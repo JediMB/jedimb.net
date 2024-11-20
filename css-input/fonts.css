@@ -1,0 +1,15 @@
+@font-face {
+    font-family: 'Jersey10';
+    font-style: normal;
+    src: local('Jersey10'),
+        local('jersey10'),
+        url(/fonts/jersey10-regular.ttf) format('truetype');
+}
+
+@font-face {
+    font-family: 'Press Start 2P';
+    font-style: normal;
+    src: local('Press Start 2P'),
+        local('press-start-2p'),
+        url(/fonts/press-start-2p-regular.ttf) format('truetype');
+}

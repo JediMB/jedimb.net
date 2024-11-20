@@ -1,0 +1,77 @@
+@import url('./fonts.css');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+    --color-hotpink-50: hsl(328, 81%, 96%);
+    --color-hotpink-100: hsl(330, 85%, 92%);
+    --color-hotpink-200: hsl(330, 87%, 85%);
+    --color-hotpink-300: hsl(330, 88%, 77%);
+    --color-hotpink-400: hsl(330, 87%, 70%);
+    --color-hotpink-500: hsl(330, 88%, 67%);
+    --color-hotpink-600: hsl(330, 64%, 59%);
+    --color-hotpink-700: hsl(330, 47%, 52%);
+    --color-hotpink-800: hsl(330, 44%, 44%);
+    --color-hotpink-900: hsl(330, 44%, 37%);
+    --color-hotpink-950: hsl(330, 44%, 29%);
+}
+
+body {
+    @apply bg-violet-950;
+    color: white;
+    margin-top: 1rem;
+    margin-inline: auto;
+    width: min(1080px, 90%);
+}
+
+header {
+    position: relative;
+    overflow: hidden;
+}
+
+header * {
+    z-index: 1;
+}
+
+header::before {
+    position: absolute;
+    top: 0;
+    inset-inline: 0;
+    height: 4px;
+    background-image: linear-gradient(
+        90deg,
+        #ff0000 0%,
+        #00ff00 50%,
+        #0000ff 100%
+    );
+    content: '';
+}
+
+.btn {
+    padding: 0.5em 1.5em;
+    border: 1px solid currentColor;
+    display: inline-block;
+    text-align: center;
+    font-weight: 600;
+}
+
+.btn:not(:disabled):not(.disabled) {
+    cursor: pointer;
+}
+
+.btn-menu {
+    border-radius: 9999px;
+    background-color: var(--color-hotpink-500);
+    color: white;
+    border: 2px solid transparent;
+    font-family: 'Press Start 2P';
+    font-weight: 100;
+}
+
+.btn-menu:hover {
+    background-color: var(--color-hotpink-300);
+    color: black;
+    border-color: white;
+}
