@@ -1,9 +1,5 @@
 <?php declare(strict_types=1) ?>
 
-<?php
-    include './components/menu-button.php';
-?>
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -15,13 +11,9 @@
     <link href="/css/style.css" rel="stylesheet" />
 </head>
 <body>
-    <header class="bg-black px-16 py-8 rounded-full">
-        <nav>
-            <ul class="flex gap-2 justify-end">
-                <li><?php menuButton('test', 'Projects') ?></li>
-                <li><?php menuButton('about:blank', 'About me') ?></li>
-            </ul>
-        </nav>
-    </header>
+    This is a test.
+    <?php
+        echo isset($_GET['test']) ? '<div>test=' . $_GET['test'] . '</div>' : '';
+    ?>
 </body>
 </html>
