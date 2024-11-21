@@ -16,14 +16,18 @@
     --color-hotpink-800: hsl(330, 44%, 44%);
     --color-hotpink-900: hsl(330, 44%, 37%);
     --color-hotpink-950: hsl(330, 44%, 29%);
+
+    font-size: 16px;
 }
 
 body {
-    @apply bg-violet-950;
+    background-image: linear-gradient(to bottom right, #222, #444);
+    background-size: cover;
+    background-repeat: no-repeat;
     color: white;
-    margin-top: 1rem;
     margin-inline: auto;
     width: min(1080px, 90%);
+    min-height: 100vh;
 }
 
 header {
@@ -35,7 +39,7 @@ header * {
     z-index: 1;
 }
 
-header::before {
+/* header::before {
     position: absolute;
     top: 0;
     inset-inline: 0;
@@ -47,7 +51,7 @@ header::before {
         #0000ff 100%
     );
     content: '';
-}
+} */
 
 .btn {
     padding: 0.5em 1.5em;
@@ -68,6 +72,7 @@ header::before {
     border: 2px solid transparent;
     font-family: 'Press Start 2P';
     font-weight: 100;
+    font-size: .875rem;
 }
 
 .btn-menu:hover {

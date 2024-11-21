@@ -523,8 +523,16 @@ video {
   display: none;
 }
 
+.mt-4 {
+    margin-top: 1rem;
+}
+
 .flex {
     display: flex;
+}
+
+.w-60 {
+    width: 15rem;
 }
 
 .justify-end {
@@ -535,13 +543,22 @@ video {
     gap: 0.5rem;
 }
 
-.rounded-full {
-    border-radius: 9999px;
+.rounded-2xl {
+    border-radius: 1rem;
+}
+
+.rounded-b-2xl {
+    border-bottom-right-radius: 1rem;
+    border-bottom-left-radius: 1rem;
 }
 
 .bg-black {
     --tw-bg-opacity: 1;
     background-color: rgb(0 0 0 / var(--tw-bg-opacity, 1));
+}
+
+.p-8 {
+    padding: 2rem;
 }
 
 .px-16 {
@@ -566,15 +583,18 @@ video {
     --color-hotpink-800: hsl(330, 44%, 44%);
     --color-hotpink-900: hsl(330, 44%, 37%);
     --color-hotpink-950: hsl(330, 44%, 29%);
+
+    font-size: 16px;
 }
 
 body {
-    --tw-bg-opacity: 1;
-    background-color: rgb(46 16 101 / var(--tw-bg-opacity, 1));
+    background-image: linear-gradient(to bottom right, #222, #444);
+    background-size: cover;
+    background-repeat: no-repeat;
     color: white;
-    margin-top: 1rem;
     margin-inline: auto;
     width: min(1080px, 90%);
+    min-height: 100vh;
 }
 
 header {
@@ -586,7 +606,7 @@ header * {
     z-index: 1;
 }
 
-header::before {
+/* header::before {
     position: absolute;
     top: 0;
     inset-inline: 0;
@@ -598,7 +618,7 @@ header::before {
         #0000ff 100%
     );
     content: '';
-}
+} */
 
 .btn {
     padding: 0.5em 1.5em;
@@ -619,6 +639,7 @@ header::before {
     border: 2px solid transparent;
     font-family: 'Press Start 2P';
     font-weight: 100;
+    font-size: .875rem;
 }
 
 .btn-menu:hover {
