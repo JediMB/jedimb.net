@@ -21,9 +21,8 @@
         5) Directory with index.html
     */
     foreach (['', '.php', '.html', DIRECTORY_SEPARATOR . 'index.php', DIRECTORY_SEPARATOR . 'index.html'] as $pathSuffix) {
-        if (
-            ( $filePath = realpath($requestPath . $pathSuffix) )
-            && is_dir($filePath) == false )
+        if ( ( $filePath = realpath($requestPath . $pathSuffix) )
+            && is_dir($filePath) == false ) // Should support for error 403 Forbidden be implemented?
                 break;
     }
 

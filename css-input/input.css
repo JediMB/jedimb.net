@@ -17,20 +17,24 @@
     --color-hotpink-900: hsl(330, 44%, 37%);
     --color-hotpink-950: hsl(330, 44%, 29%);
 
+    --color-sandyyellow-500: hsl(53, 97%, 72%);
+
+    --color-lightgreenishblue-500: hsl(153, 90%, 68%);
+
+    --color-bluelotus-500: hsl(244, 79%, 65%);
+
     font-size: 16px;
 }
 
 body {
-    background-image: linear-gradient(to bottom right, #222, #444);
-    background-size: cover;
-    background-repeat: no-repeat;
+    background-color: #111;
     color: white;
     margin-inline: auto;
     width: min(1080px, 90%);
     min-height: 100vh;
 }
 
-header {
+/* header {
     position: relative;
     overflow: hidden;
 }
@@ -38,8 +42,8 @@ header {
 header * {
     z-index: 1;
 }
-
-/* header::before {
+    
+header::before {
     position: absolute;
     top: 0;
     inset-inline: 0;

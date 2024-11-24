@@ -15,7 +15,7 @@
     <link href="/css/style.css" rel="stylesheet" />
 </head>
 <body>
-    <header class="bg-black px-16 py-8 rounded-b-2xl">
+    <header class="bg-gradient-to-br px-16 py-8 rounded-b-2xl" style="--tw-gradient-stops: #111 0 15%, #333;">
         <nav id="menu-top">
             <ul class="flex gap-2 justify-end">
                 <li><?php menuButton('test', 'Projects') ?></li>
@@ -25,6 +25,11 @@
     </header>
     <div class="mt-4">
         <!-- Scrap this and just make drop-down menus -->
+        <!--
+            Alternatively, have a transparent (no-bg) row below the header that expands and pushes
+            the page content downwards as you hover over the button. Then, when you click on it,
+            a series of "cards" slide in from the side(s) to form the sub-menu in that space
+        -->
         <nav id="menu-left" class="bg-black w-60 p-8 rounded-2xl">
             <ul>
                 <li>Project 1</li>
