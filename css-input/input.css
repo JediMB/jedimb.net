@@ -27,6 +27,7 @@
 }
 
 body {
+    overflow-x: hidden;
     background-color: #111;
     color: white;
     margin-inline: auto;
@@ -83,4 +84,16 @@ header::before {
     background-color: var(--color-hotpink-300);
     color: black;
     border-color: white;
+}
+
+.list-cards > li {
+    --animation-delay: 0s;
+    border: 1px white dotted;
+    padding: 1rem 4rem;
+    animation: slide-in 1s ease-out var(--animation-delay) backwards;
+}
+
+@keyframes slide-in {
+    0%      { transform: translate(100vw); }
+    100%    { transform: translate(0); }
 }

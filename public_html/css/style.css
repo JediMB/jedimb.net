@@ -523,28 +523,24 @@ video {
   display: none;
 }
 
-.mt-4 {
-    margin-top: 1rem;
-}
-
 .flex {
     display: flex;
 }
 
-.w-60 {
-    width: 15rem;
+.flex-wrap {
+    flex-wrap: wrap;
 }
 
 .justify-end {
     justify-content: flex-end;
 }
 
-.gap-2 {
-    gap: 0.5rem;
+.justify-center {
+    justify-content: center;
 }
 
-.rounded-2xl {
-    border-radius: 1rem;
+.gap-2 {
+    gap: 0.5rem;
 }
 
 .rounded-b-2xl {
@@ -552,17 +548,12 @@ video {
     border-bottom-left-radius: 1rem;
 }
 
-.bg-black {
-    --tw-bg-opacity: 1;
-    background-color: rgb(0 0 0 / var(--tw-bg-opacity, 1));
-}
-
 .bg-gradient-to-br {
     background-image: linear-gradient(to bottom right, var(--tw-gradient-stops));
 }
 
-.p-8 {
-    padding: 2rem;
+.p-4 {
+    padding: 1rem;
 }
 
 .px-16 {
@@ -588,10 +579,17 @@ video {
     --color-hotpink-900: hsl(330, 44%, 37%);
     --color-hotpink-950: hsl(330, 44%, 29%);
 
+    --color-sandyyellow-500: hsl(53, 97%, 72%);
+
+    --color-lightgreenishblue-500: hsl(153, 90%, 68%);
+
+    --color-bluelotus-500: hsl(244, 79%, 65%);
+
     font-size: 16px;
 }
 
 body {
+    overflow-x: hidden;
     background-color: #111;
     color: white;
     margin-inline: auto;
@@ -648,4 +646,16 @@ header::before {
     background-color: var(--color-hotpink-300);
     color: black;
     border-color: white;
+}
+
+.list-cards > li {
+    --animation-delay: 0s;
+    border: 1px white dotted;
+    padding: 1rem 4rem;
+    animation: slide-in 1s ease-out var(--animation-delay) backwards;
+}
+
+@keyframes slide-in {
+    0%      { transform: translate(100vw); }
+    100%    { transform: translate(0); }
 }
