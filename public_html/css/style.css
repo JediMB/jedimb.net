@@ -527,16 +527,24 @@ video {
     display: flex;
 }
 
+.grid {
+    display: grid;
+}
+
+.hidden {
+    display: none;
+}
+
+.grid-cols-2 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
 .flex-wrap {
     flex-wrap: wrap;
 }
 
 .justify-end {
     justify-content: flex-end;
-}
-
-.justify-center {
-    justify-content: center;
 }
 
 .gap-2 {
@@ -564,6 +572,10 @@ video {
 .py-8 {
     padding-top: 2rem;
     padding-bottom: 2rem;
+}
+
+.filter {
+    filter: var(--tw-blur) var(--tw-brightness) var(--tw-contrast) var(--tw-grayscale) var(--tw-hue-rotate) var(--tw-invert) var(--tw-saturate) var(--tw-sepia) var(--tw-drop-shadow);
 }
 
 :root {
@@ -595,6 +607,10 @@ body {
     margin-inline: auto;
     width: min(1080px, 90%);
     min-height: 100vh;
+}
+
+h1 {
+    font-size: 2em;
 }
 
 /* header {
@@ -642,16 +658,61 @@ header::before {
     font-size: .875rem;
 }
 
-.btn-menu:hover {
+.btn-menu:hover, .btn-menu.selected {
     background-color: var(--color-hotpink-300);
     color: black;
     border-color: white;
 }
 
-.list-cards > li {
-    --animation-delay: 0s;
+.show-menu {
+    --animation-name: show-menu;
+}
+
+.hide-menu {
+    --animation-name: hide-menu;
+}
+
+.show-menu, .hide-menu {
+    overflow: hidden;
+    cursor: default;
+    pointer-events: none;
+    animation: var(--animation-name) 0.5s ease-in-out backwards;
+}
+
+.show-menu * {
+    opacity: 0;
+}
+
+@keyframes show-menu {
+    0%      { max-height: 0; }
+    100%    { max-height: 8rem; }
+}
+
+@keyframes hide-menu {
+    0% {
+        max-height: 8rem;
+        opacity: 1;
+    }
+    100% {
+        max-height: 0;
+        opacity: 0;
+    }
+}
+
+.list-cards:not(.hidden) {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    justify-content: center;
+}
+
+.list-cards li {
     border: 1px white dotted;
     padding: 1rem 4rem;
+}
+
+.list-cards:not(.show-menu) > li {
+    --animation-delay: 0s;
     animation: slide-in 1s ease-out var(--animation-delay) backwards;
 }
 

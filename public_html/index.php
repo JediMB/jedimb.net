@@ -3,6 +3,8 @@
 <?php
     include './utilities/attributes.php';
     include './components/menu-data.php';
+
+    $menu = menuData();
 ?>
 
 <!DOCTYPE html>
@@ -17,20 +19,12 @@
 </head>
 <body>
     <header>
-        <script defer>
-            function openSubMenu(id) {
-                if (isNaN(id)) return;
-
-                //window.alert(id);
-
-            }
-        </script>
-
-        <div class="bg-gradient-to-br px-16 py-8 rounded-b-2xl" style="--tw-gradient-stops: #111 0 15%, #333;">
+        <div class="grid grid-cols-2 bg-gradient-to-br px-16 py-8 rounded-b-2xl" style="--tw-gradient-stops: #111 0 15%, #333;">
+            <h1>Under Construction</h1>
             <nav id="menu">
-                <ul class="flex gap-2 justify-end">
+                <ul class="flex gap-2 flex-wrap justify-end">
                     <?php
-                        if ($menu = menuData())
+                        if ($menu)
                             for ($menuId = 0; $menuId < count($menu); $menuId++) {
                                 $menuItem = $menu[$menuId];
 
@@ -40,7 +34,7 @@
                                 $url = property_exists($menuItem, "url") ? $menuItem->url : null;
                                 
                                 $mouseOverJS = property_exists($menuItem, "submenu") && is_array($menuItem->submenu)
-                                    ? 'openSubMenu(' . $menuId . ')'
+                                    ? 'openSubMenu(' . $menuId . ', this)'
                                     : null;
 
                                 echo '<li>';
@@ -56,13 +50,15 @@
         <nav id="sub-menu" class="p-4">
             <?php
                 if ($menu)
-                    foreach ($menu as $menuItem) {
+                    for ($menuId = 0; $menuId < count($menu); $menuId++) {
+                        $menuItem = $menu[$menuId];
+
                         if (property_exists($menuItem, "submenu") == false || is_array($menuItem->submenu) == false)
                             continue;
 
                         $submenu = $menuItem->submenu;
 
-                        echo '<ul class="flex gap-2 justify-center flex-wrap list-cards">';
+                        echo '<ul id="submenu-' . $menuId . '" class="list-cards hidden">';
 
                         for ($i = 0; $i < count($submenu); $i++) {
                             if (property_exists($submenu[$i], "title") == false)
@@ -77,6 +73,63 @@
                     }
             ?>
         </nav>
+        
+        <script>
+            const menuButtons = Array.from(document.querySelectorAll('[id^="menu-button-"]'));
+            const subMenus = Array.from(document.querySelectorAll('[id^="submenu-"]'));
+            let activeSubmenuId = -1;
+
+            subMenus.forEach(submenu => {
+                submenu.addEventListener('animationend', (event) => {
+                    const animationName = event.animationName;
+
+                    switch (animationName) {
+                        case 'hide-menu':
+                            event.target.classList.add('hidden');
+                            event.target.classList.remove('hide-menu');
+
+                            const submenuToOpen =  subMenus.find(submenu => submenu.id === `submenu-${activeSubmenuId}`);
+
+                            submenuToOpen.classList.add('show-menu');
+                            submenuToOpen.classList.remove('hidden');
+                            break;
+
+                        case 'show-menu':
+                            event.target.classList.remove('show-menu');
+                            break;
+
+                        default:
+                            event.stopPropagation();
+                            break;
+                    }
+
+                });
+            });
+
+            function openSubMenu(id, btn) {
+                if (isNaN(id) || id === activeSubmenuId) return;
+
+                activeSubmenuId = id;
+
+                menuButtons.forEach(menuBtn => menuBtn.classList.remove('selected'));
+                btn.classList.add('selected');
+
+                const submenusToClose = subMenus.filter(
+                    submenu => submenu.id !== `submenu-${id}`
+                    && submenu.classList.contains('hidden') == false
+                    && submenu.classList.contains('hide-menu') == false
+                );
+
+                if (submenusToClose.length > 0) {
+                    submenusToClose.forEach(submenu => submenu.classList.add('hide-menu'));
+                    return;
+                }
+
+                const submenuToOpen = subMenus.find(submenu => submenu.id === `submenu-${activeSubmenuId}`);
+                submenuToOpen.classList.add('show-menu');
+                submenuToOpen.classList.remove('hidden');
+            }
+        </script>
     </header>
     <main>
         <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec ullamcorper nisl a nisl dictum laoreet. Morbi aliquet facilisis neque. Etiam accumsan erat ex. Nam auctor ipsum nunc, id tristique risus blandit quis. Mauris sed nulla tempus, suscipit enim mattis, dapibus quam. Nunc nulla lectus, aliquam non bibendum non, auctor ut magna. Vestibulum ex ligula, aliquet iaculis commodo at, mattis vitae tortor.</p>
