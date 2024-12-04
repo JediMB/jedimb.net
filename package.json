@@ -6,7 +6,7 @@
   "scripts": {
     "serve": "concurrently npm:php:*",
     "php:postcss": "postcss ./css-input/input.css -o ./public_html/css/style.css --watch",
-    "php:server": "php -S localhost:4000 -t ./public_html/ ./public_html/router.php"
+    "php:server": "php -S localhost:4000 -t ./public_html/ ./public_html/index.php"
   },
   "devDependencies": {
     "autoprefixer": "^10.4.20",
