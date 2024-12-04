@@ -1,0 +1,30 @@
+Alternative 1:
+--------------
+router.php:
+Save the path of the requested php file before including it
+
+contentpage.php
+Before the content, have an require_once that points to the view/template page
+? Possibly <?php if (require_once('...') === false) exit; ?> ?
+
+view/template.php
+Where the content is supposed to go, include the path saved from the router
+? <?php exit; ?> at the end of the template ?
+
+
+Alternative 2:
+--------------
+router.php:
+Instead of outputting the requested php file, uses
+	ob_start();
+	include $filePath;
+	$GLOBALS['page_content'] = ob_get_clean();
+	require_once $GLOBALS['page_template']; //'view/template.php'
+	
+view/template.php:
+Where the content is supposed to go, echo the global page_content variable
+
+
+
+Either alternative should allow the content page to set variables like page title
+for the template to render, or even define which template to use to begin with.
