@@ -1,8 +1,8 @@
 <?php declare(strict_types=1) ?>
 
 <?php
-    include './utilities/attributes.php';
-    include './components/menu-data.php';
+    require_once './utilities/attributes.php';
+    require_once './components/menu-data.php';
 
     $menu = menuData();
 ?>
