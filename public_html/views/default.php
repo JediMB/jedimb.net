@@ -57,15 +57,19 @@
                     for ($menuId = 0; $menuId < count($menu); $menuId++) {
                         $menuItem = $menu[$menuId];
 
-                        if (property_exists($menuItem, 'submenu') == false || is_array($menuItem->submenu) == false)
+                        if (isset($menuItem->submenu) == false || is_array($menuItem->submenu) == false)
                             continue;
 
                         $submenu = array_values(array_filter($menuItem->submenu, function ($item) {
                             return isset($item->title);
                         }));
 
+                        $itemsPerRow = count($submenu) > 3
+                            ? 4
+                            : 3;
+
                         echo <<<HTML
-                            <ul id="submenu-$menuId" class="list-cards hidden"> <!-- hidden -->
+                            <ul id="submenu-$menuId" class="list-cards hidden" style="--items-per-row: $itemsPerRow"> <!-- hidden -->
                         HTML;
 
                         for ($i = 0; $i < count($submenu); $i++) {

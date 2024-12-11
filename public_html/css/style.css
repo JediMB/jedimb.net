@@ -699,16 +699,21 @@ header::before {
     }
 }
 
+.list-cards {
+    --items-per-row: 3;
+    --gap: 0.5rem;
+}
+
 .list-cards:not(.hidden) {
     display: flex;
     flex-wrap: wrap;
-    gap: 0.5rem;
+    gap: var(--gap);
     justify-content: center;
 }
 
 .list-cards > .card {
-    width: calc(33% - 0.33rem);
-    aspect-ratio: 3/1;
+    width: calc((100% / var(--items-per-row)) - ((var(--items-per-row) - 1) * var(--gap)));
+    height: 6rem;
     cursor: pointer;
 }
 
@@ -746,9 +751,9 @@ header::before {
     inset: 0;
     backface-visibility: hidden;
     overflow: hidden;
-    border-width: 1px;
+    border-width: 2px;
     border-color: white;
-    border-style: dotted;
+    border-style: solid;
     border-radius: 1rem;
     background: linear-gradient(to bottom right, var(--color-hotpink-500), var(--color-bluelotus-500));
     padding: 0.25rem 0.5rem;
