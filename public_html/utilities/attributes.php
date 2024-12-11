@@ -12,7 +12,7 @@
         if ($useHref)
             return ' href="' . $value . '" ';
 
-        return $prefix . 'window.location = \'' . $value . '\'' . $suffix;
+        return $prefix . "window.location = '" . $value . "'" . $suffix;
     }
 
     function onMouseOver(?string $value) {

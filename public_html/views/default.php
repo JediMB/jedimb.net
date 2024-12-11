@@ -28,20 +28,24 @@
                             for ($menuId = 0; $menuId < count($menu); $menuId++) {
                                 $menuItem = $menu[$menuId];
 
-                                if (property_exists($menuItem, "title") == false)
+                                if (isset($menuItem->title) == false)
                                     continue;
 
-                                $url = property_exists($menuItem, "url") ? $menuItem->url : null;
-                                
-                                $mouseOverJS = property_exists($menuItem, "submenu") && is_array($menuItem->submenu)
-                                    ? 'openSubMenu(' . $menuId . ', this)'
-                                    : null;
+                                if (isset($menuItem->submenu) && is_array($menuItem->submenu))
+                                    $onClick = onClick('openSubMenu(' . $menuId . ', this)');
 
-                                echo '<li>';
-                                echo '<a id="menu-button-' . $menuId .'" class="btn btn-menu"' . onClick($url, true) . onMouseOver($mouseOverJS) . '>'
-                                        . $menuItem->title
-                                    . '</a>';
-                                echo '</li>';
+                                else if (isset($menuItem->url))
+                                    $onClick = onClick($menuItem->url, true);
+
+                                else $onClick = null;
+
+                                echo <<<HTML
+                                    <li>
+                                        <a id="menu-button-$menuId" class="btn btn-menu" $onClick>
+                                            $menuItem->title
+                                        </a>
+                                    </li>
+                                HTML;
                             }
                     ?>
                 </ul>
@@ -53,20 +57,38 @@
                     for ($menuId = 0; $menuId < count($menu); $menuId++) {
                         $menuItem = $menu[$menuId];
 
-                        if (property_exists($menuItem, "submenu") == false || is_array($menuItem->submenu) == false)
+                        if (property_exists($menuItem, 'submenu') == false || is_array($menuItem->submenu) == false)
                             continue;
 
-                        $submenu = $menuItem->submenu;
+                        $submenu = array_values(array_filter($menuItem->submenu, function ($item) {
+                            return isset($item->title);
+                        }));
 
-                        echo '<ul id="submenu-' . $menuId . '" class="list-cards hidden">';
+                        echo <<<HTML
+                            <ul id="submenu-$menuId" class="list-cards hidden"> <!-- hidden -->
+                        HTML;
 
                         for ($i = 0; $i < count($submenu); $i++) {
-                            if (property_exists($submenu[$i], "title") == false)
-                                continue;
+                            $submenuItem = $submenu[$i];
 
-                            echo '<li style="--animation-delay: '. $i * 200 . 'ms;">';
-                            echo $submenu[$i]->title;
-                            echo '</li>';
+                            $animationDelay = ($i * 200) . 'ms';
+
+                            echo <<<HTML
+                                <li class="card" style="--animation-delay: $animationDelay;">
+                                    <div class="card-inner">
+                                        <div class="card-front">{$submenuItem->title}</div>
+                            HTML;
+                            
+                            if (isset($submenuItem->description)) {
+
+                                echo <<<HTML
+                                            <div class="card-back">{$submenuItem->description}</div>
+                                HTML;
+                            }
+                            echo <<<HTML
+                                    </div>
+                                </li>
+                            HTML;
                         }
 
                         echo '</ul>';

@@ -133,17 +133,54 @@ header::before {
     justify-content: center;
 }
 
-.list-cards li {
-    border: 1px white dotted;
-    padding: 1rem 4rem;
+.list-cards > .card {
+    width: calc(33% - 0.33rem);
+    aspect-ratio: 3/1;
+    cursor: pointer;
 }
 
-.list-cards:not(.show-menu) > li {
+.list-cards:not(.show-menu) > .card {
     --animation-delay: 0s;
     animation: slide-in 1s ease-out var(--animation-delay) backwards;
 }
 
 @keyframes slide-in {
-    0%      { transform: translate(100vw); }
+    0%      { transform: translate(100vw); /*100vw*/ }
     100%    { transform: translate(0); }
+}
+
+.card {
+    position: relative;
+    perspective: 1000px;
+}
+
+.card-inner {
+    position: absolute;
+    inset: 0;
+    transition: transform 0.8s;
+    transform-style: preserve-3d;
+}
+
+.card:has(.card-back):hover .card-inner {
+    transform: rotateY(-180deg);
+}
+
+.card-front, .card-back {
+    position: absolute;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    inset: 0;
+    backface-visibility: hidden;
+    overflow: hidden;
+    border-width: 1px;
+    border-color: white;
+    border-style: dotted;
+    border-radius: 1rem;
+    background: linear-gradient(to bottom right, var(--color-hotpink-500), var(--color-bluelotus-500));
+    padding: 0.25rem 0.5rem;
+}
+
+.card-back {
+    transform: rotateY(180deg);
 }
