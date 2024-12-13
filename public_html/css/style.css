@@ -760,13 +760,14 @@ header::before {
 
 .card-back {
     max-height: 0;
+    background: linear-gradient(to bottom right, var(--color-lightgreenishblue-500), var(--color-hotpink-500));
     color: transparent;
     transform: rotateY(180deg);
     transition: max-height 0.8s, color 0.5s;
 }
 
 .card:hover .card-back {
-    color: inherit;
+    color: black;
     max-height: 8rem;
     transition: max-height 0.8s, color 1.6s;
 }
