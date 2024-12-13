@@ -700,7 +700,6 @@ header::before {
 }
 
 .list-cards {
-    --items-per-row: 3;
     --gap: 0.5rem;
 }
 

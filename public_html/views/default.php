@@ -65,7 +65,7 @@
                         }));
 
                         echo <<<HTML
-                            <ul id="submenu-$menuId" class="list-cards hidden" style="--items-per-row: $itemsPerRow"> <!-- hidden -->
+                            <ul id="submenu-$menuId" class="list-cards hidden"> <!-- hidden -->
                         HTML;
 
                         for ($i = 0; $i < count($submenu); $i++) {
