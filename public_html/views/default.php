@@ -64,10 +64,6 @@
                             return isset($item->title);
                         }));
 
-                        $itemsPerRow = count($submenu) > 3
-                            ? 4
-                            : 3;
-
                         echo <<<HTML
                             <ul id="submenu-$menuId" class="list-cards hidden" style="--items-per-row: $itemsPerRow"> <!-- hidden -->
                         HTML;
@@ -86,7 +82,7 @@
                             if (isset($submenuItem->description)) {
 
                                 echo <<<HTML
-                                            <div class="card-back">{$submenuItem->description}</div>
+                                    <div class="card-back">{$submenuItem->description}</div>
                                 HTML;
                             }
                             echo <<<HTML

@@ -712,9 +712,10 @@ header::before {
 }
 
 .list-cards > .card {
-    width: calc((100% / var(--items-per-row)) - ((var(--items-per-row) - 1) * var(--gap)));
-    height: 6rem;
     cursor: pointer;
+    flex-grow: 1;
+    max-width: calc(33% - (var(--gap) * 2));
+    align-self: stretch;
 }
 
 .list-cards:not(.show-menu) > .card {
@@ -728,13 +729,12 @@ header::before {
 }
 
 .card {
-    position: relative;
     perspective: 1000px;
 }
 
 .card-inner {
-    position: absolute;
-    inset: 0;
+    display: grid;
+    grid-template: 'stack';
     transition: transform 0.8s;
     transform-style: preserve-3d;
 }
@@ -744,11 +744,10 @@ header::before {
 }
 
 .card-front, .card-back {
-    position: absolute;
+    grid-area: stack;
     display: flex;
     justify-content: center;
     align-items: center;
-    inset: 0;
     backface-visibility: hidden;
     overflow: hidden;
     border-width: 2px;
@@ -756,9 +755,18 @@ header::before {
     border-style: solid;
     border-radius: 1rem;
     background: linear-gradient(to bottom right, var(--color-hotpink-500), var(--color-bluelotus-500));
-    padding: 0.25rem 0.5rem;
+    padding: 1rem 4rem;
 }
 
 .card-back {
+    max-height: 0;
+    color: transparent;
     transform: rotateY(180deg);
+    transition: max-height 0.8s, color 0.5s;
+}
+
+.card:hover .card-back {
+    color: inherit;
+    max-height: 8rem;
+    transition: max-height 0.8s, color 1.6s;
 }
