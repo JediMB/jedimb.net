@@ -68,6 +68,9 @@ header::before {
     display: inline-block;
     text-align: center;
     font-weight: 600;
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
 }
 
 .btn:not(:disabled):not(.disabled) {
@@ -155,6 +158,9 @@ header::before {
 }
 
 .card {
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
     perspective: 1000px;
 }
 

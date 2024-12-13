@@ -728,6 +728,9 @@ header::before {
 }
 
 .card {
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
     perspective: 1000px;
 }
 
