@@ -20,7 +20,10 @@
 <body>
     <header>
         <div class="grid grid-cols-2 bg-gradient-to-br px-16 py-8 rounded-b-2xl" style="--tw-gradient-stops: #111 0 15%, #333;">
-            <h1>Under Construction</h1>
+            <div>
+                <h1>Under Construction</h1>
+                <p>No responsive/mobile view yet</p>
+            </div>
             <nav id="menu">
                 <ul class="flex gap-2 flex-wrap justify-end">
                     <?php
@@ -153,8 +156,13 @@
             }
         </script>
     </header>
+
     <main>
         <?= $GLOBALS['page_content'] ?>
     </main>
+
+    <footer>
+
+    </footer>
 </body>
 </html>

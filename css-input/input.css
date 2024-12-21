@@ -4,55 +4,59 @@
 @tailwind components;
 @tailwind utilities;
 
+@layer base {
+    :root {
+        --color-hotpink-50: 330 88% 93%;
+        --color-hotpink-100: 331 88% 90%;
+        --color-hotpink-200: 330 88% 83%;
+        --color-hotpink-300: 330 88% 77%;
+        --color-hotpink-400: 330 88% 70%;
+            --color-hotpink-500: 330 88% 67%;
+        --color-hotpink-600: 330 65% 60%;
+        --color-hotpink-700: 330 43% 47%;
+        --color-hotpink-800: 330 43% 34%;
+        --color-hotpink-900: 330 43% 20%;
+        --color-hotpink-950: 331 42% 14%;
+    
+        --color-sandyyellow-50: 54 93% 94%;
+        --color-sandyyellow-100: 53 95% 91%;
+        --color-sandyyellow-200: 53 97% 86%;
+        --color-sandyyellow-300: 53 96% 80%;
+        --color-sandyyellow-400: 53 97% 75%;
+            --color-sandyyellow-500: 53 97% 72%;
+        --color-sandyyellow-600: 53 69% 65%;
+        --color-sandyyellow-700: 53 38% 50%;
+        --color-sandyyellow-800: 53 38% 36%;
+        --color-sandyyellow-900: 53 38% 22%;
+        --color-sandyyellow-950: 53 37% 14%;
+    
+        --color-lightgreenishblue-50: 154 88% 93%;
+        --color-lightgreenishblue-100: 153 92% 90%;
+        --color-lightgreenishblue-200: 153 90% 84%;
+        --color-lightgreenishblue-300: 153 91% 77%;
+        --color-lightgreenishblue-400: 153 91% 71%;
+            --color-lightgreenishblue-500: 153 90% 68%;
+        --color-lightgreenishblue-600: 153 68% 61%;
+        --color-lightgreenishblue-700: 153 43% 47%;
+        --color-lightgreenishblue-800: 153 43% 34%;
+        --color-lightgreenishblue-900: 153 42% 20%;
+        --color-lightgreenishblue-950: 153 42% 14%;
+    
+        --color-bluelotus-50: 244 79% 93%;
+        --color-bluelotus-100: 244 82% 89%;
+        --color-bluelotus-200: 244 80% 82%;
+        --color-bluelotus-300: 244 81% 75%;
+        --color-bluelotus-400: 244 80% 68%;
+            --color-bluelotus-500: 244 79% 65%;
+        --color-bluelotus-600: 244 60% 58%;
+        --color-bluelotus-700: 244 43% 45%;
+        --color-bluelotus-800: 244 43% 33%;
+        --color-bluelotus-900: 244 43% 19%;
+        --color-bluelotus-950: 244 42% 13%;
+    }
+}
+
 :root {
-    --color-hotpink-50: hsl(330, 88%, 93%);
-    --color-hotpink-100: hsl(331, 88%, 90%);
-    --color-hotpink-200: hsl(330, 88%, 83%);
-    --color-hotpink-300: hsl(330, 88%, 77%);
-    --color-hotpink-400: hsl(330, 88%, 70%);
-        --color-hotpink-500: hsl(330, 88%, 67%);
-    --color-hotpink-600: hsl(330, 65%, 60%);
-    --color-hotpink-700: hsl(330, 43%, 47%);
-    --color-hotpink-800: hsl(330, 43%, 34%);
-    --color-hotpink-900: hsl(330, 43%, 20%);
-    --color-hotpink-950: hsl(331, 42%, 14%);
-
-    --color-sandyyellow-50: hsl(54, 93%, 94%);
-    --color-sandyyellow-100: hsl(53, 95%, 91%);
-    --color-sandyyellow-200: hsl(53, 97%, 86%);
-    --color-sandyyellow-300: hsl(53, 96%, 80%);
-    --color-sandyyellow-400: hsl(53, 97%, 75%);
-        --color-sandyyellow-500: hsl(53, 97%, 72%);
-    --color-sandyyellow-600: hsl(53, 69%, 65%);
-    --color-sandyyellow-700: hsl(53, 38%, 50%);
-    --color-sandyyellow-800: hsl(53, 38%, 36%);
-    --color-sandyyellow-900: hsl(53, 38%, 22%);
-    --color-sandyyellow-950: hsl(53, 37%, 14%);
-
-    --color-lightgreenishblue-50: hsl(154, 88%, 93%);
-    --color-lightgreenishblue-100: hsl(153, 92%, 90%);
-    --color-lightgreenishblue-200: hsl(153, 90%, 84%);
-    --color-lightgreenishblue-300: hsl(153, 91%, 77%);
-    --color-lightgreenishblue-400: hsl(153, 91%, 71%);
-        --color-lightgreenishblue-500: hsl(153, 90%, 68%);
-    --color-lightgreenishblue-600: hsl(153, 68%, 61%);
-    --color-lightgreenishblue-700: hsl(153, 43%, 47%);
-    --color-lightgreenishblue-800: hsl(153, 43%, 34%);
-    --color-lightgreenishblue-900: hsl(153, 42%, 20%);
-    --color-lightgreenishblue-950: hsl(153, 42%, 14%);
-
-    --color-bluelotus-50: hsl(244, 79%, 93%);
-    --color-bluelotus-100: hsl(244, 82%, 89%);
-    --color-bluelotus-200: hsl(244, 80%, 82%);
-    --color-bluelotus-300: hsl(244, 81%, 75%);
-    --color-bluelotus-400: hsl(244, 80%, 68%);
-        --color-bluelotus-500: hsl(244, 79%, 65%);
-    --color-bluelotus-600: hsl(244, 60%, 58%);
-    --color-bluelotus-700: hsl(244, 43%, 45%);
-    --color-bluelotus-800: hsl(244, 43%, 33%);
-    --color-bluelotus-900: hsl(244, 43%, 19%);
-    --color-bluelotus-950: hsl(244, 42%, 13%);
-
     font-size: 16px;
 }
 
@@ -109,7 +113,7 @@ header::before {
 
 .btn-menu {
     border-radius: 9999px;
-    background-color: var(--color-hotpink-500);
+    @apply bg-hotpink-500;
     color: white;
     border: 2px solid transparent;
     font-family: 'Press Start 2P';
@@ -118,7 +122,7 @@ header::before {
 }
 
 .btn-menu:hover, .btn-menu.selected {
-    background-color: var(--color-hotpink-300);
+    @apply bg-hotpink-300;
     color: black;
     border-color: white;
 }
@@ -216,13 +220,13 @@ header::before {
     border-color: white;
     border-style: solid;
     border-radius: 1rem;
-    background: linear-gradient(to bottom right, var(--color-hotpink-500), var(--color-bluelotus-500));
+    @apply bg-gradient-to-br from-hotpink-500 to-bluelotus-500;
     padding: 1rem 4rem;
 }
 
 .card-back {
     max-height: 0;
-    background: linear-gradient(to bottom right, var(--color-lightgreenishblue-500), var(--color-hotpink-500));
+    @apply bg-gradient-to-br from-lightgreenishblue-500 to-hotpink-500;
     color: transparent;
     transform: rotateY(180deg);
     transition: max-height 0.8s, color 0.5s;
