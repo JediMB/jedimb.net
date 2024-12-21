@@ -7,11 +7,12 @@
     $GLOBALS['page_content'] = 'Page content';
 
     // Remove directory separator and query string from path
-    $requestPath = ltrim(
-        explode('?', $_SERVER['REQUEST_URI'], 2)[0],
-        '/');
+    $requestPath = ltrim($_SERVER['REQUEST_URI'], '/');
+
+    if (($queryRemoved = strstr($requestPath, '?', true)) !== false)
+        $requestPath = $queryRemoved;
     
-    // If it's a root request, serve root/index.php
+    // If it's a root request, serve root/home.php
     if ($requestPath === '')
         $requestPath = 'home.php';
     
@@ -22,7 +23,16 @@
         4) Directory with index.php
         5) Directory with index.html
     */
-    foreach (['', '.php', '.html', DIRECTORY_SEPARATOR . 'index.php', DIRECTORY_SEPARATOR . 'index.html'] as $pathSuffix) {
+    foreach (
+        [
+            '',
+            '.php',
+            '.html',
+            DIRECTORY_SEPARATOR . 'index.php',
+            DIRECTORY_SEPARATOR . 'index.html'
+        ]
+        as $pathSuffix
+        ) {
         if ( ( $filePath = realpath($requestPath . $pathSuffix) )
             && is_dir($filePath) == false ) // Should support for error 403 Forbidden be implemented?
                 break;
@@ -34,7 +44,10 @@
         || $filePath == __FILE__
         || substr(basename($filePath), 0, 1) == '.') {
             header('HTTP/1.1 404 Not Found');
-            echo '404 Not Found';
+            ob_start();
+            include '404.php';
+            $GLOBALS['page_content'] = ob_get_clean();
+            require_once $GLOBALS['page_template'];
             exit;
     }
 
