@@ -1,6 +1,6 @@
 <?php
-    function menuData() {
-        $fileName = 'routes.json';
+    function configData() {
+        $fileName = '.configuration.json';
 
         if ( is_file($fileName) == false )
             return null;
@@ -11,8 +11,8 @@
 
         $obj = json_decode($jsonObj);
         
-        if ( property_exists($obj, "menu") && is_array($obj->menu))
-            return $obj->menu;
+        if (isset($obj->configuration))
+            return $obj->configuration;
 
         return null;
     }

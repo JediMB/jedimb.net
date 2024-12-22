@@ -1,0 +1,36 @@
+{
+    "configuration": {
+        "menu": [
+            {
+                "title": "Help",
+                "submenu": [
+                    { "title": "I need somebody" },
+                    { "title": "Not just anybody" }
+                ]
+            },
+            {
+                "title": "Projects",
+                "submenu": [
+                    {
+                        "title": "Project A",
+                        "url": "/projects/project-a",
+                        "description": "This is a project."
+                    },
+                    {
+                        "title": "Project B",
+                        "url": "/projects/project-b",
+                        "description": "This is a another project with a significantly longer description, as you may very well see."
+                    },
+                    { "title": "Project C" },
+                    { "title": "Project D" },
+                    { "title": "Project E" },
+                    { "title": "Project F" }
+                ]
+            },
+            {
+                "title": "About me",
+                "url": "/about"
+            }
+        ]
+    }
+}

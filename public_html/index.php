@@ -2,6 +2,8 @@
 
     chdir(__DIR__);
     
+    require_once './utilities/configuration.php';
+    
     $GLOBALS['page_title'] = 'JediMB.net';
     $GLOBALS['page_template'] = realpath('views/default.php');
     $GLOBALS['page_content'] = 'Page content';
@@ -42,8 +44,11 @@
     if ( $requestPath == 'index' || $requestPath == 'index.php'
         || strpos($filePath, __DIR__ . DIRECTORY_SEPARATOR) !== 0 
         || $filePath == __FILE__
-        || substr(basename($filePath), 0, 1) == '.') {
+        || substr(basename($filePath), 0, 1) == '.'
+        ) {
             header('HTTP/1.1 404 Not Found');
+            $GLOBALS['configuration'] ??= configData();
+
             ob_start();
             include '404.php';
             $GLOBALS['page_content'] = ob_get_clean();
@@ -53,6 +58,8 @@
 
     // If PHP file, serve through interpreter
     if (strtolower(substr($filePath, -4)) == '.php') {
+        $GLOBALS['configuration'] ??= configData();
+
         ob_start();
         include $filePath;
         $GLOBALS['page_content'] = ob_get_clean();

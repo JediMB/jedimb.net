@@ -523,6 +523,12 @@ video {
   display: none;
 }
 
+:root {
+        --color-primary: hsl(244, 42%, 13%);
+
+        font-size: 16px;
+    }
+
 .flex {
     display: flex;
 }
@@ -578,10 +584,6 @@ video {
     filter: var(--tw-blur) var(--tw-brightness) var(--tw-contrast) var(--tw-grayscale) var(--tw-hue-rotate) var(--tw-invert) var(--tw-saturate) var(--tw-sepia) var(--tw-drop-shadow);
 }
 
-:root {
-    font-size: 16px;
-}
-
 body {
     overflow-x: hidden;
     background-color: #111;
@@ -635,8 +637,7 @@ header::before {
 
 .btn-menu {
     border-radius: 9999px;
-    --tw-bg-opacity: 1;
-    background-color: hsl(330 88% 67% / var(--tw-bg-opacity, 1));
+    background-color: hsl(330, 88%, 67%);
     color: white;
     border: 2px solid transparent;
     font-family: 'Press Start 2P';
@@ -645,8 +646,7 @@ header::before {
 }
 
 .btn-menu:hover, .btn-menu.selected {
-    --tw-bg-opacity: 1;
-    background-color: hsl(330 88% 77% / var(--tw-bg-opacity, 1));
+    background-color: hsl(330, 88%, 77%);
     color: black;
     border-color: white;
 }
