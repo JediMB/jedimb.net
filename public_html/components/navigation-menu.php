@@ -15,7 +15,7 @@
                     continue;
 
                 if (isset($menuItem->submenu) && is_array($menuItem->submenu))
-                    $onClick = onClick('openSubMenu(' . $menuId . ', this)');
+                    $onClick = onClick('toggleSubMenu(' . $menuId . ', this)');
 
                 else if (isset($menuItem->url))
                     $onClick = onClick($menuItem->url, true);

@@ -10,11 +10,7 @@ subMenus.forEach(submenu => {
             case 'hide-menu':
                 event.target.classList.add('hidden');
                 event.target.classList.remove('hide-menu');
-
-                const submenuToOpen =  subMenus.find(submenu => submenu.id === `submenu-${activeSubmenuId}`);
-
-                submenuToOpen.classList.add('show-menu');
-                submenuToOpen.classList.remove('hidden');
+                showSubMenu();
                 break;
 
             case 'show-menu':
@@ -29,16 +25,20 @@ subMenus.forEach(submenu => {
     });
 });
 
-function openSubMenu(id, btn) {
-    if (isNaN(id) || id === activeSubmenuId) return;
+function toggleSubMenu(id, btn) {
+    if (isNaN(id)) return;
 
-    activeSubmenuId = id;
+    activeSubmenuId = id === activeSubmenuId
+        ? -1
+        : id;
 
     menuButtons.forEach(menuBtn => menuBtn.classList.remove('selected'));
-    btn.classList.add('selected');
+    
+    if (activeSubmenuId >= 0)
+        btn.classList.add('selected')
 
     const submenusToClose = subMenus.filter(
-        submenu => submenu.id !== `submenu-${id}`
+        submenu => submenu.id !== `submenu-${activeSubmenuId}`
         && submenu.classList.contains('hidden') == false
         && submenu.classList.contains('hide-menu') == false
     );
@@ -48,7 +48,14 @@ function openSubMenu(id, btn) {
         return;
     }
 
+    showSubMenu();
+    
+}
+
+function showSubMenu() {
+    if (activeSubmenuId < 0) return;
+
     const submenuToOpen = subMenus.find(submenu => submenu.id === `submenu-${activeSubmenuId}`);
-    submenuToOpen.classList.add('show-menu');
-    submenuToOpen.classList.remove('hidden');
+    submenuToOpen?.classList.add('show-menu');
+    submenuToOpen?.classList.remove('hidden');
 }
