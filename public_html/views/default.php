@@ -54,6 +54,27 @@
     </header>
 
     <main>
+        <!--
+            Check for:
+                anthropic-ai
+                Claude-Web
+                Applebot-Extended
+                Bytespider
+                CCBot
+                ChatGPT-User
+                cohere-ai
+                Diffbot
+                FacebookBot
+                GoogleOther
+                Google-Extended
+                GPTBot
+                ImagesiftBot
+                PerplexityBot
+                OmigiliBot
+                Omigili
+         -->
+        <p><?= $_SERVER['HTTP_USER_AGENT'] ?></p>
+        <br />
         <?= $GLOBALS['page_content'] ?>
     </main>
 
