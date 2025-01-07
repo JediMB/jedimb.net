@@ -7,8 +7,6 @@
 @layer base {
     :root {
         --color-primary: theme(colors.bluelotus.950);
-
-        font-size: 16px;
     }
 }
 
@@ -148,16 +146,19 @@ header::before {
     -webkit-user-select: none;
     -moz-user-select: none;
     perspective: 1000px;
+    border-radius: 1rem;
 }
 
 .card-inner {
     display: grid;
+    border-radius: inherit;
     grid-template: 'stack';
     transition: transform 0.8s;
     transform-style: preserve-3d;
 }
 
-.card:has(.card-back):hover .card-inner {
+.card:has(.card-back):hover .card-inner,
+.card:has(.card-back):focus .card-inner {
     transform: rotateY(-180deg);
 }
 
@@ -171,7 +172,7 @@ header::before {
     border-width: 2px;
     border-color: white;
     border-style: solid;
-    border-radius: 1rem;
+    border-radius: inherit;
     @apply bg-gradient-to-br from-hotpink-500 to-bluelotus-500;
     padding: 1rem 4rem;
 }
@@ -184,7 +185,8 @@ header::before {
     transition: max-height 0.8s, color 0.5s;
 }
 
-.card:hover .card-back {
+.card:hover .card-back,
+.card:focus .card-back  {
     color: black;
     max-height: 8rem;
     transition: max-height 0.8s, color 1.6s;

@@ -10,21 +10,23 @@
         if ($menu)
             for ($menuId = 0; $menuId < count($menu); $menuId++) {
                 $menuItem = $menu[$menuId];
+                $onClick = null;
+                $onKeyDown = null;
 
                 if (isset($menuItem->title) == false)
                     continue;
 
-                if (isset($menuItem->submenu) && is_array($menuItem->submenu))
+                if (isset($menuItem->submenu) && is_array($menuItem->submenu)) {
                     $onClick = onClick('toggleSubMenu(' . $menuId . ', this)');
+                    $onKeyDown = onReturnKey('toggleSubMenu(' . $menuId . ', this)');
+                }
 
                 else if (isset($menuItem->url))
                     $onClick = onClick($menuItem->url, true);
 
-                else $onClick = null;
-
                 echo <<<HTML
                     <li>
-                        <a id="menu-button-$menuId" class="btn btn-menu" $onClick>
+                        <a id="menu-button-$menuId" tabindex="0" class="btn btn-menu" $onClick $onKeyDown>
                             $menuItem->title
                         </a>
                     </li>
@@ -63,7 +65,7 @@
                     $animationDelay = ($i * 200) . 'ms';
 
                     echo <<<HTML
-                        <li class="card" style="--animation-delay: $animationDelay;">
+                        <li tabindex="0" class="card" style="--animation-delay: $animationDelay;">
                             <div class="card-inner">
                                 <div class="card-front">{$submenuItem->title}</div>
                     HTML;
