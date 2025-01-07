@@ -137,7 +137,7 @@
   box-sizing: border-box; /* 1 */
   border-width: 0; /* 2 */
   border-style: solid; /* 2 */
-  border-color: currentColor; /* 2 */
+  border-color: hsl(0, 0%, 20%); /* 2 */
 }
 
 ::before,
@@ -463,13 +463,13 @@ textarea {
 
 input::-moz-placeholder, textarea::-moz-placeholder {
   opacity: 1; /* 1 */
-  color: #9ca3af; /* 2 */
+  color: hsl(0, 0%, 40%); /* 2 */
 }
 
 input::placeholder,
 textarea::placeholder {
   opacity: 1; /* 1 */
-  color: #9ca3af; /* 2 */
+  color: hsl(0, 0%, 40%); /* 2 */
 }
 
 /*
@@ -524,7 +524,10 @@ video {
 }
 
 :root {
-        --color-primary: hsl(244, 42%, 13%);
+        --color-hotpink-300: hsl(330, 88%, 77%);
+        --color-hotpink-500: hsl(330, 88%, 67%);
+        --color-bluelotus-500: hsl(244, 79%, 65%);
+        --color-lightgreenishblue-500: hsl(153, 90%, 68%);
     }
 
 .flex {
@@ -564,6 +567,62 @@ video {
     background-image: linear-gradient(to bottom right, var(--tw-gradient-stops));
 }
 
+.from-gray-50 {
+    --tw-gradient-from: hsl(0, 0%, 5%) var(--tw-gradient-from-position);
+    --tw-gradient-to: hsl(0 0% 5% / 0) var(--tw-gradient-to-position);
+    --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to);
+}
+
+.from-gray-50\/5 {
+    --tw-gradient-from: hsl(0 0% 5% / 0.05) var(--tw-gradient-from-position);
+    --tw-gradient-to: hsl(0 0% 5% / 0) var(--tw-gradient-to-position);
+    --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to);
+}
+
+.from-gray-50\/10 {
+    --tw-gradient-from: hsl(0 0% 5% / 0.1) var(--tw-gradient-from-position);
+    --tw-gradient-to: hsl(0 0% 5% / 0) var(--tw-gradient-to-position);
+    --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to);
+}
+
+.from-gray-50\/50 {
+    --tw-gradient-from: hsl(0 0% 5% / 0.5) var(--tw-gradient-from-position);
+    --tw-gradient-to: hsl(0 0% 5% / 0) var(--tw-gradient-to-position);
+    --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to);
+}
+
+.from-gray-50\/90 {
+    --tw-gradient-from: hsl(0 0% 5% / 0.9) var(--tw-gradient-from-position);
+    --tw-gradient-to: hsl(0 0% 5% / 0) var(--tw-gradient-to-position);
+    --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to);
+}
+
+.from-gray-50\/95 {
+    --tw-gradient-from: hsl(0 0% 5% / 0.95) var(--tw-gradient-from-position);
+    --tw-gradient-to: hsl(0 0% 5% / 0) var(--tw-gradient-to-position);
+    --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to);
+}
+
+.from-15\% {
+    --tw-gradient-from-position: 15%;
+}
+
+.to-gray-200 {
+    --tw-gradient-to: hsl(0, 0%, 20%) var(--tw-gradient-to-position);
+}
+
+.to-gray-200\/10 {
+    --tw-gradient-to: hsl(0 0% 20% / 0.1) var(--tw-gradient-to-position);
+}
+
+.to-gray-200\/90 {
+    --tw-gradient-to: hsl(0 0% 20% / 0.9) var(--tw-gradient-to-position);
+}
+
+.to-gray-200\/95 {
+    --tw-gradient-to: hsl(0 0% 20% / 0.95) var(--tw-gradient-to-position);
+}
+
 .p-4 {
     padding: 1rem;
 }
@@ -584,7 +643,7 @@ video {
 
 body {
     overflow-x: hidden;
-    background-color: #111;
+    background-color: hsl(0, 0%, 5%);
     color: white;
     margin-inline: auto;
     width: min(1080px, 90%);
@@ -631,142 +690,4 @@ header::before {
 
 .btn:not(:disabled):not(.disabled) {
     cursor: pointer;
-}
-
-.btn-menu {
-    border-radius: 9999px;
-    background-color: hsl(330, 88%, 67%);
-    color: white;
-    border: 2px solid transparent;
-    font-family: 'Press Start 2P';
-    font-weight: 100;
-    font-size: .875rem;
-}
-
-.btn-menu:hover, .btn-menu.selected {
-    background-color: hsl(330, 88%, 77%);
-    color: black;
-    border-color: white;
-}
-
-.show-menu {
-    --animation-name: show-menu;
-}
-
-.hide-menu {
-    --animation-name: hide-menu;
-}
-
-.show-menu, .hide-menu {
-    overflow: hidden;
-    cursor: default;
-    pointer-events: none;
-    animation: var(--animation-name) 0.5s ease-in-out backwards;
-}
-
-.show-menu * {
-    opacity: 0;
-}
-
-@keyframes show-menu {
-    0%      { max-height: 0; }
-    100%    { max-height: 8rem; }
-}
-
-@keyframes hide-menu {
-    0% {
-        max-height: 8rem;
-        opacity: 1;
-    }
-    100% {
-        max-height: 0;
-        opacity: 0;
-    }
-}
-
-.list-cards {
-    --gap: 0.5rem;
-}
-
-.list-cards:not(.hidden) {
-    display: flex;
-    flex-wrap: wrap;
-    gap: var(--gap);
-    justify-content: center;
-}
-
-.list-cards > .card {
-    cursor: pointer;
-    flex-grow: 1;
-    max-width: calc(33% - (var(--gap) * 2));
-    align-self: stretch;
-}
-
-.list-cards:not(.show-menu) > .card {
-    --animation-delay: 0s;
-    animation: slide-in 1s ease-out var(--animation-delay) backwards;
-}
-
-@keyframes slide-in {
-    0%      { transform: translate(100vw); /*100vw*/ }
-    100%    { transform: translate(0); }
-}
-
-.card {
-    user-select: none;
-    -webkit-user-select: none;
-    -moz-user-select: none;
-    perspective: 1000px;
-    border-radius: 1rem;
-}
-
-.card-inner {
-    display: grid;
-    border-radius: inherit;
-    grid-template: 'stack';
-    transition: transform 0.8s;
-    transform-style: preserve-3d;
-}
-
-.card:has(.card-back):hover .card-inner,
-.card:has(.card-back):focus .card-inner {
-    transform: rotateY(-180deg);
-}
-
-.card-front, .card-back {
-    grid-area: stack;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    backface-visibility: hidden;
-    overflow: hidden;
-    border-width: 2px;
-    border-color: white;
-    border-style: solid;
-    border-radius: inherit;
-    background-image: linear-gradient(to bottom right, var(--tw-gradient-stops));
-    --tw-gradient-from: hsl(330, 88%, 67%) var(--tw-gradient-from-position);
-    --tw-gradient-to: hsl(330 88% 67% / 0) var(--tw-gradient-to-position);
-    --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to);
-    --tw-gradient-to: hsl(244, 79%, 65%) var(--tw-gradient-to-position);
-    padding: 1rem 4rem;
-}
-
-.card-back {
-    max-height: 0;
-    background-image: linear-gradient(to bottom right, var(--tw-gradient-stops));
-    --tw-gradient-from: hsl(153, 90%, 68%) var(--tw-gradient-from-position);
-    --tw-gradient-to: hsl(153 90% 68% / 0) var(--tw-gradient-to-position);
-    --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to);
-    --tw-gradient-to: hsl(330, 88%, 67%) var(--tw-gradient-to-position);
-    color: transparent;
-    transform: rotateY(180deg);
-    transition: max-height 0.8s, color 0.5s;
-}
-
-.card:hover .card-back,
-.card:focus .card-back  {
-    color: black;
-    max-height: 8rem;
-    transition: max-height 0.8s, color 1.6s;
 }

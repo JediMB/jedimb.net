@@ -6,13 +6,16 @@
 
 @layer base {
     :root {
-        --color-primary: theme(colors.bluelotus.950);
+        --color-hotpink-300: theme(colors.hotpink.300);
+        --color-hotpink-500: theme(colors.hotpink.500);
+        --color-bluelotus-500: theme(colors.bluelotus.500);
+        --color-lightgreenishblue-500: theme(colors.lightgreenishblue.500);
     }
 }
 
 body {
     overflow-x: hidden;
-    background-color: #111;
+    background-color: theme(colors.gray.50);
     color: white;
     margin-inline: auto;
     width: min(1080px, 90%);
@@ -59,135 +62,4 @@ header::before {
 
 .btn:not(:disabled):not(.disabled) {
     cursor: pointer;
-}
-
-.btn-menu {
-    border-radius: 9999px;
-    background-color: theme(colors.hotpink.500);
-    color: white;
-    border: 2px solid transparent;
-    font-family: 'Press Start 2P';
-    font-weight: 100;
-    font-size: .875rem;
-}
-
-.btn-menu:hover, .btn-menu.selected {
-    background-color: theme(colors.hotpink.300);
-    color: black;
-    border-color: white;
-}
-
-
-.show-menu {
-    --animation-name: show-menu;
-}
-
-.hide-menu {
-    --animation-name: hide-menu;
-}
-
-.show-menu, .hide-menu {
-    overflow: hidden;
-    cursor: default;
-    pointer-events: none;
-    animation: var(--animation-name) 0.5s ease-in-out backwards;
-}
-
-.show-menu * {
-    opacity: 0;
-}
-
-@keyframes show-menu {
-    0%      { max-height: 0; }
-    100%    { max-height: 8rem; }
-}
-
-@keyframes hide-menu {
-    0% {
-        max-height: 8rem;
-        opacity: 1;
-    }
-    100% {
-        max-height: 0;
-        opacity: 0;
-    }
-}
-
-.list-cards {
-    --gap: 0.5rem;
-}
-
-.list-cards:not(.hidden) {
-    display: flex;
-    flex-wrap: wrap;
-    gap: var(--gap);
-    justify-content: center;
-}
-
-.list-cards > .card {
-    cursor: pointer;
-    flex-grow: 1;
-    max-width: calc(33% - (var(--gap) * 2));
-    align-self: stretch;
-}
-
-.list-cards:not(.show-menu) > .card {
-    --animation-delay: 0s;
-    animation: slide-in 1s ease-out var(--animation-delay) backwards;
-}
-
-@keyframes slide-in {
-    0%      { transform: translate(100vw); /*100vw*/ }
-    100%    { transform: translate(0); }
-}
-
-.card {
-    user-select: none;
-    -webkit-user-select: none;
-    -moz-user-select: none;
-    perspective: 1000px;
-    border-radius: 1rem;
-}
-
-.card-inner {
-    display: grid;
-    border-radius: inherit;
-    grid-template: 'stack';
-    transition: transform 0.8s;
-    transform-style: preserve-3d;
-}
-
-.card:has(.card-back):hover .card-inner,
-.card:has(.card-back):focus .card-inner {
-    transform: rotateY(-180deg);
-}
-
-.card-front, .card-back {
-    grid-area: stack;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    backface-visibility: hidden;
-    overflow: hidden;
-    border-width: 2px;
-    border-color: white;
-    border-style: solid;
-    border-radius: inherit;
-    @apply bg-gradient-to-br from-hotpink-500 to-bluelotus-500;
-    padding: 1rem 4rem;
-}
-
-.card-back {
-    max-height: 0;
-    @apply bg-gradient-to-br from-lightgreenishblue-500 to-hotpink-500;
-    color: transparent;
-    transform: rotateY(180deg);
-    transition: max-height 0.8s, color 0.5s;
-}
-
-.card:hover .card-back,
-.card:focus .card-back  {
-    color: black;
-    max-height: 8rem;
-    transition: max-height 0.8s, color 1.6s;
 }

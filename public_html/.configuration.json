@@ -31,6 +31,18 @@
                 "title": "About me",
                 "url": "/about"
             }
+        ],
+        "socials": [
+            {
+                "title": "Github",
+                "icon": "github-icon.svg",
+                "url": "https://github.com/JediMB/"
+            },
+            {
+                "title": "Mastodon",
+                "icon": "mastodon-icon.svg",
+                "url": "https://mastodon.gamedev.place/@jedimb"
+            }
         ]
     }
 }

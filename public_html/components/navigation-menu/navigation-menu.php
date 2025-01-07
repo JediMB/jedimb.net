@@ -1,8 +1,15 @@
 <?php
     function mainMenu(array $menu) {
+        $unsuffixedComponentPath = rtrim(__FILE__, 'php');
+        $cssPath = realpath($unsuffixedComponentPath . 'css');
+        $jsPath = realpath($unsuffixedComponentPath . 'js')
+            ? substr($unsuffixedComponentPath, strlen(getcwd())) . 'js'
+            : false;
+
+        echo $cssPath ? '<style type="text/css">' . file_get_contents($cssPath) . '</style>' : null;
+        echo $jsPath ? '<script src="'. $jsPath . '" defer></script>' : null;
+
         echo <<<HTML
-            <script src="/components/navigation-menu.js" defer></script>
-            
             <nav id="menu">
                 <ul class="flex gap-2 flex-wrap justify-end">
         HTML;

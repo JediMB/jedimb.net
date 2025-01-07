@@ -39,12 +39,13 @@
         if ( ( $filePath = realpath($requestPath . $pathSuffix) ) == false )
             continue;
 
-        if ( is_dir($filePath) )
+        if ( is_dir($filePath) ) {
             $error403 = true;
-        else {
-            $error403 = false;
-            break;
+            continue;
         }
+        
+        $error403 = false;
+        break;
     }
 
     // Serve error 403 if trying to access a directory without an index file to serve
