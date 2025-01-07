@@ -35,9 +35,28 @@
         ]
         as $pathSuffix
         ) {
-        if ( ( $filePath = realpath($requestPath . $pathSuffix) )
-            && is_dir($filePath) == false ) // Should support for error 403 Forbidden be implemented?
-                break;
+
+        if ( ( $filePath = realpath($requestPath . $pathSuffix) ) == false )
+            continue;
+
+        if ( is_dir($filePath) )
+            $error403 = true;
+        else {
+            $error403 = false;
+            break;
+        }
+    }
+
+    // Serve error 403 if trying to access a directory without an index file to serve
+    if ( isset($error403) && $error403 ) {
+        header('HTTP/1.1 403 Forbidden');
+        $GLOBALS['configuration'] ??= configData();
+
+        ob_start();
+        include 'error/403.php';
+        $GLOBALS['page_content'] = ob_get_clean();
+        require_once $GLOBALS['page_template'];
+        exit;
     }
 
     // If trying to access a disallowed file, serve error 404
@@ -50,7 +69,7 @@
             $GLOBALS['configuration'] ??= configData();
 
             ob_start();
-            include '404.php';
+            include 'error/404.php';
             $GLOBALS['page_content'] = ob_get_clean();
             require_once $GLOBALS['page_template'];
             exit;
