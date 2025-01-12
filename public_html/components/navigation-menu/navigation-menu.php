@@ -1,5 +1,7 @@
 <?php
-    function mainMenu(array $menu) {
+    function mainMenu(?array $menu) {
+        if (!$menu) return;
+
         $unsuffixedComponentPath = rtrim(__FILE__, 'php');
         $cssPath = realpath($unsuffixedComponentPath . 'css');
         $jsPath = realpath($unsuffixedComponentPath . 'js')
@@ -14,31 +16,30 @@
                 <ul class="flex gap-2 flex-wrap justify-end">
         HTML;
 
-        if ($menu)
-            for ($menuId = 0; $menuId < count($menu); $menuId++) {
-                $menuItem = $menu[$menuId];
-                $onClick = null;
-                $onKeyDown = null;
+        for ($menuId = 0; $menuId < count($menu); $menuId++) {
+            $menuItem = $menu[$menuId];
+            $onClick = null;
+            $onKeyDown = null;
 
-                if (isset($menuItem->title) == false)
-                    continue;
+            if (isset($menuItem->title) == false)
+                continue;
 
-                if (isset($menuItem->submenu) && is_array($menuItem->submenu)) {
-                    $onClick = onClick('toggleSubMenu(' . $menuId . ', this)');
-                    $onKeyDown = onReturnKey('toggleSubMenu(' . $menuId . ', this)');
-                }
-
-                else if (isset($menuItem->url))
-                    $onClick = onClick($menuItem->url, true);
-
-                echo <<<HTML
-                    <li>
-                        <a id="menu-button-$menuId" tabindex="0" class="btn btn-menu" $onClick $onKeyDown>
-                            $menuItem->title
-                        </a>
-                    </li>
-                HTML;
+            if (isset($menuItem->submenu) && is_array($menuItem->submenu)) {
+                $onClick = onClick('toggleSubMenu(' . $menuId . ', this)');
+                $onKeyDown = onReturnKey('toggleSubMenu(' . $menuId . ', this)');
             }
+
+            else if (isset($menuItem->url))
+                $onClick = onClick($menuItem->url, true);
+
+            echo <<<HTML
+                <li>
+                    <a id="menu-button-$menuId" tabindex="0" class="btn btn-menu" $onClick $onKeyDown>
+                        $menuItem->title
+                    </a>
+                </li>
+            HTML;
+        }
 
         echo <<<HTML
                 </ul>

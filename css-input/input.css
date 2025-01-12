@@ -6,6 +6,7 @@
 
 @layer base {
     :root {
+        --color-gray-50: theme(colors.gray.50);
         --color-hotpink-300: theme(colors.hotpink.300);
         --color-hotpink-500: theme(colors.hotpink.500);
         --color-bluelotus-500: theme(colors.bluelotus.500);
@@ -15,7 +16,7 @@
 
 body {
     overflow-x: hidden;
-    background-color: theme(colors.gray.50);
+    background-color: var(--color-gray-50);
     color: white;
     margin-inline: auto;
     width: min(1080px, 90%);

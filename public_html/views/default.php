@@ -2,6 +2,7 @@
 
 <?php
     require_once './components/navigation-menu/navigation-menu.php';
+    require_once './components/social-links/social-links.php';
     require_once './utilities/attributes.php';
 
     $socials = isset($GLOBALS['configuration']->socials) && is_array($GLOBALS['configuration']->socials)
@@ -25,21 +26,9 @@
 </head>
 <body>
     <header>
-        <div class="bg-gradient-to-br from-gray-50/95 from-15% to-gray-200/95 px-16 rounded-b-2xl">
-            <div class="flex justify-end">
-                <?php
-                    foreach($socials as $social) {
-                        echo <<<HTML
-                            <a href="{$social->url}" title="{$social->title}" target="_blank" style="
-                                width: 48px;
-                                height: 48px;
-                                -webkit-mask: url('/images/social-media/{$social->icon}') no-repeat 50% 50%;
-                                mask: url('/images/social-media/{$social->icon}') no-repeat 50% 50%;
-                                mask-size: 32px;
-                                background-color: white;">&nbsp;</a>
-                        HTML;
-                    }
-                ?>
+        <div class="bg-gradient-to-br from-gray-50/95 from-15% to-gray-200/95 px-16 pt-2 rounded-b-2xl">
+            <div class="flex justify-end gap-2">
+                <?php socialLinks($socials) ?>
             </div>
             <div class="grid grid-cols-2 py-8">
                 <div>
