@@ -9,7 +9,8 @@
         <p>Noli manere, manere in memoria</p>
     </section>
     <aside>
-        <h2>Links:</h2>
+        <h2>Links</h2>
+        <div class="mb-2">There are a lot of good people on the Internet.</div>
         <a href="https://enikofox.com" title="Eniko does bad things to code">
             <img src="https://enikofox.com/enikodoesbadthingstocode.png" width="88" height="31" alt="Eniko does bad things to code">
         </a>

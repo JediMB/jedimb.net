@@ -531,12 +531,16 @@ video {
         --color-lightgreenishblue-500: hsl(153, 90%, 68%);
     }
 
-.mt-4 {
-    margin-top: 1rem;
+.mb-2 {
+    margin-bottom: 0.5rem;
 }
 
 .mt-1 {
     margin-top: 0.25rem;
+}
+
+.mt-4 {
+    margin-top: 1rem;
 }
 
 .flex {
@@ -551,25 +555,13 @@ video {
     display: none;
 }
 
-.w-auto {
-    width: auto;
-}
-
 .w-fit {
     width: -moz-fit-content;
     width: fit-content;
 }
 
-.w-3\/4 {
-    width: 75%;
-}
-
 .flex-grow {
     flex-grow: 1;
-}
-
-.flex-grow-0 {
-    flex-grow: 0;
 }
 
 .grid-cols-2 {
@@ -601,11 +593,6 @@ video {
     border-top-width: 2px;
 }
 
-.border-t-hotpink-200 {
-    --tw-border-opacity: 1;
-    border-top-color: hsl(330 88% 83% / var(--tw-border-opacity, 1));
-}
-
 .border-t-hotpink-500\/50 {
     border-top-color: hsl(330 88% 67% / 0.5);
 }
@@ -628,16 +615,12 @@ video {
     --tw-gradient-to: hsl(0 0% 20% / 0.95) var(--tw-gradient-to-position);
 }
 
-.p-4 {
-    padding: 1rem;
-}
-
-.p-2 {
-    padding: 0.5rem;
-}
-
 .p-1 {
     padding: 0.25rem;
+}
+
+.p-4 {
+    padding: 1rem;
 }
 
 .px-16 {
@@ -648,6 +631,11 @@ video {
 .py-8 {
     padding-top: 2rem;
     padding-bottom: 2rem;
+}
+
+.px-2 {
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
 }
 
 .pt-2 {
@@ -676,7 +664,16 @@ body {
 }
 
 h1 {
+    font-size: 3em;
+}
+
+h2 {
+    font-family: 'Press Start 2P';
     font-size: 2em;
+}
+
+aside h2 {
+    font-size: 1.5em;
 }
 
 /* header {

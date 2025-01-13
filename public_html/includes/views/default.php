@@ -42,7 +42,7 @@
         <?php subMenu($menu) ?>
     </header>
 
-    <main>
+    <main class="px-2">
         <?= $GLOBALS['page_content'] ?>
     </main>
 

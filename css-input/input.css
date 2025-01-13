@@ -24,7 +24,16 @@ body {
 }
 
 h1 {
+    font-size: 3em;
+}
+
+h2 {
+    font-family: 'Press Start 2P';
     font-size: 2em;
+}
+
+aside h2 {
+    font-size: 1.5em;
 }
 
 /* header {
