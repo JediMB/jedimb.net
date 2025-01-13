@@ -54,7 +54,7 @@
         || strpos($filePath, __DIR__ . DIRECTORY_SEPARATOR) !== 0 
         || $filePath === __FILE__
         || substr(basename($filePath), 0, 1) === '.'
-        || strpos($requestPath, 'includes/') === 0;
+        || ( $isPHP && strpos($requestPath, 'includes/') === 0 );
 
     // If a PHP document will be served, set site configuration
     if ($isPHP || $error403 || $error404)
