@@ -34,7 +34,7 @@
         as $pathSuffix
         ) {
 
-        if ( ( $filePath = realpath($requestPath . $pathSuffix) ) == false )
+        if ( ( $filePath = realpath($requestPath . $pathSuffix) ) === false )
             continue;
 
         if ( is_dir($filePath) ) {
@@ -48,7 +48,37 @@
 
     // Check if trying to access a PHP or disallowed file
     $isPHP = (strtolower(substr($filePath, -4)) === '.php');
-    $error404 =
+
+    if ($isPHP) {
+        $httpUserAgent = strtolower($_SERVER['HTTP_USER_AGENT']);
+
+        foreach([
+            'anthropic-ai',
+            'claude-web',
+            'applebot-extended',
+            'bytespider',
+            'ccbot',
+            'chatgpt-user',
+            'cohere-ai',
+            'diffbot',
+            'facebookbot',
+            'googleother',
+            'google-extended',
+            'gptbot',
+            'imagesiftbot',
+            'perplexitybot',
+            'omigilibot',
+            'omigili',
+        ] as $botAgent)
+        {
+            if (strpos($httpUserAgent, $botAgent) !== false) {
+                $error404 = true;
+                break;
+            }
+        }
+    }
+
+    $error404 ??=
         strtolower($requestPath) === 'index'
         || strtolower($requestPath) === 'index.php'
         || strpos($filePath, __DIR__ . DIRECTORY_SEPARATOR) !== 0 

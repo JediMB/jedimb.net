@@ -32,8 +32,8 @@
             </div>
             <div class="grid grid-cols-2 py-8">
                 <div>
-                    <h1>Under Construction</h1>
-                    <p>No responsive/mobile view yet</p>
+                    <h1><?= $GLOBALS['site_title'] ?></h1>
+                    <p class="w-fit mt-1 p-1 border-t-2 border-t-hotpink-500/50 italic">Cool tagline goes here. In theory.</p>
                 </div>
                 
                 <?php mainMenu($menu) ?>
@@ -43,27 +43,6 @@
     </header>
 
     <main>
-        <!--
-            Check for:
-                anthropic-ai
-                Claude-Web
-                Applebot-Extended
-                Bytespider
-                CCBot
-                ChatGPT-User
-                cohere-ai
-                Diffbot
-                FacebookBot
-                GoogleOther
-                Google-Extended
-                GPTBot
-                ImagesiftBot
-                PerplexityBot
-                OmigiliBot
-                Omigili
-         -->
-        <p><?= $_SERVER['HTTP_USER_AGENT'] ?></p>
-        <br />
         <?= $GLOBALS['page_content'] ?>
     </main>
 
