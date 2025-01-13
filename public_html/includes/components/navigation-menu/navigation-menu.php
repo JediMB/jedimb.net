@@ -71,10 +71,11 @@
                     $submenuItem = $submenu[$i];
 
                     $animationDelay = ($i * 200) . 'ms';
+                    $onClick = isset($submenuItem->url) ? onClick($submenuItem->url, true) : null;
 
                     echo <<<HTML
-                        <li tabindex="0" class="card" style="--animation-delay: $animationDelay;">
-                            <div class="card-inner">
+                        <li class="card" style="--animation-delay: $animationDelay;">
+                            <a tabindex="0" class="card-inner" $onClick>
                                 <div class="card-front">{$submenuItem->title}</div>
                     HTML;
                     
@@ -85,7 +86,7 @@
                         HTML;
                     }
                     echo <<<HTML
-                            </div>
+                            </a>
                         </li>
                     HTML;
                 }

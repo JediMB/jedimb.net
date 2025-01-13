@@ -85,6 +85,10 @@
     border-radius: 1rem;
 }
 
+.card a {
+    border-radius: inherit;
+}
+
 .card-inner {
     display: grid;
     border-radius: inherit;
@@ -94,7 +98,7 @@
 }
 
 .card:has(.card-back):hover .card-inner,
-.card:has(.card-back):focus .card-inner {
+.card-inner:has(.card-back):focus {
     transform: rotateY(-180deg);
 }
 
@@ -122,7 +126,7 @@
 }
 
 .card:hover .card-back,
-.card:focus .card-back  {
+.card-inner:focus .card-back   {
     color: black;
     max-height: 8rem;
     transition: max-height 0.8s, color 1.6s;

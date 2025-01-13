@@ -1,9 +1,9 @@
 <?php declare(strict_types=1) ?>
 
 <?php
-    require_once './components/navigation-menu/navigation-menu.php';
-    require_once './components/social-links/social-links.php';
-    require_once './utilities/attributes.php';
+    require_once './includes/components/navigation-menu/navigation-menu.php';
+    require_once './includes/components/social-links/social-links.php';
+    require_once './includes/utilities/attributes.php';
 
     $socials = isset($GLOBALS['configuration']->socials) && is_array($GLOBALS['configuration']->socials)
         ? $GLOBALS['configuration']->socials
@@ -67,8 +67,8 @@
         <?= $GLOBALS['page_content'] ?>
     </main>
 
-    <footer>
-
+    <footer class="mt-4 text-center">
+        <?= printCopyrightYear() ?>
     </footer>
 </body>
 </html>

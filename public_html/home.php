@@ -1,5 +1,6 @@
 <?php
-    $GLOBALS['page_title'] = 'Home - JediMB.net';
+    setPageTitle('Home');
+    setCopyrightYearByFile(__FILE__);
 ?>
 
 <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec ullamcorper nisl a nisl dictum laoreet. Morbi aliquet facilisis neque. Etiam accumsan erat ex. Nam auctor ipsum nunc, id tristique risus blandit quis. Mauris sed nulla tempus, suscipit enim mattis, dapibus quam. Nunc nulla lectus, aliquam non bibendum non, auctor ut magna. Vestibulum ex ligula, aliquet iaculis commodo at, mattis vitae tortor.</p>

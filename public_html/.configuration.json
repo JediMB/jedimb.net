@@ -1,5 +1,9 @@
 {
     "configuration": {
+        "title": "JediMB.net",
+        "author": "JediMB",
+        "creationYear": "2025",
+        "defaultTemplate": "default.php",
         "menu": [
             {
                 "title": "Help",
