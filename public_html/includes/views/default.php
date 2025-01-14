@@ -51,7 +51,7 @@
     <footer class="mt-4 text-center italic">
         <?= printCopyrightYear() ?>
         <br/>
-        Made in PHP, HTML, Tailwind, CSS and JavaScript, primarily using Visual Studio Code.
+        Made in PHP, HTML, CSS and JavaScript, with Visual Studio Code, Tailwind and PHP Intelephense.
     </footer>
 </body>
 </html>
