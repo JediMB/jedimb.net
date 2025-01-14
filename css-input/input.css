@@ -59,6 +59,7 @@ ol.numbered > li {
     margin-block: 0.35em;
     counter-increment: custom-counter;
     min-height: 2.25em;
+    transition: transform 0.5s;
 }
 
 ol.numbered > li::before {
@@ -83,6 +84,10 @@ ol.numbered > li::before {
         background-color 0.5s,
         color 0.5s,
         text-shadow 0.5s;
+}
+
+ol.numbered > li:hover {
+    transform: translateX(1em);
 }
 
 ol.numbered > li:hover::before {

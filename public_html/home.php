@@ -21,7 +21,8 @@
         </div>
         <p>
             See that list? I could have just gone with a regular ordered list, but instead I spent time on making it all fancy-like
-            and lost track of what I was going to type here. <em>Hopeless!</em>
+            <em class="text-gray-500">(including hover effects)</em> and lost track of what I was going to type here.
+            <em class="text-gray-500">Hopeless!</em>
         </p>
         <p><em>Anyway...!</em></p>
         <p>
@@ -39,7 +40,7 @@
                 <img src="https://enikofox.com/enikodoesbadthingstocode.png" width="88" height="31" alt="Eniko does bad things to code">
             </a>
         </div>
-        <div class="mt-3 italic">
+        <div class="mt-3 text-gray-500 italic">
             I'll make my own button at some point, too!
         </div>
     </aside>
