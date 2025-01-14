@@ -73,7 +73,12 @@ module.exports = {
         950:  'hsl(244, 42%, 13%)'
       }
     },
-    extend: {},
+    extend: {
+      gridTemplateColumns: {
+        'sidebar-left': 'var(--sidebar-width, 120px) 1fr',
+        'sidebar-right': '1fr var(--sidebar-width, 120px)'
+      }
+    },
   },
   plugins: [],
 }

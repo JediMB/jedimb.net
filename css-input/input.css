@@ -9,6 +9,7 @@
         --color-gray-50: theme(colors.gray.50);
         --color-hotpink-300: theme(colors.hotpink.300);
         --color-hotpink-500: theme(colors.hotpink.500);
+        --color-hotpink-700: theme(colors.hotpink.700);
         --color-bluelotus-500: theme(colors.bluelotus.500);
         --color-lightgreenishblue-500: theme(colors.lightgreenishblue.500);
     }
@@ -23,17 +24,71 @@ body {
     min-height: 100vh;
 }
 
+main {
+    font-size: 1.25rem;
+}
+
+main h2::before {
+    margin-inline-end: 0.25em;
+    content: '>';
+}
+
 h1 {
     font-size: 3em;
 }
 
 h2 {
+    margin-block: 0.25em;
     font-family: 'Press Start 2P';
-    font-size: 2em;
+    font-size: 1.5em;
 }
 
-aside h2 {
+p {
+    margin-block: 1em;
+}
+
+ol.numbered {
+    max-width: 50%;
+    padding-inline-start: 3.15em;
+    list-style: none none 0;
+    counter-reset: custom-counter;
+}
+
+ol.numbered > li {
+    position: relative;
+    margin-block: 0.35em;
+    counter-increment: custom-counter;
+    min-height: 2.25em;
+}
+
+ol.numbered > li::before {
+    position: absolute;
+    content: counter(custom-counter);
+    font-family: 'Jersey10';
     font-size: 1.5em;
+    top: 0;
+    left: -1.9em;
+    width: 1.5em;
+    height: 1.5em;
+    border-radius: 50%;
+    background-color: var(--color-hotpink-500);
+    text-shadow: 2px 2px 1px black;
+    box-shadow: 1.25px 1.25px 1px 0 white;
+    line-height: 1.5em;
+    font-weight: 700;
+    text-align: center;
+    vertical-align: middle;
+    transform: rotate(-15deg);
+    transition:
+        background-color 0.5s,
+        color 0.5s,
+        text-shadow 0.5s;
+}
+
+ol.numbered > li:hover::before {
+    background-color: var(--color-hotpink-700);
+    color: black;
+    text-shadow: 2px 2px 1px white;
 }
 
 /* header {
@@ -72,4 +127,18 @@ header::before {
 
 .btn:not(:disabled):not(.disabled) {
     cursor: pointer;
+}
+
+.links a img {
+    transition:
+        transform 0.2s,
+        filter 0.5s,
+        box-shadow 0.5s;
+}
+
+.links a:hover img {
+    --glow-color: theme(colors.hotpink.500 / 50%);
+    box-shadow: 0px 0px 16px 4px var(--glow-color);
+    transform: scale(1.2);
+    filter: brightness(1.5);
 }

@@ -26,28 +26,32 @@
 </head>
 <body>
     <header>
-        <div class="bg-gradient-to-br from-gray-50/95 from-15% to-gray-200/95 px-16 pt-2 rounded-b-2xl">
+        <div class="bg-gradient-to-br from-gray-50/95 from-15% to-gray-200/95 px-10 pt-2 rounded-b-2xl">
             <div class="flex justify-end gap-2">
                 <?php socialLinks($socials) ?>
             </div>
-            <div class="grid grid-cols-2 py-8">
+            <div class="grid grid-cols-2 pb-6">
                 <div>
                     <h1><?= $GLOBALS['site_title'] ?></h1>
                     <p class="w-fit mt-1 p-1 border-t-2 border-t-hotpink-500/50 italic">Cool tagline goes here. In theory.</p>
                 </div>
                 
-                <?php mainMenu($menu) ?>
+                <div class="mt-6">
+                    <?php mainMenu($menu) ?>
+                </div>
             </div>
         </div>
         <?php subMenu($menu) ?>
     </header>
-
-    <main class="px-2">
+    
+    <div class="px-2">
         <?= $GLOBALS['page_content'] ?>
-    </main>
+    </div>
 
-    <footer class="mt-4 text-center">
+    <footer class="mt-4 text-center italic">
         <?= printCopyrightYear() ?>
+        <br/>
+        Made in PHP, HTML, Tailwind, CSS and JavaScript, primarily using Visual Studio Code.
     </footer>
 </body>
 </html>
