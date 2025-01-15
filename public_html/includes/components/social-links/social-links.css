@@ -1,8 +1,0 @@
-.social-link svg {
-    fill: white;
-}
-
-.social-link:hover svg,
-.social-link:focus svg {
-    fill: var(--color-bluelotus-500);
-}

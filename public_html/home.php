@@ -5,7 +5,7 @@
 
 <page-content class="grid grid-cols-sidebar-right gap-x-8">
     <main>
-        <h2>So why are we here?</h2>
+        <h2>So,<span style="font-size: 0.5em"> </span>why are we here?</h2>
         <p>
             It's honestly difficult to come up with something to put here. I've just been staring at the screen,
             adjusting the padding and margins, tweaking font sizes, etc., and maybe that's also why I'm terrible
@@ -37,7 +37,7 @@
         </div>
         <div class="flex flex-col gap-3 items-center">
             <a href="https://enikofox.com" title="Eniko does bad things to code" target="_blank">
-                <img src="https://enikofox.com/enikodoesbadthingstocode.png" width="88" height="31" alt="Eniko does bad things to code">
+                <img src="<!--https://enikofox.com/enikodoesbadthingstocode.png-->" width="88" height="31" alt="Eniko does bad things to code">
             </a>
         </div>
         <div class="mt-3 text-gray-500 italic">
