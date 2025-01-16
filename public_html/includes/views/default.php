@@ -26,7 +26,7 @@
     <link href="/css/style.css" rel="stylesheet" />
 </head>
 <body>
-    <header class="relative max-[879px]:sticky max-[879px]:top-0 max-[879px]:mb-4">
+    <header class="max-[879px]:sticky max-[879px]:top-0 max-[879px]:mb-4 z-10">
         <div class="min-[880px]:rounded-b-2xl min-[880px]:px-10
             max-[879px]:px-2 bg-gradient-to-br from-gray-50/95 from-15% to-gray-200/95 pt-2">
             <div class="flex min-[880px]:justify-between max-[879px]:justify-center gap-2">

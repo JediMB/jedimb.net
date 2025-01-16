@@ -1,16 +1,12 @@
-#mobile-menu label {
-    cursor: pointer;
-}
-
 #mobile-menu-contents {
     position: fixed;
     inset: 0 5rem 0 0;
-    z-index: 999;
     background-color: var(--color-hotpink-700);
     transform: translateX(-100%);
 }
 
 #mobile-menu-contents.shown {
+    pointer-events: auto;
     transform: translateX(0);
 }
 
@@ -30,4 +26,8 @@
 @keyframes hide-mobile-menu {
     0%      { transform: translateX(0); }
     100%    { transform: translateX(-100%);}
+}
+
+#mobile-menu-contents ul {
+    margin-inline-start: 1em;
 }

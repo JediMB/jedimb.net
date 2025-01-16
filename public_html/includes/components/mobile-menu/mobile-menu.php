@@ -11,13 +11,12 @@
         echo $cssPath ? '<style type="text/css">' . file_get_contents($cssPath) . '</style>' : null;
         echo $jsPath ? '<script src="'. $jsPath . '" defer></script>' : null;
 
-        $onClick = onClick('toggleMobileMenu();');
-        $onReturnKey = onReturnKey('this.click();');
+        $onClick = onClick('toggleMobileMenu(event);');
 
         echo <<<HTML
             <nav id="mobile-menu">
 
-                <button id="mobile-menu-button" {$onClick}>
+                <button id="mobile-menu-button" {$onClick} class="pointer-events-auto">
                     <svg width="4rem" height="4rem" viewBox="0 -10 96 96" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <path d="M64 60H94C95.1046 60 96 60.8954 96 62V74C96 75.1046 95.1046 76 94 76H64V60Z" fill="white"/>
                         <path d="M0 68C0 63.5817 3.58172 60 8 60H69V76H8C3.58172 76 0 72.4183 0 68V68Z" fill="white"/>
@@ -36,7 +35,7 @@
             try {
                 echo <<<HTML
                     <li>
-                        $menuItem->title
+                        <a href="{$menuItem->url}">$menuItem->title</a>
                 HTML;
 
                 if (isset($menuItem->submenu) && is_array($menuItem->submenu)) {
@@ -45,7 +44,7 @@
                     foreach (($menuItem->submenu) as $submenuItem) {
                         echo <<<HTML
                             <li>
-                                $submenuItem->title
+                                <a href="{$submenuItem->url}">$submenuItem->title</a>
                             </li>
                         HTML;
                     }
