@@ -577,6 +577,10 @@ video {
     width: fit-content;
 }
 
+.resize {
+    resize: both;
+}
+
 .grid-cols-sidebar-right {
     grid-template-columns: 1fr var(--sidebar-width, 120px);
 }

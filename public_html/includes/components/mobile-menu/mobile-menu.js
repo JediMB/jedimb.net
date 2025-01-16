@@ -5,6 +5,10 @@ const menuButton = mobileMenu.querySelector('#mobile-menu-button');
 const menuContents = mobileMenu.querySelector('#mobile-menu-contents');
 const menuItems = Array.from(menuContents.querySelectorAll('a[href]'));
 
+window.addEventListener('resize', (e) =>
+    menuContents.classList.contains('shown') && closeMobileMenu()
+);
+
 html.addEventListener('click', (e) => {
     if (menuContents.classList.contains('shown') === false)
         return;
@@ -41,9 +45,12 @@ function menuFocusTrap(e) {
     const checkIndex = e.shiftKey ? 0 : menuItems.length-1;
     const targetIndex = e.shiftKey ? menuItems.length-1 : 0;
 
-    if (document.activeElement === menuItems[checkIndex]) {
+    if (document.activeElement === menuItems[checkIndex]
+        || document.activeElement === menuButton
+    ) {
         menuItems[targetIndex].focus();
         e.preventDefault();
+        return;
     }
 }
 
@@ -65,7 +72,7 @@ function openMobileMenu() {
 }
 
 function closeMobileMenu() {
-    menuContents.classList.remove('show-mobile-menu');
+    menuContents.classList.remove('shown');
     menuContents.classList.add('hide-mobile-menu');
     body.classList.remove('fixed');
     body.classList.remove('pointer-events-none');
