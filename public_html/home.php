@@ -3,8 +3,8 @@
     setCopyrightYearByFile(__FILE__);
 ?>
 
-<page-content class="grid grid-cols-sidebar-right gap-x-8">
-    <main>
+<page-content class="min-[600px]:grid grid-cols-sidebar-right gap-x-8">
+    <main class="mb-3">
         <h2>So,<span style="font-size: 0.5em"> </span>why are we here?</h2>
         <p>
             It's honestly difficult to come up with something to put here. I've just been staring at the screen,
@@ -30,14 +30,16 @@
             until the website is in a finished enough state that I can remove them and actually start working on content.
         </p>
     </main>
-    <aside class="links">
+    <aside class="links max-[599px]:bg-hotpink-950 max-[599px]:p-2 max-[599px]:rounded-lg">
         <h2>Links</h2>
         <div class="mb-3">
             Cool people and places in 88 × 31 pixels:
         </div>
-        <div class="flex flex-col gap-3 items-center">
+        <div class="flex gap-3 px-2
+            min-[600px]:flex-col min-[600px]:items-center
+            max-[599px]:flex-row max-[599px]:justify-center max-[599px]:flex-wrap">
             <a href="https://enikofox.com" title="Eniko does bad things to code" target="_blank">
-                <img src="<!--https://enikofox.com/enikodoesbadthingstocode.png-->" width="88" height="31" alt="Eniko does bad things to code">
+                <img src="https://enikofox.com/enikodoesbadthingstocode.png" width="88" height="31" alt="Eniko does bad things to code">
             </a>
         </div>
         <div class="mt-3 text-gray-500 italic">

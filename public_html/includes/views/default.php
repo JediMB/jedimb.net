@@ -26,11 +26,10 @@
     <link href="/css/style.css" rel="stylesheet" />
 </head>
 <body>
-    <header>
-        <div class="max-[879px]:flex max-[879px]:flex-row-reverse max-[879px]:justify-between max-[879px]:px-2
-            min-[880px]:rounded-b-2xl min-[880px]:pt-2 min-[880px]:px-10
-            bg-gradient-to-br from-gray-50/95 from-15% to-gray-200/95">
-            <div class="flex max-[879px]:flex-col-reverse justify-between gap-2">
+    <header class="relative max-[879px]:sticky max-[879px]:top-0 max-[879px]:mb-4">
+        <div class="min-[880px]:rounded-b-2xl min-[880px]:px-10
+            max-[879px]:px-2 bg-gradient-to-br from-gray-50/95 from-15% to-gray-200/95 pt-2">
+            <div class="flex min-[880px]:justify-between max-[879px]:justify-center gap-2">
                 <div class="max-[879px]:hidden">
                     <a href="/">
                         <svg xmlns="http://www.w3.org/2000/svg" width="2rem" height="2rem" viewBox="-2 -0.5 100 100" fill="white">
@@ -42,14 +41,19 @@
                 <div class="flex justify-end gap-2">
                     <?php socialLinks($socials) ?>
                 </div>
-                <div class="min-[880px]:hidden flex justify-end">
-                    <?php mobileMenu($menu) ?>
-                </div>
             </div>
             <div class="flex justify-between gap-2 min-[880px]:mt-6">
-                <div>
+                <div class="max-[879px]:hidden">
                     <a href="/"><h1><?= $GLOBALS['site_title'] ?></h1></a>
-                    <p class="max-[879px]:hidden w-fit mt-1 p-1 border-t-2 border-t-hotpink-500/50 italic">Cool tagline goes here. In theory.</p>
+                    <p class="w-fit mt-1 p-1 border-t-2 border-t-hotpink-500/50 italic">Cool tagline goes here. In theory.</p>
+                </div>
+
+                <div class="min-[880px]:hidden">
+                    <h1><?= $GLOBALS['site_title'] ?></h1>
+                </div>
+
+                <div class="min-[880px]:hidden">
+                    <?php mobileMenu($menu) ?>
                 </div>
                 
                 <div class="max-[879px]:hidden">
@@ -62,11 +66,11 @@
         </div>
     </header>
     
-    <div class="px-2">
+    <div class="min-[880px]:px-2 max-[879px]:px-4">
         <?= $GLOBALS['page_content'] ?>
     </div>
 
-    <footer class="mt-4 text-center italic">
+    <footer class="mt-4 px-2 text-center italic">
         <?= printCopyrightYear() ?>
         <br/>
         Made in PHP, HTML, CSS and JavaScript, with Visual Studio Code, Tailwind and PHP Intelephense.

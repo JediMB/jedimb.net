@@ -532,48 +532,8 @@ video {
         --color-lightgreenishblue-500: hsl(153, 90%, 68%);
     }
 
-.fixed {
-    position: fixed;
-}
-
-.inset-0 {
-    inset: 0px;
-}
-
-.left-0 {
-    left: 0px;
-}
-
-.right-\[4rem\] {
-    right: 4rem;
-}
-
-.right-16 {
-    right: 4rem;
-}
-
-.right-20 {
-    right: 5rem;
-}
-
-.right-24 {
-    right: 6rem;
-}
-
-.right-\[22\] {
-    right: 22;
-}
-
-.right-\[88px\] {
-    right: 88px;
-}
-
-.right-\[5\.5rem\] {
-    right: 5.5rem;
-}
-
-.z-50 {
-    z-index: 50;
+.relative {
+    position: relative;
 }
 
 .mb-3 {
@@ -592,12 +552,16 @@ video {
     margin-top: 1rem;
 }
 
-.flex {
-    display: flex;
+.mb-2 {
+    margin-bottom: 0.5rem;
 }
 
-.grid {
-    display: grid;
+.mb-4 {
+    margin-bottom: 1rem;
+}
+
+.flex {
+    display: flex;
 }
 
 .hidden {
@@ -613,16 +577,8 @@ video {
     grid-template-columns: 1fr var(--sidebar-width, 120px);
 }
 
-.flex-col {
-    flex-direction: column;
-}
-
 .flex-wrap {
     flex-wrap: wrap;
-}
-
-.items-center {
-    align-items: center;
 }
 
 .justify-end {
@@ -646,17 +602,20 @@ video {
          column-gap: 2rem;
 }
 
+.rounded-md {
+    border-radius: 0.375rem;
+}
+
+.rounded-lg {
+    border-radius: 0.5rem;
+}
+
 .border-t-2 {
     border-top-width: 2px;
 }
 
 .border-t-hotpink-500\/50 {
     border-top-color: hsl(330 88% 67% / 0.5);
-}
-
-.bg-hotpink-950 {
-    --tw-bg-opacity: 1;
-    background-color: hsl(331 42% 14% / var(--tw-bg-opacity, 1));
 }
 
 .bg-gradient-to-br {
@@ -685,9 +644,17 @@ video {
     padding: 1rem;
 }
 
+.p-2 {
+    padding: 0.5rem;
+}
+
 .px-2 {
     padding-left: 0.5rem;
     padding-right: 0.5rem;
+}
+
+.pt-2 {
+    padding-top: 0.5rem;
 }
 
 .text-center {
@@ -865,33 +832,109 @@ header::before {
         margin-block-start: 0.75rem;
         font-size: 2.5rem;
     }
+
+    h2 {
+        font-size: 1.2em;
+    }
+
+    ol.numbered {
+        max-width: 75%;
+    }
+}
+
+@media not all and (min-width: 600px) {
+    ol.numbered {
+        max-width: calc(100% - 1em);
+    }
+
+    .links div {
+        text-align: center;
+    }
 }
 
 @media (max-width: 879px) {
 
-    .max-\[879px\]\:flex {
-        display: flex;
+    .max-\[879px\]\:sticky {
+        position: sticky;
+    }
+
+    .max-\[879px\]\:top-0 {
+        top: 0px;
+    }
+
+    .max-\[879px\]\:mb-4 {
+        margin-bottom: 1rem;
     }
 
     .max-\[879px\]\:hidden {
         display: none;
     }
 
-    .max-\[879px\]\:flex-row-reverse {
-        flex-direction: row-reverse;
-    }
-
-    .max-\[879px\]\:flex-col-reverse {
-        flex-direction: column-reverse;
-    }
-
-    .max-\[879px\]\:justify-between {
-        justify-content: space-between;
+    .max-\[879px\]\:justify-center {
+        justify-content: center;
     }
 
     .max-\[879px\]\:px-2 {
         padding-left: 0.5rem;
         padding-right: 0.5rem;
+    }
+
+    .max-\[879px\]\:px-4 {
+        padding-left: 1rem;
+        padding-right: 1rem;
+    }
+}
+
+@media (max-width: 599px) {
+
+    .max-\[599px\]\:flex-row {
+        flex-direction: row;
+    }
+
+    .max-\[599px\]\:flex-wrap {
+        flex-wrap: wrap;
+    }
+
+    .max-\[599px\]\:justify-center {
+        justify-content: center;
+    }
+
+    .max-\[599px\]\:rounded-lg {
+        border-radius: 0.5rem;
+    }
+
+    .max-\[599px\]\:bg-gray-100 {
+        --tw-bg-opacity: 1;
+        background-color: hsl(0 0% 10% / var(--tw-bg-opacity, 1));
+    }
+
+    .max-\[599px\]\:bg-gray-50 {
+        --tw-bg-opacity: 1;
+        background-color: hsl(0 0% 5% / var(--tw-bg-opacity, 1));
+    }
+
+    .max-\[599px\]\:bg-hotpink-950 {
+        --tw-bg-opacity: 1;
+        background-color: hsl(331 42% 14% / var(--tw-bg-opacity, 1));
+    }
+
+    .max-\[599px\]\:p-2 {
+        padding: 0.5rem;
+    }
+}
+
+@media (min-width: 600px) {
+
+    .min-\[600px\]\:grid {
+        display: grid;
+    }
+
+    .min-\[600px\]\:flex-col {
+        flex-direction: column;
+    }
+
+    .min-\[600px\]\:items-center {
+        align-items: center;
     }
 }
 
@@ -905,6 +948,10 @@ header::before {
         display: none;
     }
 
+    .min-\[880px\]\:justify-between {
+        justify-content: space-between;
+    }
+
     .min-\[880px\]\:rounded-b-2xl {
         border-bottom-right-radius: 1rem;
         border-bottom-left-radius: 1rem;
@@ -915,7 +962,8 @@ header::before {
         padding-right: 2.5rem;
     }
 
-    .min-\[880px\]\:pt-2 {
-        padding-top: 0.5rem;
+    .min-\[880px\]\:px-2 {
+        padding-left: 0.5rem;
+        padding-right: 0.5rem;
     }
 }

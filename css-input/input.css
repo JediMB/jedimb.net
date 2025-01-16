@@ -174,4 +174,22 @@ header::before {
         margin-block-start: 0.75rem;
         font-size: 2.5rem;
     }
+
+    h2 {
+        font-size: 1.2em;
+    }
+
+    ol.numbered {
+        max-width: 75%;
+    }
+}
+
+@media not all and (min-width: 600px) {
+    ol.numbered {
+        max-width: calc(100% - 1em);
+    }
+
+    .links div {
+        text-align: center;
+    }
 }

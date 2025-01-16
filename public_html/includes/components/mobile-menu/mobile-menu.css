@@ -1,0 +1,33 @@
+#mobile-menu label {
+    cursor: pointer;
+}
+
+#mobile-menu-contents {
+    position: fixed;
+    inset: 0 5rem 0 0;
+    z-index: 999;
+    background-color: var(--color-hotpink-700);
+    transform: translateX(-100%);
+}
+
+#mobile-menu-contents.shown {
+    transform: translateX(0);
+}
+
+.show-mobile-menu {
+    animation: show-mobile-menu 0.5s ease-in-out forwards;
+}
+
+.hide-mobile-menu {
+    animation: hide-mobile-menu 0.5s ease-in-out forwards;
+}
+
+@keyframes show-mobile-menu {
+    0%      { transform: translateX(-100%); }
+    100%    { transform: translateX(0); }
+}
+
+@keyframes hide-mobile-menu {
+    0%      { transform: translateX(0); }
+    100%    { transform: translateX(-100%);}
+}
