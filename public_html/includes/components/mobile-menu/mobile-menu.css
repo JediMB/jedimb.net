@@ -190,6 +190,7 @@
     }
     50% {
         fill: var(--color-blade-1);
+        filter: drop-shadow(-4px 0 12px var(--color-blade-1));
         transform:
             rotateZ(90deg)
             translate(67%, 67%)
@@ -197,6 +198,7 @@
     }
     100% {
         fill: var(--color-blade-1);
+        filter: drop-shadow(-4px 0 12px var(--color-blade-1));
         transform:
             rotateZ(90deg)
             translate(67%, 67%)
@@ -235,6 +237,7 @@
     }
     50% {
         fill: var(--color-blade-2);
+        filter: drop-shadow(-4px 0 12px var(--color-blade-2));
         transform:
             rotateZ(-90deg)
             translate(-35%, 35%)
@@ -242,6 +245,7 @@
     }
     100% {
         fill: var(--color-blade-2);
+        filter: drop-shadow(-4px 0 12px var(--color-blade-2));
         transform:
             rotateZ(-90deg)
             translate(-35%, 35%)
@@ -280,6 +284,7 @@
     }
     50% {
         fill: var(--color-blade-3);
+        filter: drop-shadow(-4px 0 12px var(--color-blade-3));
         transform:
             rotateZ(90deg)
             translate(3%, 3%)
@@ -287,6 +292,7 @@
     }
     100% {
         fill: var(--color-blade-3);
+        filter: drop-shadow(-4px 0 12px var(--color-blade-3));
         transform:
             rotateZ(90deg)
             translate(3%, 3%)
@@ -308,6 +314,67 @@
             translate(3%, 3%);
     }
     100% {
+        fill: var(--color-hilt);
+        transform:
+            rotateZ(90deg)
+            translate(3%, 3%);
+    }
+}
+
+.reverting svg * {
+    animation: var(--animation) 0.5s ease-out forwards;
+}
+
+@keyframes third-top-blade {
+    from {
+        fill: var(--color-blade-1);
+        transform:
+            rotateZ(90deg)
+            translate(67%, 67%)
+            scale(100%, 100%);
+    }
+}
+
+@keyframes third-top-hilt {
+    from {
+        fill: var(--color-hilt);
+        transform:
+            rotateZ(90deg)
+            translate(67%, 67%);
+    }
+}
+
+@keyframes third-mid-blade {
+    from {
+        fill: var(--color-blade-2);
+        transform:
+            rotateZ(-90deg)
+            translate(-35%, 35%)
+            scale(100%, 100%);
+    }
+}
+
+@keyframes third-mid-hilt {
+    from {
+        fill: var(--color-hilt);
+        transform:
+            rotateZ(-90deg)
+            translate(-35%, 35%);
+    }
+}
+
+@keyframes third-low-blade {
+    from {
+        fill: var(--color-blade-3);
+        transform:
+            rotateZ(90deg)
+            translate(3%, 3%)
+            scale(100%, 100%);
+    }
+}
+
+@keyframes third-low-hilt {
+    from {
         fill: var(--color-hilt);
         transform:
             rotateZ(90deg)

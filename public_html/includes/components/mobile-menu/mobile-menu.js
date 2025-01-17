@@ -62,7 +62,13 @@ function buttonMouseOver() {
         return;
 
     hoverAnimation = true;
+
+    if (menuButton.classList.contains('reverting'));
+        animatedSvgParts.forEach(part => 
+            part.style.cssText = part.style.cssText.replace('third', 'first'));
+    
     menuButton.classList.add('animating');
+    menuButton.classList.remove('reverting');
     menuButton.addEventListener('animationend', () => {
         if (activated) {
             animatedSvgParts.forEach(part => 
@@ -117,7 +123,8 @@ function closeMobileMenu() {
     if (menuContents.classList.contains('shown')) {
         activated = false;
         animatedSvgParts.forEach(part => 
-            part.style.cssText = part.style.cssText.replace('second', 'first'));
+            part.style.cssText = part.style.cssText.replace('second', 'third'));
+        menuButton.classList.add('reverting');
         menuButton.classList.remove('active');
         menuContents.classList.remove('shown');
         menuContents.classList.add('hide-mobile-menu');
