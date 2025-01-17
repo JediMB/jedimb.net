@@ -11,28 +11,30 @@
         echo $cssPath ? '<style type="text/css">' . file_get_contents($cssPath) . '</style>' : null;
         echo $jsPath ? '<script src="'. $jsPath . '" defer></script>' : null;
 
-        $onClick = onClick('toggleMobileMenu(event);');
+        $onClick = onClick('openMobileMenu(event);');
 
         echo <<<HTML
             <nav id="mobile-menu">
 
-                <button id="mobile-menu-button" {$onClick} class="pointer-events-auto">
-                    <svg width="4rem" height="4rem" viewBox="0 -10 96 96" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M64 60H94C95.1046 60 96 60.8954 96 62V74C96 75.1046 95.1046 76 94 76H64V60Z" fill="white"/>
-                        <path d="M0 68C0 63.5817 3.58172 60 8 60H69V76H8C3.58172 76 0 72.4183 0 68V68Z" fill="white"/>
-                        <path d="M27 30H88C92.4183 30 96 33.5817 96 38V38C96 42.4183 92.4183 46 88 46H27V30Z" fill="white"/>
-                        <path d="M0 32C0 30.8954 0.895431 30 2 30H32V46H2C0.895431 46 0 45.1046 0 44V32Z" fill="white"/>
-                        <path d="M64 0H94C95.1046 0 96 0.895431 96 2V14C96 15.1046 95.1046 16 94 16H64V0Z" fill="white"/>
-                        <path d="M0 8C0 3.58172 3.58172 0 8 0H69V16H8C3.58172 16 0 12.4183 0 8V8Z" fill="white"/>
+                <button id="mobile-menu-button" {$onClick}>
+                    <svg width="4rem" height="4rem" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <rect id="svg-rect-top-blade" width="80" height="14" x="0" y="11" rx="8" fill="white" style="--animation: first-top-blade;" />
+                        <rect id="svg-rect-top-hilt" width="30" height="16" x="70" y="10" rx="2" fill="white" style="--animation: first-top-hilt;" />
+                        <rect id="svg-rect-mid-hilt" width="30" height="16" x="0" y="42" rx="2" fill="white" style="--animation: first-mid-hilt;" />
+                        <rect id="svg-rect-mid-blade" width="80" height="14" x="20" y="43" rx="8" fill="white" style="--animation: first-mid-blade;" />
+                        <rect id="svg-rect-low-blade" width="80" height="14" x="0" y="75" rx="8" fill="white" style="--animation: first-low-blade;" />
+                        <rect id="svg-rect-low-hilt" width="30" height="16" x="70" y="74" rx="2" fill="white" style="--animation: first-low-hilt;" />
+                        <rect id="svg-rect-frame" width="100" height="100" x="0" y="0" fill="transparent" />
                     </svg>
                 </button>
-
+                
                 <ul id="mobile-menu-contents" class="hidden">
                     <li><a href="/">Home</a></li>
         HTML;
 
         foreach ($menu as $menuItem) {
             try {
+                // Hetzner has stricter settings and will print errors if variables aren't isset-checked properly
                 echo <<<HTML
                     <li>
                         <a href="{$menuItem->url}">$menuItem->title</a>

@@ -31,3 +31,100 @@
 #mobile-menu-contents ul {
     margin-inline-start: 1em;
 }
+
+#mobile-menu-button svg {
+    overflow: visible;
+}
+
+#svg-rect-top-hilt,
+#svg-rect-top-blade {
+    transform-origin: 85% 18% 0;
+}
+
+#svg-rect-mid-hilt,
+#svg-rect-mid-blade {
+    transform-origin: 15% 50% 0;
+}
+
+#svg-rect-low-hilt,
+#svg-rect-low-blade {
+    transform-origin: 85% 82% 0;
+}
+
+.animating svg * {
+    animation: var(--animation) 1s ease-out forwards;
+}
+
+@keyframes first-top-blade {
+    0%      { transform: scale(100%, 100%)  rotateZ(0deg)   translate(0); }
+    33%     { transform: scale(0%, 33%)     rotateZ(0deg)   translate(0); }
+    100%    { transform: scale(0%, 33%)     rotateZ(90deg)  translate(67%, 67%); }
+}
+
+@keyframes first-top-hilt {
+    0%      { transform:                    rotateZ(0deg)   translate(0); }
+    33%     { transform:                    rotateZ(0deg)   translate(0); }
+    100%    { transform:                    rotateZ(90deg)  translate(67%, 67%); }
+}
+
+@keyframes first-mid-blade {
+    0%      { transform: scale(100%, 100%)  rotateZ(0deg); }
+    33%     { transform: scale(0%, 33%)     rotateZ(0deg); }
+    100%    { transform: scale(0%, 33%)     rotateZ(-90deg); }
+}
+
+@keyframes first-mid-hilt {
+    0%      { transform:                    rotateZ(0deg)   translate(0); }
+    33%     { transform:                    rotateZ(0deg)   translate(0); }
+    100%    { transform:                    rotateZ(-90deg) translate(-35%, 35%); }
+}
+
+@keyframes first-low-blade {
+    0%      { transform: scale(100%, 100%)  rotateZ(0deg)   translateX(0%); }
+    33%     { transform: scale(0%, 33%)     rotateZ(0deg)   translateX(0%); }
+    100%    { transform: scale(0%, 33%)     rotateZ(90deg)  translateX(3%); }
+}
+
+@keyframes first-low-hilt {
+    0%      { transform:                    rotateZ(0deg)   translate(0); }
+    33%     { transform:                    rotateZ(0deg)   translate(0); }
+    100%    { transform:                    rotateZ(90deg)  translate(3%, 3%); }
+}
+
+.active svg * {
+    animation: var(--animation) 1s ease-out forwards;
+}
+
+/* Change colors and restore blade scale */
+
+@keyframes second-top-blade {
+    0%      { 
+        transform: scale(0%, 33%)     rotateZ(90deg)  translate(67%, 67%); }
+    100%    { 
+        transform: scale(0%, 33%)     rotateZ(90deg)  translate(67%, 67%); }
+}
+
+@keyframes second-top-hilt {
+    0%      { transform:                    rotateZ(90deg)  translate(67%, 67%); }
+    100%    { transform:                    rotateZ(90deg)  translate(67%, 67%); }
+}
+
+@keyframes second-mid-blade {
+    0%      { transform: scale(0%, 33%)     rotateZ(-90deg); }
+    100%    { transform: scale(0%, 33%)     rotateZ(-90deg); }
+}
+
+@keyframes second-mid-hilt {
+    0%      { transform:                    rotateZ(-90deg) translate(-35%, 35%); }
+    100%    { transform:                    rotateZ(-90deg) translate(-35%, 35%); }
+}
+
+@keyframes second-low-blade {
+    0%      { transform: scale(0%, 33%)     rotateZ(90deg)  translateX(3%); }
+    100%    { transform: scale(0%, 33%)     rotateZ(90deg)  translateX(3%); }
+}
+
+@keyframes second-low-hilt {
+    0%      { transform:                    rotateZ(90deg)  translate(3%, 3%); }
+    100%    { transform:                    rotateZ(90deg)  translate(3%, 3%); }
+}

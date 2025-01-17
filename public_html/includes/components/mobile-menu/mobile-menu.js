@@ -2,19 +2,15 @@ const html = document.querySelector(':root');
 const body = document.querySelector('body');
 const mobileMenu = document.querySelector('#mobile-menu');
 const menuButton = mobileMenu.querySelector('#mobile-menu-button');
+const animatedSvgParts = Array.from(menuButton.querySelectorAll('svg *[style]'));
+const menuButtonFrame = menuButton.querySelector('#svg-rect-frame');
 const menuContents = mobileMenu.querySelector('#mobile-menu-contents');
 const menuItems = Array.from(menuContents.querySelectorAll('a[href]'));
 
-window.addEventListener('resize', (e) =>
+window.addEventListener('resize', () =>
     menuContents.classList.contains('shown') && closeMobileMenu()
 );
 
-html.addEventListener('click', (e) => {
-    if (menuContents.classList.contains('shown') === false)
-        return;
-
-    closeMobileMenu();
-});
 menuContents.addEventListener('click', (e) => e.stopPropagation());
 
 menuContents.addEventListener('animationend', (event) => {
@@ -54,27 +50,79 @@ function menuFocusTrap(e) {
     }
 }
 
-function toggleMobileMenu(e) {
-    if (menuContents.classList.contains('hidden'))
-        openMobileMenu();
-    else if (menuContents.classList.contains('shown'))
-        closeMobileMenu();
+let hoverAnimation = false;
+let activated = false;
+menuButtonFrame.addEventListener('mouseover', () => buttonMouseOver());
+menuButtonFrame.addEventListener('focus', () => buttonMouseOver());
+menuButtonFrame.addEventListener('mouseout', () => buttonMouseOut());
+menuButtonFrame.addEventListener('blur', () => buttonMouseOut());
 
-    e.stopPropagation();
+function buttonMouseOver() {
+    if (hoverAnimation)
+        return;
+
+    hoverAnimation = true;
+    menuButton.classList.add('animating');
+    menuButton.addEventListener('animationend', () => {
+        if (activated) {
+            animatedSvgParts.forEach(part => 
+                part.style.cssText = part.style.cssText.replace('first', 'second'));
+            menuButton.classList.add('active');
+            menuButton.classList.remove('animating');
+        }
+
+        hoverAnimation = false;
+    }, {once: true});
 }
 
-function openMobileMenu() {
-    menuContents.classList.remove('hidden');
-    menuContents.classList.add('show-mobile-menu');
-    body.classList.add('fixed');
-    body.classList.add('pointer-events-none');
-    body.addEventListener('keydown', menuFocusTrap);
+function buttonMouseOut() {
+    if (activated)
+        return;
+
+    menuButton.classList.remove('animating');
+    hoverAnimation = false;
+}
+
+function openMobileMenu(e) {
+    if (menuContents.classList.contains('hidden')) {
+        e.stopPropagation();
+        
+        if (hoverAnimation) {
+            activated = true;
+        }
+        else if (menuButton.classList.contains('animating')) {
+            animatedSvgParts.forEach(part => 
+                part.style.cssText = part.style.cssText.replace('first', 'second'));
+            menuButton.classList.add('active');
+            menuButton.classList.remove('animating');
+        }
+        else {
+            activated = true;
+            buttonMouseOver();
+        }
+
+        menuContents.classList.remove('hidden');
+        menuContents.classList.add('show-mobile-menu');
+        body.classList.add('fixed');
+        body.classList.add('pointer-events-none');
+        body.addEventListener('keydown', menuFocusTrap);
+
+        html.addEventListener('click', () => 
+            closeMobileMenu(), {once: true}
+        );
+    }
 }
 
 function closeMobileMenu() {
-    menuContents.classList.remove('shown');
-    menuContents.classList.add('hide-mobile-menu');
-    body.classList.remove('fixed');
-    body.classList.remove('pointer-events-none');
-    body.removeEventListener('keydown', menuFocusTrap);
+    if (menuContents.classList.contains('shown')) {
+        activated = false;
+        animatedSvgParts.forEach(part => 
+            part.style.cssText = part.style.cssText.replace('second', 'first'));
+        menuButton.classList.remove('active');
+        menuContents.classList.remove('shown');
+        menuContents.classList.add('hide-mobile-menu');
+        body.classList.remove('fixed');
+        body.classList.remove('pointer-events-none');
+        body.removeEventListener('keydown', menuFocusTrap);
+    }
 }
