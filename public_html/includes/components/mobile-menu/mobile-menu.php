@@ -32,35 +32,45 @@
                     <li><a href="/">Home</a></li>
         HTML;
 
-        foreach ($menu as $menuItem) {
-            try {
-                // Hetzner has stricter settings and will print errors if variables aren't isset-checked properly
-                echo <<<HTML
-                    <li>
-                        <a href="{$menuItem->url}">$menuItem->title</a>
-                HTML;
+        foreach ($menu as $key => $menuItem) {
+            if (isset($menuItem->title) === false)
+                continue;
 
-                if (isset($menuItem->submenu) && is_array($menuItem->submenu)) {
-                    echo '<ul>';
+            if (isset($menuItem->submenu) && is_array($menuItem->submenu)) {
 
-                    foreach (($menuItem->submenu) as $submenuItem) {
-                        echo <<<HTML
-                            <li>
-                                <a href="{$submenuItem->url}">$submenuItem->title</a>
-                            </li>
-                        HTML;
-                    }
-
-                    echo '</ul>';
+                $submenuMarkup = '';
+                foreach($menuItem->submenu as $submenuItem) {
+                    if ((isset($submenuItem->title) && isset($submenuItem->url)) === false)
+                        continue;
+                    
+                    $submenuMarkup = $submenuMarkup . <<<HTML
+                        <li>
+                            <a href="{$submenuItem->url}">$submenuItem->title</a>
+                        </li>
+                    HTML;
                 }
 
+                if(strlen($submenuMarkup) < 10)
+                    continue;
+
+                $onReturnKey = onReturnKey('this.click();');
+                
                 echo <<<HTML
+                    <li>
+                        <input id="mobile-menu-entry-{$key}" type="checkbox" class="hidden">
+                        <label for="mobile-menu-entry-{$key}" tabindex="0" $onReturnKey>$menuItem->title</label>
+                        <ul>
+                            $submenuMarkup
+                        </ul>
                     </li>
                 HTML;
             }
-            catch(Exception)
-            {
-                continue;
+            else if (isset($menuItem->url)) {
+                echo <<<HTML
+                    <li>
+                        <a href="{$menuItem->url}">$menuItem->title</a>
+                    </li>
+                HTML;
             }
         }
 

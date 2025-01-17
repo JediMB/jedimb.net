@@ -42,7 +42,7 @@
                     <?php socialLinks($socials) ?>
                 </div>
             </div>
-            <div class="flex justify-between gap-2 min-[880px]:mt-6">
+            <div class="flex justify-between gap-2 min-[880px]:mt-6 max-[879px]:ps-2">
                 <div class="max-[879px]:hidden">
                     <a href="/"><h1><?= $GLOBALS['site_title'] ?></h1></a>
                     <p class="w-fit mt-1 p-1 border-t-2 border-t-hotpink-500/50 italic">Cool tagline goes here. In theory.</p>
