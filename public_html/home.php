@@ -17,6 +17,7 @@
                 <li>...a way to learn more PHP and refresh what I learned a year ago (in early 2024).</li>
                 <li>...a place to showcase future code projects, like small games.</li>
                 <li>...to see if I could come up with a way to make my PHP experience more similar to web app frameworks like Angular.</li>
+                <li>EDIT: ...to make a really dorky menu button for the mobile view, apparently!</li>
             </ol>
         </div>
         <p>
