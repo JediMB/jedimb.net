@@ -20,8 +20,8 @@
                     <svg width="4rem" height="4rem" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <rect id="svg-rect-top-blade" width="80" height="14" x="0" y="11" rx="8" fill="white" style="--animation: first-top-blade;" />
                         <rect id="svg-rect-top-hilt" width="30" height="16" x="70" y="10" rx="2" fill="white" style="--animation: first-top-hilt;" />
-                        <rect id="svg-rect-mid-hilt" width="30" height="16" x="0" y="42" rx="2" fill="white" style="--animation: first-mid-hilt;" />
                         <rect id="svg-rect-mid-blade" width="80" height="14" x="20" y="43" rx="8" fill="white" style="--animation: first-mid-blade;" />
+                        <rect id="svg-rect-mid-hilt" width="30" height="16" x="0" y="42" rx="2" fill="white" style="--animation: first-mid-hilt;" />
                         <rect id="svg-rect-low-blade" width="80" height="14" x="0" y="75" rx="8" fill="white" style="--animation: first-low-blade;" />
                         <rect id="svg-rect-low-hilt" width="30" height="16" x="70" y="74" rx="2" fill="white" style="--animation: first-low-hilt;" />
                         <rect id="svg-rect-frame" width="100" height="100" x="0" y="0" fill="transparent" />
