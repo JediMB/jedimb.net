@@ -34,6 +34,10 @@
 
 #mobile-menu-button svg {
     overflow: visible;
+    --color-hilt: darkgrey;
+    --color-blade-1: rgb(255, 76, 76);
+    --color-blade-2: rgb(76, 255, 76);
+    --color-blade-3: rgb(76, 76, 255);
 }
 
 #svg-rect-top-hilt,
@@ -173,10 +177,6 @@
 }
 
 .active svg * {
-    --color-hilt: darkgrey;
-    --color-blade-1: rgb(255, 76, 76);
-    --color-blade-2: rgb(76, 255, 76);
-    --color-blade-3: rgb(76, 76, 255);
     animation: var(--animation) 1s ease-out forwards;
 }
 
