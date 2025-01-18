@@ -34,7 +34,7 @@
 
             echo <<<HTML
                 <li>
-                    <a tabindex="0" class="btn btn-menu" $onClick $onKeyDown>
+                    <a id="menu-button-{$menuId}" tabindex="0" class="btn btn-menu" $onClick $onKeyDown>
                         $menuItem->title
                     </a>
                 </li>

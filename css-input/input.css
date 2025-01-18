@@ -24,6 +24,49 @@ body {
     min-height: 100vh;
 }
 
+header-container {
+    --color-from: theme(colors.gray.50 / 95%);
+    --color-to: theme(colors.gray.200 / 95%);
+
+    display: block;
+    background-image: linear-gradient(
+        to bottom right,
+        var(--color-from) 0%,
+        var(--color-from) 15%,
+        var(--color-to) 100% );
+}
+
+header-links {
+    display: flex;
+    gap: 0.5rem;
+}
+
+social-container {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.5rem;
+}
+
+menu-container {
+    display: flex;
+    justify-content: space-between;
+    gap: 0.5rem;
+}
+
+.tagline {
+    --color-border: theme(colors.hotpink.500 / 50%);
+    margin-block: 0.25rem 1rem;
+    width: fit-content;
+    border-top: 2px var(--color-border) solid;
+    padding: 0.25rem;
+    font-style: italic;
+}
+
+content-container {
+    display: block;
+    padding-inline: 0.5rem;
+}
+
 main {
     font-size: 1.25rem;
 }
@@ -31,6 +74,13 @@ main {
 main h2::before {
     margin-inline-end: 0.25em;
     content: '>';
+}
+
+footer {
+    margin-top: 1rem;
+    padding-inline: 0.5rem;
+    text-align: center;
+    font-style: italic;
 }
 
 h1 {
@@ -164,10 +214,60 @@ header::before {
     filter: brightness(1.5);
 }
 
+@media all and (min-width: 55rem) {
+    header-container {
+        border-bottom-left-radius: 1rem;
+        border-bottom-right-radius: 1rem;
+        padding-inline: 2.5rem;
+    }
 
-@media not all and (min-width: 880px) {
+    header-links {
+        justify-content: space-between;
+    }
+
+    menu-container {
+        margin-top: 1.5rem;
+    }
+
+    mobile-title,
+    mobile-menu  {
+        display: none;
+    }
+}
+
+@media not all and (min-width: 55rem) {
     body {
         width: 100%;
+    }
+
+    header {
+        position: sticky;
+        top: 0;
+        margin-bottom: 1rem;
+        z-index: 10;
+    }
+
+    header-container {
+        padding-inline: 0.5rem;
+    }
+
+    header-links {
+        justify-content: center;
+    }
+
+    home-wrapper,
+    desktop-title,
+    desktop-menu,
+    sub-menu {
+        display: none;
+    }
+
+    menu-container {
+        padding-inline-start: 0.5rem;
+    }
+
+    content-container {
+        padding-inline: 1rem
     }
 
     h1 {
@@ -184,7 +284,7 @@ header::before {
     }
 }
 
-@media not all and (min-width: 600px) {
+@media not all and (min-width: 37.5rem) {
     ol.numbered {
         max-width: calc(100% - 1em);
     }
