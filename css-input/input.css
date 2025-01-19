@@ -33,7 +33,8 @@ header-container {
         to bottom right,
         var(--color-from) 0%,
         var(--color-from) 15%,
-        var(--color-to) 100% );
+        var(--color-to) 100%
+    );
 }
 
 header-links {
@@ -98,6 +99,14 @@ h2 {
 
 p {
     margin-block: 1em;
+}
+
+i {
+    margin-inline-end: 0.125em;
+}
+
+content-container a {
+    color: var(--color-hotpink-500);
 }
 
 a:hover {
