@@ -530,6 +530,8 @@ video {
         --color-hotpink-700: hsl(330, 43%, 47%);
         --color-bluelotus-500: hsl(244, 79%, 65%);
         --color-lightgreenishblue-500: hsl(153, 90%, 68%);
+
+        --color-mobile-menu: hsl(330 43% 34% / 50%);
     }
 
 .pointer-events-none {
@@ -636,6 +638,7 @@ header-container {
 
 header-links {
     display: flex;
+    padding-block-start: 0.5rem;
     gap: 0.5rem;
 }
 
@@ -699,7 +702,7 @@ p {
     margin-block: 1em;
 }
 
-i {
+i, em {
     margin-inline-end: 0.125em;
 }
 
@@ -860,6 +863,10 @@ header::before {
 
     header-links {
         justify-content: center;
+    }
+
+    social-container {
+        gap: 1rem;
     }
 
     home-wrapper,

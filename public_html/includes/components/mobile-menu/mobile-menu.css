@@ -1,10 +1,12 @@
 #mobile-menu-contents {
     position: fixed;
     overflow: hidden auto;
+    border-right: 2px white solid;
     inset: 0 5rem 0 0;
-    background-color: var(--color-hotpink-700);
-    padding-block: 3rem;
+    background-color: var(--color-mobile-menu, black);
+    backdrop-filter: blur(5px) brightness(30%);
     font-size: 2rem;
+    padding-block: 3rem;
     transform: translateX(-100%);
 }
 
@@ -25,7 +27,7 @@
 #mobile-menu-contents li label:hover,
 #mobile-menu-contents li a:hover {
     color: currentColor;
-    background-color: var(--color-bluelotus-500);
+    background-color: var(--color-hotpink-700);
 }
 
 #mobile-menu-contents li input + label::after {

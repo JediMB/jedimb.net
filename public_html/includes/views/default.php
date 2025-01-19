@@ -23,7 +23,19 @@
     <title><?= $GLOBALS['page_title'] ?></title>
     
     <link rel="icon" type="image/x-icon" href="favicon.png" />
-    <link href="/css/style.css" rel="stylesheet" />
+    <?php
+        $cssPath = 'css/style.css';
+        $realPath = realpath($cssPath);
+        $cssPath = '/' . (
+            $realPath
+            ? $cssPath . '?rev=' . date('ymdHi', filectime($realPath))
+            : $cssPath
+        );
+
+        echo <<<HTML
+            <link href="{$cssPath}" rel="stylesheet" />
+        HTML;
+    ?>
 </head>
 <body>
     <header>
