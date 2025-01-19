@@ -28,9 +28,10 @@
                 $onClick = onClick('toggleSubMenu(' . $menuId . ', this)');
                 $onKeyDown = onReturnKey('toggleSubMenu(' . $menuId . ', this)');
             }
-
             else if (isset($menuItem->url))
                 $onClick = onClick($menuItem->url, true);
+            else
+                continue;
 
             echo <<<HTML
                 <li>
@@ -69,6 +70,9 @@
 
                 for ($i = 0; $i < count($submenu); $i++) {
                     $submenuItem = $submenu[$i];
+
+                    if ((isset($submenuItem->title) && isset($submenuItem->url)) === false)
+                        continue;
 
                     $animationDelay = ($i * 200) . 'ms';
                     $onClick = isset($submenuItem->url) ? onClick($submenuItem->url, true) : null;
