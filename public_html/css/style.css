@@ -524,14 +524,22 @@ video {
 }
 
 :root {
-        --color-gray-50: hsl(0, 0%, 5%);
-        --color-hotpink-300: hsl(330, 88%, 77%);
-        --color-hotpink-500: hsl(330, 88%, 67%);
-        --color-hotpink-700: hsl(330, 43%, 47%);
-        --color-bluelotus-500: hsl(244, 79%, 65%);
-        --color-lightgreenishblue-500: hsl(153, 90%, 68%);
+        --color-primary-light: hsl(330, 88%, 77%);
+        --color-primary: hsl(330, 88%, 67%);
+        --color-primary-50: hsl(330 88% 67% / 50%);
+        --color-primary-dark: hsl(330, 43%, 47%);
+        --color-primary-dark-50: hsl(330 43% 47% / 50%);
+        --color-secondary: hsl(244, 79%, 65%);
+        --color-tertiary: hsl(153, 90%, 68%);
+        --color-accent: hsl(53, 97%, 72%);
 
-        --color-mobile-menu: hsl(330 43% 34% / 50%);
+        --color-background: hsl(0, 0%, 5%);
+        --color-text: #ffffff;
+        --color-link: hsl(330, 88%, 83%);
+        --color-link-hover: hsl(244, 80%, 82%);
+
+        --color-header-1: hsl(0 0% 5% / 95%);
+        --color-header-2: hsl(0 0% 20% / 95%);
     }
 
 .pointer-events-none {
@@ -615,24 +623,22 @@ video {
 }
 
 body {
-    overflow-x: hidden;
-    background-color: var(--color-gray-50);
-    color: white;
     margin-inline: auto;
     width: min(1080px, 90%);
     min-height: 100vh;
+    overflow-x: hidden;
+    background-color: var(--color-background);
+    font-family: ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+    color: var(--color-text);
 }
 
 header-container {
-    --color-from: hsl(0 0% 5% / 95%);
-    --color-to: hsl(0 0% 20% / 95%);
-
     display: block;
     background-image: linear-gradient(
         to bottom right,
-        var(--color-from) 0%,
-        var(--color-from) 15%,
-        var(--color-to) 100%
+        var(--color-header-1) 0%,
+        var(--color-header-1) 15%,
+        var(--color-header-2) 100%
     );
 }
 
@@ -655,11 +661,10 @@ menu-container {
 }
 
 .tagline {
-    --color-border: hsl(330 88% 67% / 50%);
     margin-block: 0.25rem 1rem;
     width: -moz-fit-content;
     width: fit-content;
-    border-top: 2px var(--color-border) solid;
+    border-top: 2px var(--color-primary-50) solid;
     padding: 0.25rem;
     font-style: italic;
 }
@@ -671,11 +676,7 @@ content-container {
 
 main {
     font-size: 1.25rem;
-}
-
-main h2::before {
-    margin-inline-end: 0.25em;
-    content: '>';
+    line-height: 1.875rem;
 }
 
 footer {
@@ -698,24 +699,61 @@ h2 {
     font-size: 1.5em;
 }
 
+main h2::before {
+    margin-inline-end: 0.25em;
+    content: '>';
+}
+
+h3 {
+    margin-block: 0.5em 0.25em;
+    font-size: 1.5em;
+    font-weight: 600;
+}
+
 p {
     margin-block: 1em;
 }
 
-i, em {
-    margin-inline-end: 0.125em;
+main i,
+main em {
+    --color-hsl-highlighter: 244, 79%, 65%;
+
+    background-image:
+        linear-gradient(104deg,
+            hsla(var(--color-hsl-highlighter), 0) 0.9%,
+            hsla(var(--color-hsl-highlighter), 1.25) 2.4%,
+            hsla(var(--color-hsl-highlighter), 0.5) 5.8%,
+            hsla(var(--color-hsl-highlighter), 0.1) 93%,
+            hsla(var(--color-hsl-highlighter), 0.7) 96%,
+            hsla(var(--color-hsl-highlighter), 0) 98%),
+        linear-gradient(183deg,
+            hsla(var(--color-hsl-highlighter), 0) 0%,
+            hsla(var(--color-hsl-highlighter), 0.3) 7.9%,
+            hsla(var(--color-hsl-highlighter), 0) 15%);
+    padding: 0.1em 13.7px;
+    box-decoration-break: clone;
+    -webkit-box-decoration-break: clone;
+    border-radius: 7.5px;
+}
+
+main .highlight-green {
+    --color-hsl-highlighter: 153, 90%, 68%;
+}
+
+main .highlight-pink {
+    --color-hsl-highlighter: 330, 88%, 67%;
 }
 
 content-container a {
-    color: var(--color-hotpink-500);
+    color: var(--color-link);
 }
 
 a:hover {
-    color: var(--color-bluelotus-500);
+    color: var(--color-link-hover);
 }
 
 a svg {
-    fill: white;
+    fill: var(--color-text);
 }
 
 a:hover svg,
@@ -748,9 +786,9 @@ ol.numbered > li::before {
     width: 1.5em;
     height: 1.5em;
     border-radius: 50%;
-    background-color: var(--color-hotpink-500);
-    text-shadow: 2px 2px 1px black;
-    box-shadow: 1.25px 1.25px 1px 0 white;
+    background-color: var(--color-primary);
+    text-shadow: 2px 2px 1px var(--color-background);
+    box-shadow: 1.25px 1.25px 1px 0 var(--color-text);
     line-height: 1.5em;
     font-weight: 700;
     text-align: center;
@@ -767,9 +805,9 @@ ol.numbered > li:hover {
 }
 
 ol.numbered > li:hover::before {
-    background-color: var(--color-hotpink-700);
-    color: black;
-    text-shadow: 2px 2px 1px white;
+    background-color: var(--color-primary-dark);
+    color: var(--color-background);
+    text-shadow: 2px 2px 1px var(--color-text);
 }
 
 /* header {
@@ -818,10 +856,9 @@ header::before {
 }
 
 .links a:hover img {
-    --glow-color: hsl(330 88% 67% / 50%);
-    box-shadow: 0px 0px 16px 4px var(--glow-color);
     transform: scale(1.2);
     filter: brightness(1.5);
+    box-shadow: 0px 0px 16px 4px var(--color-primary-50);
 }
 
 @media all and (min-width: 55rem) {
@@ -890,9 +927,9 @@ header::before {
     }
 
     h2 {
-        font-size: 1.2em;
+        font-size: 1.125em;
     }
-
+    
     ol.numbered {
         max-width: 75%;
     }

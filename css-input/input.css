@@ -6,36 +6,42 @@
 
 @layer base {
     :root {
-        --color-gray-50: theme(colors.gray.50);
-        --color-hotpink-300: theme(colors.hotpink.300);
-        --color-hotpink-500: theme(colors.hotpink.500);
-        --color-hotpink-700: theme(colors.hotpink.700);
-        --color-bluelotus-500: theme(colors.bluelotus.500);
-        --color-lightgreenishblue-500: theme(colors.lightgreenishblue.500);
+        --color-primary-light: theme(colors.hotpink.300);
+        --color-primary: theme(colors.hotpink.500);
+        --color-primary-50: theme(colors.hotpink.500 / 50%);
+        --color-primary-dark: theme(colors.hotpink.700);
+        --color-primary-dark-50: theme(colors.hotpink.700 / 50%);
+        --color-secondary: theme(colors.bluelotus.500);
+        --color-tertiary: theme(colors.lightgreenishblue.500);
+        --color-accent: theme(colors.sandyyellow.500);
 
-        --color-mobile-menu: theme(colors.hotpink.800 / 50%);
+        --color-background: theme(colors.gray.50);
+        --color-text: theme(colors.white);
+        --color-link: theme(colors.hotpink.200);
+        --color-link-hover: theme(colors.bluelotus.200);
+
+        --color-header-1: theme(colors.gray.50 / 95%);
+        --color-header-2: theme(colors.gray.200 / 95%);
     }
 }
 
 body {
-    overflow-x: hidden;
-    background-color: var(--color-gray-50);
-    color: white;
     margin-inline: auto;
     width: min(1080px, 90%);
     min-height: 100vh;
+    overflow-x: hidden;
+    background-color: var(--color-background);
+    font-family: ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+    color: var(--color-text);
 }
 
 header-container {
-    --color-from: theme(colors.gray.50 / 95%);
-    --color-to: theme(colors.gray.200 / 95%);
-
     display: block;
     background-image: linear-gradient(
         to bottom right,
-        var(--color-from) 0%,
-        var(--color-from) 15%,
-        var(--color-to) 100%
+        var(--color-header-1) 0%,
+        var(--color-header-1) 15%,
+        var(--color-header-2) 100%
     );
 }
 
@@ -58,10 +64,9 @@ menu-container {
 }
 
 .tagline {
-    --color-border: theme(colors.hotpink.500 / 50%);
     margin-block: 0.25rem 1rem;
     width: fit-content;
-    border-top: 2px var(--color-border) solid;
+    border-top: 2px var(--color-primary-50) solid;
     padding: 0.25rem;
     font-style: italic;
 }
@@ -73,11 +78,7 @@ content-container {
 
 main {
     font-size: 1.25rem;
-}
-
-main h2::before {
-    margin-inline-end: 0.25em;
-    content: '>';
+    line-height: 1.875rem;
 }
 
 footer {
@@ -100,24 +101,61 @@ h2 {
     font-size: 1.5em;
 }
 
+main h2::before {
+    margin-inline-end: 0.25em;
+    content: '>';
+}
+
+h3 {
+    margin-block: 0.5em 0.25em;
+    font-size: 1.5em;
+    font-weight: 600;
+}
+
 p {
     margin-block: 1em;
 }
 
-i, em {
-    margin-inline-end: 0.125em;
+main i,
+main em {
+    --color-hsl-highlighter: 244, 79%, 65%;
+
+    background-image:
+        linear-gradient(104deg,
+            hsla(var(--color-hsl-highlighter), 0) 0.9%,
+            hsla(var(--color-hsl-highlighter), 1.25) 2.4%,
+            hsla(var(--color-hsl-highlighter), 0.5) 5.8%,
+            hsla(var(--color-hsl-highlighter), 0.1) 93%,
+            hsla(var(--color-hsl-highlighter), 0.7) 96%,
+            hsla(var(--color-hsl-highlighter), 0) 98%),
+        linear-gradient(183deg,
+            hsla(var(--color-hsl-highlighter), 0) 0%,
+            hsla(var(--color-hsl-highlighter), 0.3) 7.9%,
+            hsla(var(--color-hsl-highlighter), 0) 15%);
+    padding: 0.1em 13.7px;
+    box-decoration-break: clone;
+    -webkit-box-decoration-break: clone;
+    border-radius: 7.5px;
+}
+
+main .highlight-green {
+    --color-hsl-highlighter: 153, 90%, 68%;
+}
+
+main .highlight-pink {
+    --color-hsl-highlighter: 330, 88%, 67%;
 }
 
 content-container a {
-    color: var(--color-hotpink-500);
+    color: var(--color-link);
 }
 
 a:hover {
-    color: var(--color-bluelotus-500);
+    color: var(--color-link-hover);
 }
 
 a svg {
-    fill: white;
+    fill: var(--color-text);
 }
 
 a:hover svg,
@@ -150,9 +188,9 @@ ol.numbered > li::before {
     width: 1.5em;
     height: 1.5em;
     border-radius: 50%;
-    background-color: var(--color-hotpink-500);
-    text-shadow: 2px 2px 1px black;
-    box-shadow: 1.25px 1.25px 1px 0 white;
+    background-color: var(--color-primary);
+    text-shadow: 2px 2px 1px var(--color-background);
+    box-shadow: 1.25px 1.25px 1px 0 var(--color-text);
     line-height: 1.5em;
     font-weight: 700;
     text-align: center;
@@ -169,9 +207,9 @@ ol.numbered > li:hover {
 }
 
 ol.numbered > li:hover::before {
-    background-color: var(--color-hotpink-700);
-    color: black;
-    text-shadow: 2px 2px 1px white;
+    background-color: var(--color-primary-dark);
+    color: var(--color-background);
+    text-shadow: 2px 2px 1px var(--color-text);
 }
 
 /* header {
@@ -220,10 +258,9 @@ header::before {
 }
 
 .links a:hover img {
-    --glow-color: theme(colors.hotpink.500 / 50%);
-    box-shadow: 0px 0px 16px 4px var(--glow-color);
     transform: scale(1.2);
     filter: brightness(1.5);
+    box-shadow: 0px 0px 16px 4px var(--color-primary-50);
 }
 
 @media all and (min-width: 55rem) {
@@ -292,9 +329,9 @@ header::before {
     }
 
     h2 {
-        font-size: 1.2em;
+        font-size: 1.125em;
     }
-
+    
     ol.numbered {
         max-width: 75%;
     }

@@ -1,9 +1,9 @@
 #mobile-menu-contents {
     position: fixed;
     overflow: hidden auto;
-    border-right: 2px white solid;
+    border-right: 2px var(--color-text) solid;
     inset: 0 5rem 0 0;
-    background-color: var(--color-mobile-menu, black);
+    background-color: var(--color-primary-dark-50, var(--color-background));
     backdrop-filter: blur(5px) brightness(30%);
     font-size: 2rem;
     padding-block: 3rem;
@@ -27,7 +27,7 @@
 #mobile-menu-contents li label:hover,
 #mobile-menu-contents li a:hover {
     color: currentColor;
-    background-color: var(--color-hotpink-700);
+    background-color: var(--color-primary-dark);
 }
 
 #mobile-menu-contents li input + label::after {
@@ -75,10 +75,10 @@
 
 #mobile-menu-button svg {
     overflow: visible;
-    --color-hilt: darkgrey;
-    --color-blade-1: rgb(255, 76, 76);
-    --color-blade-2: rgb(76, 255, 76);
-    --color-blade-3: rgb(76, 76, 255);
+    --color-hilt: #a9a9a9;
+    --color-blade-1: var(--color-secondary);
+    --color-blade-2: var(--color-tertiary);
+    --color-blade-3: var(--color-primary);
 }
 
 #svg-rect-top-hilt,
