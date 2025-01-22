@@ -1,4 +1,12 @@
 @font-face {
+    font-family: 'Press Start 2P';
+    font-style: normal;
+    src: local('Press Start 2P'),
+        local('press-start-2p'),
+        url(/fonts/press-start-2p-regular.ttf) format('truetype');
+}
+
+@font-face {
     font-family: 'Jersey10';
     font-style: normal;
     src: local('Jersey10'),
@@ -7,11 +15,19 @@
 }
 
 @font-face {
-    font-family: 'Press Start 2P';
+    font-family: 'Roboto Mono';
     font-style: normal;
-    src: local('Press Start 2P'),
-        local('press-start-2p'),
-        url(/fonts/press-start-2p-regular.ttf) format('truetype');
+    src: local('Roboto Mono'),
+        local('roboto-mono'),
+        url(/fonts/robotomono.ttf);
+}
+
+@font-face {
+    font-family: 'Roboto Mono';
+    font-style: italic;
+    src: local('Roboto Mono'),
+        local('roboto-mono'),
+        url(/fonts/robotomono-italic.ttf);
 }
 
 *, ::before, ::after {
@@ -537,6 +553,7 @@ video {
         --color-text: #ffffff;
         --color-link: hsl(330, 88%, 83%);
         --color-link-hover: hsl(244, 80%, 82%);
+        --color-link-visited: hsl(153, 90%, 84%);
 
         --color-header-1: hsl(0 0% 5% / 95%);
         --color-header-2: hsl(0 0% 20% / 95%);
@@ -628,7 +645,7 @@ body {
     min-height: 100vh;
     overflow-x: hidden;
     background-color: var(--color-background);
-    font-family: ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+    font-family: 'Roboto Mono';
     color: var(--color-text);
 }
 
@@ -646,6 +663,21 @@ header-links {
     display: flex;
     padding-block-start: 0.5rem;
     gap: 0.5rem;
+}
+
+@property --fill {
+    syntax: '<percentage>';
+    inherits: true;
+    initial-value: 0%;
+}
+
+header-links a svg {
+    fill: currentColor;
+}
+
+header-links a:hover svg,
+header-links a:focus svg {
+    fill: var(--color-primary);
 }
 
 social-container {
@@ -675,8 +707,41 @@ content-container {
 }
 
 main {
-    font-size: 1.25rem;
-    line-height: 1.875rem;
+    font-size: 1.125rem;
+    line-height: 1.5rem;
+}
+
+main a {
+    position: relative;
+    color: var(--color-link);
+    text-shadow: 1px 1px var(--color-background);
+
+    --color-hsl-highlighter: 330, 88%, 67%;
+    background-image:
+        linear-gradient(104deg,
+            hsla(var(--color-hsl-highlighter), 0) 0.9%,
+            hsla(var(--color-hsl-highlighter), 1.25) 2.4%,
+            hsla(var(--color-hsl-highlighter), 0.5) 5.8%,
+            hsla(var(--color-hsl-highlighter), 0.1) 93%,
+            hsla(var(--color-hsl-highlighter), 0.7) 96%,
+            hsla(var(--color-hsl-highlighter), 0) 98%),
+        linear-gradient(183deg,
+            hsla(var(--color-hsl-highlighter), 0) 0%,
+            hsla(var(--color-hsl-highlighter), 0.3) 7.9%,
+            hsla(var(--color-hsl-highlighter), 0) 15%);
+    padding: 0.1em 13.7px;
+    box-decoration-break: clone;
+    -webkit-box-decoration-break: clone;
+    border-radius: 0.46875rem;
+}
+
+main a:visited {
+    color: var(--color-link-visited);
+}
+
+main a:hover {
+    --color-hsl-highlighter: 244, 79%, 65%;
+    color: var(--color-link-hover);
 }
 
 footer {
@@ -705,60 +770,13 @@ main h2::before {
 }
 
 h3 {
-    margin-block: 0.5em 0.25em;
+    margin-block: 1.4em 0.667em;
     font-size: 1.5em;
     font-weight: 600;
 }
 
 p {
     margin-block: 1em;
-}
-
-main i,
-main em {
-    --color-hsl-highlighter: 244, 79%, 65%;
-
-    background-image:
-        linear-gradient(104deg,
-            hsla(var(--color-hsl-highlighter), 0) 0.9%,
-            hsla(var(--color-hsl-highlighter), 1.25) 2.4%,
-            hsla(var(--color-hsl-highlighter), 0.5) 5.8%,
-            hsla(var(--color-hsl-highlighter), 0.1) 93%,
-            hsla(var(--color-hsl-highlighter), 0.7) 96%,
-            hsla(var(--color-hsl-highlighter), 0) 98%),
-        linear-gradient(183deg,
-            hsla(var(--color-hsl-highlighter), 0) 0%,
-            hsla(var(--color-hsl-highlighter), 0.3) 7.9%,
-            hsla(var(--color-hsl-highlighter), 0) 15%);
-    padding: 0.1em 13.7px;
-    box-decoration-break: clone;
-    -webkit-box-decoration-break: clone;
-    border-radius: 7.5px;
-}
-
-main .highlight-green {
-    --color-hsl-highlighter: 153, 90%, 68%;
-}
-
-main .highlight-pink {
-    --color-hsl-highlighter: 330, 88%, 67%;
-}
-
-content-container a {
-    color: var(--color-link);
-}
-
-a:hover {
-    color: var(--color-link-hover);
-}
-
-a svg {
-    fill: var(--color-text);
-}
-
-a:hover svg,
-a:focus svg {
-    fill: currentColor;
 }
 
 ol.numbered {

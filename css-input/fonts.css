@@ -1,4 +1,12 @@
 @font-face {
+    font-family: 'Press Start 2P';
+    font-style: normal;
+    src: local('Press Start 2P'),
+        local('press-start-2p'),
+        url(/fonts/press-start-2p-regular.ttf) format('truetype');
+}
+
+@font-face {
     font-family: 'Jersey10';
     font-style: normal;
     src: local('Jersey10'),
@@ -7,9 +15,17 @@
 }
 
 @font-face {
-    font-family: 'Press Start 2P';
+    font-family: 'Roboto Mono';
     font-style: normal;
-    src: local('Press Start 2P'),
-        local('press-start-2p'),
-        url(/fonts/press-start-2p-regular.ttf) format('truetype');
+    src: local('Roboto Mono'),
+        local('roboto-mono'),
+        url(/fonts/robotomono.ttf);
+}
+
+@font-face {
+    font-family: 'Roboto Mono';
+    font-style: italic;
+    src: local('Roboto Mono'),
+        local('roboto-mono'),
+        url(/fonts/robotomono-italic.ttf);
 }
