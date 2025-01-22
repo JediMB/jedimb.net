@@ -52,12 +52,6 @@ header-links {
     gap: 0.5rem;
 }
 
-@property --fill {
-    syntax: '<percentage>';
-    inherits: true;
-    initial-value: 0%;
-}
-
 header-links a svg {
     fill: currentColor;
 }
