@@ -91,6 +91,12 @@ main {
     line-height: 1.5rem;
 }
 
+::selection,
+::-moz-selection {
+    background-color: var(--color-primary);
+    color: var(--color-background);
+}
+
 main a {
     position: relative;
     color: var(--color-link);
@@ -125,7 +131,7 @@ main a:hover {
 }
 
 footer {
-    margin-top: 1rem;
+    margin-top: 2rem;
     padding-inline: 0.5rem;
     text-align: center;
     font-style: italic;
@@ -341,4 +347,69 @@ header::before {
     .links div {
         text-align: center;
     }
+}
+
+about-me {
+    display: block;
+    margin-top: 2em;
+}
+
+about-me ul {
+    outline: 1px var(--color-accent) solid;
+    border: 2px var(--color-header-2) solid;
+    border-radius: 0.5em 0.5em 0 0;
+    overflow: hidden;
+    display: block flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 2px;
+}
+
+about-me li {
+    background-color: var(--color-text);
+    color: var(--color-background);
+    padding-inline: 0.5em;
+    padding-block: 0.2em;
+    flex-grow: 1;
+    text-align: center;
+}
+
+about-me li:has(input:checked) {
+    background-color: var(--color-primary);
+    color: var(--color-text);
+    font-weight: 800;
+}
+
+about-me li:has(label:hover) {
+    background-color: var(--color-primary-light);
+    color: var(--color-background)
+}
+
+about-me input[name=about-me] {
+    display: none;
+}
+
+about-me label {
+    display: inline-block;
+    cursor: pointer;
+    width: 100%;
+}
+
+about-me-content {
+    display: block;
+    outline: 1px var(--color-accent) solid;
+    border: 2px var(--color-header-2) solid;
+    padding: 1em;
+}
+
+about-me-content h3 {
+    margin-block: 0 0.667em;
+}
+
+about-me-content section {
+    animation: about-me-content 0.8s ease-in-out;
+}
+
+@keyframes about-me-content {
+    from { opacity: 0; }
 }
