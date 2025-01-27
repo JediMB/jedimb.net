@@ -1016,7 +1016,7 @@ about-me-content section {
 
     content-container {
         margin-block: var(--spacing-outer);
-        padding-inline: 1rem
+        padding-inline: var(--spacing-inner);
     }
 
     h1 {
