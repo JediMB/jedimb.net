@@ -956,7 +956,7 @@ about-me-content section {
     header-container {
         border-bottom-left-radius: 1rem;
         border-bottom-right-radius: 1rem;
-        padding-inline: 2.5rem;
+        padding-inline: var(--spacing-outer);
     }
 
     header-links {
@@ -964,7 +964,7 @@ about-me-content section {
     }
 
     menu-container {
-        margin-top: 1.5rem;
+        margin-top: var(--spacing-inner);
     }
 
     mobile-title,
@@ -986,7 +986,7 @@ about-me-content section {
     }
 
     header-container {
-        padding-inline: 0.5rem;
+        padding-inline: var(--spacing-edges);
     }
 
     header-links {
@@ -994,7 +994,7 @@ about-me-content section {
     }
 
     social-container {
-        gap: 1rem;
+        gap: var(--spacing-inner);
     }
 
     home-wrapper,
@@ -1005,7 +1005,7 @@ about-me-content section {
     }
 
     menu-container {
-        padding-inline-start: 0.5rem;
+        padding-inline-start: var(--spacing-edges);
     }
 
     mobile-menu {
@@ -1015,6 +1015,7 @@ about-me-content section {
     }
 
     content-container {
+        margin-block: var(--spacing-outer);
         padding-inline: 1rem
     }
 
@@ -1024,7 +1025,7 @@ about-me-content section {
     }
 
     h2 {
-        font-size: 1.125em;
+        font-size: 1.5em;
     }
     
     ol.numbered {
