@@ -557,6 +557,12 @@ video {
 
         --color-header-1: hsl(0 0% 5% / 95%);
         --color-header-2: hsl(0 0% 20% / 95%);
+
+        --spacing-internal: 0.25rem;
+        --spacing-edges: 0.5rem;
+        --spacing-buttons: 0.5rem;
+        --spacing-inner: 1rem;
+        --spacing-outer: 2rem;
     }
 
 .pointer-events-none {
@@ -661,8 +667,7 @@ header-container {
 
 header-links {
     display: flex;
-    padding-block-start: 0.5rem;
-    gap: 0.5rem;
+    padding-block-start: var(--spacing-edges);
 }
 
 header-links a svg {
@@ -677,27 +682,25 @@ header-links a:focus svg {
 social-container {
     display: flex;
     justify-content: flex-end;
-    gap: 0.5rem;
+    gap: var(--spacing-buttons);
 }
 
 menu-container {
     display: flex;
     justify-content: space-between;
-    gap: 0.5rem;
+    gap: var(--spacing-edges);
 }
 
 .tagline {
-    margin-block: 0.25rem 1rem;
-    width: -moz-fit-content;
-    width: fit-content;
+    margin-block: var(--spacing-edges) var(--spacing-inner);
     border-top: 2px var(--color-primary-50) solid;
-    padding: 0.25rem;
+    padding: var(--spacing-edges);
     font-style: italic;
 }
 
 content-container {
     display: block;
-    padding-inline: 0.5rem;
+    padding-inline: var(--spacing-edges);
 }
 
 main {
@@ -719,7 +722,7 @@ main {
 main a {
     position: relative;
     color: var(--color-link);
-    text-shadow: 1px 1px var(--color-background);
+    text-shadow: 2px 2px var(--color-background);
 
     --color-hsl-highlighter: 330, 88%, 67%;
     background-image:
@@ -750,34 +753,34 @@ main a:hover {
 }
 
 footer {
-    margin-top: 2rem;
-    padding-inline: 0.5rem;
+    margin-top: var(--spacing-outer);
+    padding-inline: var(--spacing-edges);
     text-align: center;
     font-style: italic;
 }
 
 h1 {
     display: inline-block;
-    font-size: 3em;
+    font-size: 4rem;
     line-height: 1em;
-    margin-block-end: 0.2em;
+    margin-block-end: var(--spacing-buttons);
 }
 
 h2 {
-    margin-block: 0.25em;
+    margin-block: var(--spacing-inner);
     font-family: 'Press Start 2P';
     font-size: 1.5em;
 }
 
 main h2::before {
-    margin-inline-end: 0.25em;
+    margin-inline-end: var(--spacing-internal);
     content: '>';
 }
 
 h3 {
-    margin-block: 1.4em 0.667em;
     font-size: 1.5em;
     font-weight: 600;
+    margin-block: 1.4em 0.667em;
 }
 
 p {
@@ -884,90 +887,6 @@ header::before {
     box-shadow: 0px 0px 16px 4px var(--color-primary-50);
 }
 
-@media all and (min-width: 55rem) {
-    header-container {
-        border-bottom-left-radius: 1rem;
-        border-bottom-right-radius: 1rem;
-        padding-inline: 2.5rem;
-    }
-
-    header-links {
-        justify-content: space-between;
-    }
-
-    menu-container {
-        margin-top: 1.5rem;
-    }
-
-    mobile-title,
-    mobile-menu  {
-        display: none;
-    }
-}
-
-@media not all and (min-width: 55rem) {
-    body {
-        width: 100%;
-    }
-
-    header {
-        position: sticky;
-        top: 0;
-        margin-bottom: 1rem;
-        z-index: 10;
-    }
-
-    header-container {
-        padding-inline: 0.5rem;
-    }
-
-    header-links {
-        justify-content: center;
-    }
-
-    social-container {
-        gap: 1rem;
-    }
-
-    home-wrapper,
-    desktop-title,
-    desktop-menu,
-    sub-menu {
-        display: none;
-    }
-
-    menu-container {
-        padding-inline-start: 0.5rem;
-    }
-
-    content-container {
-        padding-inline: 1rem
-    }
-
-    h1 {
-        margin-block-start: 0.75rem;
-        font-size: 2.5rem;
-    }
-
-    h2 {
-        font-size: 1.125em;
-    }
-    
-    ol.numbered {
-        max-width: 75%;
-    }
-}
-
-@media not all and (min-width: 37.5rem) {
-    ol.numbered {
-        max-width: calc(100% - 1em);
-    }
-
-    .links div {
-        text-align: center;
-    }
-}
-
 about-me {
     display: block;
     margin-top: 2em;
@@ -1033,7 +952,94 @@ about-me-content section {
     from { opacity: 0; }
 }
 
+@media all and (min-width: 55rem) {
+    header-container {
+        border-bottom-left-radius: 1rem;
+        border-bottom-right-radius: 1rem;
+        padding-inline: 2.5rem;
+    }
+
+    header-links {
+        justify-content: space-between;
+    }
+
+    menu-container {
+        margin-top: 1.5rem;
+    }
+
+    mobile-title,
+    mobile-menu  {
+        display: none;
+    }
+}
+
+@media not all and (min-width: 55rem) {
+    body {
+        width: 100%;
+    }
+
+    header {
+        position: sticky;
+        top: 0;
+        margin-bottom: 1rem;
+        z-index: 10;
+    }
+
+    header-container {
+        padding-inline: 0.5rem;
+    }
+
+    header-links {
+        justify-content: center;
+    }
+
+    social-container {
+        gap: 1rem;
+    }
+
+    home-wrapper,
+    desktop-title,
+    desktop-menu,
+    sub-menu {
+        display: none;
+    }
+
+    menu-container {
+        padding-inline-start: 0.5rem;
+    }
+
+    mobile-menu {
+        display: flex;
+        flex-direction: column;
+        justify-content: end;
+    }
+
+    content-container {
+        padding-inline: 1rem
+    }
+
+    h1 {
+        margin-block-start: 0.75rem;
+        font-size: clamp(2rem, 10vw + 0.25rem, 64px);
+    }
+
+    h2 {
+        font-size: 1.125em;
+    }
+    
+    ol.numbered {
+        max-width: 75%;
+    }
+}
+
 @media not all and (min-width: 37.5rem) {
+    ol.numbered {
+        max-width: calc(100% - 1em);
+    }
+
+    .links div {
+        text-align: center;
+    }
 
     .max-md\:flex-row {
         flex-direction: row;

@@ -55,7 +55,7 @@
             </header-links>
             <menu-container>
                 <desktop-title>
-                    <a href="/"><h1><?= $GLOBALS['site_title'] ?></h1></a>
+                    <h1><a href="/"><?= $GLOBALS['site_title'] ?></a></h1>
                     <div class="tagline">Cool tagline goes here. In theory.</div>
                 </desktop-title>
 
