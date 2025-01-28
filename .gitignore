@@ -1,2 +1,3 @@
 node_modules/
 public_html/.htaccess
+public_html/.secrets.json
