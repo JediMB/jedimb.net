@@ -1,35 +1,43 @@
 <?php
+    require_once('./includes/utilities/database.php');
+
     setPageTitle('Blog');
     setCopyrightYearByFile(__FILE__);
 ?>
 
 <page-content class="md:grid grid-cols-sidebar-right gap-x-8">
     <main class="mb-3">
-        <?php
-            $dbInfo = readSecrets()->database;
-            $db = $dbInfo->sources[$dbInfo->id];
-
-            $dbConnection = pg_connect('host=' . $db->host . ' dbname=' . $db->name . ' user=' . $db->user . ' password=' . $db->pass)
-                or die('Could not connect: ' . pg_last_error());
-
-            $query = 'SELECT * FROM jedimb_net.blog_post';
-            $result = pg_query($dbConnection, $query) or die('Query failed: ' . pg_last_error());
-
-            echo '<table>';
-            while ($line = pg_fetch_array($result, null, PGSQL_ASSOC)) {
-                echo '<tr>';
-                foreach ($line as $colValue) {
-                    echo '<td>' . $colValue . '</td>';
-                }
-                echo '</tr>';
-            }
-            echo '</table>';
-
-            pg_free_result($result);
-
-            pg_close($dbConnection);
-        ?> 
+        <template>
+            <section class="flex flex-col">
+                <a href="/blog/{id}"><h2>Title</h2></a>
+                <section-byline>6h ago - last modified 4h ago</section-byline>
+                <section-content>Content</section-content>
+            </section>
+        </template>
     </main>
+    <script>
+        const output = document.querySelector('main');
+        const template = output.querySelector('template');
+
+        fetch('/api/blog/posts')
+            .then(response => {
+                if (!response.ok)
+                    throw new Error('API call failed')
+
+                return response.json();
+            })
+            .then(data => {
+                console.log(data)
+                data.forEach(post => {
+                    const cloneNode = template.content.cloneNode(true);
+                    cloneNode.querySelector('h2').textContent = 'New Title';
+                    cloneNode.querySelector('section-byline').textContent = post.created_on;
+                    cloneNode.querySelector('section-content').innerHTML = post.contents;
+                    output.appendChild(cloneNode);
+                });
+            })
+            .catch(error => console.log(error));
+    </script>
     <aside class="links max-md:bg-hotpink-950 max-md:p-2 max-md:rounded-lg">
         <h2>Links</h2>
         <div class="mb-3">

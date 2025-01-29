@@ -48,7 +48,7 @@
         HTML;
     }
 
-    function subMenu(array $menu) {
+    function subMenu(?array $menu) {
         echo <<<HTML
             <nav id="sub-menu" class="p-4">
         HTML;

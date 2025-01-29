@@ -6,15 +6,38 @@
     require_once './includes/utilities/copyright-year.php';
 
     // Remove slashes and dots from start and query string from end of path
-    $requestPath = ltrim($_SERVER['REQUEST_URI'], '/.');
-
-    if (($queryRemoved = strstr($requestPath, '?', true)) !== false)
-        $requestPath = $queryRemoved;
+    $requestPath = parse_url(ltrim($_SERVER['REQUEST_URI'], '/.'), PHP_URL_PATH);
     
     // If it's a root request, serve root/home.php
     if ($requestPath === '')
         $requestPath = 'home.php';
-    
+
+    // If it's an api call, handle separately
+    if (strpos($requestPath, 'api/') === 0) {
+        header('Content-Type: application/json');
+        
+        setConfiguration();
+        require_once('./includes/utilities/database.php');
+
+        $requestComponents = explode(DIRECTORY_SEPARATOR, $requestPath, 10);
+
+        $apiPath = $requestComponents[0];
+        for ($i = 1; $i < count($requestComponents); $i++) {
+            $apiPath = $apiPath . DIRECTORY_SEPARATOR . $requestComponents[$i];
+
+            // If a matching api file is found, serve it as a json string
+            if (($filePath = realpath($apiPath . '.php'))) {
+                $GLOBALS['api_params'] = array_slice($requestComponents, $i + 1);
+                include $filePath;
+                exit;
+            }
+        }
+
+        echo json_encode(['message' => 'Invalid URI']);
+        exit;
+    }
+
+
     /*  Try to find a matching file in the following order:
         1) Perfect match
         2) File with php extension

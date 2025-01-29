@@ -589,6 +589,10 @@ video {
     display: table;
 }
 
+.contents {
+    display: contents;
+}
+
 .hidden {
     display: none;
 }
@@ -599,6 +603,10 @@ video {
 
 .grid-cols-sidebar-right {
     grid-template-columns: 1fr var(--sidebar-width, 120px);
+}
+
+.flex-col {
+    flex-direction: column;
 }
 
 .flex-wrap {
