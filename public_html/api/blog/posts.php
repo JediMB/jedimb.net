@@ -13,7 +13,7 @@
                 break;
             }
 
-            dbSelect('blog_post');
+            dbSelect('blog_post', ['id', 'permalink', 'title', "substring(content, '((.*(?<=<!--[ ]*SPLIT[ ]*-->))|^((?!<!--[ ]*SPLIT[ ]*-->).)*$)') as content", 'mastolink', 'created_on', 'modified_on']);
             $posts = [];
             while ($post = dbResultNextRow()) {
                 $posts[] = $post;

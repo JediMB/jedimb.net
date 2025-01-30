@@ -169,6 +169,11 @@ p {
     margin-block: 1em;
 }
 
+.weak {
+    font-size: 0.9em;
+    opacity: 0.5;
+}
+
 ol.numbered {
     max-width: 50%;
     padding-inline-start: 3.15em;

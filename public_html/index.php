@@ -5,18 +5,16 @@
     require_once './includes/utilities/configuration.php';
     require_once './includes/utilities/copyright-year.php';
 
+    setConfiguration();
+
     // Remove slashes and dots from start and query string from end of path
     $requestPath = parse_url(ltrim($_SERVER['REQUEST_URI'], '/.'), PHP_URL_PATH);
     
-    // If it's a root request, serve root/home.php
-    if ($requestPath === '')
-        $requestPath = 'home.php';
 
     // If it's an api call, handle separately
     if (strpos($requestPath, 'api/') === 0) {
         header('Content-Type: application/json');
         
-        setConfiguration();
         require_once('./includes/utilities/database.php');
 
         $requestComponents = explode(DIRECTORY_SEPARATOR, $requestPath, 10);
@@ -37,6 +35,15 @@
         exit;
     }
 
+    // If it's trying to access a blog entry, serve a match
+    if (strpos($requestPath, 'blog/') === 0) {
+        
+        exit;
+    }
+
+    // If it's a root request, serve root/home.php
+    if ($requestPath === '')
+        $requestPath = $GLOBALS['site_home'];
 
     /*  Try to find a matching file in the following order:
         1) Perfect match
@@ -108,10 +115,6 @@
         || $filePath === __FILE__
         || substr(basename($filePath), 0, 1) === '.'
         || ( $isPHP && strpos($requestPath, 'includes/') === 0 );
-
-    // If a PHP document will be served, set site configuration
-    if ($isPHP || $error403 || $error404)
-        setConfiguration();
 
     // Serve error 403 if trying to access a directory without an index file to serve
     if ($error403) {

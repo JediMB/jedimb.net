@@ -25,6 +25,7 @@
             $GLOBALS['site_author'] = $config->author ?: throw new Exception('Author unspecified.');
             $GLOBALS['page_title'] = $GLOBALS['site_title'] = $config->title ?: throw new Exception('Title unspecified.');
             $GLOBALS['page_template'] = realpath('includes/views/' . $config->defaultTemplate) ?: throw new Exception('No valid template specified.');
+            $GLOBALS['site_home'] = realpath($config->home) ?: throw new Exception('No valid home document specified.');
             $GLOBALS['page_year'] = $config->creationYear ?: throw new Exception('Creation year unspecified.');
             $GLOBALS['page_content'] = 'Page content';
         }

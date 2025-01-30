@@ -22,8 +22,8 @@
         </div>
         <p>
             See that list? I could have just gone with a regular ordered list, but instead I spent time on making it all fancy-like
-            <em class="text-gray-500">(including hover effects)</em> and lost track of what I was going to type here.
-            <em class="text-gray-500">Hopeless!</em>
+            <em class="weak">(including hover effects)</em> and lost track of what I was going to type here.
+            <em class="weak">Hopeless!</em>
         </p>
         <p><em>Anyway...!</em></p>
         <p>
