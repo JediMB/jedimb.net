@@ -22,6 +22,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= $GLOBALS['page_title'] ?></title>
     
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <link rel="icon" type="image/x-icon" href="favicon.png" />
     <?php
         $cssPath = 'css/style.css';
@@ -36,6 +37,8 @@
             <link href="{$cssPath}" rel="stylesheet" />
         HTML;
     ?>
+    <script type="text/javascript" src="/js/purify.min.js"></script>
+    <script type="module" src="/js/mastodon-comments.js"></script>
 </head>
 <body>
     <header>
