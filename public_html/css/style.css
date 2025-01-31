@@ -581,6 +581,10 @@ video {
     margin-top: 0.75rem;
 }
 
+.block {
+    display: block;
+}
+
 .flex {
     display: flex;
 }
@@ -589,8 +593,16 @@ video {
     display: table;
 }
 
+.contents {
+    display: contents;
+}
+
 .hidden {
     display: none;
+}
+
+.flex-grow {
+    flex-grow: 1;
 }
 
 .transform {

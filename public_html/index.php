@@ -14,8 +14,6 @@
     // If it's an api call, handle separately
     if (strpos($requestPath, 'api/') === 0) {
         header('Content-Type: application/json');
-        
-        require_once('./includes/utilities/database.php');
 
         $requestComponents = explode(DIRECTORY_SEPARATOR, $requestPath, 10);
 
@@ -36,8 +34,14 @@
     }
 
     // If it's trying to access a blog entry, serve a match
-    if (strpos($requestPath, 'blog/') === 0) {
-        
+    //if (strpos($requestPath, 'blog/') === 0) {
+    $matches = [];
+    if (preg_match('/^blog(\/[0-9]{4}\/[0-9]{2}\/[0-9]{2}\/[-a-z0-9]*)$/', $requestPath, $matches)) {
+        $GLOBALS['permalink'] = $matches[1];
+        ob_start();
+        include 'blog/post.php';
+        $GLOBALS['page_content'] = ob_get_clean();
+        require_once $GLOBALS['page_template'];
         exit;
     }
 

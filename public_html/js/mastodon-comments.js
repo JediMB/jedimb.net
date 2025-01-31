@@ -1,14 +1,14 @@
 const styles = `
 :root {
-  --font-color: #5d686f;
+  --font-color: var(--color-text, #5d686f);
   --font-size: 1.0rem;
 
   --block-border-width: 1px;
-  --block-border-radius: 3px;
-  --block-border-color: #ededf0;
-  --block-background-color: #f7f8f8;
+  --block-border-radius: 0.25rem;
+  --block-border-color: var(--color-text, #ededf0);
+  --block-background-color: var(--color-background, #f7f8f8);
 
-  --comment-indent: 40px;
+  --comment-indent: 2.5rem;
 }
 
 #mastodon-stats {
@@ -24,7 +24,7 @@ const styles = `
   background-color: var(--block-background-color);
   border-radius: var(--block-border-radius);
   border: var(--block-border-width) var(--block-border-color) solid;
-  padding: 20px;
+  padding: 1.125rem;
   margin-bottom: 1.5rem;
   display: flex;
   flex-direction: column;
@@ -51,16 +51,21 @@ const styles = `
   border-radius: 5px;
 }
 
+.mastodon-comment .author .author-text {
+  display: flex;
+  flex-grow: 1;
+}
+
 .mastodon-comment .author .details {
   display: flex;
   flex-direction: column;
 }
 
-.mastodon-comment .author .details .name {
+.mastodon-comment .author .name {
   font-weight: bold;
 }
 
-.mastodon-comment .author .details .user {
+.mastodon-comment .author .user {
   color: #5d686f;
   font-size: medium;
 }
@@ -111,6 +116,28 @@ const styles = `
 
 .mastodon-comment .status .favourites.active a, #mastodon-stats .favourites.active a {
   color: #ca8f04;
+}
+
+@media not all and (min-width: 37.5rem) {
+  :root {
+    --comment-indent: 1rem;
+  }
+  .mastodon-comment .author .avatar img {
+    width: 67.5px;
+    height: 67.5px;
+  }
+
+  .mastodon-comment .author .details {
+    display: contents;
+  }
+
+  .mastodon-comment .author .author-text {
+    flex-direction: column;
+  }
+
+  .mastodon-comment .author .author-text .date {
+    margin-left: 0;
+  }
 }
 `;
 
@@ -230,20 +257,22 @@ class MastodonComments extends HTMLElement {
               toot.account.avatar_static,
             )}" height=60 width=60 alt="">
           </div>
-          <div class="details">
-            <a class="name" href="${toot.account.url}" rel="nofollow">${
-              toot.account.display_name
-            }</a>
-            <a class="user" href="${
-              toot.account.url
-            }" rel="nofollow">${this.user_account(toot.account)}</a>
-          </div>
-          <a class="date" href="${
-            toot.url
-          }" rel="nofollow">${toot.created_at.substr(
-            0,
-            10,
-          )} ${toot.created_at.substr(11, 8)}</a>
+          <div class="author-text">
+            <div class="details">
+              <a class="name" href="${toot.account.url}" rel="nofollow">${
+                toot.account.display_name
+              }</a>
+              <a class="user" href="${
+                toot.account.url
+              }" rel="nofollow">${this.user_account(toot.account)}</a>
+            </div>
+            <a class="date" href="${
+              toot.url
+            }" rel="nofollow">${toot.created_at.substr(
+              0,
+              10,
+            )} ${toot.created_at.substr(11, 8)}</a>
+            </div>
         </div>
         <div class="content">${toot.content}</div>
         <div class="attachments">

@@ -1,4 +1,6 @@
 <?php
+    require_once('./includes/utilities/database.php');
+
     $input = json_decode(file_get_contents('php://input'), true);
 
     dbConnect();
@@ -9,6 +11,7 @@
             
             if ( count($params) > 0 && ( $id = intval($params[0]) ) ) {
                 dbSelect('blog_post', [], ['id = ' . $id], [], 1);
+                // Handle not finding a match
                 echo json_encode(dbResultNextRow());
                 break;
             }

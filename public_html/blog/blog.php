@@ -56,10 +56,3 @@
         </div>
     </aside>
 </page-content>
-<!-- 
-    0) Using threaded toots is more trouble than it's worth, so nevermind that
-    1) Replace Fontawesome dependency with a couple of custom SVGs or something
-    2) Fix up the CSS and markup generation to better fit the site's design
-    3) Find a way to use Mastodon's API to post the toot and save its id as the blog post is generated
--->
-<mastodon-comments host="mastodon.gamedev.place" user="jedimb" tootId="113056844680690229" style="width: min(100%, 600px);"></mastodon-comments>
