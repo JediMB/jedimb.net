@@ -581,10 +581,6 @@ video {
     margin-top: 0.75rem;
 }
 
-.block {
-    display: block;
-}
-
 .flex {
     display: flex;
 }
@@ -754,8 +750,11 @@ main {
 }
 
 main a {
-    position: relative;
     color: var(--color-link);
+}
+
+main p a {
+    position: relative;
     text-shadow: 2px 2px var(--color-background);
 
     --color-hsl-highlighter: 330, 88%, 67%;
@@ -777,13 +776,17 @@ main a {
     border-radius: 0.46875rem;
 }
 
-main a:visited {
+main p a:visited {
     color: var(--color-link-visited);
 }
 
 main a:hover {
-    --color-hsl-highlighter: 244, 79%, 65%;
     color: var(--color-link-hover);
+    text-decoration: underline;
+}
+
+main p a:hover {
+    --color-hsl-highlighter: 244, 79%, 65%;
 }
 
 footer {

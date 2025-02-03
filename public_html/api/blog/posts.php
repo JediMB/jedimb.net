@@ -9,14 +9,20 @@
         case 'GET':
             $params = $GLOBALS['api_params'];
             
-            if ( count($params) > 0 && ( $id = intval($params[0]) ) ) {
-                dbSelect('blog_post', [], ['id = ' . $id], [], 1);
-                // Handle not finding a match
-                echo json_encode(dbResultNextRow());
-                break;
-            }
+            // if ( count($params) > 0 && ( $id = intval($params[0]) ) ) {
+            //     dbSelect('blog_post', [], ['id = ' . $id], [], 1);
+                
+            //     if (($result = dbResultNextRow()))
+            //         echo json_encode($result);
+            //     else
+            //         echo json_encode(['error' => 'Blog post not found.']);
 
-            dbSelect('blog_post', ['id', 'permalink', 'title', "substring(content, '((.*(?<=<!--[ ]*SPLIT[ ]*-->))|^((?!<!--[ ]*SPLIT[ ]*-->).)*$)') as content", 'mastolink', 'created_on', 'modified_on']);
+            //     break;
+            // }
+
+            dbSelect('blog_post',
+                ['id', 'permalink', 'title', "substring(content, '((.*(?<=<!--[ ]*SPLIT[ ]*-->))|^((?!<!--[ ]*SPLIT[ ]*-->).)*$)') as content", 'mastolink', 'created_on', 'modified_on'],
+                ['is_published = true']);
             $posts = [];
             while ($post = dbResultNextRow()) {
                 $posts[] = $post;
@@ -25,7 +31,7 @@
             break;
 
         default:
-            echo json_encode(['message' => 'Invalid request method']);
+            echo json_encode(['error' => 'Invalid request method']);
     }
 
     dbDisconnect();

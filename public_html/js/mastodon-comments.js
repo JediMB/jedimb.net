@@ -199,7 +199,7 @@ class MastodonComments extends HTMLElement {
       <div class="replies ${this.toot_active(toot, "replies")}">
         <a href="${
           toot.url
-        }" rel="nofollow"><i class="fa fa-reply fa-fw"></i>${this.toot_count(
+        }" rel="nofollow" target="_blank"><i class="fa fa-reply fa-fw"></i>${this.toot_count(
           toot,
           "replies",
         )}</a>
@@ -207,7 +207,7 @@ class MastodonComments extends HTMLElement {
       <div class="reblogs ${this.toot_active(toot, "reblogs")}">
         <a href="${
           toot.url
-        }" rel="nofollow"><i class="fa fa-retweet fa-fw"></i>${this.toot_count(
+        }" rel="nofollow" target="_blank"><i class="fa fa-retweet fa-fw"></i>${this.toot_count(
           toot,
           "reblogs",
         )}</a>
@@ -215,7 +215,7 @@ class MastodonComments extends HTMLElement {
       <div class="favourites ${this.toot_active(toot, "favourites")}">
         <a href="${
           toot.url
-        }" rel="nofollow"><i class="fa fa-star fa-fw"></i>${this.toot_count(
+        }" rel="nofollow" target="_blank"><i class="fa fa-star fa-fw"></i>${this.toot_count(
           toot,
           "favourites",
         )}</a>
@@ -259,16 +259,16 @@ class MastodonComments extends HTMLElement {
           </div>
           <div class="author-text">
             <div class="details">
-              <a class="name" href="${toot.account.url}" rel="nofollow">${
+              <a class="name" href="${toot.account.url}" rel="nofollow" target="_blank">${
                 toot.account.display_name
               }</a>
               <a class="user" href="${
                 toot.account.url
-              }" rel="nofollow">${this.user_account(toot.account)}</a>
+              }" rel="nofollow" target="_blank">${this.user_account(toot.account)}</a>
             </div>
             <a class="date" href="${
               toot.url
-            }" rel="nofollow">${toot.created_at.substr(
+            }" rel="nofollow" target="_blank">${toot.created_at.substr(
               0,
               10,
             )} ${toot.created_at.substr(11, 8)}</a>
