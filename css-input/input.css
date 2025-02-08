@@ -78,6 +78,58 @@ menu-container {
     gap: var(--spacing-edges);
 }
 
+#flip-logo {
+    fill: var(--color-background);
+    stroke: var(--color-header-2);
+}
+
+#flip-logo > rect {
+    transform-origin: var(--center);
+}
+
+#flip-logo > .flipped {
+    animation: var(--delay) flipped 0.3s linear forwards;
+}
+
+/* #flip-logo > .hovered,
+#flip-logo > .hovered-adjacent,
+#flip-logo > .hovered-corner {
+    fill: var(--color-secondary);
+} */
+
+#flip-logo > .flipped.hovered,
+#flip-logo > .flipped.hovered-adjacent,
+#flip-logo > .flipped.hovered-corner {
+    fill: var(--color-tertiary) !important;
+}
+
+.hovered {
+    filter: brightness(1.5);
+}
+
+.hovered-adjacent {
+    filter: brightness(1.25);
+}
+
+.hovered-corner {
+    filter: brightness(0.9);
+}
+
+@keyframes flipped {
+    50% {
+        transform: rotateY(90deg);
+        fill: var(--color-background);
+    }
+    51% {
+        transform: rotateY(91.8deg);
+        fill: var(--color-primary);
+    }
+    100% {
+        transform: rotateY(180deg);
+        fill: var(--color-primary);
+    }
+}
+
 .tagline {
     margin-block: var(--spacing-edges) var(--spacing-inner);
     border-top: 2px var(--color-primary-50) solid;

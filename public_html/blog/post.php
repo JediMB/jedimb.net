@@ -3,7 +3,8 @@
 
     dbConnect();
 
-    dbSelect('blog_post', [], ['permalink = \'' . $GLOBALS['permalink'] . '\''], [], 1);
+    //dbSelect('blog_post', [], ['permalink = \'' . $GLOBALS['permalink'] . '\''], [], 1);
+    dbSelectFunction('select_blog_post', [ $GLOBALS['permalink'] ]);
     $row = dbResultNextRow();
 
     dbDisconnect();

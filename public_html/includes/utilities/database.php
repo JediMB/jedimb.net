@@ -1,22 +1,29 @@
-<?php    
-    $dbInfo = readSecrets()->database;
-    $db = $dbInfo->sources[$dbInfo->id];
-
-    $GLOBALS['db_connection_string'] =
-        'host=' . $db->host .
-        ' dbname=' . $db->name .
-        ' user=' . $db->user .
-        ' password=' . $db->pass;
-    $GLOBALS['db_schema'] = $db->schema;
-    
-    unset($dbInfo);
-    unset($db);
-
+<?php
     function dbConnect() {
         $dbConnection = pg_connect($GLOBALS['db_connection_string'])
             or die('Could not connect: ' . pg_last_error());
 
         $GLOBALS['db_connection'] = $dbConnection;
+    }
+
+    function dbSelectFunction(
+            string $functionName,
+            array $args = []
+    ) {
+        dbResultFree();
+
+        $dbConnection =
+            $GLOBALS['db_connection']
+            ?? die('No database connection available for query.');
+
+        $query = 'SELECT * FROM ' . $GLOBALS['db_schema'] . '.' .
+            $functionName . '(\'' .
+                ($args ? implode('\', \'', $args) : null)
+            . '\')';
+
+        $result = pg_query($dbConnection, $query) or die('Query failed: ' . pg_last_error());
+
+        $GLOBALS['db_result'] = $result;
     }
 
     function dbSelect(

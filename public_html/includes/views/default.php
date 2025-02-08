@@ -58,7 +58,41 @@
             </header-links>
             <menu-container>
                 <desktop-title>
-                    <h1><a href="/"><?= $GLOBALS['site_title'] ?></a></h1>
+                    <!-- <h1><a href="/"><?= $GLOBALS['site_title'] ?></a></h1> -->
+                    <!-- <img src="images/logo.svg"> -->
+                    <?php
+
+                        $unitWidth = 8;
+                        $unitHeight = 8;
+                        $columns = 56;
+                        $rows = 10;
+
+                        $width = $unitWidth * $columns;
+                        $height = $unitHeight * $rows;
+
+                        echo <<<HTML
+                            <svg id="flip-logo" width="{$width}px" height="{$height}px"
+                                viewBox="0 0 {$width} {$height}" fill="none" stroke="none" xmlns="http://www.w3.org/2000/svg">
+                        HTML;
+                        
+                        for ($x = 0; $x < $columns; $x++) {
+                            $posX = $x * $unitWidth;
+                            $xCenter = $posX + (0.5 * $unitWidth);
+                            for ($y = 0; $y < $rows; $y++) {
+                                $posY = $y * $unitHeight;
+                                $yCenter = $posY + (0.5 * $unitHeight);
+
+                                $delay = $x * 100;
+                                echo <<<HTML
+                                    <rect logo-col="{$x}" logo-row="{$y}" width="{$unitWidth}" height="{$unitHeight}" x="{$posX}" y="{$posY}" fill="inherit" stroke="inherit"
+                                        style="--delay: {$delay}ms;  --center: {$xCenter}px {$yCenter}px;" />
+                                HTML;
+                            }
+                        }
+                        
+                        echo '</svg>';
+                    ?>
+                    <script type="text/javascript" src="/js/logo.js" defer></script>
                     <div class="tagline">Cool tagline goes here. In theory.</div>
                 </desktop-title>
 

@@ -57,7 +57,36 @@
             echo 'Error: ' . $e->getMessage();
             exit;
         }
+    }
 
+    function setSecrets() {
+        try {
+            $secrets = readSecrets();
+
+            /*
+                Since these should be optional features, configuration should determine if
+                the variables should be set to begin with and the components that use them
+                should throw errors if they're not set.
+            */
+            
+            //$GLOBALS['pepper'] = $secrets->pepper ?: throw new Exception('No pepper found.');
+
+            $db = $secrets->database->sources[$secrets->database->id];
+            $GLOBALS['db_connection_string'] =
+                'host=' . $db->host .
+                ' dbname=' . $db->name .
+                ' user=' . $db->user .
+                ' password=' . $db->pass;
+            $GLOBALS['db_schema'] = $db->schema;
+
+            $GLOBALS['mastodon_host'] = $secrets->mastodon->host ?: throw new Exception('Mastodon hostname not specified.');
+            $GLOBALS['mastodon_user'] = $secrets->mastodon->user ?: throw new Exception('Mastodon user not specified.');
+            $GLOBALS['mastodon_token'] = $secrets->mastodon->token ?: throw new Exception('Mastodon access token not provided');
+        }
+        catch (Exception $e) {
+            echo 'Error: ' . $e->getMessage();
+            exit;
+        }
     }
 
     function setPageTitle(string $pageTitle) {

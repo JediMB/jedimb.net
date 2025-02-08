@@ -6,6 +6,7 @@
     require_once './includes/utilities/copyright-year.php';
 
     setConfiguration();
+    setSecrets();
 
     // Remove slashes and dots from start and query string from end of path
     $requestPath = parse_url(ltrim($_SERVER['REQUEST_URI'], '/.'), PHP_URL_PATH);
@@ -16,7 +17,7 @@
         header('Content-Type: application/json');
 
         $requestComponents = explode(DIRECTORY_SEPARATOR, $requestPath, 10);
-
+        
         $apiPath = $requestComponents[0];
         for ($i = 1; $i < count($requestComponents); $i++) {
             $apiPath = $apiPath . DIRECTORY_SEPARATOR . $requestComponents[$i];
