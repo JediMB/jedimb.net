@@ -42,6 +42,7 @@
     <!-- 
         1) Replace Fontawesome dependency with a couple of custom SVGs or something
         2) Find a way to use Mastodon's API to post the toot and save its id as the blog post is generated
+        3) Move mastolink regex string to configuration?
     -->
     <?php
         $matches = [];

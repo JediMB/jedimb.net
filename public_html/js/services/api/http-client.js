@@ -1,6 +1,7 @@
 export default class HttpClient {
     constructor() {
         this.baseApiUrl = '/api/';
+        this.requestTypeCss = 'background-color: red; color: white;';
     }
     static httpClient = new HttpClient();
 
@@ -10,7 +11,7 @@ export default class HttpClient {
         if (response.ok)
             return await response.json();
 
-        console.log(`Error ${response.status}: GET ${this.baseApiUrl + api} failed.`)
+        console.error(`Error ${response.status}: %c GET %c '${this.baseApiUrl + api}' failed.`, this.requestTypeCss)
         return null;
     }
 
@@ -19,6 +20,10 @@ export default class HttpClient {
     }
 
     async put(api) {
+
+    }
+
+    async patch(api) {
 
     }
 
