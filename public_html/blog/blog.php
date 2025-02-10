@@ -5,6 +5,8 @@
     setCopyrightYearByFile(__FILE__);
 ?>
 
+<script type="module" defer src="/js/pages/blog.blog.js"></script>
+
 <page-content class="md:grid grid-cols-sidebar-right gap-x-8">
     <main class="mb-3">
         <!-- Implement pagination and include the first page as part of the document -->
@@ -16,32 +18,6 @@
             </section>
         </template>
     </main>
-    <script>
-        const output = document.querySelector('main');
-        const template = output.querySelector('template');
-
-        fetch('/api/blog/posts')
-            .then(response => {
-                if (!response.ok)
-                    throw new Error('API call failed')
-
-                return response.json();
-            })
-            .then(data => {
-                data.forEach(post => {
-                    const cloneNode = template.content.cloneNode(true);
-                    cloneNode.querySelector('section > h2').innerHTML = `<a href="/blog${post.permalink}">` + post.title + '</a>';
-                    cloneNode.querySelector('section-byline').textContent = post.created_on;
-                    cloneNode.querySelector('section-content').innerHTML = post.content +
-                        (post.content.match('(.*(?<=<!--[ ]*SPLIT[ ]*-->))')
-                            ? `<a href="/blog${post.permalink}">Read more...</a>`
-                            : '');
-
-                    output.appendChild(cloneNode);
-                });
-            })
-            .catch(error => console.log(error));
-    </script>
     <aside class="links max-md:bg-hotpink-950 max-md:p-2 max-md:rounded-lg">
         <h2>Links</h2>
         <div class="mb-3">

@@ -2,11 +2,8 @@
     require_once('./includes/utilities/database.php');
 
     dbConnect();
-
-    //dbSelect('blog_post', [], ['permalink = \'' . $GLOBALS['permalink'] . '\''], [], 1);
     dbSelectFunction('select_blog_post', [ $GLOBALS['permalink'] ]);
     $row = dbResultNextRow();
-
     dbDisconnect();
 
     if(!$row) {
