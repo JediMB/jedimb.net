@@ -10,7 +10,7 @@ const blogPosts = await blogPostApiService.getBlogPosts();
 blogPosts.forEach(post => {
     const cloneNode = template.content.cloneNode(true);
     cloneNode.querySelector('section > h2').innerHTML = `<a href="/blog${post.permalink}">` + post.title + '</a>';
-    cloneNode.querySelector('section-byline').textContent = post.created_on;
+    cloneNode.querySelector('section-byline').textContent = post.createdOn.toLocaleString(); // Expand markup and JS to include modifiedOn date
     cloneNode.querySelector('section-content').innerHTML = post.content +
         (post.content.match('(.*(?<=<!--[ ]*SPLIT[ ]*-->))')
             ? `<a href="/blog${post.permalink}">Read more...</a>`

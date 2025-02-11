@@ -1,7 +1,7 @@
 <?php
     function dbConnect() {
         $dbConnection = pg_connect($GLOBALS['db_connection_string'])
-            or die('Could not connect: ' . pg_last_error());
+            or throw new Exception('Couldn\'t connect to database.');
 
         $GLOBALS['db_connection'] = $dbConnection;
     }
@@ -14,14 +14,15 @@
 
         $dbConnection =
             $GLOBALS['db_connection']
-            ?? die('No database connection available for query.');
+            ?? throw new Exception('No database connection available for query.');
 
         $query = 'SELECT * FROM ' . $GLOBALS['db_schema'] . '.' .
             $functionName . '(\'' .
                 ($args ? implode('\', \'', $args) : null)
             . '\')';
 
-        $result = pg_query($dbConnection, $query) or die('Query failed: ' . pg_last_error());
+        $result = pg_query($dbConnection, $query)
+            or throw new Exception('Database query failed: ' . pg_last_error());
 
         $GLOBALS['db_result'] = $result;
     }
@@ -38,7 +39,7 @@
 
         $dbConnection =
             $GLOBALS['db_connection']
-            ?? die('No database connection available for query.');
+            ?? throw new Exception('No database connection available for query.');
 
         $query = 'SELECT ' . ( $columns ? implode(', ', $columns) : '*' ) .
             ' FROM ' . $GLOBALS['db_schema']. '.' . $tableName .
@@ -47,14 +48,15 @@
             ( $rowLimit ? ' LIMIT ' . $rowLimit : null ) .
             ( $rowOffset ? ' OFFSET ' . $rowOffset : null );
 
-        $result = pg_query($dbConnection, $query) or die('Query failed: ' . pg_last_error());
+        $result = pg_query($dbConnection, $query)
+            or throw new Exception('Database query failed: ' . pg_last_error());
 
         $GLOBALS['db_result'] = $result;
     }
 
     function dbResultNextRow() {
         $result = $GLOBALS['db_result']
-            ?? die('No database result to fetch row from.');
+            ?? throw new Exception('No database result to fetch row from.');
 
         return pg_fetch_array($result, null, PGSQL_ASSOC);
     }

@@ -655,6 +655,10 @@ video {
     padding-right: 0.5rem;
 }
 
+.capitalize {
+    text-transform: capitalize;
+}
+
 .italic {
     font-style: italic;
 }

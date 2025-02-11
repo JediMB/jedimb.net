@@ -1,4 +1,4 @@
-import HttpClient from './http-client.js';
+import HttpClient from '../../http-client.js';
 import BlogPost from '../../classes/blog-post.js';
 
 export default class BlogPostApiService {
