@@ -44,8 +44,11 @@
 
             ($secretsPath = realpath($secretsPath)) ?: throw new Exception('Secrets not found.');
 
+            if ( ($jsonSize = filesize($secretsPath)) <= 0 )
+                throw new Exception('Zero-size secrets file.');
+
             $jsonFile = fopen($secretsPath, 'r');
-            $jsonObj = fread($jsonFile, filesize($secretsPath));
+            $jsonObj = fread($jsonFile, $jsonSize);
             fclose($jsonFile);
 
             $obj = json_decode($jsonObj);
