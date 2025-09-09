@@ -1,28 +1,19 @@
 <?php
-    require_once('./includes/services/database.php');
+    require_once('./includes/services/blog/blog-posts-service.php');
 
     /*
-        2) Make a services/blog/blog-posts-service.php that handles the logic here
         3) Maybe tear out the use of global variables in database.php
         4) Would OOP (classes for the DB connection and BlogPostsService) make sense?
     */
-    try {
-        dbConnect();
-        dbSelectFunction('select_blog_post', [ $GLOBALS['permalink'] ]);
-        $row = dbResultNextRow();
-    }
-    catch(Exception $e) {
-        $row['title'] = 'Error';
-        $row['content'] = $e->getMessage();
-    }
-    dbDisconnect();
 
-    if(!$row) {
+    $post = getBlogPost($GLOBALS['permalink']);
+
+    if(!$post) {
         include 'includes/errors/404.php';
         return;
     }
 
-    setPageTitle($row['title']);
+    setPageTitle($post['title']);
     setCopyrightYearByFile(__FILE__);
 ?>
 
@@ -30,23 +21,23 @@
 
 <page-content>
     <main>
-        <h2><?=$row['title']?></h2>
+        <h2><?=$post['title']?></h2>
         <div>
             <?php
-                if (isset($row['created_on'])) {
+                if (isset($post['created_on'])) {
                     echo <<<HTML
-                        <span><date-time server-time="{$row['created_on']}" class="capitalize">{$row['created_on']}</date-time></span>
+                        <span><date-time server-time="{$post['created_on']}" class="capitalize">{$post['created_on']}</date-time></span>
                     HTML;
                 }
 
-                if (isset($row['modified_on']) && $row['modified_on']) {
+                if (isset($post['modified_on']) && $post['modified_on']) {
                     echo <<<HTML
-                        <span class="weak">- Last modified <date-time server-time="{$row['modified_on']}">{$row['modified_on']}</date-time>.</span>
+                        <span class="weak">- Last modified <date-time server-time="{$post['modified_on']}">{$post['modified_on']}</date-time>.</span>
                     HTML;
                 }
             ?>
         </div>
-        <?=$row['content']?>
+        <?=$post['content']?>
     </main>
     <!-- 
         1) Replace Fontawesome dependency with a couple of custom SVGs or something
@@ -55,7 +46,7 @@
     -->
     <?php
         $matches = [];
-        if (isset($row['mastolink']) && preg_match('/^http[s]?:\/\/([-.a-z0-9]+)\/@([-.a-z0-9]+)\/([0-9]+)$/', $row['mastolink'], $matches)) {
+        if (isset($post['mastolink']) && preg_match('/^http[s]?:\/\/([-.a-z0-9]+)\/@([-.a-z0-9]+)\/([0-9]+)$/', $post['mastolink'], $matches)) {
             echo <<<HTML
                 <mastodon-comments host="{$matches[1]}" user="{$matches[2]}" tootId="{$matches[3]}"></mastodon-comments>
             HTML;

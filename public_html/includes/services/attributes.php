@@ -1,38 +1,40 @@
 <?php
-    function onClick(?string $value, bool $isUrl = false, bool $useHref = true) {
-        $prefix = ' onclick="';
-        $suffix = ';" ';
 
-        if (!$value)
-            return $prefix . 'return false' . $suffix;
+function onClick(?string $value, bool $isUrl = false, bool $useHref = true) {
+    $prefix = ' onclick="';
+    $suffix = ';" ';
 
-        if ($isUrl == false)
-            return $prefix . $value . $suffix;
+    if (!$value)
+        return $prefix . 'return false' . $suffix;
 
-        if ($useHref)
-            return ' href="' . $value . '" ';
+    if ($isUrl == false)
+        return $prefix . $value . $suffix;
 
-        return $prefix . "window.location = '" . $value . "'" . $suffix;
-    }
+    if ($useHref)
+        return ' href="' . $value . '" ';
 
-    function onReturnKey(?string $value, bool $isUrl = false) {
-        $prefix = ' onkeydown="';
-        $suffix = ';" ';
+    return $prefix . "window.location = '" . $value . "'" . $suffix;
+}
 
-        if (!$value)
-            return $prefix . 'return false' . $suffix;
+function onReturnKey(?string $value, bool $isUrl = false) {
+    $prefix = ' onkeydown="';
+    $suffix = ';" ';
 
-        $prefix = $prefix . 'if(event?.key === \'Enter\') ';   
+    if (!$value)
+        return $prefix . 'return false' . $suffix;
 
-        if ($isUrl == false)
-            return $prefix . $value . $suffix;
+    $prefix = $prefix . 'if(event?.key === \'Enter\') ';   
 
-        return $prefix . "window.location = '" . $value . "'" . $suffix;
-    }
+    if ($isUrl == false)
+        return $prefix . $value . $suffix;
 
-    function onMouseOver(?string $value) {
-        if (!$value) return null;
+    return $prefix . "window.location = '" . $value . "'" . $suffix;
+}
 
-        return ' onmouseover="' . $value . ';" ';
-    }
+function onMouseOver(?string $value) {
+    if (!$value) return null;
+
+    return ' onmouseover="' . $value . ';" ';
+}
+
 ?>
