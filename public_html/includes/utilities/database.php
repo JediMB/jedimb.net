@@ -61,7 +61,7 @@
         return pg_fetch_array($result, null, PGSQL_ASSOC);
     }
 
-    function dbResultFree(\PgSql\Result $result = null) {
+    function dbResultFree(?\PgSql\Result $result = null) {
         if ($result)
             return pg_free_result($result);
         
