@@ -1,5 +1,5 @@
 <?php
-    require_once('./includes/utilities/database.php');
+    require_once('./includes/services/database.php');
 
     setPageTitle('Blog');
     setCopyrightYearByFile(__FILE__);

@@ -1,5 +1,5 @@
 <?php
-    require_once('./includes/utilities/database.php');
+    require_once('./includes/services/database.php');
 
     $input = json_decode(file_get_contents('php://input'), true);
 

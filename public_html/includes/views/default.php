@@ -4,7 +4,7 @@
     require_once './includes/components/navigation-menu/navigation-menu.php';
     require_once './includes/components/mobile-menu/mobile-menu.php';
     require_once './includes/components/social-links/social-links.php';
-    require_once './includes/utilities/attributes.php';
+    require_once './includes/services/attributes.php';
 
     $socials = isset($GLOBALS['configuration']->socials) && is_array($GLOBALS['configuration']->socials)
         ? $GLOBALS['configuration']->socials

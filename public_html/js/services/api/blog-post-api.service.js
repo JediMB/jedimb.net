@@ -1,5 +1,5 @@
 import HttpClient from '../../http-client.js';
-import BlogPost from '../../classes/blog-post.js';
+import BlogPost from '../../models/blog-post.js';
 
 export default class BlogPostApiService {
     constructor(httpClient = HttpClient.httpClient) {

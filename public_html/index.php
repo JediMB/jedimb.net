@@ -2,8 +2,8 @@
 
     chdir(__DIR__);
     
-    require_once './includes/utilities/configuration.php';
-    require_once './includes/utilities/copyright-year.php';
+    require_once './includes/services/configuration.php';
+    require_once './includes/services/copyright-year.php';
 
     setConfiguration();
     setSecrets();

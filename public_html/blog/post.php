@@ -1,12 +1,10 @@
 <?php
-    require_once('./includes/utilities/database.php');
+    require_once('./includes/services/database.php');
 
     /*
-        1) Rename 'utilities' to 'services'
         2) Make a services/blog/blog-posts-service.php that handles the logic here
         3) Maybe tear out the use of global variables in database.php
         4) Would OOP (classes for the DB connection and BlogPostsService) make sense?
-        5) '/js/classes' should be '/js/models'
     */
     try {
         dbConnect();
