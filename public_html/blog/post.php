@@ -1,5 +1,5 @@
 <?php
-    require_once('./includes/services/blog/blog-posts-service.php');
+    require_once('includes/services/blog/blog-posts-service.php');
 
     /*
         3) Maybe tear out the use of global variables in database.php
