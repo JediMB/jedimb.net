@@ -1,8 +1,10 @@
 <?php
-    require_once('includes/services/database.php');
 
-    setPageTitle('Blog');
-    setCopyrightYearByFile(__FILE__);
+require_once 'includes/services/database.php';
+
+setPageTitle('Blog');
+setCopyrightYearByFile(__FILE__);
+
 ?>
 
 <script type="module" defer src="/js/pages/blog.blog.js"></script>

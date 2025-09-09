@@ -1,18 +1,20 @@
 <?php declare(strict_types=1) ?>
 
 <?php
-    require_once './includes/components/navigation-menu/navigation-menu.php';
-    require_once './includes/components/mobile-menu/mobile-menu.php';
-    require_once './includes/components/social-links/social-links.php';
-    require_once './includes/services/attributes.php';
 
-    $socials = isset($GLOBALS['configuration']->socials) && is_array($GLOBALS['configuration']->socials)
-        ? $GLOBALS['configuration']->socials
-        : null;
+require_once 'includes/components/navigation-menu/navigation-menu.php';
+require_once 'includes/components/mobile-menu/mobile-menu.php';
+require_once 'includes/components/social-links/social-links.php';
+require_once 'includes/services/attributes.php';
 
-    $menu = isset($GLOBALS['configuration']->menu) && is_array($GLOBALS['configuration']->menu)
-        ? $GLOBALS['configuration']->menu
-        : null;
+$socials = isset($GLOBALS['configuration']->socials) && is_array($GLOBALS['configuration']->socials)
+    ? $GLOBALS['configuration']->socials
+    : null;
+
+$menu = isset($GLOBALS['configuration']->menu) && is_array($GLOBALS['configuration']->menu)
+    ? $GLOBALS['configuration']->menu
+    : null;
+
 ?>
 
 <!DOCTYPE html>
@@ -25,17 +27,19 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <link rel="icon" type="image/x-icon" href="/favicon.svg" />
     <?php
-        $cssPath = 'css/style.css';
-        $realPath = realpath($cssPath);
-        $cssPath = '/' . (
-            $realPath
-            ? $cssPath . '?rev=' . date('ymdHi', filectime($realPath))
-            : $cssPath
-        );
+    
+    $cssPath = 'css/style.css';
+    $realPath = realpath($cssPath);
+    $cssPath = '/' . (
+        $realPath
+        ? $cssPath . '?rev=' . date('ymdHi', filectime($realPath))
+        : $cssPath
+    );
 
-        echo <<<HTML
-            <link href="{$cssPath}" rel="stylesheet" />
-        HTML;
+    echo <<<HTML
+        <link href="{$cssPath}" rel="stylesheet" />
+    HTML;
+    
     ?>
     <script type="text/javascript" src="/js/purify.min.js"></script>
     <script type="module" src="/js/mastodon-comments.js"></script>
@@ -62,35 +66,36 @@
                     <!-- <img src="images/logo.svg"> -->
                     <?php
 
-                        $unitWidth = 8;
-                        $unitHeight = 8;
-                        $columns = 56;
-                        $rows = 10;
+                    $unitWidth = 8;
+                    $unitHeight = 8;
+                    $columns = 56;
+                    $rows = 10;
 
-                        $width = $unitWidth * $columns;
-                        $height = $unitHeight * $rows;
+                    $width = $unitWidth * $columns;
+                    $height = $unitHeight * $rows;
 
-                        echo <<<HTML
-                            <svg id="flip-logo" width="{$width}px" height="{$height}px"
-                                viewBox="0 0 {$width} {$height}" fill="none" stroke="none" xmlns="http://www.w3.org/2000/svg">
-                        HTML;
-                        
-                        for ($x = 0; $x < $columns; $x++) {
-                            $posX = $x * $unitWidth;
-                            $xCenter = $posX + (0.5 * $unitWidth);
-                            for ($y = 0; $y < $rows; $y++) {
-                                $posY = $y * $unitHeight;
-                                $yCenter = $posY + (0.5 * $unitHeight);
+                    echo <<<HTML
+                        <svg id="flip-logo" width="{$width}px" height="{$height}px"
+                            viewBox="0 0 {$width} {$height}" fill="none" stroke="none" xmlns="http://www.w3.org/2000/svg">
+                    HTML;
+                    
+                    for ($x = 0; $x < $columns; $x++) {
+                        $posX = $x * $unitWidth;
+                        $xCenter = $posX + (0.5 * $unitWidth);
+                        for ($y = 0; $y < $rows; $y++) {
+                            $posY = $y * $unitHeight;
+                            $yCenter = $posY + (0.5 * $unitHeight);
 
-                                $delay = $x * 100;
-                                echo <<<HTML
-                                    <rect logo-col="{$x}" logo-row="{$y}" width="{$unitWidth}" height="{$unitHeight}" x="{$posX}" y="{$posY}" fill="inherit" stroke="inherit"
-                                        style="--delay: {$delay}ms;  --center: {$xCenter}px {$yCenter}px;" />
-                                HTML;
-                            }
+                            $delay = $x * 100;
+                            echo <<<HTML
+                                <rect logo-col="{$x}" logo-row="{$y}" width="{$unitWidth}" height="{$unitHeight}" x="{$posX}" y="{$posY}" fill="inherit" stroke="inherit"
+                                    style="--delay: {$delay}ms;  --center: {$xCenter}px {$yCenter}px;" />
+                            HTML;
                         }
-                        
-                        echo '</svg>';
+                    }
+                    
+                    echo '</svg>';
+                    
                     ?>
                     <script type="text/javascript" src="/js/logo.js" defer></script>
                     <div class="tagline">Cool tagline goes here. In theory.</div>

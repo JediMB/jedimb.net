@@ -1,6 +1,6 @@
 <?php
 
-require_once('includes/services/database.php');
+require_once 'includes/services/database.php';
 
 function getBlogPost(string $permalink) {
     try {

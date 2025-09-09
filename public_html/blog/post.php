@@ -1,20 +1,22 @@
 <?php
-    require_once('includes/services/blog/blog-posts-service.php');
 
-    /*
-        3) Maybe tear out the use of global variables in database.php
-        4) Would OOP (classes for the DB connection and BlogPostsService) make sense?
-    */
+require_once 'includes/services/blog/blog-posts-service.php';
 
-    $post = getBlogPost($GLOBALS['permalink']);
+/*
+    3) Maybe tear out the use of global variables in database.php
+    4) Would OOP (classes for the DB connection and BlogPostsService) make sense?
+*/
 
-    if(!$post) {
-        include 'includes/errors/404.php';
-        return;
-    }
+$post = getBlogPost($GLOBALS['permalink']);
 
-    setPageTitle($post['title']);
-    setCopyrightYearByFile(__FILE__);
+if(!$post) {
+    include 'includes/errors/404.php';
+    return;
+}
+
+setPageTitle($post['title']);
+setCopyrightYearByFile(__FILE__);
+
 ?>
 
 <script type="text/javascript" defer src="/js/pages/blog.post.js"></script>
@@ -24,17 +26,19 @@
         <h2><?=$post['title']?></h2>
         <div>
             <?php
-                if (isset($post['created_on'])) {
-                    echo <<<HTML
-                        <span><date-time server-time="{$post['created_on']}" class="capitalize">{$post['created_on']}</date-time></span>
-                    HTML;
-                }
 
-                if (isset($post['modified_on']) && $post['modified_on']) {
-                    echo <<<HTML
-                        <span class="weak">- Last modified <date-time server-time="{$post['modified_on']}">{$post['modified_on']}</date-time>.</span>
-                    HTML;
-                }
+            if (isset($post['created_on'])) {
+                echo <<<HTML
+                    <span><date-time server-time="{$post['created_on']}" class="capitalize">{$post['created_on']}</date-time></span>
+                HTML;
+            }
+
+            if (isset($post['modified_on']) && $post['modified_on']) {
+                echo <<<HTML
+                    <span class="weak">- Last modified <date-time server-time="{$post['modified_on']}">{$post['modified_on']}</date-time>.</span>
+                HTML;
+            }
+
             ?>
         </div>
         <?=$post['content']?>
@@ -45,11 +49,13 @@
         3) Move mastolink regex string to configuration?
     -->
     <?php
-        $matches = [];
-        if (isset($post['mastolink']) && preg_match('/^http[s]?:\/\/([-.a-z0-9]+)\/@([-.a-z0-9]+)\/([0-9]+)$/', $post['mastolink'], $matches)) {
-            echo <<<HTML
-                <mastodon-comments host="{$matches[1]}" user="{$matches[2]}" tootId="{$matches[3]}"></mastodon-comments>
-            HTML;
-        }
+
+    $matches = [];
+    if (isset($post['mastolink']) && preg_match('/^http[s]?:\/\/([-.a-z0-9]+)\/@([-.a-z0-9]+)\/([0-9]+)$/', $post['mastolink'], $matches)) {
+        echo <<<HTML
+            <mastodon-comments host="{$matches[1]}" user="{$matches[2]}" tootId="{$matches[3]}"></mastodon-comments>
+        HTML;
+    }
+    
     ?>
 </page-content>

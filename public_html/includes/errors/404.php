@@ -1,5 +1,7 @@
 <?php
-    $GLOBALS['page_title'] = '404 Not Found - JediMB.net';
+
+$GLOBALS['page_title'] = '404 Not Found - JediMB.net';
+
 ?>
 
 <h1>404 Not Found</h1>
