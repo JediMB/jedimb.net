@@ -4,9 +4,13 @@
     
     require_once 'includes/services/configuration.php';
     require_once 'includes/services/copyright-year.php';
+    require_once 'includes/services/database-service.php';
 
-    setConfiguration();
-    setSecrets();
+    setConfiguration(); // Make configuration a service
+    setSecrets(); // Make secrets a service? Part of configuration?
+    DatabaseService::getInstance()->initialize($GLOBALS['db_connection_string'], $GLOBALS['db_schema']);
+    // Move routing to a service and make this a cleaner file for initializing services
+    // Make services inherit from an abstract singleton class?
 
     // Remove slashes and dots from start and query string from end of path
     $requestPath = parse_url(ltrim($_SERVER['REQUEST_URI'], '/.'), PHP_URL_PATH);

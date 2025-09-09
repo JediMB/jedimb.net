@@ -1,13 +1,8 @@
 <?php
 
-require_once 'includes/services/blog/blog-posts-service.php';
+require_once 'includes/services/blog/blog-post-service.php';
 
-/*
-    3) Maybe tear out the use of global variables in database.php
-    4) Would OOP (classes for the DB connection and BlogPostsService) make sense?
-*/
-
-$post = getBlogPost($GLOBALS['permalink']);
+$post = BlogPostService::getInstance()->getBlogPost($GLOBALS['permalink']);
 
 if(!$post) {
     include 'includes/errors/404.php';

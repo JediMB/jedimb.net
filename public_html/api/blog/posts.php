@@ -1,10 +1,11 @@
 <?php
 
-require_once 'includes/services/database.php';
+require_once 'includes/services/database-service.php';
 
 $input = json_decode(file_get_contents('php://input'), true);
+$dbService = DatabaseService::getInstance();
 
-dbConnect();
+$dbService->connect();
 
 switch( $_SERVER['REQUEST_METHOD'] ) {
     case 'GET':
@@ -20,12 +21,11 @@ switch( $_SERVER['REQUEST_METHOD'] ) {
 
         //     break;
         // }
-
-        dbSelect('blog_post',
+        $dbService->select('blog_post',
             ['id', 'permalink', 'title', "substring(content, '((.*(?<=<!--[ ]*SPLIT[ ]*-->))|^((?!<!--[ ]*SPLIT[ ]*-->).)*$)') as content", 'mastolink', 'created_on', 'modified_on'],
             ['is_published = true']);
         $posts = [];
-        while ($post = dbResultNextRow()) {
+        while ($post = $dbService->nextRow()) {
             $posts[] = $post;
         }
         echo json_encode($posts);
@@ -35,6 +35,6 @@ switch( $_SERVER['REQUEST_METHOD'] ) {
         echo json_encode(['error' => 'Invalid request method']);
 }
 
-dbDisconnect();
+$dbService->disconnect();
 
 ?>
