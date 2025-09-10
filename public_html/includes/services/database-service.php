@@ -1,25 +1,13 @@
 <?php
 
+require_once 'includes/services/singleton.php';
+
 use PgSql\Connection;
 use PgSql\Result;
 
-class DatabaseService {
-    private static DatabaseService $instance;
-
-    private function __construct() { }
-    private function __clone() { }
-    public function __wakeup() {
-        throw new Exception('Cannot unserialize a singleton.');
-    }
+class DatabaseService extends Singleton {
     function __destruct() {
         $this->disconnect();
-    }
-
-    public static function getInstance() {
-        if (isset(self::$instance))
-            return self::$instance;
-
-        return (self::$instance = new DatabaseService());
     }
 
     private string|false $connectionString = false;

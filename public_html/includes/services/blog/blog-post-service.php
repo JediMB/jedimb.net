@@ -1,26 +1,14 @@
 <?php
 
+require_once 'includes/services/singleton.php';
 require_once 'includes/services/database-service.php';
 
-class BlogPostService {
-    private static BlogPostService $instance;
+class BlogPostService extends Singleton {
     private DatabaseService $dbService;
 
-    private function __construct() {
+    protected function __construct() {
         $this->dbService = DatabaseService::getInstance();
     }
-    private function __clone() { }
-    public function __wakeup() {
-        throw new Exception('Cannot unserialize a singleton.');
-    }
-
-    public static function getInstance() {
-        if (isset(self::$instance))
-            return self::$instance;
-
-        return (self::$instance = new BlogPostService());
-    }
-
 
     public function getBlogPost(string $permalink) {
         $dbService = $this->dbService;
