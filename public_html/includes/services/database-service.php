@@ -6,26 +6,26 @@ use PgSql\Connection;
 use PgSql\Result;
 
 class DatabaseService extends Singleton {
+    private string|false $connectionString = false;
+    private string|false $schema = false;
+
+    private Connection|false $connection = false;
+    private Result|false $latest = false;
+
     function __destruct() {
         $this->disconnect();
     }
-
-    private string|false $connectionString = false;
-    private string|false $schema = false;
 
     public function initialize(string $connectionString, string $schema) {
         $this->connectionString = $connectionString;
         $this->schema = $schema;
     }
 
-    private Connection|false $connection = false;
-    private Result|false $latest = false;
-
     function connect() {
         if (!$this->connectionString)
             throw new Exception('No connection string or database service uninitialized.');
 
-        $this->connection = pg_connect($GLOBALS['db_connection_string'])
+        $this->connection = pg_connect($this->connectionString)
             or throw new Exception('Couldn\'t connect to database.');
     }
 

@@ -4,25 +4,27 @@ require_once 'includes/services/singleton.php';
 require_once 'includes/services/database-service.php';
 
 class BlogPostService extends Singleton {
-    private DatabaseService $dbService;
+    private DatabaseService $service;
 
     protected function __construct() {
-        $this->dbService = DatabaseService::getInstance();
+        $this->service = DatabaseService::getInstance();
     }
 
     public function getBlogPost(string $permalink) {
-        $dbService = $this->dbService;
+        $db = $this->service;
 
         try {
-            $dbService->connect();
-            $dbService->selectFunction('select_blog_post', [ $permalink ]);
-            $post = $dbService->nextRow();
+            $db->connect();
+            $db->selectFunction('select_blog_post', [ $permalink ]);
+            $post = $db->nextRow();
         }
         catch(Exception $e) {
             $post['title'] = 'Error';
             $post['content'] = $e->getMessage();
         }
-        $dbService->disconnect();
+        finally {
+            $db->disconnect();
+        }
 
         return $post;
     }
