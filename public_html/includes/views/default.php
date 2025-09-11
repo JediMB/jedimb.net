@@ -62,7 +62,7 @@ $menu = isset($GLOBALS['configuration']->menu) && is_array($GLOBALS['configurati
             </header-links>
             <menu-container>
                 <desktop-title>
-                    <!-- <h1><a href="/"><?= $GLOBALS['site_title'] ?></a></h1> -->
+                    <!-- <h1><a href="/"><?= SITE_TITLE ?></a></h1> -->
                     <!-- <img src="images/logo.svg"> -->
                     <?php
 
@@ -102,7 +102,7 @@ $menu = isset($GLOBALS['configuration']->menu) && is_array($GLOBALS['configurati
                 </desktop-title>
 
                 <mobile-title>
-                    <h1><?= $GLOBALS['site_title'] ?></h1>
+                    <h1><?= SITE_TITLE ?></h1>
                 </mobile-title>
 
                 <mobile-menu>

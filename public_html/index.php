@@ -26,7 +26,7 @@
 
     // If it's a root request, serve root/home.php
     if ($requestPath === '')
-        $requestPath = $GLOBALS['site_home'];
+        $requestPath = SITE_HOMEPATH;
 
     /*  Try to find a matching file in the following order:
         1) Perfect match

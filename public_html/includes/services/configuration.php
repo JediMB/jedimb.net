@@ -1,7 +1,16 @@
 <?php
 
+define('CONFIG_PATH', '.configuration.json');
+define('SECRETS_PATH', '.secrets.json');
+
+define('SITE_TITLE', 'JediMB.net');
+define('SITE_AUTHOR', 'JediMB');
+define('SITE_CREATEDYEAR', '2025');
+define('SITE_TEMPLATE', 'default.php');
+define('SITE_HOMEPATH', 'blog/blog.php');
+
 function readConfiguration() {
-    $fileName = '.configuration.json';
+    $fileName = CONFIG_PATH;
 
     if ( is_file($fileName) == false )
         return null;
@@ -23,11 +32,10 @@ function setConfiguration() {
         $config = readConfiguration();
         $GLOBALS['configuration'] = $config ?? throw new Exception('No configuration found.');
 
-        $GLOBALS['site_author'] = $config->author ?: throw new Exception('Author unspecified.');
-        $GLOBALS['page_title'] = $GLOBALS['site_title'] = $config->title ?: throw new Exception('Title unspecified.');
-        $GLOBALS['page_template'] = realpath('includes/views/' . $config->defaultTemplate) ?: throw new Exception('No valid template specified.');
-        $GLOBALS['site_home'] = realpath($config->home) ?: throw new Exception('No valid home document specified.');
-        $GLOBALS['page_year'] = $config->creationYear ?: throw new Exception('Creation year unspecified.');
+        $GLOBALS['page_title'] = SITE_TITLE;
+        $GLOBALS['page_template'] = realpath('includes/views/' . SITE_TEMPLATE);
+        $GLOBALS['site_home'] = realpath(SITE_HOMEPATH);
+        $GLOBALS['page_year'] = SITE_CREATEDYEAR;
         $GLOBALS['page_content'] = 'Page content';
     }
     catch (Exception $e) {
@@ -41,7 +49,7 @@ function readSecrets() {
         if (isset($GLOBALS['configuration']) === false)
             throw new Exception('Configuration not set when attempting to read secrets.');
 
-        $secretsPath = $GLOBALS['configuration']->secrets ?: throw new Exception('Secrets path unspecified.');
+        $secretsPath = SECRETS_PATH ?: throw new Exception('Secrets path unspecified.');
 
         ($secretsPath = realpath($secretsPath)) ?: throw new Exception('Secrets not found.');
 
@@ -97,7 +105,7 @@ function setSecrets() {
 }
 
 function setPageTitle(string $pageTitle) {
-    $GLOBALS['page_title'] = $pageTitle . ' - ' . $GLOBALS['site_title'];
+    $GLOBALS['page_title'] = $pageTitle . ' – ' . SITE_TITLE;
 }
 
 ?>

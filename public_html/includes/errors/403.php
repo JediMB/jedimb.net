@@ -1,6 +1,6 @@
 <?php
 
-$GLOBALS['page_title'] = '403 Forbidden - JediMB.net';
+setPageTitle('403 Forbidden');
     
 ?>
 

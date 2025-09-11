@@ -1,6 +1,6 @@
 <?php
 
-$GLOBALS['page_title'] = '404 Not Found - JediMB.net';
+setPageTitle('404 Not Found');
 
 ?>
 
