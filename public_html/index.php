@@ -2,11 +2,10 @@
 
     chdir(__DIR__);
     
-    require_once 'includes/services/configuration.php';
+    require_once 'configuration.php';
     require_once 'includes/services/copyright-year.php';
 
-    setConfiguration(); // Make configuration a service
-    setSecrets(); // Make secrets a service? Part of configuration?
+    $config = Configuration::getInstance();
     // Move routing to a service and make this a cleaner file for initializing services
     // Make services inherit from an abstract singleton class?
 
@@ -19,14 +18,14 @@
         $GLOBALS['permalink'] = $matches[1];
         ob_start();
         include 'blog/post.php';
-        $GLOBALS['page_content'] = ob_get_clean();
-        require_once $GLOBALS['page_template'];
+        $config->$pageContent = ob_get_clean();
+        require_once $config->pageTemplate;
         exit;
     }
 
     // If it's a root request, serve root/home.php
     if ($requestPath === '')
-        $requestPath = SITE_HOMEPATH;
+        $requestPath = SITE_HOME;
 
     /*  Try to find a matching file in the following order:
         1) Perfect match
@@ -105,8 +104,8 @@
 
         ob_start();
         include 'includes/errors/403.php';
-        $GLOBALS['page_content'] = ob_get_clean();
-        require_once $GLOBALS['page_template'];
+        $config->$pageContent = ob_get_clean();
+        require_once $config->pageTemplate;
         exit;
     }
 
@@ -116,8 +115,8 @@
 
         ob_start();
         include 'includes/errors/404.php';
-        $GLOBALS['page_content'] = ob_get_clean();
-        require_once $GLOBALS['page_template'];
+        $config->$pageContent = ob_get_clean();
+        require_once $config->pageTemplate;
         exit;
     }
 
@@ -147,8 +146,8 @@
         // Otherwise serve PHP file through interpreter
         ob_start();
         include $filePath;
-        $GLOBALS['page_content'] = ob_get_clean();
-        require_once $GLOBALS['page_template'];
+        $config->$pageContent = ob_get_clean();
+        require_once $config->pageTemplate;
         exit;
     }
 

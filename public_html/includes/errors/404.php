@@ -1,6 +1,6 @@
 <?php
 
-setPageTitle('404 Not Found');
+Configuration::getInstance()->setPageTitle('404 Not Found');
 
 ?>
 

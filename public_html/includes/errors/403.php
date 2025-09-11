@@ -1,6 +1,6 @@
 <?php
 
-setPageTitle('403 Forbidden');
+Configuration::getInstance()->setPageTitle('403 Forbidden');
     
 ?>
 

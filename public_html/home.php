@@ -1,5 +1,5 @@
 <?php
-    setPageTitle('Home');
+    Configuration::getInstance()->setPageTitle('Home');
     setCopyrightYearByFile(__FILE__);
 ?>
 

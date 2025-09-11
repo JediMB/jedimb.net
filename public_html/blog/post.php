@@ -7,7 +7,7 @@ if ( !( $post = BlogPostService::getInstance()->getBlogPost($GLOBALS['permalink'
     return;
 }
 
-setPageTitle($post['title']);
+Configuration::getInstance()->setPageTitle($post['title']);
 setCopyrightYearByFile(__FILE__);
 
 ?>

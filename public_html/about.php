@@ -1,5 +1,5 @@
 <?php
-    setPageTitle('About me');
+    Configuration::getInstance()->setPageTitle('About me');
     setCopyrightYearByFile(__FILE__);
 ?>
 

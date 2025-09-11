@@ -1,6 +1,6 @@
 <?php
 
-setPageTitle('Blog');
+Configuration::getInstance()->setPageTitle('Blog');
 setCopyrightYearByFile(__FILE__);
 
 ?>
