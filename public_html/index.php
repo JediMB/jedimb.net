@@ -18,7 +18,7 @@
         $GLOBALS['permalink'] = $matches[1];
         ob_start();
         include 'blog/post.php';
-        $config->$pageContent = ob_get_clean();
+        $config->pageContent = ob_get_clean();
         require_once $config->pageTemplate;
         exit;
     }
@@ -104,7 +104,7 @@
 
         ob_start();
         include 'includes/errors/403.php';
-        $config->$pageContent = ob_get_clean();
+        $config->pageContent = ob_get_clean();
         require_once $config->pageTemplate;
         exit;
     }
@@ -115,7 +115,7 @@
 
         ob_start();
         include 'includes/errors/404.php';
-        $config->$pageContent = ob_get_clean();
+        $config->pageContent = ob_get_clean();
         require_once $config->pageTemplate;
         exit;
     }
@@ -146,7 +146,7 @@
         // Otherwise serve PHP file through interpreter
         ob_start();
         include $filePath;
-        $config->$pageContent = ob_get_clean();
+        $config->pageContent = ob_get_clean();
         require_once $config->pageTemplate;
         exit;
     }

@@ -1,5 +1,7 @@
 <?php
 
+require_once 'includes/services/database-service.php';
+
 $input = json_decode(file_get_contents('php://input'), true);
 
 // $params = $GLOBALS['api_params'];
@@ -7,24 +9,12 @@ $input = json_decode(file_get_contents('php://input'), true);
 switch( $_SERVER['REQUEST_METHOD'] ) {
     case 'GET':
         try {
-            $connection = new PDO(
-                $GLOBALS['db_dsn'],
-                $GLOBALS['db_user'],
-                $GLOBALS['db_pass'],
-                [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]
-            );
-            $schema = $GLOBALS['db_schema'];
-
-            $query = $connection->prepare("SELECT * FROM $schema.blog_posts_published");
-            $query->execute();
-
-            echo json_encode($query->fetchAll());
+            $result = DatabaseService::getInstance()->selectView('blog_posts_published', Fetch::All);
+            
+            echo json_encode($result);
         }
         catch (PDOException $e) {
             echo json_encode(['error' => $e->getMessage()]);
-        }
-        finally {
-            $connection = null;
         }
         break;
 

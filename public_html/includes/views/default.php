@@ -120,7 +120,7 @@ $menu = isset($GLOBALS['configuration']->menu) && is_array($GLOBALS['configurati
     </header>
     
     <content-container>
-        <?= $config->$pageContent ?>
+        <?= $config->pageContent ?>
     </content-container>
 
     <footer>
