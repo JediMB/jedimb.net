@@ -9,6 +9,8 @@ define('SITE_CREATEDYEAR', '2025');
 define('SITE_TEMPLATE', 'default.php');
 define('SITE_HOME', 'blog/blog.php');
 
+define('DB_OPTIONS', [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]);
+
 require_once 'includes/services/singleton.php';
 
 class Configuration extends Singleton {
@@ -17,6 +19,11 @@ class Configuration extends Singleton {
     public string $pageYear;
     public string $pageContent;
 
+    public string $dbDSN;
+    public string $dbUser;
+    public string $dbPass;
+    public string $dbSchema;
+
     protected function __construct() {
         $this->pageTitle = SITE_TITLE;
         $this->pageTemplate  = realpath('includes/views/' . SITE_TEMPLATE);
@@ -24,7 +31,9 @@ class Configuration extends Singleton {
         $this->pageContent = 'Page content';
 
         $this->setConfiguration();
-        $this->setSecrets();
+
+        if (SECRETS_PATH)
+            $this->setSecrets();
     }
 
     private function setConfiguration() {
@@ -73,16 +82,18 @@ class Configuration extends Singleton {
         }
     }
 
-    function setSecrets() {
+    private function setSecrets() {
         try {
             $secrets = $this->readSecrets();
 
-            $db = $secrets->database->sources[$secrets->database->id];
-
-            $GLOBALS['db_dsn'] = $db->dsn;
-            $GLOBALS['db_schema'] = $db->schema;
-            $GLOBALS['db_user'] = $db->user;
-            $GLOBALS['db_pass'] = $db->pass;
+            if (isset($secrets->database->sources[$secrets->database->id])) {
+                $db = $secrets->database->sources[$secrets->database->id];
+                
+                $this->dbDSN = $db->dsn;
+                $this->dbUser = $db->user;
+                $this->dbPass = $db->pass;
+                $this->dbSchema = $db->schema;
+            }
 
             $GLOBALS['mastodon_host'] = $secrets->mastodon->host ?: throw new Exception('Mastodon hostname not specified.');
             $GLOBALS['mastodon_user'] = $secrets->mastodon->user ?: throw new Exception('Mastodon user not specified.');

@@ -9,27 +9,26 @@ enum Fetch {
 
 class DatabaseService extends Singleton {
     private PDO|null $service;
-    private Configuration $config;
+    private string $schema;
 
     protected function __construct() {
+        $config = Configuration::getInstance();
+
         $this->service = new PDO(
-                $GLOBALS['db_dsn'],
-                $GLOBALS['db_user'],
-                $GLOBALS['db_pass'],
-                [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]
-            );
-        
-            $this->config = Configuration::getInstance();
+            $config->dbDSN,
+            $config->dbUser,
+            $config->dbPass,
+            DB_OPTIONS
+        );
+        $this->schema = $config->dbSchema;
     }
     public function __destruct() {
         $this->service = null;
     }
 
     public function selectFunction(string $name, string $parameters, Fetch $amount = Fetch::One) {
-        $schema = $GLOBALS['db_schema'];
-        
         $query = $this->service->prepare(
-            "SELECT * FROM $schema.$name($parameters)"
+            "SELECT * FROM " . $this->schema . ".$name($parameters)"
         );
         $query->execute();
 
@@ -40,10 +39,8 @@ class DatabaseService extends Singleton {
     }
 
     public function selectView(string $name, Fetch $amount = Fetch::One) {
-        $schema = $GLOBALS['db_schema'];
-        
         $query = $this->service->prepare(
-            "SELECT * FROM $schema.$name"
+            "SELECT * FROM " . $this->schema . ".$name"
         );
         $query->execute();
 
