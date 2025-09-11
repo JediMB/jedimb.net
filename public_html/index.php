@@ -4,39 +4,14 @@
     
     require_once 'includes/services/configuration.php';
     require_once 'includes/services/copyright-year.php';
-    require_once 'includes/services/database-service.php';
 
     setConfiguration(); // Make configuration a service
     setSecrets(); // Make secrets a service? Part of configuration?
-    DatabaseService::getInstance()->initialize($GLOBALS['db_connection_string'], $GLOBALS['db_schema']);
     // Move routing to a service and make this a cleaner file for initializing services
     // Make services inherit from an abstract singleton class?
 
     // Remove slashes and dots from start and query string from end of path
     $requestPath = parse_url(ltrim($_SERVER['REQUEST_URI'], '/.'), PHP_URL_PATH);
-    
-
-    // If it's an api call, handle separately
-    if (strpos($requestPath, 'api/') === 0) {
-        header('Content-Type: application/json');
-
-        $requestComponents = explode(DIRECTORY_SEPARATOR, $requestPath, 10);
-        
-        $apiPath = $requestComponents[0];
-        for ($i = 1; $i < count($requestComponents); $i++) {
-            $apiPath = $apiPath . DIRECTORY_SEPARATOR . $requestComponents[$i];
-
-            // If a matching api file is found, serve it as a json string
-            if (($filePath = realpath($apiPath . '.php'))) {
-                $GLOBALS['api_params'] = array_slice($requestComponents, $i + 1);
-                include $filePath;
-                exit;
-            }
-        }
-
-        echo json_encode(['message' => 'Invalid URI']);
-        exit;
-    }
 
     // If it's trying to access a blog entry, serve a match
     $matches = [];
@@ -84,7 +59,7 @@
         break;
     }
 
-    // Check if trying to access a PHP or disallowed file
+    // Check if trying to access a PHP file
     $isPHP = (strtolower(substr($filePath, -4)) === '.php');
 
     if ($isPHP) {
@@ -146,8 +121,30 @@
         exit;
     }
 
-    // Serve PHP file through interpreter
     if ($isPHP) {
+        // If it's an api call, handle separately
+        if (strpos($requestPath, 'api/') === 0) {
+            header('Content-Type: application/json');
+
+            $requestComponents = explode(DIRECTORY_SEPARATOR, $requestPath, 10);
+            
+            $apiPath = $requestComponents[0];
+            for ($i = 1; $i < count($requestComponents); $i++) {
+                $apiPath = $apiPath . DIRECTORY_SEPARATOR . $requestComponents[$i];
+
+                // If a matching api file is found, serve it as a json string
+                if (($filePath = realpath($apiPath . '.php'))) {
+                    $GLOBALS['api_params'] = array_slice($requestComponents, $i + 1);
+                    include $filePath;
+                    exit;
+                }
+            }
+
+            echo json_encode(['message' => 'Invalid URI']);
+            exit;
+        }
+        
+        // Otherwise serve PHP file through interpreter
         ob_start();
         include $filePath;
         $GLOBALS['page_content'] = ob_get_clean();

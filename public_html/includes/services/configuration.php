@@ -77,11 +77,14 @@ function setSecrets() {
 
         $db = $secrets->database->sources[$secrets->database->id];
         $GLOBALS['db_connection_string'] =
-            'host=' . $db->host .
-            ' dbname=' . $db->name .
+            'host=sql710.your-server.de' .
+            ' dbname=jedimb_db1' . 
             ' user=' . $db->user .
             ' password=' . $db->pass;
+        $GLOBALS['db_dsn'] = $db->dsn;
         $GLOBALS['db_schema'] = $db->schema;
+        $GLOBALS['db_user'] = $db->user;
+        $GLOBALS['db_pass'] = $db->pass;
 
         $GLOBALS['mastodon_host'] = $secrets->mastodon->host ?: throw new Exception('Mastodon hostname not specified.');
         $GLOBALS['mastodon_user'] = $secrets->mastodon->user ?: throw new Exception('Mastodon user not specified.');

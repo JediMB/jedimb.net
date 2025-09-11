@@ -1,29 +1,29 @@
 <?php
 
 require_once 'includes/services/singleton.php';
-require_once 'includes/services/database-service.php';
 
 class BlogPostService extends Singleton {
-    private DatabaseService $service;
-
-    protected function __construct() {
-        $this->service = DatabaseService::getInstance();
-    }
-
     public function getBlogPost(string $permalink) {
-        $db = $this->service;
-
         try {
-            $db->connect();
-            $db->selectFunction('select_blog_post', [ $permalink ]);
-            $post = $db->nextRow();
+            $connection = new PDO(
+                $GLOBALS['db_dsn'],
+                $GLOBALS['db_user'],
+                $GLOBALS['db_pass'],
+                [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]
+            );
+            $schema = $GLOBALS['db_schema'];
+
+            $query = $connection->prepare("SELECT * FROM $schema.select_blog_post('$permalink')");
+            $query->execute();
+
+            $post = $query->fetch();
         }
-        catch(Exception $e) {
+        catch (PDOException $e) {
             $post['title'] = 'Error';
             $post['content'] = $e->getMessage();
         }
         finally {
-            $db->disconnect();
+            $connection = null;
         }
 
         return $post;
