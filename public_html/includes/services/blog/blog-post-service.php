@@ -2,9 +2,10 @@
 
 require_once 'includes/services/singleton.php';
 require_once 'includes/services/database-service.php';
+require_once 'includes/models/blog-post.php';
 
 class BlogPostService extends Singleton {
-    public function getBlogPost(string $permalink) {
+    public function getBlogPost(string $permalink): BlogPost {
         try {
             $post = DatabaseService::getInstance()->selectFunction(
                 'read_blog_post', "'$permalink'"
@@ -15,7 +16,7 @@ class BlogPostService extends Singleton {
             $post['content'] = $e->getMessage();
         }
 
-        return $post;
+        return new BlogPost($post);
     }
 }
 
