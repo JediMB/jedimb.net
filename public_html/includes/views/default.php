@@ -57,7 +57,7 @@ $menu = isset($GLOBALS['configuration']->menu) && is_array($GLOBALS['configurati
                     </a>
                 </home-wrapper>
                 <social-container>
-                    <?php socialLinks($socials) ?>
+                    <?php socialLinks() ?>
                 </social-container>
             </header-links>
             <menu-container>

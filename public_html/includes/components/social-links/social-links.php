@@ -1,7 +1,10 @@
 <?php
 
-function socialLinks(?array $socials) {
-    if (!$socials) return;
+require_once 'includes/services/social-link.service.php';
+
+function socialLinks() {
+    $socials = SocialLinkService::getInstance()->getSocialLinks();
+    if (count($socials) === 0) return;
 
     $unsuffixedComponentPath = rtrim(__FILE__, 'php');
     $cssPath = realpath($unsuffixedComponentPath . 'css');
@@ -14,17 +17,18 @@ function socialLinks(?array $socials) {
 
     echo '<svg class="hidden" xmlns="http://www.w3.org/2000/svg">';
     foreach($socials as $social) {
+        /** @var SocialLink $social */
         try {
             $symbol = <<<HTML
                 <symbol
                     id="svg-social-link-{$social->id}"
                     width="2rem"
                     height="2rem"
-                    viewBox="{$social->svg->viewBox}"
+                    viewBox="{$social->svgViewBox}"
                     fill="inherit">
             HTML;
 
-            $content = $social->svg->content;
+            $content = $social->svgContent;
 
             echo $symbol . $content . '</symbol>';
         }
@@ -35,10 +39,11 @@ function socialLinks(?array $socials) {
     echo '</svg>';
 
     foreach($socials as $social) {
+        /** @var SocialLink $social */
         try {
             echo <<<HTML
-                <a href="{$social->url}" title="{$social->title}" target="_blank" class="social-link"
-                    aria-label="Social link to {$social->title}">
+                <a href="{$social->url}" title="{$social->description}" target="_blank" class="social-link"
+                    aria-label="Social link to {$social->description}">
                     <svg width="2rem" height="2rem">
                         <use xlink:href="#svg-social-link-{$social->id}" href="#svg-social-link-{$social->id}"></use>
                     </svg>
