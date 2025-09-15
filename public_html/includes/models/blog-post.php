@@ -17,7 +17,7 @@ class BlogPost {
     public bool $isPinned;
 
     public function __construct(array $dbRow) {
-        $this->id = $dbRow['id'] ?? -1;
+        $this->id = $dbRow['id'] ?? 0;
         $this->permalink = $dbRow['permalink'] ?? '';
         $this->title = $dbRow['title'] ?? '';
         $this->content = $dbRow['content'] ?? '';

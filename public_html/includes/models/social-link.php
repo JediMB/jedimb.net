@@ -11,7 +11,7 @@ class SocialLink {
     public string $svgContent;
 
     public function __construct(array $dbRow) {
-        $this->id = $dbRow['id'] ?? -1;
+        $this->id = $dbRow['id'] ?? 0;
         $this->name = $dbRow['name'] ?? '';
         $this->description = $dbRow['description'] ?? '';
         $this->url = $dbRow['url'] ?? '';

@@ -1,17 +1,27 @@
 <?php
 
+use Services\PageService;
+
     chdir(__DIR__);
     
     require_once 'configuration.php';
+    require_once 'includes/services/page.service.php';
     require_once 'includes/services/copyright-year.php';
 
     $config = Configuration::getInstance();
+    /** @var Configuration $config */
+    $config->buildRoutes(PageService::getInstance()->getPagePaths());
+
     // Move routing to a service and make this a cleaner file for initializing services
     // Make services inherit from an abstract singleton class?
 
     // Remove slashes and dots from start and query string from end of path
     $requestPath = parse_url(ltrim($_SERVER['REQUEST_URI'], '/.'), PHP_URL_PATH);
 
+    /*
+        foreach on $config->getRoutes and deliver a page with getPage if there's a match
+    */
+    
     // If it's trying to access a blog entry, serve a match
     $matches = [];
     if (preg_match('/^blog(\/[0-9]{4}\/[0-9]{2}\/[0-9]{2}\/[-a-z0-9]*)$/', $requestPath, $matches)) {

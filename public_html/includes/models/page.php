@@ -15,7 +15,7 @@ class Page {
     public bool $isVisible;
 
     public function __construct(array $dbRow) {
-        $this->id = $dbRow['id'] ?? -1;
+        $this->id = $dbRow['id'] ?? 0;
         $this->parentId = $dbRow['parent_id'] ?? null;
         $this->pathPart = $dbRow['path_part'] ?? '';
         $this->title = $dbRow['title'] ?? '';

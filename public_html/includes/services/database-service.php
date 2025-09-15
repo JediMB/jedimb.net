@@ -52,16 +52,13 @@ class DatabaseService extends Singleton {
         return $query->fetch();
     }
 
-    public function selectView(string $name, Fetch $amount = Fetch::One) {
+    public function selectView(string $name) {
         $query = $this->service->prepare(
             "SELECT * FROM " . $this->schema . ".$name"
         );
         $query->execute();
 
-        if ($amount === Fetch::All)
-            return $query->fetchAll();
-
-        return $query->fetch();
+        return $query->fetchAll();
     }
 }
 

@@ -1,9 +1,5 @@
 <?php
 
-require_once 'includes/services/singleton.php';
-
-use Services\Singleton;
-
 define('CONFIG_PATH', '.configuration.json');
 define('SECRETS_PATH', '.secrets.json');
 
@@ -15,11 +11,17 @@ define('SITE_HOME', 'blog/blog.php');
 
 define('DB_OPTIONS', [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]);
 
+require_once 'includes/services/singleton.php';
+
+use Services\PageService;
+use Services\Singleton;
+
 class Configuration extends Singleton{
     public string $pageTitle;
     public string $pageTemplate;
     public string $pageYear;
     public string $pageContent;
+    private array $pageRoutes; 
 
     public string $dbDSN;
     public string $dbUser;
@@ -105,6 +107,26 @@ class Configuration extends Singleton{
             echo 'Error: ' . $e->getMessage();
             exit;
         }
+    }
+
+    public function buildRoutes(array $pagePaths) {
+        $this->pageRoutes = [];
+       
+        foreach ($pagePaths as $path) {
+            $id = $path->id;
+            $fullPath = $path->pathPart;
+
+            while ($path->parentId) {
+                $path = $pagePaths[$path->parentId];
+                $fullPath = $path->pathPart . DIRECTORY_SEPARATOR . $fullPath;
+            }
+
+            $this->pageRoutes[$id] = $fullPath;
+        }
+    }
+
+    public function getRoutes() {
+        return [...$this->pageRoutes];
     }
 
     function setPageTitle(string $pageTitle) {
