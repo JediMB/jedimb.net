@@ -1,5 +1,9 @@
 <?php
 
+namespace Services;
+
+use Exception;
+
 class Singleton {
     protected static array $instances = [];
 

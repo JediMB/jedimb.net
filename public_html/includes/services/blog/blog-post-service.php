@@ -1,8 +1,13 @@
 <?php
 
+namespace Services;
+
 require_once 'includes/services/singleton.php';
 require_once 'includes/services/database-service.php';
 require_once 'includes/models/blog-post.php';
+
+use Models\BlogPost;
+use PDOException;
 
 class BlogPostService extends Singleton {
     public function getBlogPost(string $permalink): BlogPost|false {

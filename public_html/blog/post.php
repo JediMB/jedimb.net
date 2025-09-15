@@ -3,6 +3,8 @@
 require_once 'includes/services/blog/blog-post-service.php';
 require_once 'includes/models/blog-post.php';
 
+use Services\BlogPostService;
+
 if ( !( $post = BlogPostService::getInstance()->getBlogPost($GLOBALS['permalink']) ) ) {
     include 'includes/errors/404.php';
     return;

@@ -2,6 +2,9 @@
 
 require_once 'includes/services/database-service.php';
 
+use Services\DatabaseService;
+use Services\Fetch;
+
 $input = json_decode(file_get_contents('php://input'), true);
 
 // $params = $GLOBALS['api_params'];

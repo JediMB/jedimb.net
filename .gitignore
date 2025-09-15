@@ -1,2 +1,3 @@
 node_modules/
 public_html/.secrets.json
+public_html/sqlca.pem

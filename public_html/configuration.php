@@ -1,5 +1,9 @@
 <?php
 
+require_once 'includes/services/singleton.php';
+
+use Services\Singleton;
+
 define('CONFIG_PATH', '.configuration.json');
 define('SECRETS_PATH', '.secrets.json');
 
@@ -11,9 +15,7 @@ define('SITE_HOME', 'blog/blog.php');
 
 define('DB_OPTIONS', [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]);
 
-require_once 'includes/services/singleton.php';
-
-class Configuration extends Singleton {
+class Configuration extends Singleton{
     public string $pageTitle;
     public string $pageTemplate;
     public string $pageYear;

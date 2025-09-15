@@ -1,6 +1,11 @@
 <?php
 
+namespace Services;
+
 require_once 'includes/services/singleton.php';
+
+use Configuration;
+use PDO;
 
 enum Fetch {
     case One;
@@ -24,6 +29,15 @@ class DatabaseService extends Singleton {
     }
     public function __destruct() {
         $this->service = null;
+    }
+
+    public function selectById(string $name, int $id) {
+        $query = $this->service->prepare(
+            "SELECT * FROM " . $this->schema . ".$name WHERE id = $id"
+        );
+        $query->execute();
+
+        return $query->fetch();
     }
 
     public function selectFunction(string $name, string $parameters, Fetch $amount = Fetch::One) {

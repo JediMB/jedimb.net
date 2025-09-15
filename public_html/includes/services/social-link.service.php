@@ -1,8 +1,13 @@
 <?php
 
+namespace Services;
+
 require_once 'includes/services/singleton.php';
 require_once 'includes/services/database-service.php';
 require_once 'includes/models/social-link.php';
+
+use Models\SocialLink;
+use PDOException;
 
 class SocialLinkService extends Singleton {
     public function getSocialLinks() : array {

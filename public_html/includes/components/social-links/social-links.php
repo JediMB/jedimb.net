@@ -2,6 +2,8 @@
 
 require_once 'includes/services/social-link.service.php';
 
+use Services\SocialLinkService;
+
 function socialLinks() {
     $socials = SocialLinkService::getInstance()->getSocialLinks();
     if (count($socials) === 0) return;

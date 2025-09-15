@@ -1,5 +1,7 @@
 <?php
 
+namespace Models;
+
 class SocialLink {
     public int $id;
     public string $name;
