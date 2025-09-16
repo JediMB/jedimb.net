@@ -3,12 +3,6 @@
     chdir(__DIR__);
     
     require_once 'configuration.php';
-    require_once 'includes/services/page.service.php';
-    require_once 'includes/services/copyright-year.php';
-    require_once 'includes/router/serve-php.php';
-
-    use Services\PageService;
-
     $config = Configuration::getInstance();
     /** @var Configuration $config */
 
@@ -24,10 +18,13 @@
         if (strpos($httpUserAgent, $botAgent) !== false)
             servePHP(PATH_ERROR404, 'HTTP/1.1 404 Not Found');
 
+    require_once 'includes/services/page.service.php';
+    require_once 'includes/router/serve-php.php';
+    use Services\PageService;
     $config->buildRoutes(PageService::getInstance()->getPagePaths());
-    /*
-        foreach on $config->getRoutes and deliver a page with getPage if there's a match
-    */
+    
+    require_once 'includes/router/virtual-pages.php';
+    handleVirtualPages($requestPath);
     
     require_once 'includes/router/blog.php';
     handleBlogRequests($requestPath);

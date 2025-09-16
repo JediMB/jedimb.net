@@ -3,6 +3,7 @@
 define('CONFIG_PATH', '.configuration.json');
 define('SECRETS_PATH', '.secrets.json');
 
+define('PATH_VIRTUALPAGE', 'page.php');
 define('PATH_ERROR403', 'includes/errors/403.php');
 define('PATH_ERROR404', 'includes/errors/404.php');
 
@@ -34,7 +35,6 @@ define('INVALID_USER_AGENTS', [
 
 require_once 'includes/services/singleton.php';
 
-use Services\PageService;
 use Services\Singleton;
 
 class Configuration extends Singleton{
@@ -42,7 +42,9 @@ class Configuration extends Singleton{
     public string $pageTemplate;
     public string $pageYear;
     public string $pageContent;
-    private array $pageRoutes; 
+
+    public array $pageRoutes;
+    public string $pageId;
 
     public string $dbDSN;
     public string $dbUser;
@@ -134,6 +136,7 @@ class Configuration extends Singleton{
         $this->pageRoutes = [];
        
         foreach ($pagePaths as $path) {
+            /** @var PagePath $path */
             $id = $path->id;
             $fullPath = $path->pathPart;
 
@@ -144,10 +147,6 @@ class Configuration extends Singleton{
 
             $this->pageRoutes[$id] = $fullPath;
         }
-    }
-
-    public function getRoutes() {
-        return [...$this->pageRoutes];
     }
 
     function setPageTitle(string $pageTitle) {
