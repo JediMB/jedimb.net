@@ -3,6 +3,9 @@
 define('CONFIG_PATH', '.configuration.json');
 define('SECRETS_PATH', '.secrets.json');
 
+define('PATH_ERROR403', 'includes/errors/403.php');
+define('PATH_ERROR404', 'includes/errors/404.php');
+
 define('SITE_TITLE', 'JediMB.net');
 define('SITE_AUTHOR', 'JediMB');
 define('SITE_CREATEDYEAR', '2025');
@@ -10,6 +13,24 @@ define('SITE_TEMPLATE', 'default.php');
 define('SITE_HOME', 'blog/blog.php');
 
 define('DB_OPTIONS', [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]);
+define('INVALID_USER_AGENTS', [
+        'anthropic-ai',
+        'claude-web',
+        'applebot-extended',
+        'bytespider',
+        'ccbot',
+        'chatgpt-user',
+        'cohere-ai',
+        'diffbot',
+        'facebookbot',
+        'googleother',
+        'google-extended',
+        'gptbot',
+        'imagesiftbot',
+        'perplexitybot',
+        'omigilibot',
+        'omigili',
+]);
 
 require_once 'includes/services/singleton.php';
 
