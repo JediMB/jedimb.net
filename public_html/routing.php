@@ -79,6 +79,14 @@ function handleBlogRequests(string $path) {
     }
 }
 
+// Serve Error 404 if user agent is known bot
+function handleBots() {
+    $httpUserAgent = strtolower($_SERVER['HTTP_USER_AGENT']);
+    foreach(INVALID_USER_AGENTS as $botAgent)
+        if (strpos($httpUserAgent, $botAgent) !== false)
+            servePHP(PATH_ERROR404, 'HTTP/1.1 404 Not Found');
+}
+
 function handleVirtualPages(string $requestPath) {
     $config = Configuration::getInstance();
     /** @var Configuration $config */

@@ -7,20 +7,24 @@
     require_once 'services/page.service.php';
     use Services\PageService;
 
-    // Remove slashes and dots from start and query string from end of path, force lowercase
-    $requestPath = strtolower(parse_url(ltrim($_SERVER['REQUEST_URI'], '/.'), PHP_URL_PATH));
+    // Force lowercase
+    $requestPath = strtolower(
+        // Remove query string from end
+        parse_url(
+            // Remove slashes and dots from start
+            ltrim($_SERVER['REQUEST_URI'], '/.'),
+            PHP_URL_PATH
+        )
+    );
     
-    // Serve Error 404 if user agent is known bot
-    $httpUserAgent = strtolower($_SERVER['HTTP_USER_AGENT']);
-    foreach(INVALID_USER_AGENTS as $botAgent)
-        if (strpos($httpUserAgent, $botAgent) !== false)
-            servePHP(PATH_ERROR404, 'HTTP/1.1 404 Not Found');
+    handleBots();
 
     handleApiRequests($requestPath);
 
     Configuration::getInstance()->buildRoutes(
         PageService::getInstance()->getPagePaths()
     );
+
 
     if ($requestPath === '')
         servePHP(realpath(SITE_HOME));
