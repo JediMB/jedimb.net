@@ -13,7 +13,13 @@ const styles = `
 
 #mastodon-stats {
   text-align: center;
-  font-size: calc(var(--font-size) * 2)
+  font-size: calc(var(--font-size) * 2);
+}
+
+#mastodon-stats svg {
+  display: inline-block;
+  width: calc(var(--font-size) * 2);
+  height: calc(var(--font-size) * 2);
 }
 
 #mastodon-comments-list {
@@ -30,6 +36,12 @@ const styles = `
   flex-direction: column;
   color: var(--font-color);
   font-size: var(--font-size);
+}
+
+.mastodon-comment .status svg {
+  display: inline-block;
+  width: var(--font-size);
+  height: var(--font-size);
 }
 
 .mastodon-comment p {
@@ -199,7 +211,7 @@ class MastodonComments extends HTMLElement {
       <div class="replies ${this.toot_active(toot, "replies")}">
         <a href="${
           toot.url
-        }" rel="nofollow" target="_blank"><i class="fa fa-reply fa-fw"></i>${this.toot_count(
+        }" rel="nofollow" target="_blank"><svg fill="currentColor"><use xlink:href="#svg-mastodon-reply" href="#svg-mastodon-reply" /></svg>${this.toot_count(
           toot,
           "replies",
         )}</a>
@@ -207,7 +219,7 @@ class MastodonComments extends HTMLElement {
       <div class="reblogs ${this.toot_active(toot, "reblogs")}">
         <a href="${
           toot.url
-        }" rel="nofollow" target="_blank"><i class="fa fa-retweet fa-fw"></i>${this.toot_count(
+        }" rel="nofollow" target="_blank"><svg fill="currentColor"><use xlink:href="#svg-mastodon-retoot" href="#svg-mastodon-retoot" /></svg>${this.toot_count(
           toot,
           "reblogs",
         )}</a>
@@ -215,7 +227,7 @@ class MastodonComments extends HTMLElement {
       <div class="favourites ${this.toot_active(toot, "favourites")}">
         <a href="${
           toot.url
-        }" rel="nofollow" target="_blank"><i class="fa fa-star fa-fw"></i>${this.toot_count(
+        }" rel="nofollow" target="_blank"><svg fill="currentColor"><use xlink:href="#svg-mastodon-favorite" href="#svg-mastodon-favorite" /></svg>${this.toot_count(
           toot,
           "favourites",
         )}</a>
@@ -250,8 +262,7 @@ class MastodonComments extends HTMLElement {
       );
     });
 
-    const mastodonComment = `<div class="mastodon-comment" style="margin-left: calc(var(--comment-indent) * ${depth})">
-        <div class="author">
+    const mastodonComment = `<div class="author">
           <div class="avatar">
             <img src="${this.escapeHtml(
               toot.account.avatar_static,
@@ -293,17 +304,17 @@ class MastodonComments extends HTMLElement {
               }
             })
             .join("")}
-        </div>
-        <div class="status">
+        </div>`;
+
+    var div = document.createElement("div");
+    div.innerHTML = `<div class="mastodon-comment" style="margin-left: calc(var(--comment-indent) * ${depth})">` + (
+      typeof DOMPurify !== "undefined"
+        ? DOMPurify.sanitize(mastodonComment.trim())
+        : mastodonComment.trim()
+    ) + `<div class="status">
           ${this.toot_stats(toot)}
         </div>
       </div>`;
-
-    var div = document.createElement("div");
-    div.innerHTML =
-      typeof DOMPurify !== "undefined"
-        ? DOMPurify.sanitize(mastodonComment.trim())
-        : mastodonComment.trim();
     document
       .getElementById("mastodon-comments-list")
       .appendChild(div.firstChild);
