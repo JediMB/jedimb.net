@@ -13,6 +13,8 @@ define('SITE_CREATEDYEAR', '2025');
 define('SITE_TEMPLATE', 'default.php');
 define('SITE_HOME', 'blog/blog.php');
 
+define('REGEX_BLOG_PATH', '/^blog(\/[0-9]{4}\/[0-9]{2}\/[0-9]{2}\/[-a-z0-9]*)$/');
+
 define('DB_OPTIONS', [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]);
 define('INVALID_USER_AGENTS', [
         'anthropic-ai',
