@@ -4,6 +4,7 @@ define('CONFIG_PATH', '.configuration.json');
 define('SECRETS_PATH', '.secrets.json');
 
 define('PATH_VIRTUALPAGE', 'page.php');
+define('PATH_REALPAGES_DIR', 'pages');
 define('PATH_ERROR403', 'includes/errors/403.php');
 define('PATH_ERROR404', 'includes/errors/404.php');
 
