@@ -4,8 +4,8 @@ define('CONFIG_PATH', '.configuration.json');
 
 define('PATH_VIRTUALPAGE', 'page.php');
 define('PATH_REALPAGES_DIR', 'pages');
-define('PATH_ERROR403', 'includes/errors/403.php');
-define('PATH_ERROR404', 'includes/errors/404.php');
+define('PATH_ERROR403', 'errors/403.php');
+define('PATH_ERROR404', 'errors/404.php');
 
 define('SITE_TITLE', 'JediMB.net');
 define('SITE_AUTHOR', 'JediMB');
@@ -36,7 +36,7 @@ define('INVALID_USER_AGENTS', [
 ]);
 
 require_once 'secrets.php';
-require_once 'includes/services/singleton.php';
+require_once 'services/singleton.php';
 
 use Services\Singleton;
 
@@ -51,7 +51,7 @@ class Configuration extends Singleton{
 
     protected function __construct() {
         $this->pageTitle = SITE_TITLE;
-        $this->pageTemplate  = realpath('includes/views/' . SITE_TEMPLATE);
+        $this->pageTemplate  = realpath('views/' . SITE_TEMPLATE);
         $this->pageYear = SITE_CREATEDYEAR;
         $this->pageContent = 'Page content';
 

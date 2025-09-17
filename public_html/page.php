@@ -2,7 +2,7 @@
 
 namespace Page;
 
-require_once 'includes/services/page.service.php';
+require_once 'services/page.service.php';
 
 use Configuration;
 use Models\PagePath;
@@ -16,7 +16,7 @@ $service = PageService::getInstance();
 $page = $service->getPage($config->pageId);
 
 if (!$page) {
-    include 'includes/errors/404.php';
+    include 'errors/404.php';
     return;
 }
 

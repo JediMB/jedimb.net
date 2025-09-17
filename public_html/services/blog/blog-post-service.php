@@ -2,9 +2,9 @@
 
 namespace Services;
 
-require_once 'includes/services/singleton.php';
-require_once 'includes/services/database-service.php';
-require_once 'includes/models/blog-post.php';
+require_once 'services/singleton.php';
+require_once 'services/database-service.php';
+require_once 'models/blog-post.php';
 
 use Models\BlogPost;
 use PDOException;

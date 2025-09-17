@@ -1,6 +1,6 @@
 <?php
 
-require_once 'includes/services/social-link.service.php';
+require_once 'services/social-link.service.php';
 
 use Services\SocialLinkService;
 

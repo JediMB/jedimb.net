@@ -4,7 +4,7 @@
     
     require_once 'configuration.php';
     require_once 'routing.php';
-    require_once 'includes/services/page.service.php';
+    require_once 'services/page.service.php';
     use Services\PageService;
 
     // Remove slashes and dots from start and query string from end of path, force lowercase

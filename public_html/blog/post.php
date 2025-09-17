@@ -1,12 +1,12 @@
 <?php
 
-require_once 'includes/services/blog/blog-post-service.php';
-require_once 'includes/models/blog-post.php';
+require_once 'services/blog/blog-post-service.php';
+require_once 'models/blog-post.php';
 
 use Services\BlogPostService;
 
 if ( !( $post = BlogPostService::getInstance()->getBlogPost($GLOBALS['permalink']) ) ) {
-    include 'includes/errors/404.php';
+    include 'errors/404.php';
     return;
 }
 /** @var BlogPost $post */

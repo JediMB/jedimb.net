@@ -2,10 +2,10 @@
 
 namespace Services;
 
-require_once 'includes/services/singleton.php';
-require_once 'includes/services/database-service.php';
-require_once 'includes/models/page.php';
-require_once 'includes/models/page-path.php';
+require_once 'services/singleton.php';
+require_once 'services/database-service.php';
+require_once 'models/page.php';
+require_once 'models/page-path.php';
 
 use Models\Page;
 use Models\PagePath;

@@ -2,7 +2,7 @@
 
 namespace Services;
 
-require_once 'includes/services/singleton.php';
+require_once 'services/singleton.php';
 
 use Configuration;
 use PDO;

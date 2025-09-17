@@ -103,7 +103,7 @@ function servePHP(string $path, string|false $header = false) {
     $config = Configuration::getInstance();
     /** @var Configuration $config */
 
-    require_once 'includes/services/copyright-year.php';
+    require_once 'services/copyright-year.php';
 
     ob_start();
     include $path;
