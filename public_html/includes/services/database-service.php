@@ -20,12 +20,12 @@ class DatabaseService extends Singleton {
         $config = Configuration::getInstance();
 
         $this->service = new PDO(
-            $config->dbDSN,
-            $config->dbUser,
-            $config->dbPass,
+            DB_SOURCE['dsn'],
+            DB_SOURCE['user'],
+            DB_SOURCE['pass'],
             DB_OPTIONS
         );
-        $this->schema = $config->dbSchema;
+        $this->schema = DB_SOURCE['schema'];
     }
     public function __destruct() {
         $this->service = null;

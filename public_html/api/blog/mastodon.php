@@ -9,7 +9,7 @@ switch( $_SERVER['REQUEST_METHOD'] ) {
         $params = $GLOBALS['api_params'];
         
         $headers = [
-            'Authorization: Bearer ' . $GLOBALS['mastodon_token'],
+            'Authorization: Bearer ' . MASTODON_TOKEN,
             'Content-Type: application/json; charset=UTF-8'
         ];
         // 'Idempotency-Key: [key]' --post-associated key that prevents duplicate toots
@@ -21,7 +21,7 @@ switch( $_SERVER['REQUEST_METHOD'] ) {
         ));
 
         curl_setopt($curl, CURLOPT_POST, true);
-        curl_setopt($curl, CURLOPT_URL, 'https://' . $GLOBALS['mastodon_host'] . '/api/v1/statuses');
+        curl_setopt($curl, CURLOPT_URL, 'https://' . MASTODON_HOST . '/api/v1/statuses');
         curl_setopt($curl, CURLOPT_HTTPHEADER, $headers);
         curl_setopt($curl, CURLOPT_POSTFIELDS, $data);
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);

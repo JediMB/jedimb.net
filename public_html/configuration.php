@@ -1,7 +1,6 @@
 <?php
 
 define('CONFIG_PATH', '.configuration.json');
-define('SECRETS_PATH', '.secrets.json');
 
 define('PATH_VIRTUALPAGE', 'page.php');
 define('PATH_REALPAGES_DIR', 'pages');
@@ -36,6 +35,7 @@ define('INVALID_USER_AGENTS', [
         'omigili',
 ]);
 
+require_once 'secrets.php';
 require_once 'includes/services/singleton.php';
 
 use Services\Singleton;
@@ -49,11 +49,6 @@ class Configuration extends Singleton{
     public array $pageRoutes;
     public string $pageId;
 
-    public string $dbDSN;
-    public string $dbUser;
-    public string $dbPass;
-    public string $dbSchema;
-
     protected function __construct() {
         $this->pageTitle = SITE_TITLE;
         $this->pageTemplate  = realpath('includes/views/' . SITE_TEMPLATE);
@@ -61,9 +56,6 @@ class Configuration extends Singleton{
         $this->pageContent = 'Page content';
 
         $this->setConfiguration();
-
-        if (SECRETS_PATH)
-            $this->setSecrets();
     }
 
     private function setConfiguration() {
@@ -86,51 +78,6 @@ class Configuration extends Singleton{
         }
         catch (Exception $e) {
             echo 'Error: Invalid website configuration.<br />' . $e->getMessage();
-            exit;
-        }
-    }
-
-    private function readSecrets() {
-        try {
-            ($secretsPath = realpath(SECRETS_PATH)) ?: throw new Exception('Secrets not found.');
-
-            if ( ($jsonSize = filesize($secretsPath)) <= 0 )
-                throw new Exception('Zero-size secrets file.');
-
-            $jsonFile = fopen($secretsPath, 'r');
-            $jsonObj = fread($jsonFile, $jsonSize);
-            fclose($jsonFile);
-
-            $obj = json_decode($jsonObj);
-
-            return $obj->secrets ?? throw new Exception('No secrets object in file.');
-        }
-        catch (Exception $e)
-        {
-            echo 'Error: ' . $e->getMessage();
-            exit;
-        }
-    }
-
-    private function setSecrets() {
-        try {
-            $secrets = $this->readSecrets();
-
-            if (isset($secrets->database->sources[$secrets->database->id])) {
-                $db = $secrets->database->sources[$secrets->database->id];
-                
-                $this->dbDSN = $db->dsn;
-                $this->dbUser = $db->user;
-                $this->dbPass = $db->pass;
-                $this->dbSchema = $db->schema;
-            }
-
-            $GLOBALS['mastodon_host'] = $secrets->mastodon->host ?: throw new Exception('Mastodon hostname not specified.');
-            $GLOBALS['mastodon_user'] = $secrets->mastodon->user ?: throw new Exception('Mastodon user not specified.');
-            $GLOBALS['mastodon_token'] = $secrets->mastodon->token ?: throw new Exception('Mastodon access token not provided');
-        }
-        catch (Exception $e) {
-            echo 'Error: ' . $e->getMessage();
             exit;
         }
     }
