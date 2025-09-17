@@ -45,12 +45,12 @@ setCopyrightYearByFile(__FILE__);
     <!-- 
         1) Replace Fontawesome dependency with a couple of custom SVGs or something
         2) Find a way to use Mastodon's API to post the toot and save its id as the blog post is generated
-        3) Move mastolink regex string to configuration?
     -->
+    
     <?php
 
     $matches = [];
-    if ($post->mastolink && preg_match('/^http[s]?:\/\/([-.a-z0-9]+)\/@([-.a-z0-9]+)\/([0-9]+)$/', $post->mastolink, $matches)) {
+    if ($post->mastolink && preg_match(REGEX_MASTOLINK, $post->mastolink, $matches)) {
         echo <<<HTML
             <mastodon-comments host="{$matches[1]}" user="{$matches[2]}" tootId="{$matches[3]}"></mastodon-comments>
         HTML;
