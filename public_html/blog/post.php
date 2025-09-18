@@ -1,6 +1,6 @@
 <?php
 
-require_once 'services/blog/blog-post-service.php';
+require_once 'services/blog-post-service.php';
 require_once 'models/blog-post.php';
 
 use Services\BlogPostService;
@@ -42,9 +42,6 @@ setCopyrightYearByFile(__FILE__);
         </div>
         <?=$post->content?>
     </main>
-    <!-- 
-        1) Find a way to use Mastodon's API to post the toot and save its id as the blog post is generated
-    -->
     
     <?php
 
