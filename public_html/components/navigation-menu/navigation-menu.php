@@ -1,8 +1,6 @@
 <?php
 
-function mainMenu(?array $menu) {
-    if (!$menu) return;
-
+function mainMenu() {
     $unsuffixedComponentPath = rtrim(__FILE__, 'php');
     $cssPath = realpath($unsuffixedComponentPath . 'css');
     $jsPath = realpath($unsuffixedComponentPath . 'js')
@@ -17,27 +15,27 @@ function mainMenu(?array $menu) {
             <ul class="flex gap-2 flex-wrap justify-end">
     HTML;
 
-    for ($menuId = 0; $menuId < count($menu); $menuId++) {
-        $menuItem = $menu[$menuId];
+    for ($menuId = 0; $menuId < count(MENU_MAIN); $menuId++) {
+        $menuItem = MENU_MAIN[$menuId];
         $onClick = null;
         $onKeyDown = null;
 
-        if (isset($menuItem->title) == false)
+        if (isset($menuItem['title']) == false)
             continue;
 
-        if (isset($menuItem->submenu) && is_array($menuItem->submenu)) {
+        if (isset($menuItem['submenu']) && is_array($menuItem['submenu'])) {
             $onClick = onClick('toggleSubMenu(' . $menuId . ', this)');
             $onKeyDown = onReturnKey('toggleSubMenu(' . $menuId . ', this)');
         }
-        else if (isset($menuItem->url))
-            $onClick = onClick($menuItem->url, true);
+        else if (isset($menuItem['url']))
+            $onClick = onClick($menuItem['url'], true);
         else
             continue;
 
         echo <<<HTML
             <li>
                 <a id="menu-button-{$menuId}" tabindex="0" class="btn btn-menu" $onClick $onKeyDown>
-                    $menuItem->title
+                    {$menuItem['title']}
                 </a>
             </li>
         HTML;
@@ -49,55 +47,54 @@ function mainMenu(?array $menu) {
     HTML;
 }
 
-function subMenu(?array $menu) {
+function subMenu() {
     echo <<<HTML
         <nav id="sub-menu" class="p-4">
     HTML;
 
-    if ($menu)
-        for ($menuId = 0; $menuId < count($menu); $menuId++) {
-            $menuItem = $menu[$menuId];
+    for ($menuId = 0; $menuId < count(MENU_MAIN); $menuId++) {
+        $menuItem = MENU_MAIN[$menuId];
 
-            if (isset($menuItem->submenu) == false || is_array($menuItem->submenu) == false)
+        if (isset($menuItem['submenu']) == false || is_array($menuItem['submenu']) == false)
+            continue;
+
+        $submenu = array_values(array_filter($menuItem['submenu'], function ($item) {
+            return isset($item['title']);
+        }));
+
+        echo <<<HTML
+            <ul id="submenu-$menuId" class="list-cards hidden"> <!-- hidden -->
+        HTML;
+
+        for ($i = 0; $i < count($submenu); $i++) {
+            $submenuItem = $submenu[$i];
+
+            if ((isset($submenuItem['title']) && isset($submenuItem['url'])) === false)
                 continue;
 
-            $submenu = array_values(array_filter($menuItem->submenu, function ($item) {
-                return isset($item->title);
-            }));
+            $animationDelay = ($i * 200) . 'ms';
+            $onClick = isset($submenuItem['url']) ? onClick($submenuItem['url'], true) : null;
 
             echo <<<HTML
-                <ul id="submenu-$menuId" class="list-cards hidden"> <!-- hidden -->
+                <li class="card" style="--animation-delay: $animationDelay;">
+                    <a tabindex="0" class="card-inner" $onClick>
+                        <div class="card-front">{$submenuItem['title']}</div>
             HTML;
-
-            for ($i = 0; $i < count($submenu); $i++) {
-                $submenuItem = $submenu[$i];
-
-                if ((isset($submenuItem->title) && isset($submenuItem->url)) === false)
-                    continue;
-
-                $animationDelay = ($i * 200) . 'ms';
-                $onClick = isset($submenuItem->url) ? onClick($submenuItem->url, true) : null;
+            
+            if (isset($submenuItem['description'])) {
 
                 echo <<<HTML
-                    <li class="card" style="--animation-delay: $animationDelay;">
-                        <a tabindex="0" class="card-inner" $onClick>
-                            <div class="card-front">{$submenuItem->title}</div>
-                HTML;
-                
-                if (isset($submenuItem->description)) {
-
-                    echo <<<HTML
-                        <div class="card-back">{$submenuItem->description}</div>
-                    HTML;
-                }
-                echo <<<HTML
-                        </a>
-                    </li>
+                    <div class="card-back">{$submenuItem['description']}</div>
                 HTML;
             }
-
-            echo '</ul>';
+            echo <<<HTML
+                    </a>
+                </li>
+            HTML;
         }
+
+        echo '</ul>';
+    }
 
     echo <<<HTML
         </nav>

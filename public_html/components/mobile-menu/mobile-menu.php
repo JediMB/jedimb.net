@@ -1,8 +1,6 @@
 <?php
 
-function mobileMenu(?array $menu) {
-    if (!$menu) return;
-
+function mobileMenu() {
     $unsuffixedComponentPath = rtrim(__FILE__, 'php');
     $cssPath = realpath($unsuffixedComponentPath . 'css');
     $jsPath = realpath($unsuffixedComponentPath . 'js')
@@ -33,20 +31,20 @@ function mobileMenu(?array $menu) {
                 <li><a href="/">Home</a></li>
     HTML;
 
-    foreach ($menu as $key => $menuItem) {
-        if (isset($menuItem->title) === false)
+    foreach (MENU_MAIN as $key => $menuItem) {
+        if (isset($menuItem['title']) === false)
             continue;
 
-        if (isset($menuItem->submenu) && is_array($menuItem->submenu)) {
+        if (isset($menuItem['submenu']) && is_array($menuItem['submenu'])) {
 
             $submenuMarkup = '';
-            foreach($menuItem->submenu as $submenuItem) {
-                if ((isset($submenuItem->title) && isset($submenuItem->url)) === false)
+            foreach($menuItem['submenu'] as $submenuItem) {
+                if ((isset($submenuItem['title']) && isset($submenuItem['url'])) === false)
                     continue;
                 
                 $submenuMarkup = $submenuMarkup . <<<HTML
                     <li>
-                        <a href="{$submenuItem->url}">$submenuItem->title</a>
+                        <a href="{$submenuItem['url']}">{$submenuItem['title']}</a>
                     </li>
                 HTML;
             }
@@ -59,17 +57,17 @@ function mobileMenu(?array $menu) {
             echo <<<HTML
                 <li>
                     <input id="mobile-menu-entry-{$key}" type="checkbox" class="hidden">
-                    <label for="mobile-menu-entry-{$key}" tabindex="0" $onReturnKey>$menuItem->title</label>
+                    <label for="mobile-menu-entry-{$key}" tabindex="0" $onReturnKey>{$menuItem['title']}</label>
                     <ul>
                         $submenuMarkup
                     </ul>
                 </li>
             HTML;
         }
-        else if (isset($menuItem->url)) {
+        else if (isset($menuItem['url'])) {
             echo <<<HTML
                 <li>
-                    <a href="{$menuItem->url}">$menuItem->title</a>
+                    <a href="{$menuItem['url']}">{$menuItem['title']}</a>
                 </li>
             HTML;
         }

@@ -7,10 +7,6 @@ require_once 'components/mobile-menu/mobile-menu.php';
 require_once 'components/social-links/social-links.php';
 require_once 'services/attributes.php';
 
-$menu = isset($GLOBALS['configuration']->menu) && is_array($GLOBALS['configuration']->menu)
-    ? $GLOBALS['configuration']->menu
-    : null;
-
 ?>
 
 <!DOCTYPE html>
@@ -67,16 +63,16 @@ $menu = isset($GLOBALS['configuration']->menu) && is_array($GLOBALS['configurati
                 </mobile-title>
 
                 <mobile-menu>
-                    <?php mobileMenu($menu) ?>
+                    <?php mobileMenu() ?>
                 </mobile-menu>
                 
                 <desktop-menu>
-                    <?php mainMenu($menu) ?>
+                    <?php mainMenu() ?>
                 </desktop-menu>
             </menu-container>
         </header-container>
         <sub-menu>
-            <?php subMenu($menu) ?>
+            <?php subMenu() ?>
         </sub-menu>
     </header>
     

@@ -36,6 +36,28 @@ define('INVALID_USER_AGENTS', [
         'omigili',
 ]);
 
+define('MENU_MAIN', [
+    [
+        'title' => 'Projects',
+        'submenu-hidden' => [
+            [
+                'title' => 'Project A',
+                'url' => '/projects/project-a',
+                'description' => 'This is a project.'
+            ],
+            [
+                'title' => 'Project B',
+                'url' => '/projects/project-b',
+                'description' => 'This is another project a significantly longer description, as you may very well see.'
+            ]
+        ]
+    ],
+    [
+        'title' => 'About me',
+        'url' => '/about'
+    ]
+]);
+
 require_once 'secrets.php';
 require_once 'services/singleton.php';
 
@@ -55,32 +77,6 @@ class Configuration extends Singleton{
         $this->pageTemplate  = realpath('views/' . SITE_TEMPLATE);
         $this->pageYear = SITE_CREATEDYEAR;
         $this->pageContent = 'Page content';
-
-        $this->setConfiguration();
-    }
-
-    private function setConfiguration() {
-        try {
-            $fileName = CONFIG_PATH;
-
-            if ( is_file($fileName) == false )
-                return null;
-
-            $jsonFile = fopen($fileName, 'r');
-            $jsonObj = fread($jsonFile, filesize($fileName));
-            fclose($jsonFile);
-
-            $obj = json_decode($jsonObj);
-            
-            if (!isset($obj->configuration))
-                throw new Exception('No configuration found.');
-
-            $GLOBALS['configuration'] = $obj->configuration;
-        }
-        catch (Exception $e) {
-            echo 'Error: Invalid website configuration.<br />' . $e->getMessage();
-            exit;
-        }
     }
 
     public function buildRoutes(array $pagePaths) {
