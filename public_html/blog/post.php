@@ -43,8 +43,7 @@ setCopyrightYearByFile(__FILE__);
         <?=$post->content?>
     </main>
     <!-- 
-        1) Replace Fontawesome dependency with a couple of custom SVGs or something
-        2) Find a way to use Mastodon's API to post the toot and save its id as the blog post is generated
+        1) Find a way to use Mastodon's API to post the toot and save its id as the blog post is generated
     -->
     
     <?php
@@ -54,7 +53,7 @@ setCopyrightYearByFile(__FILE__);
         echo <<<HTML
             <svg class="hidden" xmlns="http://www.w3.org/2000/svg">
                 <symbol id="svg-mastodon-reply" viewBox="0 0 100 100" fill="inherit">
-                    <path d="M8 50L28 30L26.1631 42.8586C26.077 43.461 26.5445 44 27.153 44H80C85.5229 44 90 48.4772 90 54V92H88C82.4771 92 78 87.5228 78 82V56H27.153C26.5445 56 26.077 56.539 26.1631 57.1414L28 70L8 50Z" fill="inherit"/>
+                    <path d="M8 40L28 20L26.1631 32.8586C26.077 33.461 26.5445 34 27.153 34H80C85.5229 34 90 38.4772 90 44V82H88C82.4771 82 78 77.5228 78 72V46H27.153C26.5445 46 26.077 46.539 26.1631 47.1414L28 60L8 40Z" fill="inherit"/>
                 </symbol>
                 <symbol id="svg-mastodon-retoot" viewBox="0 0 100 100" fill="inherit">
                     <path d="M92 82C92 87.5228 87.5228 92 82 92L18.7049 92C18.0788 92 17.6067 92.5689 17.7221 93.1843L19 100L5 86L19 72L17.7221 78.8157C17.6067 79.4311 18.0788 80 18.7049 80L80 80V43.1421C80 40.49 81.0536 37.9464 82.9289 36.0711L92 27L92 82Z" fill="inherit"/>

@@ -16,6 +16,12 @@ const styles = `
   font-size: calc(var(--font-size) * 2);
 }
 
+#mastodon-stats a {
+  display: flex;
+  align-items: center;
+  gap: 0.1em;
+}
+
 #mastodon-stats svg {
   display: inline-block;
   width: calc(var(--font-size) * 2);
