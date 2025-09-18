@@ -7,6 +7,8 @@ require_once 'components/mobile-menu/mobile-menu.php';
 require_once 'components/social-links/social-links.php';
 require_once 'services/attributes.php';
 
+use Services\NavigationService;
+
 ?>
 
 <!DOCTYPE html>
@@ -14,7 +16,7 @@ require_once 'services/attributes.php';
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?= Configuration::getInstance()->pageTitle ?></title>
+    <title><?= NavigationService::getInstance()->pageTitle ?></title>
     
     <link rel="icon" type="image/x-icon" href="/favicon.svg" />
     <?php
@@ -77,7 +79,7 @@ require_once 'services/attributes.php';
     </header>
     
     <content-container>
-        <?= $config->pageContent ?>
+        <?= $nav->pageContent ?>
     </content-container>
 
     <footer>

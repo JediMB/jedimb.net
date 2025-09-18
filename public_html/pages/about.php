@@ -1,6 +1,10 @@
 <?php
-    Configuration::getInstance()->setPageTitle('About me');
-    setCopyrightYearByFile(__FILE__);
+
+use Services\NavigationService;
+
+NavigationService::getInstance()->setPageTitle('About me');
+setCopyrightYearByFile(__FILE__);
+
 ?>
 
 <page-content>

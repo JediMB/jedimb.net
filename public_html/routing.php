@@ -1,5 +1,7 @@
 <?php
 
+use Services\NavigationService;
+
 function getRealPath(string $path, bool &$isForbidden) : string|false {
     /*  Try to find a matching file in the following order:
     1) Non-PHP perfect match
@@ -8,7 +10,7 @@ function getRealPath(string $path, bool &$isForbidden) : string|false {
     */
     $isForbidden = false;
 
-    if ( ( strtolower(substr($path, -4)) !== '.php' )
+    if ( isPHP($path) === false
         && ($realPath = realpath($path))
         && is_dir($realPath) === false ) {
 
@@ -88,15 +90,19 @@ function handleBots() {
 }
 
 function handleVirtualPages(string $requestPath) {
-    $config = Configuration::getInstance();
-    /** @var Configuration $config */
+    $nav = NavigationService::getInstance();
+    /** @var NavigationService $nav */
 
-    foreach ($config->pageRoutes as $id => $route) {
+    foreach ($nav->pageRoutes as $id => $route) {
         if ($route === $requestPath) {
-            $config->pageId = $id;
+            $nav->pageId = $id;
             servePHP(PATH_VIRTUALPAGE, false);
         }
     }
+}
+
+function isPHP(string $path) : bool {
+    return ( strtolower(substr($path, -4)) === '.php' );
 }
 
 function isUnsafe(string $realPath) : bool {
@@ -108,15 +114,15 @@ function servePHP(string $path, string|false $header = false) {
     if ($header)
         header($header);
 
-    $config = Configuration::getInstance();
-    /** @var Configuration $config */
+    $nav = NavigationService::getInstance();
+    /** @var NavigationService $nav */
 
     require_once 'services/copyright-year.php';
 
     ob_start();
     include $path;
-    $config->pageContent = ob_get_clean();
-    require_once $config->pageTemplate;
+    $nav->pageContent = ob_get_clean();
+    require_once $nav->pageTemplate;
     exit;
 }
 

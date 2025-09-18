@@ -1,6 +1,8 @@
 <?php
 
-Configuration::getInstance()->setPageTitle('403 Forbidden');
+use Services\NavigationService;
+
+NavigationService::getInstance()->setPageTitle('403 Forbidden');
     
 ?>
 

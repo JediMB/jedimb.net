@@ -1,6 +1,8 @@
 <?php
 
-Configuration::getInstance()->setPageTitle('404 Not Found');
+use Services\NavigationService;
+
+NavigationService::getInstance()->setPageTitle('404 Not Found');
 
 ?>
 

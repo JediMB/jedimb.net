@@ -4,7 +4,6 @@ namespace Services;
 
 require_once 'services/singleton.php';
 
-use Configuration;
 use PDO;
 
 enum Fetch {
@@ -17,8 +16,6 @@ class DatabaseService extends Singleton {
     private string $schema;
 
     protected function __construct() {
-        $config = Configuration::getInstance();
-
         $this->service = new PDO(
             DB_SOURCE['dsn'],
             DB_SOURCE['user'],

@@ -1,52 +1,55 @@
 <?php
 
-    chdir(__DIR__);
-    
-    require_once 'configuration.php';
-    require_once 'routing.php';
-    require_once 'services/page.service.php';
-    use Services\PageService;
+chdir(__DIR__);
 
-    // Force lowercase
-    $requestPath = strtolower(
-        // Remove query string from end
-        parse_url(
-            // Remove slashes and dots from start
-            ltrim($_SERVER['REQUEST_URI'], '/.'),
-            PHP_URL_PATH
-        )
-    );
-    
-    handleBots();
+require_once 'configuration.php';
+require_once 'secrets.php';
+require_once 'routing.php';
+require_once 'services/navigation.service.php';
+require_once 'services/page.service.php';
 
-    handleApiRequests($requestPath);
+use Services\NavigationService;
+use Services\PageService;
 
-    Configuration::getInstance()->buildRoutes(
-        PageService::getInstance()->getPagePaths()
-    );
+// Force lowercase
+$requestPath = strtolower(
+    // Remove query string from end
+    parse_url(
+        // Remove slashes and dots from start
+        ltrim($_SERVER['REQUEST_URI'], '/.'),
+        PHP_URL_PATH
+    )
+);
+
+handleBots();
+
+handleApiRequests($requestPath);
+
+NavigationService::getInstance()->buildRoutes(
+    PageService::getInstance()->getPagePaths()
+);
 
 
-    if ($requestPath === '')
-        servePHP(realpath(SITE_HOME));
-    
-    handleVirtualPages($requestPath);
-    
-    handleBlogRequests($requestPath);
+if ($requestPath === '')
+    servePHP(realpath(SITE_HOME));
 
-    $isForbidden = false;
-    $realPath = getRealPath($requestPath, $isForbidden);
+handleVirtualPages($requestPath);
 
-    if (!$realPath)
-        servePHP(PATH_ERROR404, 'HTTP/1.1 404 Not Found');
+handleBlogRequests($requestPath);
 
-    if ($isForbidden)
-        servePHP(PATH_ERROR403, 'HTTP/1.1 403 Forbidden');
+$isForbidden = false;
+$realPath = getRealPath($requestPath, $isForbidden);
 
-    $isPHP = ( strtolower(substr($realPath, -4)) === '.php' );
-    if ($isPHP)
-        servePHP($realPath);
+if (!$realPath)
+    servePHP(PATH_ERROR404, 'HTTP/1.1 404 Not Found');
 
-    // Serve asset file from filesystem
-    return false;
+if ($isForbidden)
+    servePHP(PATH_ERROR403, 'HTTP/1.1 403 Forbidden');
+
+if (isPHP($realPath))
+    servePHP($realPath);
+
+// Serve asset file from filesystem
+return false;
 
 ?>

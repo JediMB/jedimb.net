@@ -1,9 +1,11 @@
 <?php
 
-require_once 'configuration.php';
+require_once 'services/navigation.service.php';
+
+use Services\NavigationService;
 
 function setCopyrightYearByFile(string $filename) {
-    $config = Configuration::getInstance();
+    $config = NavigationService::getInstance();
     $config->pageYear =
         $config->pageYear === ( $year = date('Y', filectime($filename)) )
         || $config->pageYear === ''
@@ -12,7 +14,7 @@ function setCopyrightYearByFile(string $filename) {
 }
 
 function printCopyrightYear() {
-    $config = Configuration::getInstance();
+    $config = NavigationService::getInstance();
     echo '© ' . $config->pageYear . ' ' . SITE_AUTHOR;
 }
 

@@ -4,23 +4,22 @@ namespace Page;
 
 require_once 'services/page.service.php';
 
-use Configuration;
-use Models\PagePath;
+use Services\NavigationService;
 use Services\PageService;
 
-$config = Configuration::getInstance();
-/** @var Configuration $config */
+$nav = NavigationService::getInstance();
+/** @var NavigationService $nav */
 $service = PageService::getInstance();
 /** @var PageService $service */
 
-$page = $service->getPage($config->pageId);
+$page = $service->getPage($nav->pageId);
 
 if (!$page) {
     include 'errors/404.php';
     return;
 }
 
-$config->setPageTitle($page->title);
+$nav->setPageTitle($page->title);
 
 ?>
 

@@ -3,6 +3,7 @@
 require_once 'services/blog-post.service.php';
 
 use Services\BlogPostService;
+use Services\NavigationService;
 
 if ( !( $post = BlogPostService::getInstance()->getBlogPost($GLOBALS['permalink']) ) ) {
     include 'errors/404.php';
@@ -10,7 +11,7 @@ if ( !( $post = BlogPostService::getInstance()->getBlogPost($GLOBALS['permalink'
 }
 /** @var BlogPost $post */
 
-Configuration::getInstance()->setPageTitle($post->title);
+NavigationService::getInstance()->setPageTitle($post->title);
 setCopyrightYearByFile(__FILE__);
 
 ?>
