@@ -3,7 +3,7 @@
 namespace Services;
 
 require_once 'services/singleton.php';
-require_once 'services/database-service.php';
+require_once 'services/database.service.php';
 require_once 'models/social-link.php';
 
 use Models\SocialLink;

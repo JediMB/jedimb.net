@@ -1,7 +1,6 @@
 <?php
 
-require_once 'services/blog-post-service.php';
-require_once 'models/blog-post.php';
+require_once 'services/blog-post.service.php';
 
 use Services\BlogPostService;
 

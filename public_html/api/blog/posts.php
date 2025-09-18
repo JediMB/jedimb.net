@@ -1,6 +1,6 @@
 <?php
 
-require_once 'services/database-service.php';
+require_once 'services/database.service.php';
 
 use Services\DatabaseService;
 use Services\Fetch;
