@@ -7,10 +7,6 @@ require_once 'components/mobile-menu/mobile-menu.php';
 require_once 'components/social-links/social-links.php';
 require_once 'services/attributes.php';
 
-$socials = isset($GLOBALS['configuration']->socials) && is_array($GLOBALS['configuration']->socials)
-    ? $GLOBALS['configuration']->socials
-    : null;
-
 $menu = isset($GLOBALS['configuration']->menu) && is_array($GLOBALS['configuration']->menu)
     ? $GLOBALS['configuration']->menu
     : null;
