@@ -4,41 +4,70 @@ namespace Services;
 
 require_once 'services/singleton.php';
 
-class NavigationService extends Singleton{
-    public string $pageTitle;
-    public string $pageTemplate;
-    public string $pageYear;
-    public string $pageContent;
+use Models\PageNavigationData;
+use PDOException;
 
-    public array $pageRoutes;
-    public string $pageId;
+class NavigationService extends Singleton{
+    public array $virtualPageRoutes;
 
     protected function __construct() {
-        $this->pageTitle = SITE_TITLE;
-        $this->pageTemplate  = realpath('views/' . SITE_TEMPLATE);
-        $this->pageYear = SITE_CREATEDYEAR;
-        $this->pageContent = 'Page content';
+        $navData = $this->getPageNavigationData();
+        
+        $this->virtualPageRoutes = $this->buildVirtualPageRoutes($navData);
+        $this->buildMenuData($navData);
     }
 
-    public function buildRoutes(array $pagePaths) {
-        $this->pageRoutes = [];
-       
-        foreach ($pagePaths as $path) {
-            /** @var PagePath $path */
-            $id = $path->id;
-            $fullPath = $path->pathPart;
+    private function getPageNavigationData() : array {
+        try {
+            $paths = DatabaseService::getInstance()->selectView(
+                'page_navigation_data'
+            );
+        }
+        catch (PDOException $e) {
+            $paths = [];
+        }
+        finally {
+            $newPaths = []; 
 
-            while ($path->parentId) {
-                $path = $pagePaths[$path->parentId];
-                $fullPath = $path->pathPart . DIRECTORY_SEPARATOR . $fullPath;
+            foreach ($paths as $path) {
+                $path = new PageNavigationData($path);
+                $newPaths[$path->id] = $path;
             }
 
-            $this->pageRoutes[$id] = $fullPath;
+            return $newPaths;
         }
     }
 
-    function setPageTitle(string $pageTitle) {
-        $this->pageTitle = $pageTitle . ' – ' . SITE_TITLE;
+    private function buildVirtualPageRoutes(array $navData) : array {
+        $routes = [];
+       
+        foreach ($navData as $item) {
+            /** @var PageNavigationData $item */
+            $id = $item->id;
+            $fullPath = $item->pathPart;
+
+            while ($item->parentId) {
+                $item = $navData[$item->parentId];
+                $fullPath = $item->pathPart . DIRECTORY_SEPARATOR . $fullPath;
+            }
+
+            $routes[$id] = $fullPath;
+        }
+
+        return $routes;
+    }
+
+    private function buildMenuData(array $virtualPageNavData) {
+        $this->buildVirtualPageMenuData();
+        $this->buildRealPageMenuData();
+    }
+
+    private function buildVirtualPageMenuData() {
+
+    }
+
+    private function buildRealPageMenuData() {
+
     }
 }
 

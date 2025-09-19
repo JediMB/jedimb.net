@@ -4,33 +4,24 @@ namespace Services;
 
 require_once 'services/singleton.php';
 require_once 'services/database.service.php';
-require_once 'models/page.php';
-require_once 'models/page-path.php';
+require_once 'models/page.model.php';
+require_once 'models/page-navigation-data.model.php';
 
 use Models\Page;
-use Models\PagePath;
 use PDOException;
 
 class PageService extends Singleton {
-    public function getPagePaths() : array {
-        try {
-            $paths = DatabaseService::getInstance()->selectView(
-                'page_paths_visible'
-            );
-        }
-        catch (PDOException $e) {
-            $paths = [];
-        }
-        finally {
-            $newPaths = []; 
+    public string $id;
+    public string $title;
+    public string $template;
+    public string $year;
+    public string $content;
 
-            foreach ($paths as $path) {
-                $path = new PagePath($path);
-                $newPaths[$path->id] = $path;
-            }
-
-            return $newPaths;
-        }
+    protected function __construct() {
+        $this->title = SITE_TITLE;
+        $this->template  = realpath('views/' . SITE_TEMPLATE);
+        $this->year = SITE_CREATEDYEAR;
+        $this->content = 'Page content';
     }
 
     public function getPage(int $id) : Page|false {
@@ -41,7 +32,7 @@ class PageService extends Singleton {
         }
         catch (PDOException $e) {
             $page['id'] = $id;
-            $page['title'] = 'Error';
+            $page['page_title'] = 'Error';
             $page['content'] = $e->getMessage();
         }
         finally {
@@ -50,6 +41,10 @@ class PageService extends Singleton {
 
             return false;
         }
+    }
+
+    public function setTitle(string $pageTitle) {
+        $this->title = $pageTitle . ' – ' . SITE_TITLE;
     }
 }
 

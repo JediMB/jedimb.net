@@ -1,8 +1,8 @@
 <?php
 
-use Services\NavigationService;
+use Services\PageService;
 
-NavigationService::getInstance()->setPageTitle('About me');
+PageService::getInstance()->setTitle('About me');
 setCopyrightYearByFile(__FILE__);
 
 ?>
@@ -40,7 +40,8 @@ setCopyrightYearByFile(__FILE__);
                                 operating systems and keep my old installation on a separate partition for when I might need to boot into it, I've gained a
                                 growing appreciation for <i><a href="https://en.wikipedia.org/wiki/Free_and_open-source_software" target="_blank">FOSS</a></i>
                                 in recent years. At the moment, I'm using the very convenient <i>Debian 12</i> on my desktop PC while a home server I maintain
-                                runs the Debian edition of <i>Linux Mint.</i>
+                                runs the Debian edition of <i>Linux Mint.</i> In September of 2025, my trusty old work/gaming laptop joined in with a fresh
+                                install of <i>Debian 13</i> ahead of an internship.
                             </p>
                             <p>
                                 Presumably I'll switch to <i>Arch Linux</i> at some point in the future, but right now I have other things to focus on.

@@ -6,10 +6,8 @@ require_once 'configuration.php';
 require_once 'secrets.php';
 require_once 'routing.php';
 require_once 'services/navigation.service.php';
-require_once 'services/page.service.php';
 
 use Services\NavigationService;
-use Services\PageService;
 
 // Force lowercase
 $requestPath = strtolower(
@@ -25,10 +23,7 @@ handleBots();
 
 handleApiRequests($requestPath);
 
-NavigationService::getInstance()->buildRoutes(
-    PageService::getInstance()->getPagePaths()
-);
-
+NavigationService::getInstance();
 
 if ($requestPath === '')
     servePHP(realpath(SITE_HOME));

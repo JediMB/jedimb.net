@@ -4,7 +4,7 @@ namespace Services;
 
 require_once 'services/singleton.php';
 require_once 'services/database.service.php';
-require_once 'models/blog-post.php';
+require_once 'models/blog-post.model.php';
 
 use Models\BlogPost;
 use PDOException;

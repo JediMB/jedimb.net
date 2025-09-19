@@ -1,8 +1,8 @@
 <?php
 
-use Services\NavigationService;
+use Services\PageService;
 
-NavigationService::getInstance()->setPageTitle('Blog');
+PageService::getInstance()->setTitle('Blog');
 setCopyrightYearByFile(__FILE__);
 
 ?>

@@ -4,7 +4,7 @@ namespace Services;
 
 require_once 'services/singleton.php';
 require_once 'services/database.service.php';
-require_once 'models/social-link.php';
+require_once 'models/social-link.model.php';
 
 use Models\SocialLink;
 use PDOException;

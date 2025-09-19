@@ -1,13 +1,18 @@
-<?php declare(strict_types=1) ?>
-
 <?php
+
+declare(strict_types=1);
+
+namespace Views;
 
 require_once 'components/navigation-menu/navigation-menu.php';
 require_once 'components/mobile-menu/mobile-menu.php';
 require_once 'components/social-links/social-links.php';
 require_once 'services/attributes.php';
 
-use Services\NavigationService;
+use Services\PageService;
+
+$page = PageService::getInstance();
+/** @var PageService $page */
 
 ?>
 
@@ -16,7 +21,7 @@ use Services\NavigationService;
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?= NavigationService::getInstance()->pageTitle ?></title>
+    <title><?= $page->title ?></title>
     
     <link rel="icon" type="image/x-icon" href="/favicon.svg" />
     <?php
@@ -79,7 +84,7 @@ use Services\NavigationService;
     </header>
     
     <content-container>
-        <?= $nav->pageContent ?>
+        <?= $page->content ?>
     </content-container>
 
     <footer>

@@ -1,6 +1,9 @@
 <?php
 
+require_once 'services/page.service.php';
+
 use Services\NavigationService;
+use Services\PageService;
 
 function getRealPath(string $path, bool &$isForbidden) : string|false {
     /*  Try to find a matching file in the following order:
@@ -93,9 +96,9 @@ function handleVirtualPages(string $requestPath) {
     $nav = NavigationService::getInstance();
     /** @var NavigationService $nav */
 
-    foreach ($nav->pageRoutes as $id => $route) {
+    foreach ($nav->virtualPageRoutes as $id => $route) {
         if ($route === $requestPath) {
-            $nav->pageId = $id;
+            PageService::getInstance()->id = $id;
             servePHP(PATH_VIRTUALPAGE, false);
         }
     }
@@ -114,15 +117,15 @@ function servePHP(string $path, string|false $header = false) {
     if ($header)
         header($header);
 
-    $nav = NavigationService::getInstance();
-    /** @var NavigationService $nav */
+    $pageService = PageService::getInstance();
+    /** @var PageService $pageService */
 
     require_once 'services/copyright-year.php';
 
     ob_start();
     include $path;
-    $nav->pageContent = ob_get_clean();
-    require_once $nav->pageTemplate;
+    $pageService->content = ob_get_clean();
+    require_once $pageService->template;
     exit;
 }
 

@@ -1,21 +1,22 @@
 <?php
 
-require_once 'services/navigation.service.php';
+require_once 'services/page.service.php';
 
-use Services\NavigationService;
+use Services\PageService;
 
 function setCopyrightYearByFile(string $filename) {
-    $config = NavigationService::getInstance();
-    $config->pageYear =
-        $config->pageYear === ( $year = date('Y', filectime($filename)) )
-        || $config->pageYear === ''
-            ? $year
-            : $$config->pageYear . '–' . $year;
+    $page = PageService::getInstance();
+    $presetYear = $page->year;
+    $page->year =
+        $presetYear === ( $fileYear = date('Y', filectime($filename)) )
+        || $presetYear === ''
+            ? $fileYear
+            : $presetYear . '–' . $fileYear;
 }
 
 function printCopyrightYear() {
-    $config = NavigationService::getInstance();
-    echo '© ' . $config->pageYear . ' ' . SITE_AUTHOR;
+    $page = PageService::getInstance();
+    echo '© ' . $page->year . ' ' . SITE_AUTHOR;
 }
 
 ?>

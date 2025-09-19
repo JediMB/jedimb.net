@@ -2,15 +2,17 @@
 
 namespace Models;
 
-class PagePath {
+class PageNavigationData {
     public int $id;
     public ?int $parentId;
     public string $pathPart;
+    public ?string $menuTitle;
 
     public function __construct(array $dbRow) {
         $this->id = $dbRow['id'] ?? 0;
         $this->parentId = $dbRow['parent_id'] ?? null;
         $this->pathPart = $dbRow['path_part'] ?? '';
+        $this->menuTitle = $dbRow['menu_title'] ?? null;
     }
 }
 

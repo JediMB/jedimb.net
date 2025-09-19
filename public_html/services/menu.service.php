@@ -8,6 +8,7 @@ class MenuService extends Singleton {
     protected function __construct() {
         
     }
+
 }
 
 ?>

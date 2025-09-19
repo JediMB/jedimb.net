@@ -8,7 +8,8 @@ class Page {
     public int $id;
     public ?int $parentId;
     public string $pathPart;
-    public string $title;
+    public ?string $menuTitle;
+    public string $pageTitle;
     public ?string $content;
     public DateTime $createdOn;
     public ?DateTime $modifiedOn;
@@ -18,7 +19,8 @@ class Page {
         $this->id = $dbRow['id'] ?? 0;
         $this->parentId = $dbRow['parent_id'] ?? null;
         $this->pathPart = $dbRow['path_part'] ?? '';
-        $this->title = $dbRow['title'] ?? '';
+        $this->menuTitle = $dbRow['menu_title'] ?? null;
+        $this->pageTitle = $dbRow['page_title'] ?? null;
         $this->content = $dbRow['content'] ?? null;
         $this->createdOn = DateTime::createFromFormat('Y-m-d H:i:se', $dbRow['created_on'] ?? '') ?: new DateTime();
         $this->modifiedOn = DateTime::createFromFormat('Y-m-d H:i:se', $dbRow['modified_on']) ?: null;
