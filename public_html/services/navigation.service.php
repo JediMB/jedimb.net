@@ -3,18 +3,23 @@
 namespace Services;
 
 require_once 'services/singleton.php';
+require_once 'models/menu-item.model.php';
 
+use Exception;
+use Models\MenuItem;
 use Models\PageNavigationData;
 use PDOException;
 
 class NavigationService extends Singleton{
     public array $virtualPageRoutes;
+    public array $menu;
 
     protected function __construct() {
         $navData = $this->getPageNavigationData();
-        
-        $this->virtualPageRoutes = $this->buildVirtualPageRoutes($navData);
-        $this->buildMenuData($navData);
+
+        $this->buildVirtualPageRoutes($navData);
+        $this->buildVirtualPageMenuData($navData);
+        $this->buildRealPageMenuData();
     }
 
     private function getPageNavigationData() : array {
@@ -38,7 +43,7 @@ class NavigationService extends Singleton{
         }
     }
 
-    private function buildVirtualPageRoutes(array $navData) : array {
+    private function buildVirtualPageRoutes(array $navData) {
         $routes = [];
        
         foreach ($navData as $item) {
@@ -54,20 +59,49 @@ class NavigationService extends Singleton{
             $routes[$id] = $fullPath;
         }
 
-        return $routes;
+        $this->virtualPageRoutes = $routes;
     }
 
-    private function buildMenuData(array $virtualPageNavData) {
-        $this->buildVirtualPageMenuData();
-        $this->buildRealPageMenuData();
-    }
+    private function buildVirtualPageMenuData(array $navData) {
+        if (!isset($this->virtualPageRoutes))
+            throw new Exception('Virtual page routes not built before trying to build menu data.');
 
-    private function buildVirtualPageMenuData() {
+        $menuItems = [];
+        $tier2Items = [];
 
+        foreach ($navData as $item) {
+            /** @var PageNavigationData $item */
+         
+            if ($item->parentId === null) {
+                $menuItems[$item->id] = new MenuItem(
+                    $item->menuTitle,
+                    $this->virtualPageRoutes[$item->id]
+                );
+                continue;
+            }
+
+            if (isset($menuItems[$item->parentId])) {
+                $menuItems[$item->parentId]->children[$item->id] =
+                    $tier2Items[$item->id] = new MenuItem(
+                        $item->menuTitle,
+                        $this->virtualPageRoutes[$item->id]
+                    );
+                continue;
+            }
+
+            if (isset($tier2Items[$item->parentId])) {
+                $tier2Items[$item->parentId]->children[$item->id] = new MenuItem(
+                    $item->menuTitle,
+                    $this->virtualPageRoutes[$item->id]
+                );
+            }
+        }
+
+        $this->menu = $menuItems;
     }
 
     private function buildRealPageMenuData() {
-
+        $menu ??= [];
     }
 }
 

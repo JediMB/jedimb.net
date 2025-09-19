@@ -14,6 +14,7 @@ class Page {
     public DateTime $createdOn;
     public ?DateTime $modifiedOn;
     public bool $isVisible;
+    public int $order;
 
     public function __construct(array $dbRow) {
         $this->id = $dbRow['id'] ?? 0;
@@ -25,6 +26,7 @@ class Page {
         $this->createdOn = DateTime::createFromFormat('Y-m-d H:i:se', $dbRow['created_on'] ?? '') ?: new DateTime();
         $this->modifiedOn = DateTime::createFromFormat('Y-m-d H:i:se', $dbRow['modified_on']) ?: null;
         $this->isVisible = $dbRow['is_visible'] ?? false;
+        $this->order = $dbRow['order'] ?? 0;
     }
 }
 
