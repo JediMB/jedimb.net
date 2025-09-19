@@ -172,10 +172,19 @@ setCopyrightYearByFile(__FILE__);
                                 "vanilla" for my first PHP project to better understand how things work.
                             </p>
                             <p>
-                                Now that the website is basically in a usable state, the plan is to tweak aspects as necessary while I move on to learn something else.
+                                <s>Now that the website is basically in a usable state, the plan is to tweak aspects as necessary while I move on to learn something else.</s>
                             </p>
                             <p>
-                                First stop: Java.
+                                <s>First stop: Java.</s>
+                            </p>
+                            <p>
+                                Or so I thought, back at the end of January. Instead, I ended up getting short-lived employment, and then just had a hard time getting
+                                back in that coding groove. As of September 8, 2025, I'm doing an internship with a previous employer. Basically, I'm using this website
+                                as a basis for a new and improved site for the company. I get the opportunity to improve my skills without unemployment interference, as
+                                well as official work experience, and they get a new website with a better user experience out of it.
+                            </p>
+                            <p>
+                                It's a win-win situation, I think, and at the time of typing <i>(two weeks in)</i>, I've honestly made some enormous improvements to the code base.
                             </p>
                         </section>
                     </template>

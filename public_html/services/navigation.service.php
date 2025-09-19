@@ -19,7 +19,6 @@ class NavigationService extends Singleton{
 
         $this->buildVirtualPageRoutes($navData);
         $this->buildVirtualPageMenuData($navData);
-        $this->buildRealPageMenuData();
     }
 
     private function getPageNavigationData() : array {
@@ -66,22 +65,22 @@ class NavigationService extends Singleton{
         if (!isset($this->virtualPageRoutes))
             throw new Exception('Virtual page routes not built before trying to build menu data.');
 
-        $menuItems = [];
+        $this->menu ??= [];
         $tier2Items = [];
 
         foreach ($navData as $item) {
             /** @var PageNavigationData $item */
          
             if ($item->parentId === null) {
-                $menuItems[$item->id] = new MenuItem(
+                $this->menu[$item->id] = new MenuItem(
                     $item->menuTitle,
                     $this->virtualPageRoutes[$item->id]
                 );
                 continue;
             }
 
-            if (isset($menuItems[$item->parentId])) {
-                $menuItems[$item->parentId]->children[$item->id] =
+            if (isset($this->menu[$item->parentId])) {
+                $this->menu[$item->parentId]->children[$item->id] =
                     $tier2Items[$item->id] = new MenuItem(
                         $item->menuTitle,
                         $this->virtualPageRoutes[$item->id]
@@ -96,12 +95,6 @@ class NavigationService extends Singleton{
                 );
             }
         }
-
-        $this->menu = $menuItems;
-    }
-
-    private function buildRealPageMenuData() {
-        $menu ??= [];
     }
 }
 

@@ -16,3 +16,4 @@
 - Blog post editing/deletion
 - Virtual Page composition/publishing
 - Virtual Page editing/deletion
+- Support for adding manual page links to menu
