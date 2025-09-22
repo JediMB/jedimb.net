@@ -5,7 +5,9 @@ namespace Services;
 require_once 'services/singleton.php';
 require_once 'services/database.service.php';
 require_once 'models/social-link.model.php';
+require_once 'enums/db-fetch.enum.php';
 
+use Enums\DBFetch;
 use Models\SocialLink;
 use PDOException;
 
@@ -15,7 +17,7 @@ class SocialLinkService extends Singleton {
             $service = DatabaseService::getInstance();
             /** @var DatabaseService $service */
 
-            $links = $service->selectView('social_link', Fetch::All);
+            $links = $service->selectView('social_link', DBFetch::All);
         }
         catch (PDOException $e) {
             $links = [];

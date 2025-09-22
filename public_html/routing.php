@@ -1,7 +1,9 @@
 <?php
 
+require_once 'enums/page-type.enum.php';
 require_once 'services/page.service.php';
 
+use Enums\PageType;
 use Services\NavigationService;
 use Services\PageService;
 
@@ -78,10 +80,11 @@ function handleApiRequests(string $path) {
 // If it's trying to access a blog entry, serve a match
 function handleBlogRequests(string $path) {
     $matches = [];
-    if (preg_match(REGEX_BLOG_PATH, $path, $matches)) {
-        $GLOBALS['permalink'] = $matches[1];
-        servePHP('blog/post.php');
-    }
+    if (preg_match(REGEX_BLOG_PATH, $path, $matches))
+        servePHP('blog/post.php', [
+            'permalink' => $matches[1],
+            'pageType' => PageType::Blog
+        ]);
 }
 
 // Serve Error 404 if user agent is known bot
@@ -89,7 +92,7 @@ function handleBots() {
     $httpUserAgent = strtolower($_SERVER['HTTP_USER_AGENT']);
     foreach(INVALID_USER_AGENTS as $botAgent)
         if (strpos($httpUserAgent, $botAgent) !== false)
-            servePHP(PATH_ERROR404, 'HTTP/1.1 404 Not Found');
+            servePHP(PATH_ERROR404, [ 'header' => 'HTTP/1.1 404 Not Found' ]);
 }
 
 function handleVirtualPages(string $requestPath) {
@@ -99,7 +102,10 @@ function handleVirtualPages(string $requestPath) {
     foreach ($nav->virtualPageRoutes as $id => $route) {
         if (ltrim($route, '/') === $requestPath) {
             PageService::getInstance()->id = $id;
-            servePHP(PATH_VIRTUALPAGE, false);
+            servePHP(PATH_VIRTUALPAGE, [
+                'pageType' => PageType::Virtual,
+                'pageId' => $id
+            ]);
         }
     }
 }
@@ -113,7 +119,12 @@ function isUnsafe(string $realPath) : bool {
         || substr(basename($realPath), 0, 1) === '.'; 
 }
 
-function servePHP(string $path, string|false $header = false) {
+function servePHP(string $path, array $variables = [ 'header' => false ]) {
+    extract($variables);
+
+    if (!isset($pageType))
+        $pageType = PageType::PHP;
+    
     if ($header)
         header($header);
 

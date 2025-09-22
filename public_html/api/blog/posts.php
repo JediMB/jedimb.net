@@ -3,7 +3,7 @@
 require_once 'services/database.service.php';
 
 use Services\DatabaseService;
-use Services\Fetch;
+use Enums\DBFetch;
 
 $input = json_decode(file_get_contents('php://input'), true);
 
@@ -12,7 +12,7 @@ $input = json_decode(file_get_contents('php://input'), true);
 switch( $_SERVER['REQUEST_METHOD'] ) {
     case 'GET':
         try {
-            $result = DatabaseService::getInstance()->selectView('blog_posts_published', Fetch::All);
+            $result = DatabaseService::getInstance()->selectView('blog_posts_published', DBFetch::All);
             
             echo json_encode($result);
         }

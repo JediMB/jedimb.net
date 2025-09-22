@@ -5,7 +5,7 @@ require_once 'services/blog-post.service.php';
 use Services\BlogPostService;
 use Services\PageService;
 
-if ( !( $post = BlogPostService::getInstance()->getBlogPost($GLOBALS['permalink']) ) ) {
+if ( !( $post = BlogPostService::getInstance()->getBlogPost($permalink) ) ) {
     include 'errors/404.php';
     return;
 }

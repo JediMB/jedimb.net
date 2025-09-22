@@ -3,13 +3,10 @@
 namespace Services;
 
 require_once 'services/singleton.php';
+require_once 'enums/db-fetch.enum.php';
 
 use PDO;
-
-enum Fetch {
-    case One;
-    case All;
-}
+use Enums\DBFetch;
 
 class DatabaseService extends Singleton {
     private PDO|null $service;
@@ -37,13 +34,13 @@ class DatabaseService extends Singleton {
         return $query->fetch();
     }
 
-    public function selectFunction(string $name, string $parameters, Fetch $amount = Fetch::One) {
+    public function selectFunction(string $name, string $parameters, DBFetch $amount = DBFetch::One) {
         $query = $this->service->prepare(
             "SELECT * FROM " . $this->schema . ".$name($parameters)"
         );
         $query->execute();
 
-        if ($amount === Fetch::All)
+        if ($amount === DBFetch::All)
             return $query->fetchAll();
 
         return $query->fetch();
