@@ -2,6 +2,7 @@
 
 namespace Page;
 
+require_once 'services/navigation.service.php';
 require_once 'services/page.service.php';
 
 use Services\NavigationService;

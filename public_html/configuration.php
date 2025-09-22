@@ -39,7 +39,7 @@ define('INVALID_USER_AGENTS', [
 define('MENU_MAIN', [
     [
         'title' => 'Projects',
-        'submenu-hidden' => [
+        'submenu' => [
             [
                 'title' => 'Project A',
                 'url' => '/projects/project-a',
