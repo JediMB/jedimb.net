@@ -46,7 +46,7 @@ function mobileMenu() {
                 /** @var MenuItem $subItem */
                 $submenuMarkup = $submenuMarkup . <<<HTML
                     <li>
-                        <a href="/{$subItem->path}">{$subItem->title}</a>
+                        <a href="{$subItem->path}">{$subItem->title}</a>
                     </li>
                 HTML;
             }
@@ -69,7 +69,7 @@ function mobileMenu() {
         else {
             echo <<<HTML
                 <li>
-                    <a href="/{$item->path}">{$item->title}</a>
+                    <a href="{$item->path}">{$item->title}</a>
                 </li>
             HTML;
         }

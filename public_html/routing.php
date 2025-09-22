@@ -97,7 +97,7 @@ function handleVirtualPages(string $requestPath) {
     /** @var NavigationService $nav */
 
     foreach ($nav->virtualPageRoutes as $id => $route) {
-        if ($route === $requestPath) {
+        if (ltrim($route, '/') === $requestPath) {
             PageService::getInstance()->id = $id;
             servePHP(PATH_VIRTUALPAGE, false);
         }

@@ -31,7 +31,7 @@ function mainMenu() {
             $onKeyDown = onReturnKey($jsFunction);
         }
         else {
-            $onClick = onClick("/$item->path", true);
+            $onClick = onClick($item->path, true);
         }
 
         echo <<<HTML
@@ -67,7 +67,7 @@ function subMenu() {
         foreach ($item->children as $subId => $subItem) {
             /** @var MenuItem $subItem */
             $animationDelay = ($subId * 200) . 'ms';
-            $onClick = onClick("/$subItem->path", true);
+            $onClick = onClick($subItem->path, true);
 
             echo <<<HTML
                 <li class="card" style="--animation-delay: $animationDelay;">

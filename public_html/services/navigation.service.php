@@ -55,7 +55,7 @@ class NavigationService extends Singleton{
                 $fullPath = $item->pathPart . DIRECTORY_SEPARATOR . $fullPath;
             }
 
-            $routes[$id] = $fullPath;
+            $routes[$id] = "/$fullPath";
         }
 
         $this->virtualPageRoutes = $routes;
