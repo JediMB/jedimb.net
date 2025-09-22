@@ -13,27 +13,17 @@ setCopyrightYearByFile(__FILE__);
     <main class="mb-3">
         <!-- Implement pagination and include the first page as part of the document -->
         <template>
-            <section class="flex flex-col">
+            <article class="flex flex-col">
                 <h2><a href="/blog/{id}">Title</a></h2>
-                <section-byline>6h ago - last modified 4h ago</section-byline>
-                <section-content>Content</section-content>
-            </section>
+                <article-byline>
+                    <date-created>6h ago</date-created>
+                    <date-modified class="weak">last modified 4h ago</date-modified>
+                </article-byline>
+                <article-content>Content</article-content>
+            </article>
         </template>
     </main>
     <aside class="links max-md:bg-hotpink-950 max-md:p-2 max-md:rounded-lg">
-        <h2>Links</h2>
-        <div class="mb-3">
-            Cool people and places in 88 × 31 pixels:
-        </div>
-        <div class="flex gap-3 px-2
-            max-md:flex-row max-md:justify-center max-md:flex-wrap
-            md:flex-col md:items-center">
-            <a href="https://enikofox.com" title="Eniko does bad things to code" target="_blank">
-                <img src="https://enikofox.com/enikodoesbadthingstocode.png" width="88" height="31" alt="Eniko does bad things to code">
-            </a>
-        </div>
-        <div class="mt-3 text-gray-500 italic">
-            I'll make my own button at some point, too!
-        </div>
+        <?php include 'components/button-links.php' ?>
     </aside>
 </page-content>

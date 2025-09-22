@@ -19,13 +19,13 @@ if (!$page) {
     return;
 }
 
-$service->setTitle($page->pageTitle);
+$service->setTitle($page->title);
 
 ?>
 
 <page-content>
     <main>
-        <h2><?= $page->header ?? $page->pageTitle ?></h2>
+        <h2><?= $page->header ?? $page->title ?></h2>
         <?= $page->content ?>
         <p>
             <?php

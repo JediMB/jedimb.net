@@ -34,7 +34,7 @@ setCopyrightYearByFile(__FILE__);
                 $modifiedOn = $post->modifiedOn->format('Y-m-d H:i:s');
 
                 echo <<<HTML
-                    <span class="weak">- Last modified <date-time server-time="{$modifiedOn}">{$modifiedOn}</date-time>.</span>
+                    <span class="weak">– Last modified <date-time server-time="{$modifiedOn}">{$modifiedOn}</date-time>.</span>
                 HTML;
             }
 

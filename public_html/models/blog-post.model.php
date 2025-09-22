@@ -2,13 +2,13 @@
 
 namespace Models;
 
+require_once 'models/page-base.model.php';
+
 use DateTime;
 
-class BlogPost {
+class BlogPost extends PageBase {
     public int $id;
     public string $permalink;
-    public string $title;
-    public string $content;
     public ?string $mastolink;
     public DateTime $createdOn;
     public ?DateTime $modifiedOn;
@@ -17,11 +17,11 @@ class BlogPost {
     public bool $isPinned;
 
     public function __construct(array $dbRow) {
+        parent::__construct($dbRow);
+
         $this->id = $dbRow['id'] ?? 0;
         $this->permalink = $dbRow['permalink'] ?? '';
-        $this->title = $dbRow['title'] ?? '';
-        $this->content = $dbRow['content'] ?? '';
-        $this->mastolink = $dbRow['mastolink'] ?? '';
+        $this->mastolink = $dbRow['mastolink'] ?? null;
         $this->createdOn = DateTime::createFromFormat('Y-m-d H:i:se', $dbRow['created_on'] ?? '') ?: new DateTime();
         $this->modifiedOn = DateTime::createFromFormat('Y-m-d H:i:se', $dbRow['modified_on']) ?: null;
         $this->isPublished = $dbRow['is_published'] ?? false;
