@@ -9,6 +9,7 @@ require_once 'enums/page-type.enum.php';
 require_once 'services/navigation.service.php';
 
 use Enums\PageType;
+use Models\MenuItem;
 use Services\NavigationService;
 
 // Force lowercase
@@ -25,10 +26,14 @@ handleBots();
 
 handleApiRequests($requestPath);
 
-NavigationService::getInstance();
+$navService = NavigationService::getInstance();
+$navService->menu[] = new MenuItem('About me', '/about');
 
 if ($requestPath === '')
-    servePHP(realpath(SITE_HOME));
+    servePHP([
+        'pagePath' => SITE_HOME,
+        'links' => true
+    ]);
 
 handleVirtualPages($requestPath);
 
@@ -38,13 +43,19 @@ $isForbidden = false;
 $realPath = getRealPath($requestPath, $isForbidden);
 
 if (!$realPath)
-    servePHP(PATH_ERROR404, [ 'header' => 'HTTP/1.1 404 Not Found' ]);
+    servePHP([
+        'header' => 'HTTP/1.1 404 Not Found',
+        'pagePath' => PATH_ERROR404
+    ]);
 
 if ($isForbidden)
-    servePHP(PATH_ERROR403, [ 'header' => 'HTTP/1.1 403 Forbidden' ]);
+    servePHP([
+        'header' => 'HTTP/1.1 403 Forbidden',
+        'pagePath' => PATH_ERROR403
+    ]);
 
 if (isPHP($realPath))
-    servePHP($realPath);
+    servePHP([ 'pagePath' => $realPath ]);
 
 // Serve asset file from filesystem
 return false;

@@ -9,7 +9,10 @@ require_once 'components/mobile-menu/mobile-menu.php';
 require_once 'components/social-links/social-links.php';
 require_once 'services/attributes.php';
 
+use Enums\PageType;
 use Services\PageService;
+
+$links = !empty($links);
 
 $page = PageService::getInstance();
 /** @var PageService $page */
@@ -21,7 +24,7 @@ $page = PageService::getInstance();
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?= $page->title ?></title>
+    <title><?= empty($title) ? SITE_TITLE : "$title – ". SITE_TITLE ?></title>
     
     <link rel="icon" type="image/x-icon" href="/favicon.svg" />
     <?php
@@ -40,7 +43,9 @@ $page = PageService::getInstance();
     
     ?>
     <script type="text/javascript" src="/js/purify.min.js"></script>
-    <script type="module" src="/js/mastodon-comments.js"></script>
+    <?php if ($pageType === PageType::Blog): ?>
+        <script type="text/javascript" defer src="/js/local-time.js"></script>
+    <?php endif ?>
 </head>
 <body>
     <header>
@@ -83,12 +88,29 @@ $page = PageService::getInstance();
         </sub-menu>
     </header>
     
-    <content-container>
-        <?= $page->content ?>
+    <content-container class="mb-3 <?= $links ? 'md:grid grid-cols-sidebar-right gap-x-8' : null ?>">
+        <main>
+            <?php if (!empty($title)): ?>
+                <h2><?= $title ?></h2>
+            <?php endif ?>
+            <?php if ($pageType === PageType::Blog): ?>
+                <div><?php include 'components/created-modified-dates.php' ?></div>
+            <?php endif ?>
+            <div><?= $content ?></div>
+        </main>
+        <?php if ($links): ?>
+            <aside class="links max-md:bg-hotpink-950 max-md:p-2 max-md:rounded-lg">
+            <?php include 'components/button-links.php' ?>
+        </aside>
+        <?php endif ?>
     </content-container>
 
+    <?php if ($pageType === PageType::Blog): ?>
+        <?php include 'components/mastodon-comments.php' ?>
+    <?php endif ?>
+
     <footer>
-        <?= printCopyrightYear() ?>
+        <?php include 'components/copyright.php' ?>
         <br/>
         Made in PHP, HTML, CSS and JavaScript, with Visual Studio Code, Tailwind and PHP Intelephense.
     </footer>

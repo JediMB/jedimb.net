@@ -1,9 +1,11 @@
 <?php
 
 require_once 'enums/page-type.enum.php';
+require_once 'services/blog-post.service.php';
 require_once 'services/page.service.php';
 
 use Enums\PageType;
+use Services\BlogPostService;
 use Services\NavigationService;
 use Services\PageService;
 
@@ -80,11 +82,21 @@ function handleApiRequests(string $path) {
 // If it's trying to access a blog entry, serve a match
 function handleBlogRequests(string $path) {
     $matches = [];
-    if (preg_match(REGEX_BLOG_PATH, $path, $matches))
-        servePHP('blog/post.php', [
-            'permalink' => $matches[1],
-            'pageType' => PageType::Blog
+    if (preg_match(REGEX_BLOG_PATH, $path, $matches)) {
+        $service = BlogPostService::getInstance();
+        /** @var BlogPostService $service */
+
+        $blogPost = $service->getBlogPost($matches[1]);
+
+        servePHP([
+            'pageType' => PageType::Blog,
+            'title' => $blogPost->title,
+            'content' => $blogPost->content,
+            'createdOn' => $blogPost->createdOn,
+            'modifiedOn' => $blogPost->modifiedOn,
+            'mastolink' => $blogPost->mastolink
         ]);
+    }
 }
 
 // Serve Error 404 if user agent is known bot
@@ -92,7 +104,10 @@ function handleBots() {
     $httpUserAgent = strtolower($_SERVER['HTTP_USER_AGENT']);
     foreach(INVALID_USER_AGENTS as $botAgent)
         if (strpos($httpUserAgent, $botAgent) !== false)
-            servePHP(PATH_ERROR404, [ 'header' => 'HTTP/1.1 404 Not Found' ]);
+            servePHP([
+                'header' => 'HTTP/1.1 404 Not Found',
+                'pagePath' => PATH_ERROR404
+            ]);
 }
 
 function handleVirtualPages(string $requestPath) {
@@ -101,10 +116,17 @@ function handleVirtualPages(string $requestPath) {
 
     foreach ($nav->virtualPageRoutes as $id => $route) {
         if (ltrim($route, '/') === $requestPath) {
-            PageService::getInstance()->id = $id;
-            servePHP(PATH_VIRTUALPAGE, [
+            $service = PageService::getInstance();
+            /** @var PageService $service */
+
+            $page = $service->getPage($id);
+
+            servePHP([
                 'pageType' => PageType::Virtual,
-                'pageId' => $id
+                'title' => $page->title,
+                'content' => $page->content,
+                'createdOn' => $page->createdOn,
+                'modifiedOn' => $page->modifiedOn
             ]);
         }
     }
@@ -119,23 +141,24 @@ function isUnsafe(string $realPath) : bool {
         || substr(basename($realPath), 0, 1) === '.'; 
 }
 
-function servePHP(string $path, array $variables = [ 'header' => false ]) {
+function servePHP(array $variables = [ 'header' => false ]) {
     extract($variables);
 
     if (!isset($pageType))
         $pageType = PageType::PHP;
     
-    if ($header)
+    if (!empty($header))
         header($header);
 
     $pageService = PageService::getInstance();
     /** @var PageService $pageService */
 
-    require_once 'services/copyright-year.php';
+    if ($pageType === PageType::PHP && isset($pagePath)) {
+        ob_start();
+        include $pagePath;
+        $content = ob_get_clean();
+    }
 
-    ob_start();
-    include $path;
-    $pageService->content = ob_get_clean();
     require_once $pageService->template;
     exit;
 }
