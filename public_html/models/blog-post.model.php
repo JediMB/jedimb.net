@@ -22,8 +22,8 @@ class BlogPost extends PageBase {
         $this->id = $dbRow['id'] ?? 0;
         $this->permalink = $dbRow['permalink'] ?? '';
         $this->mastolink = $dbRow['mastolink'] ?? null;
-        $this->createdOn = DateTime::createFromFormat('Y-m-d H:i:se', $dbRow['created_on'] ?? '') ?: new DateTime();
-        $this->modifiedOn = DateTime::createFromFormat('Y-m-d H:i:se', $dbRow['modified_on']) ?: null;
+        $this->createdOn = DateTime::createFromFormat(DB_DATETIME_FORMAT, $dbRow['created_on'] ?? '') ?: new DateTime();
+        $this->modifiedOn = DateTime::createFromFormat(DB_DATETIME_FORMAT, $dbRow['modified_on'] ?? '') ?: null;
         $this->isPublished = $dbRow['is_published'] ?? false;
         $this->isVisible = $dbRow['is_visible'] ?? false;
         $this->isPinned = $dbRow['is_pinned'] ?? false;

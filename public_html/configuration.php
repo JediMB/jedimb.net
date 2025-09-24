@@ -20,6 +20,8 @@ define('META_DESCRIPTION', "JediMB's indie website");
 define('META_KEYWORDS', 'indie, programming, games, blog, webdev');
 
 define('DB_OPTIONS', [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]);
+define('DB_DATETIME_FORMAT', 'Y-m-d H:i:se');
+
 define('INVALID_USER_AGENTS', [
         'anthropic-ai',
         'claude-web',

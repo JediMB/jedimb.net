@@ -23,8 +23,8 @@ class Page extends PageBase {
         $this->parentId = $dbRow['parent_id'] ?? null;
         $this->pathPart = $dbRow['path_part'] ?? '';
         $this->menuTitle = $dbRow['menu_title'] ?? null;
-        $this->createdOn = DateTime::createFromFormat('Y-m-d H:i:se', $dbRow['created_on'] ?? '') ?: new DateTime();
-        $this->modifiedOn = DateTime::createFromFormat('Y-m-d H:i:se', $dbRow['modified_on']) ?: null;
+        $this->createdOn = DateTime::createFromFormat(DB_DATETIME_FORMAT, $dbRow['created_on'] ?? '') ?: new DateTime();
+        $this->modifiedOn = DateTime::createFromFormat(DB_DATETIME_FORMAT, $dbRow['modified_on'] ?? '') ?: null;
         $this->isVisible = $dbRow['is_visible'] ?? false;
         $this->order = $dbRow['order'] ?? 0;
     }
