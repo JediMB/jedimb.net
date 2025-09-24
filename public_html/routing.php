@@ -150,6 +150,9 @@ function servePHP(array $variables = [ 'header' => false ]) {
     if (!empty($header))
         header($header);
 
+    if (empty($template))
+        $template = SITE_VIEW;
+
     $pageService = PageService::getInstance();
     /** @var PageService $pageService */
 
@@ -159,7 +162,7 @@ function servePHP(array $variables = [ 'header' => false ]) {
         $content = ob_get_clean();
     }
 
-    require_once $pageService->template;
+    require_once realpath("views/$template");
     exit;
 }
 

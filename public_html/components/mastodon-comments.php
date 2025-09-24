@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 $linkComponents = [];
 $isValid = isset($mastolink) && preg_match(REGEX_MASTOLINK, $mastolink, $linkComponents);

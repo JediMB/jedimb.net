@@ -1,8 +1,6 @@
-<?php
+<?php declare(strict_types=1);
 
-use Services\PageService;
-
-PageService::getInstance()->setTitle('404 Not Found');
+$title = '404 Not Found';
 
 ?>
 

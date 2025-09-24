@@ -1,4 +1,6 @@
- <?php $createdString = $createdOn->format('Y-m-d H:i:s') ?>
+ <?php declare(strict_types=1);
+ $createdString = $createdOn->format('Y-m-d H:i:s')
+ ?>
 
 <span>
     <date-time server-time="<?= $createdString ?>" class="capitalize">

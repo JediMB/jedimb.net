@@ -1,4 +1,4 @@
-<?php ?>
+<?php declare(strict_types=1); ?>
 
 <script type="module" src="/js/pages/blog.blog.js"></script>
 

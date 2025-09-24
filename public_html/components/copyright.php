@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
     $siteYear = trim(SITE_CREATEDYEAR);
 

@@ -1,4 +1,8 @@
-<?php $title = 'About me' ?>
+<?php declare(strict_types=1);
+
+$title = 'About me'
+
+?>
 
 <p>
     I'm a Swedish 🇸🇪 programmer <em>(<a href="https://cv.jedimb.net" target="_blank">actively looking for work</a>)</em>

@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 $input = json_decode(file_get_contents('php://input'), true);
 

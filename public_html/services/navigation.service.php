@@ -1,8 +1,9 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Services;
 
 require_once 'services/singleton.php';
+require_once 'models/page-navigation-data.model.php';
 require_once 'models/menu-item.model.php';
 
 use Exception;
