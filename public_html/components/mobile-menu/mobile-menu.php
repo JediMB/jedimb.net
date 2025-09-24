@@ -1,9 +1,11 @@
 <?php declare(strict_types=1);
 
 require_once 'services/navigation.service.php';
+require_once 'utilities/menu-link.utility.php';
 
-use Services\NavigationService;
 use Models\MenuItem;
+use Services\NavigationService;
+use Utilities\MenuLink;
 
 function mobileMenu() {
     $unsuffixedComponentPath = rtrim(__FILE__, 'php');
@@ -15,7 +17,7 @@ function mobileMenu() {
     echo $cssPath ? '<style type="text/css">' . file_get_contents($cssPath) . '</style>' : null;
     echo $jsPath ? '<script src="'. $jsPath . '" defer></script>' : null;
 
-    $onClick = onClick('openMobileMenu(event);');
+    $onClick = MenuLink::onClick('openMobileMenu(event);');
 
     echo <<<HTML
         <nav id="mobile-menu">
@@ -54,7 +56,7 @@ function mobileMenu() {
             if(strlen($submenuMarkup) < 10)
                 continue;
 
-            $onReturnKey = onReturnKey('this.click();');
+            $onReturnKey = MenuLink::onReturnKey('this.click();');
             
             echo <<<HTML
                 <li>

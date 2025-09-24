@@ -5,7 +5,6 @@ namespace Views;
 require_once 'components/navigation-menu/navigation-menu.php';
 require_once 'components/mobile-menu/mobile-menu.php';
 require_once 'components/social-links/social-links.php';
-require_once 'services/attributes.php';
 
 use Enums\PageType;
 use Services\PageService;

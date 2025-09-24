@@ -1,9 +1,11 @@
 <?php declare(strict_types=1);
 
 require_once 'services/navigation.service.php';
+require_once 'utilities/menu-link.utility.php';
 
-use Services\NavigationService;
 use Models\MenuItem;
+use Services\NavigationService;
+use Utilities\MenuLink;
 
 function mainMenu() {
     $unsuffixedComponentPath = rtrim(__FILE__, 'php');
@@ -27,11 +29,11 @@ function mainMenu() {
 
         if (count($item->children) > 0) {
             $jsFunction = "toggleSubMenu($id, this)";
-            $onClick = onClick($jsFunction);
-            $onKeyDown = onReturnKey($jsFunction);
+            $onClick = MenuLink::onClick($jsFunction);
+            $onKeyDown = MenuLink::onReturnKey($jsFunction);
         }
         else {
-            $onClick = onClick($item->path, true);
+            $onClick = MenuLink::onClick($item->path, true);
         }
 
         echo <<<HTML
@@ -67,7 +69,7 @@ function subMenu() {
         foreach ($item->children as $subId => $subItem) {
             /** @var MenuItem $subItem */
             $animationDelay = ($subId * 200) . 'ms';
-            $onClick = onClick($subItem->path, true);
+            $onClick = MenuLink::onClick($subItem->path, true);
 
             echo <<<HTML
                 <li class="card" style="--animation-delay: $animationDelay;">
