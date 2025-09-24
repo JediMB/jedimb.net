@@ -1,20 +1,3 @@
-#menu .btn-menu {
-    border-radius: 9999px;
-    background-color: var(--color-primary);
-    color: var(--color-text);
-    border: 2px solid transparent;
-    font-family: 'Press Start 2P';
-    font-weight: 100;
-    font-size: .875rem;
-}
-
-#menu .btn-menu:hover,
-#menu .btn-menu.selected {
-    background-color: var(--color-primary-light);
-    color: var(--color-background);
-    border-color: var(--color-text);
-}
-
 #sub-menu .show-menu {
     --animation-name: show-menu;
 }

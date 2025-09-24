@@ -2,8 +2,6 @@
 
 namespace Views;
 
-require_once 'components/navigation-menu/navigation-menu.php';
-require_once 'components/mobile-menu/mobile-menu.php';
 require_once 'components/social-links/social-links.php';
 
 use Enums\PageType;
@@ -66,16 +64,16 @@ $page = PageService::getInstance();
                 </mobile-title>
 
                 <mobile-menu>
-                    <?php mobileMenu() ?>
+                    <?php require_once 'components/mobile-menu/mobile-menu.php' ?>
                 </mobile-menu>
                 
                 <desktop-menu>
-                    <?php mainMenu() ?>
+                    <?php require_once 'components/main-menu/main-menu.php' ?>
                 </desktop-menu>
             </menu-container>
         </header-container>
         <sub-menu>
-            <?php subMenu() ?>
+            <?php require_once 'components/sub-menu/sub-menu.php' ?>
         </sub-menu>
     </header>
     
