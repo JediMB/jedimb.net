@@ -13,6 +13,7 @@ use Enums\PageType;
 use Services\PageService;
 
 $links = !empty($links);
+$cssPath = PATH_CSS_DEFAULT;
 
 $page = PageService::getInstance();
 /** @var PageService $page */
@@ -24,26 +25,19 @@ $page = PageService::getInstance();
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta name="author" content="<?= SITE_AUTHOR ?>">
+    <meta name="description" content="<?= META_DESCRIPTION ?>">
+    <meta name="keywords" content="<?= META_KEYWORDS ?>">
+
     <title><?= empty($title) ? SITE_TITLE : "$title – ". SITE_TITLE ?></title>
     
-    <link rel="icon" type="image/x-icon" href="/favicon.svg" />
-    <?php
-    
-    $cssPath = 'css/style.css';
-    $realPath = realpath($cssPath);
-    $cssPath = '/' . (
-        $realPath
-        ? $cssPath . '?rev=' . date('ymdHi', filectime($realPath))
-        : $cssPath
-    );
+    <?php include 'components/css-revision-link.php' ?>
 
-    echo <<<HTML
-        <link href="{$cssPath}" rel="stylesheet" />
-    HTML;
+    <link rel="icon" type="image/x-icon" href="/favicon.svg" />
     
-    ?>
     <script type="text/javascript" src="/js/purify.min.js"></script>
-    <?php if ($pageType === PageType::Blog): ?>
+    <?php if ($pageType === PageType::BlogPost): ?>
         <script type="text/javascript" defer src="/js/local-time.js"></script>
     <?php endif ?>
 </head>
@@ -93,7 +87,7 @@ $page = PageService::getInstance();
             <?php if (!empty($title)): ?>
                 <h2><?= $title ?></h2>
             <?php endif ?>
-            <?php if ($pageType === PageType::Blog): ?>
+            <?php if ($pageType === PageType::BlogPost): ?>
                 <div><?php include 'components/created-modified-dates.php' ?></div>
             <?php endif ?>
             <div><?= $content ?></div>
@@ -105,7 +99,7 @@ $page = PageService::getInstance();
         <?php endif ?>
     </content-container>
 
-    <?php if ($pageType === PageType::Blog): ?>
+    <?php if ($pageType === PageType::BlogPost): ?>
         <?php include 'components/mastodon-comments.php' ?>
     <?php endif ?>
 

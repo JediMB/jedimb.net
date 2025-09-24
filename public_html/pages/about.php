@@ -1,8 +1,4 @@
-<?php
-
-$title = 'About me';
-
-?>
+<?php $title = 'About me' ?>
 
 <p>
     I'm a Swedish 🇸🇪 programmer <em>(<a href="https://cv.jedimb.net" target="_blank">actively looking for work</a>)</em>

@@ -89,7 +89,7 @@ function handleBlogRequests(string $path) {
         $blogPost = $service->getBlogPost($matches[1]);
 
         servePHP([
-            'pageType' => PageType::Blog,
+            'pageType' => PageType::BlogPost,
             'title' => $blogPost->title,
             'content' => $blogPost->content,
             'createdOn' => $blogPost->createdOn,

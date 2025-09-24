@@ -31,7 +31,7 @@ $navService->menu[] = new MenuItem('About me', '/about');
 
 if ($requestPath === '')
     servePHP([
-        'pagePath' => SITE_HOME,
+        'pagePath' => PATH_HOMEPAGE,
         'links' => true
     ]);
 

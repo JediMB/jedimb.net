@@ -19,7 +19,7 @@ class PageService extends Singleton {
 
     protected function __construct() {
         $this->title = SITE_TITLE;
-        $this->template  = realpath('views/' . SITE_TEMPLATE);
+        $this->template  = realpath('views/' . PATH_TEMPLATE_DEFAULT);
         $this->year = SITE_CREATEDYEAR;
         $this->content = 'Page content';
     }

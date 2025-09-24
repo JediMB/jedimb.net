@@ -1,6 +1,6 @@
 <?php ?>
 
-<script type="module" defer src="/js/pages/blog.blog.js"></script>
+<script type="module" src="/js/pages/blog.blog.js"></script>
 
 <!-- Implement pagination and include the first page as part of the document -->
 <template>
