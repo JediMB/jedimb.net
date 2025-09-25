@@ -1,12 +1,12 @@
 <?php declare(strict_types=1);
 
-    if (!isset($modifiedOn) && !isset($pagePath))
+    if (!isset($pageDate) && !isset($pagePath))
         throw new Exception('Copyright component requires modified date or page path');
 
     $siteYear = trim(SITE_CREATEDYEAR);
 
-    if (isset($modifiedOn))
-        $year = $modifiedOn->format('Y');
+    if (isset($pageDate))
+        $year = $pageDate->format('Y');
     else
         $year = date('Y', filectime($pagePath));
 

@@ -104,7 +104,7 @@ $page = PageService::getInstance();
         <?php if ($pageType === PageType::PHP): ?>
             <?php Component::include('copyright.php', [ 'pagePath' => $pagePath ]) ?>
         <?php else: ?>
-            <?php Component::include('copyright.php', [ 'modifiedOn' => $modifiedOn ]) ?>
+            <?php Component::include('copyright.php', [ 'pageDate' => $modifiedOn ?: $createdOn ]) ?>
         <?php endif ?>
         <br/>
         Made in PHP, HTML, CSS and JavaScript, with Visual Studio Code, Tailwind and PHP Intelephense.
