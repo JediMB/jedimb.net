@@ -2,7 +2,6 @@
 
 namespace Views;
 
-require_once 'components/social-links/social-links.php';
 require_once 'utilities/component.utility.php';
 
 use Enums\PageType;
@@ -46,7 +45,7 @@ $links = !empty($links);
                     </a>
                 </home-wrapper>
                 <social-container>
-                    <?php socialLinks() ?>
+                    <?php Component::include('social-links.php') ?>
                 </social-container>
             </header-links>
             <menu-container>
