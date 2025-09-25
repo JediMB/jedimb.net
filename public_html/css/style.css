@@ -655,6 +655,10 @@ video {
     padding-right: 0.5rem;
 }
 
+.lowercase {
+    text-transform: lowercase;
+}
+
 .capitalize {
     text-transform: capitalize;
 }

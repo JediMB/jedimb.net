@@ -1,3 +1,4 @@
 node_modules/
-public_html/.htaccess
+public_html/secrets.php
 public_html/.secrets.json
+public_html/sqlca.pem

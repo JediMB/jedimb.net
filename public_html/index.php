@@ -1,157 +1,62 @@
-<?php
+<?php declare(strict_types=1);
 
-    chdir(__DIR__);
-    
-    require_once './includes/utilities/configuration.php';
-    require_once './includes/utilities/copyright-year.php';
+chdir(__DIR__);
 
-    setConfiguration();
-    setSecrets();
+require_once 'configuration.php';
+require_once 'secrets.php';
+require_once 'routing.php';
+require_once 'enums/page-type.enum.php';
+require_once 'services/navigation.service.php';
 
-    // Remove slashes and dots from start and query string from end of path
-    $requestPath = parse_url(ltrim($_SERVER['REQUEST_URI'], '/.'), PHP_URL_PATH);
-    
+use Models\MenuItem;
+use Services\NavigationService;
 
-    // If it's an api call, handle separately
-    if (strpos($requestPath, 'api/') === 0) {
-        header('Content-Type: application/json');
+// Force lowercase
+$requestPath = strtolower(
+    // Remove query string from end
+    parse_url(
+        // Remove slashes and dots from start
+        ltrim($_SERVER['REQUEST_URI'], '/.'),
+        PHP_URL_PATH
+    )
+);
 
-        $requestComponents = explode(DIRECTORY_SEPARATOR, $requestPath, 10);
-        
-        $apiPath = $requestComponents[0];
-        for ($i = 1; $i < count($requestComponents); $i++) {
-            $apiPath = $apiPath . DIRECTORY_SEPARATOR . $requestComponents[$i];
+handleBots();
 
-            // If a matching api file is found, serve it as a json string
-            if (($filePath = realpath($apiPath . '.php'))) {
-                $GLOBALS['api_params'] = array_slice($requestComponents, $i + 1);
-                include $filePath;
-                exit;
-            }
-        }
+handleApiRequests($requestPath);
 
-        echo json_encode(['message' => 'Invalid URI']);
-        exit;
-    }
+$navService = NavigationService::getInstance();
+$navService->menu[] = new MenuItem('About me', '/about');
 
-    // If it's trying to access a blog entry, serve a match
-    $matches = [];
-    if (preg_match('/^blog(\/[0-9]{4}\/[0-9]{2}\/[0-9]{2}\/[-a-z0-9]*)$/', $requestPath, $matches)) {
-        $GLOBALS['permalink'] = $matches[1];
-        ob_start();
-        include 'blog/post.php';
-        $GLOBALS['page_content'] = ob_get_clean();
-        require_once $GLOBALS['page_template'];
-        exit;
-    }
+if ($requestPath === '')
+    servePHP([
+        'pagePath' => PATH_HOMEPAGE,
+        'links' => true
+    ]);
 
-    // If it's a root request, serve root/home.php
-    if ($requestPath === '')
-        $requestPath = $GLOBALS['site_home'];
+handleVirtualPages($requestPath);
 
-    /*  Try to find a matching file in the following order:
-        1) Perfect match
-        2) File with php extension
-        3) File with html extension
-        4) Directory with index.php
-        5) Directory with index.html
-    */
-    $error403 = false;
-    foreach (
-        [
-            '',
-            '.php',
-            '.html',
-            DIRECTORY_SEPARATOR . 'index.php',
-            DIRECTORY_SEPARATOR . 'index.html'
-        ]
-        as $pathSuffix
-        ) {
+handleBlogRequests($requestPath);
 
-        if ( ( $filePath = realpath($requestPath . $pathSuffix) ) === false )
-            continue;
+$isForbidden = false;
+$realPath = getRealPath($requestPath, $isForbidden);
 
-        if ( is_dir($filePath) ) {
-            $error403 = true;
-            continue;
-        }
-        
-        $error403 = false;
-        break;
-    }
+if (!$realPath)
+    servePHP([
+        'header' => 'HTTP/1.1 404 Not Found',
+        'pagePath' => PATH_ERROR404
+    ]);
 
-    // Check if trying to access a PHP or disallowed file
-    $isPHP = (strtolower(substr($filePath, -4)) === '.php');
+if ($isForbidden)
+    servePHP([
+        'header' => 'HTTP/1.1 403 Forbidden',
+        'pagePath' => PATH_ERROR403
+    ]);
 
-    if ($isPHP) {
-        $httpUserAgent = strtolower($_SERVER['HTTP_USER_AGENT']);
+if (isPHP($realPath))
+    servePHP([ 'pagePath' => $realPath ]);
 
-        foreach([
-            'anthropic-ai',
-            'claude-web',
-            'applebot-extended',
-            'bytespider',
-            'ccbot',
-            'chatgpt-user',
-            'cohere-ai',
-            'diffbot',
-            'facebookbot',
-            'googleother',
-            'google-extended',
-            'gptbot',
-            'imagesiftbot',
-            'perplexitybot',
-            'omigilibot',
-            'omigili',
-        ] as $botAgent)
-        {
-            if (strpos($httpUserAgent, $botAgent) !== false) {
-                $error404 = true;
-                break;
-            }
-        }
-    }
-
-    $error404 ??=
-        strtolower($requestPath) === 'index'
-        || strtolower($requestPath) === 'index.php'
-        || strpos($filePath, __DIR__ . DIRECTORY_SEPARATOR) !== 0 
-        || $filePath === __FILE__
-        || substr(basename($filePath), 0, 1) === '.'
-        || ( $isPHP && strpos($requestPath, 'includes/') === 0 );
-
-    // Serve error 403 if trying to access a directory without an index file to serve
-    if ($error403) {
-        header('HTTP/1.1 403 Forbidden');
-
-        ob_start();
-        include 'includes/errors/403.php';
-        $GLOBALS['page_content'] = ob_get_clean();
-        require_once $GLOBALS['page_template'];
-        exit;
-    }
-
-    // Serve error 404 if trying to access a disallowed file
-    if ($error404) {
-        header('HTTP/1.1 404 Not Found');
-
-        ob_start();
-        include 'includes/errors/404.php';
-        $GLOBALS['page_content'] = ob_get_clean();
-        require_once $GLOBALS['page_template'];
-        exit;
-    }
-
-    // Serve PHP file through interpreter
-    if ($isPHP) {
-        ob_start();
-        include $filePath;
-        $GLOBALS['page_content'] = ob_get_clean();
-        require_once $GLOBALS['page_template'];
-        exit;
-    }
-
-    // Serve asset file from filesystem
-    return false;
+// Serve asset file from filesystem
+return false;
 
 ?>
