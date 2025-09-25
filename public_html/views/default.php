@@ -3,9 +3,11 @@
 namespace Views;
 
 require_once 'components/social-links/social-links.php';
+require_once 'utilities/component.utility.php';
 
 use Enums\PageType;
 use Services\PageService;
+use Utilities\Component;
 
 $links = !empty($links);
 $cssPath = PATH_CSS_DEFAULT;
@@ -103,5 +105,7 @@ $page = PageService::getInstance();
         <br/>
         Made in PHP, HTML, CSS and JavaScript, with Visual Studio Code, Tailwind and PHP Intelephense.
     </footer>
+
+    <?php Component::renderQueuedJS() ?>
 </body>
 </html>

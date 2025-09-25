@@ -11,29 +11,36 @@ class Component {
         if (isset(static::$components[$componentFile][$fileType]))
             return;
 
-        static::$components[$componentFile][$fileType] = true;
-
         if ( ($filePath = realpath(rtrim($componentFile, 'php') . $fileType)) ) {
             $fileContents = file_get_contents($filePath);
             echo '<style type="text/css">' . $fileContents . '</style>';
         }
+        
+        static::$components[$componentFile][$fileType] = !!$filePath;
     }
 
-    static function renderJS(string $componentFile) {
+    static function queueJS(string $componentFile) {
         $fileType = 'js';
 
         if (isset(static::$components[$componentFile][$fileType]))
             return;
 
-        static::$components[$componentFile][$fileType] = true;
+        if ( ($filePath = realpath(rtrim($componentFile, 'php') . $fileType)) )
+            static::$components[$componentFile][$fileType] = file_get_contents($filePath);
+        else
+            static::$components[$componentFile][$fileType] = false;
+    }
 
-        if ( ($filePath = realpath(rtrim($componentFile, 'php') . $fileType)) ) {
-            $fileContents = file_get_contents($filePath);
-            echo <<<HTML
-                <script>
-                    $fileContents
-                </script>
-            HTML;
+    static function renderQueuedJS() {
+        $fileType = 'js';
+
+        foreach (static::$components as $component) {
+            if (isset($component[$fileType]) && $component[$fileType])
+                echo <<<HTML
+                    <script>
+                        $component[$fileType]
+                    </script>
+                HTML;
         }
     }
 }

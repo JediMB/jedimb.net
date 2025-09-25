@@ -10,6 +10,7 @@ use Utilities\Component;
 use Utilities\MenuLink;
 
 Component::renderCSS(__FILE__);
+Component::queueJS(__FILE__);
 
 ?>
 
@@ -66,5 +67,3 @@ Component::renderCSS(__FILE__);
         <?php endforeach ?>
     </ul>
 </nav>
-
-<?php Component::renderJS(__FILE__) ?>
