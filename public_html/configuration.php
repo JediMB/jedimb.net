@@ -8,6 +8,10 @@ define('PATH_ERROR403', 'errors/403.php');
 define('PATH_ERROR404', 'errors/404.php');
 define('PATH_CSS_DEFAULT', 'css/style.css');
 
+define('SPECIAL_PATHS', [
+    'login' => 'account/login.php'
+]);
+
 define('SITE_TITLE', 'JediMB.net');
 define('SITE_AUTHOR', 'JediMB');
 define('SITE_CREATEDYEAR', '2025');

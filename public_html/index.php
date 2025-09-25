@@ -27,6 +27,8 @@ $requestPath = strtolower(
     )
 );
 
+session_start();
+
 handleBots();
 
 handleApiRequests($requestPath);
@@ -39,6 +41,11 @@ if ($requestPath === '')
         'pagePath' => PATH_HOMEPAGE,
         'links' => true
     ]);
+
+foreach (SPECIAL_PATHS as $request => $path) {
+    if ($requestPath === $request)
+        servePHP([ 'pagePath' => $path ]);
+}
 
 handleVirtualPages($requestPath);
 
