@@ -1,11 +1,15 @@
 <?php declare(strict_types=1);
-    
-    $realPath = realpath($cssPath);
 
-    $cssPath = "/$cssPath";
+if (!isset($cssPath))
+    throw new Exception('CSS Revision Link component requires cssPath variable');
 
-    if ($realPath)
-        $cssPath = "$cssPath?rev=" . date('ymdHi', filectime($realPath));
+$realPath = realpath($cssPath);
+
+$cssPath = "/$cssPath";
+
+if ($realPath)
+    $cssPath = "$cssPath?rev=" . date('ymdHi', filectime($realPath));
+
 ?>
 
 <link href="<?= $cssPath ?>" rel="stylesheet" />

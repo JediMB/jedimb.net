@@ -1,7 +1,10 @@
 <?php declare(strict_types=1);
 
+if (!isset($mastolink))
+    throw new Exception('Mastodon Comments component requires mastolink variable');
+
 $linkComponents = [];
-$isValid = isset($mastolink) && preg_match(REGEX_MASTOLINK, $mastolink, $linkComponents);
+$isValid = ( $mastolink && preg_match(REGEX_MASTOLINK, $mastolink, $linkComponents) );
 
 ?>
 

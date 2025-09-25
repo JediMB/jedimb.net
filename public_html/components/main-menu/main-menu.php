@@ -10,7 +10,6 @@ use Utilities\Component;
 use Utilities\MenuLink;
 
 Component::renderCSS(__FILE__);
-Component::queueJS(__FILE__);
 
 ?>
 
@@ -29,9 +28,7 @@ Component::queueJS(__FILE__);
                     <?php else: ?>
                         <?= MenuLink::onClick($item->path, true) ?>
                     <?php endif ?>    
-                    >
-                    <?= $item->title ?>
-                </a>
+                ><?= $item->title ?></a>
             </li>
         <?php endforeach ?>
     </ul>

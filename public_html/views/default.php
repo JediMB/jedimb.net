@@ -6,14 +6,9 @@ require_once 'components/social-links/social-links.php';
 require_once 'utilities/component.utility.php';
 
 use Enums\PageType;
-use Services\PageService;
 use Utilities\Component;
 
 $links = !empty($links);
-$cssPath = PATH_CSS_DEFAULT;
-
-$page = PageService::getInstance();
-/** @var PageService $page */
 
 ?>
 
@@ -29,7 +24,7 @@ $page = PageService::getInstance();
 
     <title><?= empty($title) ? SITE_TITLE : "$title – ". SITE_TITLE ?></title>
     
-    <?php include 'components/css-revision-link.php' ?>
+    <?php Component::include('css-revision-link.php', [ 'cssPath' => PATH_CSS_DEFAULT ]) ?>
 
     <link rel="icon" type="image/x-icon" href="/favicon.svg" />
     
@@ -66,16 +61,16 @@ $page = PageService::getInstance();
                 </mobile-title>
 
                 <mobile-menu>
-                    <?php require_once 'components/mobile-menu/mobile-menu.php' ?>
+                    <?php Component::include('mobile-menu/mobile-menu.php') ?>
                 </mobile-menu>
                 
                 <desktop-menu>
-                    <?php require_once 'components/main-menu/main-menu.php' ?>
+                    <?php Component::include('main-menu/main-menu.php') ?>
                 </desktop-menu>
             </menu-container>
         </header-container>
         <sub-menu>
-            <?php require_once 'components/sub-menu/sub-menu.php' ?>
+            <?php Component::include('sub-menu/sub-menu.php') ?>
         </sub-menu>
     </header>
     
@@ -85,19 +80,22 @@ $page = PageService::getInstance();
                 <h2><?= $title ?></h2>
             <?php endif ?>
             <?php if ($pageType === PageType::BlogPost): ?>
-                <div><?php include 'components/created-modified-dates.php' ?></div>
+                <div><?php Component::include('created-modified-dates.php', [
+                    'createdOn' => $createdOn,
+                    'modifiedOn' => $modifiedOn
+                ]) ?></div>
             <?php endif ?>
             <div><?= $content ?></div>
         </main>
         <?php if ($links): ?>
             <aside class="links max-md:bg-hotpink-950 max-md:p-2 max-md:rounded-lg">
-            <?php include 'components/button-links.php' ?>
+            <?php Component::include('button-links.php') ?>
         </aside>
         <?php endif ?>
     </content-container>
 
     <?php if ($pageType === PageType::BlogPost): ?>
-        <?php include 'components/mastodon-comments.php' ?>
+        <?php Component::include('mastodon-comments.php', [ 'mastolink' => $mastolink ]) ?>
     <?php endif ?>
 
     <footer>

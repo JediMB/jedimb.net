@@ -1,5 +1,8 @@
 <?php declare(strict_types=1);
 
+if (!isset($createdOn) || !isset($modifiedOn))
+    throw new Exception('Created/Modified Dates component requires createdOn and modifiedOn and variables');
+
 $createdString = $createdOn->format('Y-m-d H:i:s');
  
 ?>
