@@ -159,7 +159,7 @@ function servePHP(array $variables = [ 'header' => false ]) {
     if ($pageType === PageType::PHP && isset($pagePath)) {
         ob_start();
         include $pagePath;
-        $content = ob_get_clean();
+        $content = ob_get_clean(); // Used in template/view
     }
 
     require_once realpath("views/$template");

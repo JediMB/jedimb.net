@@ -5,6 +5,19 @@ namespace Utilities;
 class Component {
     private static array $components;
 
+    static function include(string $includePath, array $variables = [], bool $returnResult = false) {
+        extract($variables);
+
+        ob_start();
+        include 'components/' . $includePath;
+        $output = ob_get_clean();
+
+        if ($returnResult)
+            return $output;
+
+        echo $output;
+    }
+
     static function renderCSS(string $componentFile) {
         $fileType = 'css';
 

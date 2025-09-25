@@ -8,7 +8,6 @@ require_once 'routing.php';
 require_once 'enums/page-type.enum.php';
 require_once 'services/navigation.service.php';
 
-use Enums\PageType;
 use Models\MenuItem;
 use Services\NavigationService;
 
