@@ -3,7 +3,13 @@
 chdir(__DIR__);
 
 require_once 'configuration.php';
+
+if (!file_exists('secrets.php')) {
+    echo 'ERROR: Please create a secrets.php file.';
+    exit;
+}
 require_once 'secrets.php';
+
 require_once 'routing.php';
 require_once 'enums/page-type.enum.php';
 require_once 'services/navigation.service.php';
