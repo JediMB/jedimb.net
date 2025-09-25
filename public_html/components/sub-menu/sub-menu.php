@@ -34,14 +34,9 @@ Component::queueJS(__FILE__);
                         <div class="card-front">
                             <?= $subItem->title ?>
                         </div>
-                        <?php
-                        // if (isset($submenuItem['description'])) {
-
-                        //     echo <<<HTML
-                        //         <div class="card-back">{$submenuItem['description']}</div>
-                        //     HTML;
-                        // }
-                        ?>
+                        <?php if ($subItem->description): ?>
+                            <div class="card-back"><?= $subItem->description ?></div>
+                        <?php endif ?>
                     </a>
                 </li>
             <?php endforeach ?>

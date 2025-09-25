@@ -75,7 +75,8 @@ class NavigationService extends Singleton{
             if ($item->parentId === null) {
                 $this->menu[$item->id] = new MenuItem(
                     $item->menuTitle,
-                    $this->virtualPageRoutes[$item->id]
+                    $this->virtualPageRoutes[$item->id],
+                    $item->description
                 );
                 continue;
             }
@@ -84,7 +85,8 @@ class NavigationService extends Singleton{
                 $this->menu[$item->parentId]->children[$item->id] =
                     $tier2Items[$item->id] = new MenuItem(
                         $item->menuTitle,
-                        $this->virtualPageRoutes[$item->id]
+                        $this->virtualPageRoutes[$item->id],
+                        $item->description
                     );
                 continue;
             }
@@ -92,7 +94,8 @@ class NavigationService extends Singleton{
             if (isset($tier2Items[$item->parentId])) {
                 $tier2Items[$item->parentId]->children[$item->id] = new MenuItem(
                     $item->menuTitle,
-                    $this->virtualPageRoutes[$item->id]
+                    $this->virtualPageRoutes[$item->id],
+                    $item->description
                 );
             }
         }
