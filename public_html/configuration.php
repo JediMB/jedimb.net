@@ -3,6 +3,7 @@
 define('CONFIG_PATH', '.configuration.json');
 
 define('PATH_HOMEPAGE', 'pages/blog.php');
+define('PATH_API_DIR', 'api');
 define('PATH_REALPAGES_DIR', 'pages');
 define('PATH_ERROR403', 'errors/403.php');
 define('PATH_ERROR404', 'errors/404.php');

@@ -56,27 +56,26 @@ function getRealPath(string $path, bool &$isForbidden) : string|false {
 
 // If it's an api call, handle separately
 function handleApiRequests(string $path) {
-    if (strpos($path, 'api/') === 0) {
-        header('Content-Type: application/json');
+    if (strpos($path, PATH_API_DIR . '/') !== 0)
+        return;
 
-        $requestComponents = explode(DIRECTORY_SEPARATOR, $path, 10);
-        
-        $apiPath = $requestComponents[0];
-        for ($i = 1; $i < count($requestComponents); $i++) {
-            $apiPath = $apiPath . DIRECTORY_SEPARATOR . $requestComponents[$i];
+    header('Content-Type: application/json');
 
-            // If a matching api file is found, serve it as a json string
-            if (($filePath = realpath($apiPath . '.php'))) {
-                $GLOBALS['api_params'] = array_slice($requestComponents, $i + 1);
-                include $filePath;
-                exit;
-            }
-        }
-
-        echo json_encode(['message' => 'Invalid URI']);
-        exit;
-    }
+    $apiPath = PATH_API_DIR;
+    $pathComponents = array_splice(explode('/', $path, 10), 1);
     
+    foreach ($pathComponents as $index => $component) {
+        $apiPath = "$apiPath/$component";
+        
+        if ( ($filePath = realpath("$apiPath.php")) ) {
+            $GLOBALS['api_params'] = array_slice($pathComponents, $index + 1);
+            include $filePath;
+            exit;
+        }
+    }
+
+    echo json_encode(['message' => 'Invalid URI']);
+    exit;
 }
 
 // If it's trying to access a blog entry, serve a match
