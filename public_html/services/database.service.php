@@ -25,30 +25,38 @@ class DatabaseService extends Singleton {
         $this->service = null;
     }
 
-    public function selectById(string $name, int $id) {
+    public function selectById(string $table, int $id) {
         $query = $this->service->prepare(
-            "SELECT * FROM " . $this->schema . ".$name WHERE id = $id"
+            "SELECT * FROM {$this->schema}.$table WHERE id = :id"
         );
+        $query->bindParam(':id', $id, PDO::PARAM_INT);
+
         $query->execute();
 
         return $query->fetch();
     }
 
-    public function selectFunction(string $name, string $parameters, DBFetch $amount = DBFetch::One) {
+    public function selectFunction(string $function, array $parameters, DBFetch $amount = DBFetch::One) {
+        $paramString = rtrim(str_repeat('?, ', count($parameters)), ', ');
         $query = $this->service->prepare(
-            "SELECT * FROM " . $this->schema . ".$name($parameters)"
+            "SELECT * FROM {$this->schema}.$function($paramString)"
         );
+
+        foreach ($parameters as $id => $param) {
+            $query->bindParam($id, $param['value'], $param['type']);
+        }
+
         $query->execute();
 
         if ($amount === DBFetch::All)
             return $query->fetchAll();
-
+        
         return $query->fetch();
     }
 
-    public function selectView(string $name) {
+    public function selectView(string $view) {
         $query = $this->service->prepare(
-            "SELECT * FROM " . $this->schema . ".$name"
+            "SELECT * FROM {$this->schema}.$view"
         );
         $query->execute();
 

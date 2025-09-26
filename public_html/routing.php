@@ -62,7 +62,8 @@ function handleApiRequests(string $path) {
     header('Content-Type: application/json');
 
     $apiPath = PATH_API_DIR;
-    $pathComponents = array_splice(explode('/', $path, 10), 1);
+    $pathComponents = explode('/', $path, 10);
+    $pathComponents = array_splice($pathComponents, 1);
     
     foreach ($pathComponents as $index => $component) {
         $apiPath = "$apiPath/$component";
