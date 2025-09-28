@@ -44,6 +44,19 @@ $links = !empty($links);
                         </svg>
                     </a>
                 </home-wrapper>
+                <account-wrapper>
+                    
+
+                    <?php if (isset($_SESSION['account_loggedin'])): ?>
+                        <a href="/logout">
+                            Log out
+                        </a>
+                    <?php else: ?>
+                        <a href="/login">
+                            Log in
+                        </a>
+                    <?php endif ?>
+                </account-wrapper>
                 <social-container>
                     <?php Component::include('social-links.php') ?>
                 </social-container>

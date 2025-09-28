@@ -10,7 +10,8 @@ define('PATH_ERROR404', 'errors/404.php');
 define('PATH_CSS_DEFAULT', 'css/style.css');
 
 define('SPECIAL_PATHS', [
-    'login' => 'account/login.php'
+    'login' => 'account/login.php',
+    'logout' => 'account/logout.php'
 ]);
 
 define('SITE_TITLE', 'JediMB.net');

@@ -31,6 +31,11 @@ session_start();
 
 handleBots();
 
+if ($requestPath === 'account/auth') {
+    include 'account/auth.php';
+    exit;
+}
+
 handleApiRequests($requestPath);
 
 $navService = NavigationService::getInstance();
