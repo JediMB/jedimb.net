@@ -21,7 +21,21 @@ export default class HttpClient {
         return null;
     }
 
-    async post(api) {
+    async post(api, data) {
+        try {
+            const response = await fetch(this.baseApiUrl + api, {
+                method: "POST",
+                body: JSON.stringify(data)
+            });
+
+            if (response.ok)
+                return await response.json();
+        }
+        catch(error) {
+            console.log(error);
+        }
+
+        return null;
 
     }
 
