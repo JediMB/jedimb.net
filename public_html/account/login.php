@@ -11,8 +11,6 @@ if (isset($_SESSION['account_loggedin'])) {
 
 ?>
 
-<div>X-Men! Welcome to login!</div>
-
 <div class="w-80 mx-auto">
     <form id="form-login" class="flex flex-col gap-3">
         <div>
@@ -29,6 +27,7 @@ if (isset($_SESSION['account_loggedin'])) {
         </div>
         <button type="submit" class="btn hover:bg-hotpink-500 hover:text-black">Login</button>
     </form>
+    <div id="login-errors"></div>
 </div>
 
 <script type="module">
@@ -38,14 +37,36 @@ if (isset($_SESSION['account_loggedin'])) {
 
     const form = document.querySelector("#form-login");
 
-    async function Login() {
+    // TODO: Button [disabled] CSS, keep the button disabled if fields are invalid
+
+    async function Login(event) {
+        // TODO: On-submit form validation (RegEx?)
+        event.submitter.disabled = true;
         const formData = new FormData(form);
 
         const data = await userApiService.login(formData);
+
+        if (data.success) {
+            // TODO: Success logic
+            // Cookie token/validator stuff
+            // Inform user about successful login
+            return;
+        }
+
+        const errorContainer = document.querySelector('#login-errors');
+
+        data.errors.forEach(error => {
+            const newError = document.createElement('div');
+            newError.classList.add('error');
+            newError.textContent = error;
+            errorContainer.appendChild(newError);
+        });
+
+        event.submitter.disabled = false;
     }
 
     form.addEventListener("submit", (event) => {
         event.preventDefault();
-        Login();
+        Login(event);
     });
 </script>

@@ -13,6 +13,7 @@ $errors = [];
 switch ( $_SERVER['REQUEST_METHOD'] ) {
     case 'POST':
         try {
+            // TODO: Additional form validation (RegEx?)
             if (empty($input['username']))
                 $errors[] = 'Username required';
             if (empty($input['password']))
