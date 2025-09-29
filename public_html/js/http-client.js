@@ -6,37 +6,54 @@ export default class HttpClient {
     static httpClient = new HttpClient();
 
     async get(api) {
-        try {
-            const response = await fetch(this.baseApiUrl + api);
+        const response = await fetch(this.baseApiUrl + api).catch(
+            error => ({
+                ok: false,
+                errors: [ error.message ]
+            })
+        );
 
-            if (response.ok)
-                return await response.json();
-
+        if (!response.ok) {
             console.error(`Error ${response.status}: %c GET %c '${this.baseApiUrl + api}' failed.`, this.requestTypeCss);
-        }
-        catch(error) {
-            console.error(error);
+
+            return { success: false, errors: response.errors ?? [ response.error ] };
         }
 
-        return null;
+        const data = await response.json().catch(
+            error => ({
+                success: false,
+                errors: [ `Failed to parse JSON: ${error.message}` ]
+            })
+        );
+
+        return data;
     }
 
-    async post(api, data) {
-        try {
-            const response = await fetch(this.baseApiUrl + api, {
-                method: "POST",
-                body: JSON.stringify(data)
-            });
+    async post(api, body) {
+        const response = await fetch(this.baseApiUrl + api, {
+            method: "POST",
+            body: JSON.stringify(body)
+        }).catch(
+            error => ({
+                ok: false,
+                errors: [ error.message ]
+            })
+        );
 
-            if (response.ok)
-                return await response.json();
+        if (!response.ok) {
+            console.error(`Error ${response.status}: %c POST %c '${this.baseApiUrl + api}' failed.`, this.requestTypeCss);
+            
+            return { success: false, errors: response.errors ?? [ response.error ]};
         }
-        catch(error) {
-            console.log(error);
-        }
+        
+        const data = await response.json().catch(
+            error => ({
+                success: false,
+                errors: [ `Failed to parse JSON: ${error.message}` ]
+            })
+        );
 
-        return null;
-
+        return data;
     }
 
     // Full replacement

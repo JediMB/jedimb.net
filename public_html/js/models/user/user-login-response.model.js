@@ -1,8 +1,8 @@
 export default class UserLoginResponse {
     constructor({
-        isSuccess, token, validator
+        id, token, validator
     }) {
-        this.isSuccess = Boolean(isSuccess);
+        this.id = Number(id);
         this.token = token;
         this.validator = validator;
     }

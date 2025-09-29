@@ -70,12 +70,15 @@ function handleApiRequests(string $path) {
         
         if ( ($filePath = realpath("$apiPath.php")) ) {
             $GLOBALS['api_params'] = array_slice($pathComponents, $index + 1);
-            include $filePath;
+            echo json_encode(
+                ( include $filePath )
+                ?? [ 'success' => false, 'errors' => ['No data from API'] ]
+            );
             exit;
         }
     }
 
-    echo json_encode(['message' => 'Invalid URI']);
+    echo json_encode([ 'success' => false, 'errors' => ['Invalid URI'] ]);
     exit;
 }
 

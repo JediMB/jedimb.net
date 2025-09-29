@@ -17,11 +17,8 @@ switch ( $_SERVER['REQUEST_METHOD'] ) {
                 $errors[] = 'Username required';
             if (empty($input['password']))
                 $errors[] = 'Password required';
-
-            if ($errors) {
-                echo json_encode([ 'error' => $errors ]);
-                return;
-            }
+            if ($errors)
+                return [ 'success' => false, 'errors' => $errors ];
 
             $service = UserService::getInstance();
             /** @var UserService $service */
@@ -30,9 +27,7 @@ switch ( $_SERVER['REQUEST_METHOD'] ) {
             if ( !$dbPassword || !password_verify($input['password'], $dbPassword->password) ) {
                 session_unset();
                 session_destroy();
-
-                echo json_encode([ 'error' => 'Incorrect username or password']);
-                return;
+                return [ 'success' => false, 'errors' => ['Incorrect username or password'] ];
             }
 
             session_regenerate_id();
@@ -40,19 +35,16 @@ switch ( $_SERVER['REQUEST_METHOD'] ) {
             $_SESSION['account_name'] = $input['username'];
             $_SESSION['account_id'] = $dbPassword->id;
 
-            $response = new UserLoginResponse(true, 'test', 'test');
+            $response = new UserLoginResponse($dbPassword->id, 'test', 'test');
+
+            return [ 'success' => true, 'value' => $response ];
         }
         catch (Exception $e) {
-            echo json_encode([ 'error' => $e->getMessage() ]);
-            return;
+            return [ 'success' => false, 'errors' => [$e->getMessage()] ];
         }
 
-        echo json_encode(['response' => $response ]);
-        break;
-
     default:
-        echo json_encode([ 'error' => 'Invalid request method' ]);
-        break;
+        return [ 'success' => false, 'errors' => ['Invalid request method'] ];
 
 }
 
