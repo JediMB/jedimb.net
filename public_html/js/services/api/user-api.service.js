@@ -1,5 +1,6 @@
 import HttpClient from "../../http-client.js";
 import UserLoginRequest from "../../models/user/user-login-request.model.js";
+import UserLoginResponse from "../../models/user/user-login-response.model.js";
 
 export default class UserApiService {
     constructor(httpClient = HttpClient.httpClient) {
@@ -7,9 +8,11 @@ export default class UserApiService {
     }
 
     async login(formData) {
-        const data = await this.httpClient.post('user/login', new UserLoginRequest(formData));
+        const response = await this.httpClient.post('user/login', new UserLoginRequest(formData));
 
-        console.log(data);
+        if (!response.success)
+            return response;
 
+        return { success: true, value: new UserLoginResponse(response.value) };
     }
 }

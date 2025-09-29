@@ -20,7 +20,7 @@ class BlogPostService extends Singleton {
         $this->dbService = DatabaseService::getInstance();
     }
 
-    // TODO: expand functionality to cover other unpublished and any
+    // TODO: expand functionality to cover 'unpublished' and 'any'
     public function getBlogPosts(PublishedStatus $publishedStatus = PublishedStatus::Published) {
         try {
             $posts = $this->dbService->selectView('blog_posts_published', DBFetch::All);
