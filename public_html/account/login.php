@@ -2,6 +2,8 @@
 
 namespace Account;
 
+use DateTime;
+
 $title = 'Login';
 
 if (isset($_SESSION['account_loggedin'])) {
@@ -49,9 +51,14 @@ if (isset($_SESSION['account_loggedin'])) {
         const data = await userApiService.login(formData);
 
         if (data.success) {
-            // TODO: Success logic
-            // Cookie token/validator stuff
-            // Inform user about successful login
+            if (data.value.token) {
+                const expires = data.value.expiresOn.toUTCString();
+                document.cookie = `userId=${data.value.userId}; expires=${expires};`
+                document.cookie = `token=${data.value.token}; expires=${expires};`
+                document.cookie = `validator=${data.value.validator}; expires=${expires};`;
+            }
+            
+            setTimeout(() => window.location.href = '/', 5000);
             return;
         }
 

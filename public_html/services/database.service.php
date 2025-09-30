@@ -49,7 +49,7 @@ class DatabaseService extends Singleton {
         $query->execute();
 
         if ($amount === DBFetch::All)
-            return $query->fetchAll();
+            return $query->fetchAll() ?: [];
         
         return $query->fetch();
     }
@@ -60,7 +60,7 @@ class DatabaseService extends Singleton {
         );
         $query->execute();
 
-        return $query->fetchAll();
+        return $query->fetchAll() ?: [];
     }
 }
 

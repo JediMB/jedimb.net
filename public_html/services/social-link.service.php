@@ -23,11 +23,9 @@ class SocialLinkService extends Singleton {
             $links = [];
         }
         finally {
-            foreach ($links as &$link) {
-                $link = new SocialLink($link);
-            }
-
-            return $links;
+            return array_map(function($link) {
+                return new SocialLink($link);
+            }, $links);
         }
     }
 }

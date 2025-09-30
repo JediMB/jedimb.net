@@ -23,7 +23,7 @@ switch( $_SERVER['REQUEST_METHOD'] ) {
         }
 
     default:
-        return [ 'success' => false, 'errors' => ['Invalid request method'] ];
+        return [ 'success' => false, 'errors' => [ TEXT_INVALID_REQUEST ] ];
 }
 
 ?>

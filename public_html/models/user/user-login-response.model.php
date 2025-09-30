@@ -2,15 +2,19 @@
 
 namespace Models\User;
 
-class UserLoginResponse {
-    public int $id;
-    public string $token;
-    public string $validator;
+use DateTime;
 
-    public function __construct(int $id, string $token, string $validator) {
-        $this->id = $id;
+class UserLoginResponse {
+    public int $userId;
+    public ?string $token;
+    public ?string $validator;
+    public ?DateTime $expiresOn;
+
+    public function __construct(int $userId, ?string $token = null, ?string $validator = null, ?DateTime $expiresOn = null) {
+        $this->userId = $userId;
         $this->token = $token;
         $this->validator = $validator;
+        $this->expiresOn = $expiresOn;
     }
 }
 

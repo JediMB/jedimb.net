@@ -8,9 +8,9 @@ class UserLoginRequest {
     public bool $persistent;
 
     public function __construct(array $postData) {
-        $this->username = $postData['username'];
-        $this->password = $postData['password'];
-        $this->persistent = $postData['persistent'];
+        $this->username = $postData['username'] ?? '';
+        $this->password = $postData['password'] ?? '';
+        $this->persistent = $postData['persistent'] ?? false;
     }
 }
 

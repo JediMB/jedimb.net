@@ -29,15 +29,9 @@ class BlogPostService extends Singleton {
             $posts = [ [ 'title' => 'Error', 'content' => $e->getMessage() ] ];
         }
         finally {
-            if ($posts) {
-                $blogPosts = [];
-                foreach ($posts as $post) {
-                    $blogPosts[] = new BlogPost($post);
-                }
-                return $blogPosts;
-            }
-
-            return [];
+            return array_map(function($post) {
+                return new BlogPost($post);
+            }, $posts);
         }
     }
 

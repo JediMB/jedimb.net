@@ -1,9 +1,10 @@
 export default class UserLoginResponse {
     constructor({
-        id, token, validator
+        userId, token, validator, expiresOn
     }) {
-        this.id = Number(id);
+        this.userId = Number(userId);
         this.token = token;
         this.validator = validator;
+        this.expiresOn = new Date(expiresOn.date + expiresOn.timezone);
     }
 }
