@@ -13,6 +13,8 @@ export default class UserApiService {
         if (!response.success)
             return response;
 
-        return { success: true, value: new UserLoginResponse(response.value) };
+        response.value = new UserLoginResponse(response.value);
+
+        return response;
     }
 }

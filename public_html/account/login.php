@@ -14,8 +14,8 @@ if (isset($_SESSION['account_loggedin'])) {
 <div class="w-80 mx-auto">
     <form id="form-login" class="flex flex-col gap-3">
         <div>
-            <label for="username">User name</label>
-            <input type="text" name="username" id="username" placeholder="User name" required class="w-full p-1 text-black">
+            <label for="username">Username</label>
+            <input type="text" name="username" id="username" placeholder="Username" required class="w-full p-1 text-black">
         </div>
         <div>
             <label for="password">Password</label>
@@ -36,12 +36,14 @@ if (isset($_SESSION['account_loggedin'])) {
     const userApiService = new UserApiService();
 
     const form = document.querySelector("#form-login");
+    const errorContainer = document.querySelector('#login-errors');
 
     // TODO: Button [disabled] CSS, keep the button disabled if fields are invalid
 
     async function Login(event) {
         // TODO: On-submit form validation (RegEx?)
         event.submitter.disabled = true;
+        errorContainer.textContent = '';
         const formData = new FormData(form);
 
         const data = await userApiService.login(formData);
@@ -52,8 +54,6 @@ if (isset($_SESSION['account_loggedin'])) {
             // Inform user about successful login
             return;
         }
-
-        const errorContainer = document.querySelector('#login-errors');
 
         data.errors.forEach(error => {
             const newError = document.createElement('div');

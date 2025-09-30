@@ -15,7 +15,7 @@ $service = UserService::getInstance();
 $user = $service->getUserPassword($_POST['username']);
 
 if (!$user) {
-    echo 'Incorrect user name or password';
+    echo 'Incorrect username or password';
     exit;
 }
 
@@ -25,7 +25,7 @@ if ($user->id === 0) {
 }
 
 if (!password_verify($_POST['password'], $user->password)) {
-    echo 'Incorrect (user name or) password';
+    echo 'Incorrect (username or) password';
     return;
 }
 
