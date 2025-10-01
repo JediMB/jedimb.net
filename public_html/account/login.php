@@ -6,7 +6,7 @@ use DateTime;
 
 $title = 'Login';
 
-if (isset($_SESSION['account_loggedin'])) {
+if (isset($_SESSION[SESSION_STATUS_KEY])) {
     header('Location: /');
     exit;
 }
@@ -41,6 +41,7 @@ if (isset($_SESSION['account_loggedin'])) {
     const errorContainer = document.querySelector('#login-errors');
 
     // TODO: Button [disabled] CSS, keep the button disabled if fields are invalid
+    console.log(document.cookie);
 
     async function Login(event) {
         // TODO: On-submit form validation (RegEx?)
@@ -53,9 +54,9 @@ if (isset($_SESSION['account_loggedin'])) {
         if (data.success) {
             if (data.value.token) {
                 const expires = data.value.expiresOn.toUTCString();
-                document.cookie = `userId=${data.value.userId}; expires=${expires};`
-                document.cookie = `token=${data.value.token}; expires=${expires};`
-                document.cookie = `validator=${data.value.validator}; expires=${expires};`;
+                document.cookie = `<?= COOKIE_USER_KEY ?>=${data.value.userId}; expires=${expires};`
+                document.cookie = `<?= COOKIE_TOKEN_KEY ?>=${data.value.token}; expires=${expires};`
+                document.cookie = `<?= COOKIE_VALIDATOR_KEY ?>=${data.value.validator}; expires=${expires};`;
             }
             
             setTimeout(() => window.location.href = '/', 5000);

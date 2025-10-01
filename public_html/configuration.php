@@ -17,7 +17,14 @@ define('SITE_AUTHOR', 'JediMB');
 define('SITE_CREATEDYEAR', '2025');
 define('SITE_VIEW', 'default.php');
 
-define('LOGIN_EXPIRATION', '1 year');
+define('COOKIE_USER_KEY', 'userId');
+define('COOKIE_TOKEN_KEY', 'token');
+define('COOKIE_VALIDATOR_KEY', 'validator');
+define('COOKIE_EXPIRATION', '1 year');
+
+define('SESSION_STATUS_KEY', 'account_loggedin');
+define('SESSION_USERNAME_KEY', 'account_name');
+define('SESSION_USERID_KEY', 'account_id');
 
 define('REGEX_BLOG_PATH', '/^blog(\/[0-9]{4}\/[0-9]{2}\/[0-9]{2}\/[-a-z0-9]*)$/');
 define('REGEX_MASTOLINK', '/^http[s]?:\/\/([-.a-z0-9]+)\/@([-.a-z0-9]+)\/([0-9]+)$/');

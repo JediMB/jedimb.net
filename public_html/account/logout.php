@@ -2,8 +2,13 @@
 
 namespace Account;
 
-session_unset();
-session_destroy();
+require_once 'services/session.service.php';
+
+use Services\SessionService;
+
+$service = SessionService::getInstance(); /** @var SessionService $service */
+$service->clearSession();
+
 header('Location: /');
 
 ?>

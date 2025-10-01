@@ -1,14 +1,15 @@
 <?php declare(strict_types=1);
 
-use Services\UserService;
-
 require_once 'models/user/user-login-request.model.php';
 require_once 'models/user/user-login-response.model.php';
+require_once 'services/db/user-token.db.service.php';
 require_once 'services/user.service.php';
 
 use Models\User\UserLoginRequest;
 use Models\User\UserLoginResponse;
 use Models\User\UserToken;
+use Services\UserService;
+use Services\DB\UserTokenDBService;
 
 $input = json_decode(file_get_contents('php://input'), true);
 $errors = [];
@@ -25,9 +26,10 @@ switch ( $_SERVER['REQUEST_METHOD'] ) {
             if ($errors)
                 return [ 'success' => false, 'errors' => $errors ];
 
-            $service = UserService::getInstance();
-            /** @var UserService $service */
-            $dbPassword = $service->getUserPassword($login->username);
+            $userService = UserService::getInstance(); /** @var UserService $userService */
+            $tokenService = UserTokenDBService::getInstance(); /** @var UserTokenDBService $tokenService */
+
+            $dbPassword = $userService->getUserPassword($login->username);
 
             if ( !$dbPassword || !password_verify($login->password, $dbPassword->password) ) {
                 session_unset();
@@ -40,7 +42,7 @@ switch ( $_SERVER['REQUEST_METHOD'] ) {
             if ($login->persistent) {
                 do {
                     $selector = uniqid('', true);
-                    $tokenMatch = $service->getUserToken($selector);
+                    $tokenMatch = $tokenService->getUserToken($selector);
                 } while($tokenMatch);
 
                 $validator = str_pad(dechex(rand(0x00000000, 0xFFFFFFFF)), 8, '0', STR_PAD_LEFT)
@@ -48,7 +50,7 @@ switch ( $_SERVER['REQUEST_METHOD'] ) {
                 
                 $validatorHash = password_hash($validator, PASSWORD_BCRYPT);
 
-                $token = $service->setUserToken($id, $selector, $validatorHash);
+                $token = $tokenService->setUserToken($id, $selector, $validatorHash);
 
                 $response = new UserLoginResponse($id, $selector, $validator, $token->expiresOn);
             }
@@ -56,9 +58,9 @@ switch ( $_SERVER['REQUEST_METHOD'] ) {
                 $response = new UserLoginResponse($id);
 
             session_regenerate_id();
-            $_SESSION['account_loggedin'] = true;
-            $_SESSION['account_name'] = $login->username;
-            $_SESSION['account_id'] = $id;
+            $_SESSION[SESSION_STATUS_KEY] = true;
+            $_SESSION[SESSION_USERNAME_KEY] = $login->username;
+            $_SESSION[SESSION_USERID_KEY] = $id;
 
             return [ 'success' => true, 'value' => $response ];
         }

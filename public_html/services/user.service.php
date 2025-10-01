@@ -7,12 +7,10 @@ require_once 'models/user/user-token.model.php';
 require_once 'services/database.service.php';
 require_once 'services/singleton.php';
 
-use DateTime;
 use Exception;
 use PDO;
 use PDOException;
 use Models\User\UserPassword;
-use Models\User\UserToken;
 
 class UserService extends Singleton {
     private DatabaseService $dbService;
@@ -37,44 +35,6 @@ class UserService extends Singleton {
                 return new UserPassword($user);
 
             return false;
-        }
-    }
-
-    public function getUserToken(string $selector) : UserToken|false {
-        try {
-            $token = $this->dbService->selectFunction(
-                'read_user_token', [
-                    1 => [ 'value' => $selector, 'type' => PDO::PARAM_STR ]
-                ]
-            );
-        }
-        catch (PDOException $e) {
-            throw new Exception('Database error: ' . $e->getMessage());
-        }
-        finally {
-            if ($token)
-                return new UserToken($token);
-
-            return false;
-        }
-    }
-
-    public function setUserToken(int $userId, string $selector, string $validatorHash) : UserToken {
-        try {
-            $token = $this->dbService->selectFunction(
-                'create_user_token', [
-                    1 => [ 'value' => $userId, 'type' => PDO::PARAM_INT ],
-                    2 => [ 'value' => $selector, 'type' => PDO::PARAM_STR ],
-                    3 => [ 'value' => $validatorHash, 'type' => PDO::PARAM_STR ],
-                    4 => [ 'value' => (new DateTime('+' . LOGIN_EXPIRATION))->format(DB_DATETIME_FORMAT), 'type' => PDO::PARAM_STR ]
-                ]
-            );
-        }
-        catch (PDOException $e) {
-            throw new Exception('Database error: ' . $e->getMessage());
-        }
-        finally {
-            return new UserToken($token);
         }
     }
 }

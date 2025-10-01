@@ -13,10 +13,12 @@ class UserToken {
 
     public function __construct(array $dbRow) {
         $this->id = $dbRow['id'] ?? 0;
-        $this->userId = $dbRow['userId'] ?? 0;
+        $this->userId = $dbRow['user_id'] ?? 0;
         $this->selector = $dbRow['selector'] ?? '';
         $this->validator_hash = $dbRow['validator_hash'] ?? '';
-        $this->expiresOn = DateTime::createFromFormat(DB_DATETIME_FORMAT, $dbRow['expires_on'] ?? '') ?: new DateTime();
+        $this->expiresOn = isset($dbRow['expires_on'])
+            ? DateTime::createFromFormat(DB_DATETIME_FORMAT, $dbRow['expires_on'])
+            : new DateTime();
     }
 }
 
