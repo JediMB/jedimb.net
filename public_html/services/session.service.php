@@ -13,7 +13,6 @@ use Services\DB\UserTokenDBService;
 class SessionService extends Singleton {
     private UserTokenDBService $tokenDBService;
 
-    #[\Override]
     protected function __construct() {
         session_start();
 
@@ -22,6 +21,17 @@ class SessionService extends Singleton {
 
     public function isLoggedIn() : bool {
         return isset($_SESSION[SESSION_STATUS_KEY]);
+    }
+
+    public function loginFromCookie() : bool {
+        $token = $this->verifyCookie();
+
+        if (!$token)
+            return false;
+
+        $this->setSession($token->userId, 'TestName');
+        $this->tokenDBService->refreshUserToken($token->id);
+        return true;
     }
 
     public function setSession(int $userId, string $userName) {

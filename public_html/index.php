@@ -37,17 +37,8 @@ handleBots();
 
 handleApiRequests($requestPath);
 
-if (!$sessionService->isLoggedIn()) {
-    $token = $sessionService->verifyCookie();
-
-    if ($token) {
-        // TODO: Decide on what user data should be stored in session. Name? Full user object?
-        $sessionService->setSession($token->userId, 'TestName');
-
-        $tokenService = UserTokenDBService::getInstance(); /** @var UserTokenDBService $tokenService */
-        $tokenService->refreshUserToken($token->id);
-    }
-}
+if (!$sessionService->isLoggedIn())
+    $sessionService->loginFromCookie();
 
 $navService = NavigationService::getInstance();
 $navService->menu[] = new MenuItem('About me', '/about');
