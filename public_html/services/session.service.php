@@ -2,12 +2,13 @@
 
 namespace Services;
 
-require_once 'services/singleton.php';
+require_once 'services/base/singleton.php';
 require_once 'services/db/user-token.db.service.php';
 
 use DateTime;
 use Exception;
-use Models\User\UserToken;
+use Models\DB\UserToken;
+use Services\Base\Singleton;
 use Services\DB\UserTokenDBService;
 
 class SessionService extends Singleton {

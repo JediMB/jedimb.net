@@ -3,12 +3,11 @@
 require_once 'models/user/user-login-request.model.php';
 require_once 'models/user/user-login-response.model.php';
 require_once 'services/db/user-token.db.service.php';
-require_once 'services/user.service.php';
+require_once 'services/db/user.db.service.php';
 
 use Models\User\UserLoginRequest;
 use Models\User\UserLoginResponse;
-use Models\User\UserToken;
-use Services\UserService;
+use Services\DB\UserDBService;
 use Services\DB\UserTokenDBService;
 
 $input = json_decode(file_get_contents('php://input'), true);
@@ -26,7 +25,7 @@ switch ( $_SERVER['REQUEST_METHOD'] ) {
             if ($errors)
                 return [ 'success' => false, 'errors' => $errors ];
 
-            $userService = UserService::getInstance(); /** @var UserService $userService */
+            $userService = UserDBService::getInstance(); /** @var UserDBService $userService */
             $tokenService = UserTokenDBService::getInstance(); /** @var UserTokenDBService $tokenService */
 
             $dbPassword = $userService->getUserPassword($login->username);

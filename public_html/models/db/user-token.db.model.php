@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Models\User;
+namespace Models\DB;
 
 use DateTime;
 
@@ -16,9 +16,9 @@ class UserToken {
         $this->userId = $dbRow['user_id'] ?? 0;
         $this->selector = $dbRow['selector'] ?? '';
         $this->validator_hash = $dbRow['validator_hash'] ?? '';
-        $this->expiresOn = isset($dbRow['expires_on'])
-            ? DateTime::createFromFormat(DB_DATETIME_FORMAT, $dbRow['expires_on'])
-            : new DateTime();
+        $this->expiresOn = DateTime::createFromFormat(DB_DATETIME_FORMAT, $dbRow['expires_on'])
+            ?: DateTime::createFromFormat(DB_DATETIME_FORMAT_FALLBACK, $dbRow['expires_on'])
+            ?: new DateTime();
     }
 }
 

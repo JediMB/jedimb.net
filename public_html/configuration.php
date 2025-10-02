@@ -38,7 +38,8 @@ define('TEXT_PASSWORD_MISSING', 'Password required');
 define('TEXT_INCORRECT_LOGIN', 'Incorrect username or password');
 
 define('DB_OPTIONS', [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]);
-define('DB_DATETIME_FORMAT', 'Y-m-d H:i:se');
+define('DB_DATETIME_FORMAT', 'Y-m-d H:i:s.u e');
+define('DB_DATETIME_FORMAT_FALLBACK', 'Y-m-d H:i:s e');
 
 define('INVALID_USER_AGENTS', [
         'anthropic-ai',

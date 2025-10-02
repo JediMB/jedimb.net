@@ -1,19 +1,20 @@
 <?php declare(strict_types=1);
 
-namespace Services;
+namespace Services\DB;
 
 require_once 'enums/published-status.enum.php';
-require_once 'services/singleton.php';
-require_once 'services/database.service.php';
-require_once 'models/blog-post.model.php';
+require_once 'models/db/blog-post.db.model.php';
+require_once 'services/base/singleton.php';
+require_once 'services/db/database.service.php';
 
-use Enums\DBFetch;
 use PDO;
 use PDOException;
+use Enums\DBFetch;
 use Enums\PublishedStatus;
-use Models\BlogPost;
+use Models\DB\BlogPost;
+use Services\Base\Singleton;
 
-class BlogPostService extends Singleton {
+class BlogPostDBService extends Singleton {
     private DatabaseService $dbService;
 
     protected function __construct() {

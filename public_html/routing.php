@@ -1,13 +1,13 @@
 <?php
 
 require_once 'enums/page-type.enum.php';
-require_once 'services/blog-post.service.php';
-require_once 'services/page.service.php';
+require_once 'services/db/blog-post.db.service.php';
+require_once 'services/db/page.db.service.php';
 
 use Enums\PageType;
-use Services\BlogPostService;
 use Services\NavigationService;
-use Services\PageService;
+use Services\DB\BlogPostDBService;
+use Services\DB\PageDBService;
 
 function getRealPath(string $path, bool &$isForbidden) : string|false {
     /*  Try to find a matching file in the following order:
@@ -86,8 +86,7 @@ function handleApiRequests(string $path) {
 function handleBlogRequests(string $path) {
     $matches = [];
     if (preg_match(REGEX_BLOG_PATH, $path, $matches)) {
-        $service = BlogPostService::getInstance();
-        /** @var BlogPostService $service */
+        $service = BlogPostDBService::getInstance(); /** @var BlogPostDBService $service */
 
         $blogPost = $service->getBlogPost($matches[1]);
 
@@ -114,13 +113,11 @@ function handleBots() {
 }
 
 function handleVirtualPages(string $requestPath) {
-    $nav = NavigationService::getInstance();
-    /** @var NavigationService $nav */
+    $nav = NavigationService::getInstance(); /** @var NavigationService $nav */
 
     foreach ($nav->virtualPageRoutes as $id => $route) {
         if (ltrim($route, '/') === $requestPath) {
-            $service = PageService::getInstance();
-            /** @var PageService $service */
+            $service = PageDBService::getInstance(); /** @var PageDBService $service */
 
             $page = $service->getPage($id);
 
@@ -156,8 +153,7 @@ function servePHP(array $variables = [ 'header' => false ]) {
     if (empty($template))
         $template = SITE_VIEW;
 
-    $pageService = PageService::getInstance();
-    /** @var PageService $pageService */
+    $pageService = PageDBService::getInstance(); /** @var PageDBService $pageService */
 
     if ($pageType === PageType::PHP && isset($pagePath)) {
         ob_start();

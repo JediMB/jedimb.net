@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Services;
+namespace Services\DB;
 
 require_once 'models/user/user-password.model.php';
 require_once 'models/user/user-token.model.php';
@@ -11,8 +11,9 @@ use Exception;
 use PDO;
 use PDOException;
 use Models\User\UserPassword;
+use Services\Base\Singleton;
 
-class UserService extends Singleton {
+class UserDBService extends Singleton {
     private DatabaseService $dbService;
 
     protected function __construct() {

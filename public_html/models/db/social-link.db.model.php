@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Models;
+namespace Models\DB;
 
 class SocialLink {
     public int $id;
@@ -9,6 +9,8 @@ class SocialLink {
     public string $url;
     public string $svgViewBox;
     public string $svgContent;
+    public int $order;
+    public bool $isVisible;
 
     public function __construct(array $dbRow) {
         $this->id = $dbRow['id'] ?? 0;
@@ -17,6 +19,8 @@ class SocialLink {
         $this->url = $dbRow['url'] ?? '';
         $this->svgViewBox = $dbRow['svg_viewbox'] ?? '';
         $this->svgContent = $dbRow['svg_content'] ?? '';
+        $this->order = $dbRow['order'] ?? 0;
+        $this->isVisible = $dbRow['is_visible'] ?? false;
     }
 }
 

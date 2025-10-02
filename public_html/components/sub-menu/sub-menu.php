@@ -15,19 +15,22 @@ Component::queueJS(__FILE__);
 ?>
 
 <nav id="sub-menu" class="p-4">
-    <?php foreach (NavigationService::getInstance()->menu as $id => $item): ?>
+    <?php foreach (NavigationService::getInstance()->menu as $id => $item): /** @var MenuItem $item */ ?>
         <?php
-        /** @var MenuItem $item */
+        
         if (count($item->children) < 1)
             continue;
+        
         $delayMultiplier = 0;
+
         ?>
         <ul id="submenu-<?= $id ?>" class="list-cards hidden"> <!-- hidden -->
-            <?php foreach ($item->children as $subId => $subItem): ?>
+            <?php foreach ($item->children as $subId => $subItem): /** @var MenuItem $subItem */ ?>
                 <?php
-                /** @var MenuItem $subItem */
+                
                 $animationDelay = ($delayMultiplier * 200) . 'ms';
                 $delayMultiplier++;
+                
                 ?>
                 <li class="card" style="--animation-delay: <?= $animationDelay ?>;">
                     <a tabindex="0" class="card-inner" <?= MenuLink::onClick($subItem->path, true) ?>>

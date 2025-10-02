@@ -2,17 +2,16 @@
 
 namespace Services\DB;
 
-require_once 'models/user/user-token.model.php';
-require_once 'services/database.service.php';
-require_once 'services/singleton.php';
+require_once 'models/db/user-token.db.model.php';
+require_once 'services/base/singleton.php';
+require_once 'services/db/database.service.php';
 
 use DateTime;
 use Exception;
 use PDO;
 use PDOException;
-use Models\User\UserToken;
-use Services\DatabaseService;
-use Services\Singleton;
+use Models\DB\UserToken;
+use Services\Base\Singleton;
 
 class UserTokenDBService extends Singleton {
     private DatabaseService $dbService;

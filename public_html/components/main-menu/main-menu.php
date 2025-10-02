@@ -15,8 +15,7 @@ Component::renderCSS(__FILE__);
 
 <nav id="main-menu">
     <ul class="flex gap-2 flex-wrap justify-end">
-        <?php foreach (NavigationService::getInstance()->menu as $id => $item): ?>
-            <?php /** @var MenuItem $item */ ?>
+        <?php foreach (NavigationService::getInstance()->menu as $id => $item): /** @var MenuItem $item */ ?>
             <li>
                 <a id="menu-button-<?= $id ?>"
                     tabindex="0"

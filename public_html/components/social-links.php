@@ -1,18 +1,17 @@
 <?php declare(strict_types=1);
 
-require_once 'services/social-link.service.php';
+require_once 'services/db/social-link.db.service.php';
 
-use Models\SocialLink;
-use Services\SocialLinkService;
+use Models\DB\SocialLink;
+use Services\DB\SocialLinkDBService;
 
-$socials = SocialLinkService::getInstance()->getSocialLinks();
+$socials = SocialLinkDBService::getInstance()->getSocialLinks();
 $symbolPrefix = 'svg-social-link-';
 
 ?>
 
 <svg class="hidden" xmlns="http://www.w3.org/2000/svg">
-    <?php foreach ($socials as $link): ?>
-        <?php /** @var SocialLink $link */ ?>
+    <?php foreach ($socials as $link): /** @var SocialLink $link */ ?>
         <symbol
             id="<?= $symbolPrefix . $link->id ?>"
             width="2rem" height="2rem"

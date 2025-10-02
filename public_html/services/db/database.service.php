@@ -1,12 +1,13 @@
 <?php declare(strict_types=1);
 
-namespace Services;
+namespace Services\DB;
 
-require_once 'services/singleton.php';
 require_once 'enums/db-fetch.enum.php';
+require_once 'services/base/singleton.php';
 
 use PDO;
 use Enums\DBFetch;
+use Services\Base\Singleton;
 
 class DatabaseService extends Singleton {
     private PDO|null $service;

@@ -1,8 +1,8 @@
 <?php declare(strict_types=1);
 
-require_once 'services/blog-post.service.php';
+require_once 'services/db/blog-post.db.service.php';
 
-use Services\BlogPostService;
+use Services\DB\BlogPostDBService;
 
 $input = json_decode(file_get_contents('php://input'), true);
 
@@ -11,8 +11,7 @@ $input = json_decode(file_get_contents('php://input'), true);
 switch( $_SERVER['REQUEST_METHOD'] ) {
     case 'GET':
         try {
-            $service = BlogPostService::getInstance();
-            /** @var BlogPostService $service */
+            $service = BlogPostDBService::getInstance(); /** @var BlogPostDBService $service */
 
             $posts = $service->getBlogPosts();
             
