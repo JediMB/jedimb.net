@@ -78,6 +78,24 @@ class UserTokenDBService extends Singleton {
             throw new Exception('Database error: ' . $e->getMessage());
         }
     }
+
+    public function removeUserToken(string $tokenSelector) : int|false {
+        try {
+            $result = $this->dbService->selectFunction(
+                'delete_user_token', [
+                    1 => [ 'value' => $tokenSelector, 'type' => PDO::PARAM_STR ]
+                ]
+            );
+
+            if ($result[0] === 0)
+                return false;
+
+            return $result[0];
+        }
+        catch (PDOException $e) {
+            return false;
+        }
+    }
 }
 
 ?>

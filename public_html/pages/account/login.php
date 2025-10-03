@@ -41,7 +41,6 @@ if (isset($_SESSION[SESSION_STATUS_KEY])) {
     const errorContainer = document.querySelector('#login-errors');
 
     // TODO: Button [disabled] CSS, keep the button disabled if fields are invalid
-    console.log(document.cookie);
 
     async function login(event) {
         // TODO: On-submit form validation (RegEx?)
