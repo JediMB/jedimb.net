@@ -3,14 +3,12 @@
 require_once 'models/user/user-login-request.model.php';
 require_once 'models/user/user-login-response.model.php';
 require_once 'services/session.service.php';
-require_once 'services/db/user-token.db.service.php';
-require_once 'services/db/user.db.service.php';
+require_once 'services/user.service.php';
 
 use Models\User\UserLoginRequest;
 use Models\User\UserLoginResponse;
 use Services\SessionService;
-use Services\DB\UserDBService;
-use Services\DB\UserTokenDBService;
+use Services\UserService;
 
 $input = json_decode(file_get_contents('php://input'), true);
 $errors = [];
@@ -27,38 +25,22 @@ switch ( $_SERVER['REQUEST_METHOD'] ) {
             if ($errors)
                 return [ 'success' => false, 'errors' => $errors ];
 
-            $userService = UserDBService::getInstance(); /** @var UserDBService $userService */
+            $userService = UserService::getInstance(); /** @var UserService $userService */
             $sessionService = SessionService::getInstance(); /** @var SessionService $sessionService */
-            $tokenService = UserTokenDBService::getInstance(); /** @var UserTokenDBService $tokenService */
 
-            $dbPassword = $userService->getUserPassword($login->username);
+            $userId = $userService->authenticateUser($login->username, $login->password);
 
-            if ( !$dbPassword || !password_verify($login->password, $dbPassword->password) ) {
+            if (!$userId) {
                 $sessionService->clearSession();
                 return [ 'success' => false, 'errors' => [ TEXT_INCORRECT_LOGIN ] ];
             }
 
-            $id = $dbPassword->id;
+            $sessionService->setSession($userId, $login->username);
 
-            if ($login->persistent) {
-                do {
-                    $selector = uniqid('', true);
-                    $tokenMatch = $tokenService->getUserToken($selector);
-                } while($tokenMatch);
-
-                $validator = str_pad(dechex(rand(0x00000000, 0xFFFFFFFF)), 8, '0', STR_PAD_LEFT)
-                            . str_pad(dechex(rand(0x00000000, 0xFFFFFFFF)), 8, '0', STR_PAD_LEFT);
-                
-                $validatorHash = password_hash($validator, PASSWORD_BCRYPT);
-
-                $token = $tokenService->setUserToken($id, $selector, $validatorHash);
-
-                $response = new UserLoginResponse($id, $selector, $validator, $token->expiresOn);
-            }
+            if ($login->persistent)
+                $response = $userService->createUserToken($userId);
             else
-                $response = new UserLoginResponse($id);
-
-            $sessionService->setSession($id, $login->username);
+                $response = new UserLoginResponse($userId);
 
             return [ 'success' => true, 'value' => $response ];
         }

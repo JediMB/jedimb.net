@@ -38,16 +38,16 @@ class UserTokenDBService extends Singleton {
         }
     }
 
-    public function setUserToken(int $userId, string $selector, string $validatorHash) : UserToken {
+    public function setUserToken(int $userId, string $selector, string $validatorHash, string $expiresOn) : UserToken {
         try {
-            $formattedExpirationDate = (new DateTime('+' . COOKIE_EXPIRATION))->format(DB_DATETIME_FORMAT);
+            
 
             $token = $this->dbService->selectFunction(
                 'create_user_token', [
                     1 => [ 'value' => $userId, 'type' => PDO::PARAM_INT ],
                     2 => [ 'value' => $selector, 'type' => PDO::PARAM_STR ],
                     3 => [ 'value' => $validatorHash, 'type' => PDO::PARAM_STR ],
-                    4 => [ 'value' => $formattedExpirationDate, 'type' => PDO::PARAM_STR ]
+                    4 => [ 'value' => $expiresOn, 'type' => PDO::PARAM_STR ]
                 ]
             );
 
