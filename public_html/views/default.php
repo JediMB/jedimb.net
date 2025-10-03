@@ -5,7 +5,6 @@ namespace Views;
 require_once 'utilities/component.utility.php';
 
 use Enums\PageType;
-use Services\DB\UserTokenDBService;
 use Utilities\Component;
 
 $links = !empty($links);
