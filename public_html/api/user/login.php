@@ -35,12 +35,12 @@ switch ( $_SERVER['REQUEST_METHOD'] ) {
                 return [ 'success' => false, 'errors' => [ TEXT_INCORRECT_LOGIN ] ];
             }
 
-            $sessionService->setSession($userId, $login->username);
-
             if ($login->persistent)
                 $response = $userService->createUserToken($userId);
             else
                 $response = new UserLoginResponse($userId);
+
+            $sessionService->setSession($userId, $response->token);
 
             return [ 'success' => true, 'value' => $response ];
         }

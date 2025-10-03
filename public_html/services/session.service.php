@@ -30,16 +30,16 @@ class SessionService extends Singleton {
         if (!$token)
             return false;
 
-        $this->setSession($token->userId, 'TestName');
+        $this->setSession($token->userId, $token->selector);
         $this->tokenDBService->refreshUserToken($token->id);
         return true;
     }
 
-    public function setSession(int $userId, string $userName) {
+    public function setSession(int $userId, string $tokenSelector) {
         session_regenerate_id();
         $_SESSION[SESSION_STATUS_KEY] = true;
-        $_SESSION[SESSION_USERID_KEY] = $userId;
-        $_SESSION[SESSION_USERNAME_KEY] = $userName;
+        $_SESSION[SESSION_TOKEN_KEY] = $tokenSelector;
+        $_SESSION[SESSION_USER_KEY] = $userId;
     }
 
     public function clearSession() {
