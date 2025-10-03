@@ -43,7 +43,7 @@ if (isset($_SESSION[SESSION_STATUS_KEY])) {
     // TODO: Button [disabled] CSS, keep the button disabled if fields are invalid
     console.log(document.cookie);
 
-    async function Login(event) {
+    async function login(event) {
         // TODO: On-submit form validation (RegEx?)
         event.submitter.disabled = true;
         errorContainer.textContent = '';
@@ -75,6 +75,6 @@ if (isset($_SESSION[SESSION_STATUS_KEY])) {
 
     form.addEventListener("submit", (event) => {
         event.preventDefault();
-        Login(event);
+        login(event);
     });
 </script>

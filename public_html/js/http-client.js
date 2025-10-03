@@ -29,7 +29,7 @@ export default class HttpClient {
         return data;
     }
 
-    async post(api, body) {
+    async post(api, body = null) {
         const response = await fetch(this.baseApiUrl + api, {
             method: "POST",
             body: JSON.stringify(body)

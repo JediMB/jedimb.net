@@ -17,4 +17,10 @@ export default class UserApiService {
 
         return response;
     }
+
+    async logout() {
+        const response = await this.httpClient.post('user/logout');
+
+        return response;
+    }
 }

@@ -45,12 +45,34 @@ $links = !empty($links);
                     </a>
                 </home-wrapper>
                 <account-wrapper>
-                    
-
                     <?php if (isset($_SESSION['account_loggedin'])): ?>
-                        <a href="/logout">
+                        <a href="#" id="btn-logout">
                             Log out
                         </a>
+                        <script type="module">
+                            import UserApiService from '/js/services/api/user-api.service.js';
+                        
+                            const userApiService = new UserApiService();
+
+                            async function logout() {
+                                const response = await userApiService.logout();
+
+                                if (response.success) {
+                                    const expires = (new Date(0)).toUTCString();
+                                    document.cookie = `<?= COOKIE_USER_KEY ?>=; expires=${expires};`
+                                    document.cookie = `<?= COOKIE_TOKEN_KEY ?>=; expires=${expires};`
+                                    document.cookie = `<?= COOKIE_VALIDATOR_KEY ?>=; expires=${expires};`;
+                                    
+                                    setTimeout(() => location.reload(), 5000);
+                                    return;
+                                }
+                            }
+
+                            document.querySelector('#btn-logout').addEventListener('click', () => {
+                                event.preventDefault();
+                                logout();
+                            });
+                        </script>
                     <?php else: ?>
                         <a href="/login">
                             Log in
