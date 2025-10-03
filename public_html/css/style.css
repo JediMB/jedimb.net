@@ -577,6 +577,11 @@ video {
     position: fixed;
 }
 
+.mx-auto {
+    margin-left: auto;
+    margin-right: auto;
+}
+
 .mb-3 {
     margin-bottom: 0.75rem;
 }
@@ -599,6 +604,14 @@ video {
 
 .hidden {
     display: none;
+}
+
+.w-80 {
+    width: 20rem;
+}
+
+.w-full {
+    width: 100%;
 }
 
 .flex-grow {
@@ -646,6 +659,10 @@ video {
     border-width: 1px;
 }
 
+.p-1 {
+    padding: 0.25rem;
+}
+
 .p-4 {
     padding: 1rem;
 }
@@ -665,6 +682,11 @@ video {
 
 .italic {
     font-style: italic;
+}
+
+.text-black {
+    --tw-text-opacity: 1;
+    color: rgb(0 0 0 / var(--tw-text-opacity, 1));
 }
 
 .text-gray-500 {
@@ -1147,6 +1169,19 @@ about-me-content section {
     .links div {
         text-align: center;
     }
+}
+
+.hover\:bg-hotpink-500:hover {
+    --tw-bg-opacity: 1;
+    background-color: hsl(330 88% 67% / var(--tw-bg-opacity, 1));
+}
+
+.hover\:text-black:hover {
+    --tw-text-opacity: 1;
+    color: rgb(0 0 0 / var(--tw-text-opacity, 1));
+}
+
+@media not all and (min-width: 37.5rem) {
 
     .max-md\:flex-row {
         flex-direction: row;

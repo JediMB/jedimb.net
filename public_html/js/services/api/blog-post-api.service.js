@@ -7,13 +7,13 @@ export default class BlogPostApiService {
     }
 
     async getBlogPosts() {
-        const data = await this.httpClient.get('blog/posts');
-        const blogPosts = [];
+        const response = await this.httpClient.get('blog/posts');
 
-        data?.forEach(post => {
-            blogPosts.push(new BlogPost(post));
-        });
+        if (!response.success)
+            return response;
 
-        return blogPosts;
+        response.value = response.value.map(post => new BlogPost(post));
+
+        return response;
     }
 }

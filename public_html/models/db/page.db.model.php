@@ -1,10 +1,12 @@
 <?php declare(strict_types=1);
 
-namespace Models;
+namespace Models\DB;
 
-require_once 'models/page-base.model.php';
+require_once 'models/base/db-page-content.model.php';
 
-class Page extends PageBase {
+use Models\Base\DBPageContent;
+
+class Page extends DBPageContent {
     public ?int $parentId;
     public string $pathPart;
     public ?string $menuTitle;

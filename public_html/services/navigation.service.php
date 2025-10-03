@@ -2,14 +2,17 @@
 
 namespace Services;
 
-require_once 'services/singleton.php';
-require_once 'models/page-navigation-data.model.php';
 require_once 'models/menu-item.model.php';
+require_once 'models/page-navigation-data.model.php';
+require_once 'services/base/singleton.php';
+require_once 'services/db/database.service.php';
 
 use Exception;
+use PDOException;
 use Models\MenuItem;
 use Models\PageNavigationData;
-use PDOException;
+use Services\Base\Singleton;
+use Services\DB\DatabaseService;
 
 class NavigationService extends Singleton{
     public array $virtualPageRoutes;
@@ -46,8 +49,7 @@ class NavigationService extends Singleton{
     private function buildVirtualPageRoutes(array $navData) {
         $routes = [];
        
-        foreach ($navData as $item) {
-            /** @var PageNavigationData $item */
+        foreach ($navData as $item) { /** @var PageNavigationData $item */
             $id = $item->id;
             $fullPath = $item->pathPart;
 
@@ -69,9 +71,7 @@ class NavigationService extends Singleton{
         $this->menu ??= [];
         $tier2Items = [];
 
-        foreach ($navData as $item) {
-            /** @var PageNavigationData $item */
-         
+        foreach ($navData as $item) { /** @var PageNavigationData $item */
             if ($item->parentId === null) {
                 $this->menu[$item->id] = new MenuItem(
                     $item->menuTitle,

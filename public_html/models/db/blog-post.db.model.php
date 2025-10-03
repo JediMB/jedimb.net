@@ -1,12 +1,12 @@
 <?php declare(strict_types=1);
 
-namespace Models;
+namespace Models\DB;
 
-require_once 'models/page-base.model.php';
+require_once 'models/base/db-page-content.model.php';
 
-use DateTime;
+use Models\Base\DBPageContent;
 
-class BlogPost extends PageBase {
+class BlogPost extends DBPageContent {
     public string $permalink;
     public ?string $mastolink;
     public bool $isPublished;

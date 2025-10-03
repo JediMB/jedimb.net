@@ -1,13 +1,13 @@
 <?php
 
 require_once 'enums/page-type.enum.php';
-require_once 'services/blog-post.service.php';
-require_once 'services/page.service.php';
+require_once 'services/db/blog-post.db.service.php';
+require_once 'services/db/page.db.service.php';
 
 use Enums\PageType;
-use Services\BlogPostService;
 use Services\NavigationService;
-use Services\PageService;
+use Services\DB\BlogPostDBService;
+use Services\DB\PageDBService;
 
 function getRealPath(string $path, bool &$isForbidden) : string|false {
     /*  Try to find a matching file in the following order:
@@ -56,35 +56,37 @@ function getRealPath(string $path, bool &$isForbidden) : string|false {
 
 // If it's an api call, handle separately
 function handleApiRequests(string $path) {
-    if (strpos($path, 'api/') === 0) {
-        header('Content-Type: application/json');
+    if (strpos($path, PATH_API_DIR . '/') !== 0)
+        return;
 
-        $requestComponents = explode(DIRECTORY_SEPARATOR, $path, 10);
-        
-        $apiPath = $requestComponents[0];
-        for ($i = 1; $i < count($requestComponents); $i++) {
-            $apiPath = $apiPath . DIRECTORY_SEPARATOR . $requestComponents[$i];
+    header('Content-Type: application/json');
 
-            // If a matching api file is found, serve it as a json string
-            if (($filePath = realpath($apiPath . '.php'))) {
-                $GLOBALS['api_params'] = array_slice($requestComponents, $i + 1);
-                include $filePath;
-                exit;
-            }
-        }
-
-        echo json_encode(['message' => 'Invalid URI']);
-        exit;
-    }
+    $apiPath = PATH_API_DIR;
+    $pathComponents = explode('/', $path, 10);
+    $pathComponents = array_splice($pathComponents, 1);
     
+    foreach ($pathComponents as $index => $component) {
+        $apiPath = "$apiPath/$component";
+        
+        if ( ($filePath = realpath("$apiPath.php")) ) {
+            $GLOBALS['api_params'] = array_slice($pathComponents, $index + 1);
+            echo json_encode(
+                ( include $filePath )
+                ?? [ 'success' => false, 'errors' => ['No data from API'] ]
+            );
+            exit;
+        }
+    }
+
+    echo json_encode([ 'success' => false, 'errors' => ['Invalid URI'] ]);
+    exit;
 }
 
 // If it's trying to access a blog entry, serve a match
 function handleBlogRequests(string $path) {
     $matches = [];
     if (preg_match(REGEX_BLOG_PATH, $path, $matches)) {
-        $service = BlogPostService::getInstance();
-        /** @var BlogPostService $service */
+        $service = BlogPostDBService::getInstance(); /** @var BlogPostDBService $service */
 
         $blogPost = $service->getBlogPost($matches[1]);
 
@@ -111,13 +113,11 @@ function handleBots() {
 }
 
 function handleVirtualPages(string $requestPath) {
-    $nav = NavigationService::getInstance();
-    /** @var NavigationService $nav */
+    $nav = NavigationService::getInstance(); /** @var NavigationService $nav */
 
     foreach ($nav->virtualPageRoutes as $id => $route) {
         if (ltrim($route, '/') === $requestPath) {
-            $service = PageService::getInstance();
-            /** @var PageService $service */
+            $service = PageDBService::getInstance(); /** @var PageDBService $service */
 
             $page = $service->getPage($id);
 
@@ -153,8 +153,7 @@ function servePHP(array $variables = [ 'header' => false ]) {
     if (empty($template))
         $template = SITE_VIEW;
 
-    $pageService = PageService::getInstance();
-    /** @var PageService $pageService */
+    $pageService = PageDBService::getInstance(); /** @var PageDBService $pageService */
 
     if ($pageType === PageType::PHP && isset($pagePath)) {
         ob_start();

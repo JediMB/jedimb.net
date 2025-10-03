@@ -29,14 +29,12 @@ Component::queueJS(__FILE__);
     
     <ul id="mobile-menu-contents" class="hidden">
         <li><a href="/">Home</a></li>
-        <?php foreach (NavigationService::getInstance()->menu as $id => $item): ?>
-            <?php /** @var MenuItem $item */ ?>
+        <?php foreach (NavigationService::getInstance()->menu as $id => $item): /** @var MenuItem $item */ ?>
             <?php if (count($item->children) > 0): ?>
                 <?php
                 
                 $submenuMarkup = '';
-                foreach ($item->children as $subId => $subItem) {
-                    /** @var MenuItem $subItem */
+                foreach ($item->children as $subId => $subItem) { /** @var MenuItem $subItem */
                     $submenuMarkup = $submenuMarkup . <<<HTML
                         <li>
                             <a href="{$subItem->path}">{$subItem->title}</a>
@@ -44,9 +42,6 @@ Component::queueJS(__FILE__);
                     HTML;
                 }
                 
-                // Can't remember what this is supposed to do.
-                // Because the old code didn't check the array length?
-                //if (strlen($submenuMarkup) < 10) continue;
                 ?>
                 <li>
                     <input id="mobile-menu-entry-$id" type="checkbox" class="hidden">

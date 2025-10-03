@@ -13,9 +13,13 @@ require_once 'secrets.php';
 require_once 'routing.php';
 require_once 'enums/page-type.enum.php';
 require_once 'services/navigation.service.php';
+require_once 'services/session.service.php';
+require_once 'services/db/user-token.db.service.php';
 
 use Models\MenuItem;
+use Services\DB\UserTokenDBService;
 use Services\NavigationService;
+use Services\SessionService;
 
 // Force lowercase
 $requestPath = strtolower(
@@ -27,9 +31,14 @@ $requestPath = strtolower(
     )
 );
 
+$sessionService = SessionService::getInstance(); /** @var SessionService $sessionService */
+
 handleBots();
 
 handleApiRequests($requestPath);
+
+if (!$sessionService->isLoggedIn())
+    $sessionService->loginFromCookie();
 
 $navService = NavigationService::getInstance();
 $navService->menu[] = new MenuItem('About me', '/about');
@@ -39,6 +48,11 @@ if ($requestPath === '')
         'pagePath' => PATH_HOMEPAGE,
         'links' => true
     ]);
+
+foreach (SPECIAL_PATHS as $request => $path) {
+    if ($requestPath === $request)
+        servePHP([ 'pagePath' => $path ]);
+}
 
 handleVirtualPages($requestPath);
 
