@@ -2,10 +2,10 @@
 
 namespace Services\DB;
 
+require_once 'models/db/user-token.db.model.php';
 require_once 'models/user/user-password.model.php';
-require_once 'models/user/user-token.model.php';
-require_once 'services/database.service.php';
-require_once 'services/singleton.php';
+require_once 'services/base/singleton.php';
+require_once 'services/db/database.service.php';
 
 use Exception;
 use PDO;
