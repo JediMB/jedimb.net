@@ -43,7 +43,6 @@ class SessionService extends Singleton {
     }
 
     public function clearSession() {
-        // TODO: See if clearing cookies via backend works when called via REST API
         session_unset();
         session_destroy();
     }

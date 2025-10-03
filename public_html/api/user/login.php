@@ -2,11 +2,13 @@
 
 require_once 'models/user/user-login-request.model.php';
 require_once 'models/user/user-login-response.model.php';
+require_once 'services/session.service.php';
 require_once 'services/db/user-token.db.service.php';
 require_once 'services/db/user.db.service.php';
 
 use Models\User\UserLoginRequest;
 use Models\User\UserLoginResponse;
+use Services\SessionService;
 use Services\DB\UserDBService;
 use Services\DB\UserTokenDBService;
 
@@ -26,13 +28,13 @@ switch ( $_SERVER['REQUEST_METHOD'] ) {
                 return [ 'success' => false, 'errors' => $errors ];
 
             $userService = UserDBService::getInstance(); /** @var UserDBService $userService */
+            $sessionService = SessionService::getInstance(); /** @var SessionService $sessionService */
             $tokenService = UserTokenDBService::getInstance(); /** @var UserTokenDBService $tokenService */
 
             $dbPassword = $userService->getUserPassword($login->username);
 
             if ( !$dbPassword || !password_verify($login->password, $dbPassword->password) ) {
-                session_unset();
-                session_destroy();
+                $sessionService->clearSession();
                 return [ 'success' => false, 'errors' => [ TEXT_INCORRECT_LOGIN ] ];
             }
 
@@ -56,10 +58,7 @@ switch ( $_SERVER['REQUEST_METHOD'] ) {
             else
                 $response = new UserLoginResponse($id);
 
-            session_regenerate_id();
-            $_SESSION[SESSION_STATUS_KEY] = true;
-            $_SESSION[SESSION_USERNAME_KEY] = $login->username;
-            $_SESSION[SESSION_USERID_KEY] = $id;
+            $sessionService->setSession($id, $login->username);
 
             return [ 'success' => true, 'value' => $response ];
         }
