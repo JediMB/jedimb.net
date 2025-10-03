@@ -9,6 +9,7 @@
 ## TODO:
 
 - <s>Cookie-based login</s> ✅
+- Sanitize input
 - Admin pages
 - Blog post composition/publishing
   - Mastodon integration: automatic toot composition, and linking the resulting toot to the blog entry as it is saved
