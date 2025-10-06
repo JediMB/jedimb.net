@@ -25,8 +25,18 @@ define('SESSION_STATUS_KEY', 'account_loggedin');
 define('SESSION_TOKEN_KEY', 'account_token');
 define('SESSION_USER_KEY', 'account_id');
 
+define('INPUT_LENGTH', [
+    'username' => ['min' => 5, 'max' => 50],
+    'password' => ['min' => 12, 'max' => 100] 
+]);
+
 define('REGEX_BLOG_PATH', '/^blog(\/[0-9]{4}\/[0-9]{2}\/[0-9]{2}\/[-a-z0-9]*)$/');
 define('REGEX_MASTOLINK', '/^http[s]?:\/\/([-.a-z0-9]+)\/@([-.a-z0-9]+)\/([0-9]+)$/');
+
+define('REGEX_INPUT', [
+    'username' => '/[a-zA-Z\u00C0-\u024F\u1E00-\u1EFF\ \-_]/',
+    'password' => "/^(?=.*[a-z])(?=.*[A-Z])[a-zA-Zà-æÀ-Æè-ïÈ-Ïò-öÒ-Öø-ýØ-Ýÿ\d!#$&*-\-?@£\$€_]$/"
+]);
 
 define('META_DESCRIPTION', "JediMB's indie website");
 define('META_KEYWORDS', 'indie, programming, games, blog, webdev');
