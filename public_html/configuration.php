@@ -34,14 +34,18 @@ define('REGEX_BLOG_PATH', '/^blog(\/[0-9]{4}\/[0-9]{2}\/[0-9]{2}\/[-a-z0-9]*)$/'
 define('REGEX_MASTOLINK', '/^http[s]?:\/\/([-.a-z0-9]+)\/@([-.a-z0-9]+)\/([0-9]+)$/');
 
 define('REGEX_INPUT', [
-    'username' => '/[a-zA-Z\u00C0-\u024F\u1E00-\u1EFF\ \-_]/',
-    'password' => "/^(?=.*[a-z])(?=.*[A-Z])[a-zA-Zà-æÀ-Æè-ïÈ-Ïò-öÒ-Öø-ýØ-Ýÿ\d!#$&*-\-?@£\$€_]$/"
+    'username' => '/^(?!\s)[\w@.!?\-\' à-æÀ-Æè-ïÈ-Ïò-öÒ-Öø-ýØ-Ýÿ]+(?<!\s)$/',
+    'password' => '/^(?=.*[a-z])(?=.*[A-Z])[\w@.!#$&?*+\-\$£€à-æÀ-Æè-ïÈ-Ïò-öÒ-Öø-ýØ-Ýÿ]+$/'
 ]);
 
 define('META_DESCRIPTION', "JediMB's indie website");
 define('META_KEYWORDS', 'indie, programming, games, blog, webdev');
 
 define('TEXT_INVALID_REQUEST', 'Invalid request method');
+define('TEXT_USERNAME_LENGTH', INPUT_LENGTH['username']['min'] . '–' . INPUT_LENGTH['username']['max'] . ' characters.');
+define('TEXT_PASSWORD_LENGTH', INPUT_LENGTH['password']['min'] . '–' . INPUT_LENGTH['password']['max'] . ' characters.');
+define('TEXT_USERNAME_CHARS', 'A-Z, ÅÄÖÆØ, accented vowels, numbers, apostrophes, spaces between words, and @.!?-.');
+define('TEXT_PASSWORD_CHARS', 'A-Z, ÅÄÖÆØ, accented vowels, numbers, and @.!#$&?*+-$£€.');
 define('TEXT_USERNAME_MISSING', 'Username required');
 define('TEXT_PASSWORD_MISSING', 'Password required');
 define('TEXT_INCORRECT_LOGIN', 'Incorrect username or password');
