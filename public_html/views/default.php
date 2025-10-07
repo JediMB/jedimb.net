@@ -108,7 +108,7 @@ $links = !empty($links);
         </sub-menu>
     </header>
     
-    <content-container class="mb-3 <?= $links ? 'md:grid grid-cols-sidebar-right gap-x-8' : null ?>">
+    <content-container class="mb-3 <?= $links ? 'grid-cols-sidebar-right' : null ?>">
         <main>
             <?php if (!empty($title)): ?>
                 <h2><?= $title ?></h2>
@@ -139,7 +139,7 @@ $links = !empty($links);
             <?php Component::include('copyright.php', [ 'pageDate' => $modifiedOn ?: $createdOn ]) ?>
         <?php endif ?>
         <br/>
-        Made in PHP, HTML, CSS and JavaScript, with Visual Studio Code, Tailwind and PHP Intelephense.
+        Made in PHP, HTML, CSS and JavaScript, with Visual Studio Code and PHP Intelephense.
     </footer>
 
     <?php Component::renderQueuedJS() ?>

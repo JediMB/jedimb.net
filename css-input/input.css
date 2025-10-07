@@ -1,35 +1,95 @@
 @import './fonts.css';
 
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+:root {
+    --screens-sm: 20rem;
+    --screens-md: 37.5rem;
+    --screens-lg: 55rem;
 
-@layer base {
-    :root {
-        --color-primary-light: theme(colors.hotpink.300);
-        --color-primary: theme(colors.hotpink.500);
-        --color-primary-50: theme(colors.hotpink.500 / 50%);
-        --color-primary-dark: theme(colors.hotpink.700);
-        --color-primary-dark-50: theme(colors.hotpink.700 / 50%);
-        --color-secondary: theme(colors.bluelotus.500);
-        --color-tertiary: theme(colors.lightgreenishblue.500);
-        --color-accent: theme(colors.sandyyellow.500);
+    --color-gray-50:   hsl(0, 0%, 5%);
+    --color-gray-100:  hsl(0, 0%, 10%);
+    --color-gray-200:  hsl(0, 0%, 20%);
+    --color-gray-300:  hsl(0, 0%, 30%);
+    --color-gray-400:  hsl(0, 0%, 40%);
+    --color-gray-500:  hsl(0, 0%, 50%);
+    --color-gray-600:  hsl(0, 0%, 60%);
+    --color-gray-700:  hsl(0, 0%, 70%);
+    --color-gray-800:  hsl(0, 0%, 80%);
+    --color-gray-900:  hsl(0, 0%, 90%);
+    --color-gray-950:  hsl(0, 0%, 95%);
 
-        --color-background: theme(colors.gray.50);
-        --color-text: theme(colors.white);
-        --color-link: theme(colors.hotpink.200);
-        --color-link-hover: theme(colors.bluelotus.200);
-        --color-link-visited: theme(colors.lightgreenishblue.200);
+    --color-hotpink-50:   hsl(330, 88%, 93%);
+    --color-hotpink-100:  hsl(331, 88%, 90%);
+    --color-hotpink-200:  hsl(330, 88%, 83%);
+    --color-hotpink-300:  hsl(330, 88%, 77%);
+    --color-hotpink-400:  hsl(330, 88%, 70%);
+    --color-hotpink-500:  hsl(330, 88%, 67%);
+    --color-hotpink-600:  hsl(330, 65%, 60%);
+    --color-hotpink-700:  hsl(330, 43%, 47%);
+    --color-hotpink-800:  hsl(330, 43%, 34%);
+    --color-hotpink-900:  hsl(330, 43%, 20%);
+    --color-hotpink-950:  hsl(331, 42%, 14%);
 
-        --color-header-1: theme(colors.gray.50 / 95%);
-        --color-header-2: theme(colors.gray.200 / 95%);
+    --color-sandyyellow-50:   hsl(54, 93%, 94%);
+    --color-sandyyellow-100:  hsl(53, 95%, 91%);
+    --color-sandyyellow-200:  hsl(53, 97%, 86%);
+    --color-sandyyellow-300:  hsl(53, 96%, 80%);
+    --color-sandyyellow-400:  hsl(53, 97%, 75%);
+    --color-sandyyellow-500:  hsl(53, 97%, 72%);
+    --color-sandyyellow-600:  hsl(53, 69%, 65%);
+    --color-sandyyellow-700:  hsl(53, 38%, 50%);
+    --color-sandyyellow-800:  hsl(53, 38%, 36%);
+    --color-sandyyellow-900:  hsl(53, 38%, 22%);
+    --color-sandyyellow-950:  hsl(53, 37%, 14%);
 
-        --spacing-internal: theme(spacing.1);
-        --spacing-edges: theme(spacing.2);
-        --spacing-buttons: theme(spacing.2);
-        --spacing-inner: theme(spacing.4);
-        --spacing-outer: theme(spacing.8);
-    }
+    --color-lightgreenishblue-50:   hsl(154, 88%, 93%);
+    --color-lightgreenishblue-100:  hsl(153, 92%, 90%);
+    --color-lightgreenishblue-200:  hsl(153, 90%, 84%);
+    --color-lightgreenishblue-300:  hsl(153, 91%, 77%);
+    --color-lightgreenishblue-400:  hsl(153, 91%, 71%);
+    --color-lightgreenishblue-500:  hsl(153, 90%, 68%);
+    --color-lightgreenishblue-600:  hsl(153, 68%, 61%);
+    --color-lightgreenishblue-700:  hsl(153, 43%, 47%);
+    --color-lightgreenishblue-800:  hsl(153, 43%, 34%);
+    --color-lightgreenishblue-900:  hsl(153, 42%, 20%);
+    --color-lightgreenishblue-950:  hsl(153, 42%, 14%);
+
+    --color-bluelotus-50:   hsl(244, 79%, 93%);
+    --color-bluelotus-100:  hsl(244, 82%, 89%);
+    --color-bluelotus-200:  hsl(244, 80%, 82%);
+    --color-bluelotus-300:  hsl(244, 81%, 75%);
+    --color-bluelotus-400:  hsl(244, 80%, 68%);
+    --color-bluelotus-500:  hsl(244, 79%, 65%);
+    --color-bluelotus-600:  hsl(244, 60%, 58%);
+    --color-bluelotus-700:  hsl(244, 43%, 45%);
+    --color-bluelotus-800:  hsl(244, 43%, 33%);
+    --color-bluelotus-900:  hsl(244, 43%, 19%);
+    --color-bluelotus-950:  hsl(244, 42%, 13%);
+}
+
+body {
+    --color-primary-light: var(--color-hotpink-300);
+    --color-primary: var(--color-hotpink-500);
+    --color-primary-50: hsl(330 88% 67% / 50%); /* Was 50% hotpink-500 */
+    --color-primary-dark: var(--color-hotpink-700);
+    --color-primary-dark-50: hsl(330 43% 47% / 50%); /* Was 50% hotpink-700 */
+    --color-secondary: var(--color-bluelotus-500);
+    --color-tertiary: var(--color-lightgreenishblue-500);
+    --color-accent: var(--color-sandyyellow-500);
+
+    --color-background: var(--color-gray-50);
+    --color-text: #ffffff;
+    --color-link: var(--color-hotpink-200);
+    --color-link-hover: var(--color-bluelotus-200);
+    --color-link-visited: var(--color-lightgreenishblue-200);
+
+    --color-header-1: hsl(0 0% 5% / 95%); /* Was 95% gray-50*/
+    --color-header-2: hsl(0 0% 20% / 95%); /* Was 95% gray-200 */
+
+    --spacing-internal: 0.25rem;
+    --spacing-edges: 0.5rem;
+    --spacing-buttons: 0.5rem;
+    --spacing-inner: 1rem;
+    --spacing-outer: 2rem;
 }
 
 body {
