@@ -19,19 +19,23 @@ if (isset($_SESSION[SESSION_STATUS_KEY])) {
             <label for="username">Username</label>
             <input type="text" name="username" id="username" placeholder="Username"
                 pattern="<?= trim(REGEX_INPUT['username'], '/') ?>" required
+                data-mismatch="<?= TEXT_USERNAME_CHARS ?>"
                 minlength="<?= INPUT_LENGTH['username']['min'] ?>"
                 maxlength="<?= INPUT_LENGTH['username']['max'] ?>"
                 title="<?= TEXT_USERNAME_LENGTH . ' ' . TEXT_USERNAME_CHARS ?>"
                 class="w-full p-1 text-black">
+            <div></div>
         </div>
         <div>
             <label for="password">Password</label>
             <input type="password" name="password" id="password" placeholder="Password"
                 pattern="<?= trim(REGEX_INPUT['password'], '/') ?>" required
+                data-mismatch="<?= TEXT_PASSWORD_CHARS ?>"
                 minlength="<?= INPUT_LENGTH['password']['min'] ?>"
                 maxlength="<?= INPUT_LENGTH['password']['max'] ?>"
                 title="<?= TEXT_PASSWORD_LENGTH . ' ' . TEXT_PASSWORD_CHARS ?>"
                 class="w-full p-1 text-black">
+            <div></div>
         </div>
         <div>
             <input type="checkbox" name="rememberme" id="rememberme">
@@ -84,13 +88,44 @@ if (isset($_SESSION[SESSION_STATUS_KEY])) {
         event.submitter.disabled = false;
     }
 
-    const validateForm = () => {
+    const addErrorMessage = (element, message) => {
+        const newError = document.createElement('div');
+        newError.classList.add('error');
+        newError.textContent = message;
+        element.appendChild(newError);
+    };
+
+    const validateForm = (source, eventType) => {
         let isValid = true;
 
         inputs.forEach(input => {
-            if (input.checkValidity())
-                return;
+            if (input.checkValidity()) {
+                if (eventType === 'input' && source === input && input.nextElementSibling) {
+                    input.classList.remove('error');
+                console.log(input.validity);
+                    input.nextElementSibling.innerHTML = '';
+                }
 
+                return;
+            }
+
+            if (eventType === 'change' && source === input) {
+
+                input.classList.add('error');
+                console.log(input.validity);
+                
+                // TODO: Verify that the sibling is actually the desired element
+                if (input.nextElementSibling) {
+                    input.nextElementSibling.textContent = '';
+
+                    if (input.validity.tooShort)
+                        addErrorMessage(input.nextElementSibling, '<?= TEXT_INPUT_TOOSHORT ?>');
+                    else if (input.validity.tooLong)
+                        addErrorMessage(input.nextElementSibling, '<?= TEXT_INPUT_TOOLONG ?>');
+                    if (input.validity.patternMismatch)
+                        addErrorMessage(input.nextElementSibling, input.dataset.mismatch);
+                }
+            }
             isValid = false;
         });
 
@@ -101,7 +136,8 @@ if (isset($_SESSION[SESSION_STATUS_KEY])) {
         if (!input.checkValidity())
             loginBtn.disabled = true;
 
-        input.addEventListener('input', validateForm);
+        input.addEventListener('input', () => validateForm(input, 'input'));
+        input.addEventListener('change', () => validateForm(input, 'change'));
     });
 
     form.addEventListener("submit", (event) => {

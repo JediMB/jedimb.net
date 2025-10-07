@@ -45,9 +45,11 @@ define('TEXT_INVALID_REQUEST', 'Invalid request method');
 define('TEXT_USERNAME_LENGTH', INPUT_LENGTH['username']['min'] . '–' . INPUT_LENGTH['username']['max'] . ' characters.');
 define('TEXT_PASSWORD_LENGTH', INPUT_LENGTH['password']['min'] . '–' . INPUT_LENGTH['password']['max'] . ' characters.');
 define('TEXT_USERNAME_CHARS', 'A-Z, ÅÄÖÆØ, accented vowels, numbers, apostrophes, spaces between words, and @.!?-.');
-define('TEXT_PASSWORD_CHARS', 'A-Z, ÅÄÖÆØ, accented vowels, numbers, and @.!#$&?*+-$£€.');
+define('TEXT_PASSWORD_CHARS', 'A-Z, ÅÄÖÆØ, accented vowels, numbers, and @.!#$&?*+-$£€. Uppercase and lowercase characters required.');
 define('TEXT_USERNAME_MISSING', 'Username required');
 define('TEXT_PASSWORD_MISSING', 'Password required');
+define('TEXT_INPUT_TOOSHORT', 'Too short');
+define('TEXT_INPUT_TOOLONG', 'Too long');
 define('TEXT_INCORRECT_LOGIN', 'Incorrect username or password');
 
 define('DB_OPTIONS', [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]);
