@@ -17,17 +17,27 @@ if (isset($_SESSION[SESSION_STATUS_KEY])) {
     <form id="form-login" class="flex flex-col gap-3">
         <div>
             <label for="username">Username</label>
-            <input type="text" name="username" id="username" placeholder="Username" required class="w-full p-1 text-black">
+            <input type="text" name="username" id="username" placeholder="Username"
+                pattern="<?= trim(REGEX_INPUT['username'], '/') ?>" required
+                minlength="<?= INPUT_LENGTH['username']['min'] ?>"
+                maxlength="<?= INPUT_LENGTH['username']['max'] ?>"
+                title="<?= TEXT_USERNAME_LENGTH . ' ' . TEXT_USERNAME_CHARS ?>"
+                class="w-full p-1 text-black">
         </div>
         <div>
             <label for="password">Password</label>
-            <input type="password" name="password" id="password" placeholder="Password" required class="w-full p-1 text-black">
+            <input type="password" name="password" id="password" placeholder="Password"
+                pattern="<?= trim(REGEX_INPUT['password'], '/') ?>" required
+                minlength="<?= INPUT_LENGTH['password']['min'] ?>"
+                maxlength="<?= INPUT_LENGTH['password']['max'] ?>"
+                title="<?= TEXT_PASSWORD_LENGTH . ' ' . TEXT_PASSWORD_CHARS ?>"
+                class="w-full p-1 text-black">
         </div>
         <div>
             <input type="checkbox" name="rememberme" id="rememberme">
             <label for="rememberme">Remember me</label>
         </div>
-        <button type="submit" class="btn hover:bg-hotpink-500 hover:text-black">Login</button>
+        <button type="submit" class="btn btn-login">Login</button>
     </form>
     <div id="login-errors"></div>
 </div>
@@ -37,12 +47,14 @@ if (isset($_SESSION[SESSION_STATUS_KEY])) {
 
     const userApiService = new UserApiService();
 
-    const form = document.querySelector("#form-login");
+    const form = document.querySelector('#form-login');
+    const inputs = form.querySelectorAll('[pattern]');
+    const loginBtn = form.querySelector('[type=submit]');
     const errorContainer = document.querySelector('#login-errors');
 
     // TODO: Button [disabled] CSS, keep the button disabled if fields are invalid
 
-    async function login(event) {
+    const login = async (event) => {
         // TODO: On-submit form validation (RegEx?)
         event.submitter.disabled = true;
         errorContainer.textContent = '';
@@ -71,6 +83,26 @@ if (isset($_SESSION[SESSION_STATUS_KEY])) {
 
         event.submitter.disabled = false;
     }
+
+    const validateForm = () => {
+        let isValid = true;
+
+        inputs.forEach(input => {
+            if (input.checkValidity())
+                return;
+
+            isValid = false;
+        });
+
+        loginBtn.disabled = !isValid;
+    }
+
+    inputs.forEach(input => {
+        if (!input.checkValidity())
+            loginBtn.disabled = true;
+
+        input.addEventListener('input', validateForm);
+    });
 
     form.addEventListener("submit", (event) => {
         event.preventDefault();
