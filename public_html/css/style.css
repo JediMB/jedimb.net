@@ -1072,6 +1072,21 @@ header::before {
 
 }
 
+input.error {
+    background-color: var(--color-hotpink-200);
+    color: black;
+}
+
+input.error::selection {
+    background-color: var(--color-hotpink-800);
+    color: white;
+}
+
+div.error {
+    display: list-item;
+    list-style-position: inside;
+}
+
 .links a img {
     transition:
         transform 0.2s,

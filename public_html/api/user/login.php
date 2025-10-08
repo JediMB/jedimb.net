@@ -5,6 +5,7 @@ require_once 'models/user/user-login-response.model.php';
 require_once 'services/session.service.php';
 require_once 'services/user.service.php';
 
+use Models\Exceptions\InputException;
 use Models\User\UserLoginRequest;
 use Models\User\UserLoginResponse;
 use Services\SessionService;
@@ -16,14 +17,7 @@ $errors = [];
 switch ( $_SERVER['REQUEST_METHOD'] ) {
     case 'POST':
         try {
-            $login = new UserLoginRequest($input); // TODO: Additional form validation (RegEx? In model constructor?)
-
-            if (empty($login->username))
-                $errors[] = TEXT_USERNAME_MISSING;
-            if (empty($login->password))
-                $errors[] = TEXT_PASSWORD_MISSING;
-            if ($errors)
-                return [ 'success' => false, 'errors' => $errors ];
+            $login = new UserLoginRequest($input);
 
             $userService = UserService::getInstance(); /** @var UserService $userService */
             $sessionService = SessionService::getInstance(); /** @var SessionService $sessionService */
@@ -43,6 +37,9 @@ switch ( $_SERVER['REQUEST_METHOD'] ) {
             $sessionService->setSession($userId, $response->token);
 
             return [ 'success' => true, 'value' => $response ];
+        }
+        catch (InputException $e) {
+            return [ 'success' => false, 'errors' => $e->getMessages() ];
         }
         catch (Exception $e) {
             return [ 'success' => false, 'errors' => [$e->getMessage()] ];
