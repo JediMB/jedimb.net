@@ -31,6 +31,11 @@ $links = !empty($links);
     <?php if ($pageType === PageType::BlogPost): ?>
         <script type="text/javascript" defer src="/js/local-time.js"></script>
     <?php endif ?>
+
+    <meta name="cookie-user-key" content="<?= COOKIE_USER_KEY ?>">
+    <meta name="cookie-token-key" content="<?= COOKIE_TOKEN_KEY ?>">
+    <meta name="cookie-validator-key" content="<?= COOKIE_VALIDATOR_KEY ?>">
+    <meta>
 </head>
 <body>
     <header>
