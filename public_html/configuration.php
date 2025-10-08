@@ -27,7 +27,7 @@ define('SESSION_USER_KEY', 'account_id');
 
 define('INPUT_LENGTH', [
     'username' => ['min' => 5, 'max' => 50],
-    'password' => ['min' => 12, 'max' => 100] 
+    'password' => ['min' => 10, 'max' => 100] 
 ]);
 
 define('REGEX_BLOG_PATH', '/^blog(\/[0-9]{4}\/[0-9]{2}\/[0-9]{2}\/[-a-z0-9]*)$/');
@@ -42,14 +42,16 @@ define('META_DESCRIPTION', "JediMB's indie website");
 define('META_KEYWORDS', 'indie, programming, games, blog, webdev');
 
 define('TEXT_INVALID_REQUEST', 'Invalid request method');
+define('TEXT_USERNAME', 'username');
+define('TEXT_PASSWORD', 'password');
+define('TEXT_INPUT_MISSING', ' required');
+define('TEXT_INPUT_TOOSHORT', ' too short');
+define('TEXT_INPUT_TOOLONG', ' too long');
+define('TEXT_INPUT_MISMATCH', ' format invalid');
 define('TEXT_USERNAME_LENGTH', INPUT_LENGTH['username']['min'] . '–' . INPUT_LENGTH['username']['max'] . ' characters.');
 define('TEXT_PASSWORD_LENGTH', INPUT_LENGTH['password']['min'] . '–' . INPUT_LENGTH['password']['max'] . ' characters.');
 define('TEXT_USERNAME_CHARS', 'A-Z, ÅÄÖÆØ, accented vowels, numbers, apostrophes, spaces between words, and @.!?-.');
-define('TEXT_PASSWORD_CHARS', 'A-Z, ÅÄÖÆØ, accented vowels, numbers, and @.!#$&?*+-$£€. Uppercase and lowercase characters required.');
-define('TEXT_USERNAME_MISSING', 'Username required');
-define('TEXT_PASSWORD_MISSING', 'Password required');
-define('TEXT_INPUT_TOOSHORT', 'Too short');
-define('TEXT_INPUT_TOOLONG', 'Too long');
+define('TEXT_PASSWORD_CHARS', 'Uppercase and lowercase characters required. A-Z, ÅÄÖÆØ, accented vowels, numbers, and @.!#$&?*+-$£€.');
 define('TEXT_INCORRECT_LOGIN', 'Incorrect username or password');
 
 define('DB_OPTIONS', [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]);
