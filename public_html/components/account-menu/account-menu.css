@@ -1,0 +1,11 @@
+[account-menu-container] li {
+    white-space: nowrap;
+}
+
+[account-menu-container] li:first-child {
+    margin-right: 2rem;
+}
+
+[account-menu-container] li:not(:last-child) {
+    margin-bottom: 0.25rem;
+}

@@ -40,6 +40,9 @@ $links = !empty($links);
 <body>
     <header>
         <header-container>
+            <account-container>
+                <?php Component::include('account-menu/account-menu.php') ?>
+            </account-container>
             <header-links>
                 <home-wrapper>
                     <a href="/" aria-label="Home button">
