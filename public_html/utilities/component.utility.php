@@ -50,7 +50,7 @@ class Component {
         foreach (static::$components as $component) {
             if (isset($component[$fileType]) && $component[$fileType])
                 echo <<<HTML
-                    <script>
+                    <script type="module">
                         $component[$fileType]
                     </script>
                 HTML;
