@@ -1,11 +1,40 @@
-[account-menu-container] li {
+account-menu-container {
+    display: flex;
+    flex-direction: column;
+    align-items: end;
+    gap: 0.5rem;
+}
+
+account-menu-container account-menu-button {
+    display: block;
+    position: relative;
+    z-index: 5;
+    margin: 0.25rem;
+}
+
+account-menu-container account-menu {
+    display: block;
+    position: absolute;
+    z-index: 4;
+    min-width: 10rem;
+    border-radius: 1rem;
+    background-color: red;
+    padding: 0.5rem;
+}
+
+account-menu-container h2 {
+    margin-block: 0 var(--spacing-inner);
+    font-size: 1.25rem;
+}
+
+account-menu-container li {
     white-space: nowrap;
 }
 
-[account-menu-container] li:first-child {
+account-menu-container li:first-child {
     margin-right: 2rem;
 }
 
-[account-menu-container] li:not(:last-child) {
+account-menu-container li:not(:last-child) {
     margin-bottom: 0.25rem;
 }

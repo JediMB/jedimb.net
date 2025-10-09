@@ -17,7 +17,6 @@ require_once 'services/session.service.php';
 require_once 'services/db/user-token.db.service.php';
 
 use Models\MenuItem;
-use Services\DB\UserTokenDBService;
 use Services\NavigationService;
 use Services\SessionService;
 

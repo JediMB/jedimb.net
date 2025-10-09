@@ -5,6 +5,7 @@ namespace Views;
 require_once 'utilities/component.utility.php';
 
 use Enums\PageType;
+use Services\SessionService;
 use Utilities\Component;
 
 $links = !empty($links);
@@ -53,7 +54,7 @@ $links = !empty($links);
                     </a>
                 </home-wrapper>
                 <account-wrapper>
-                    <?php if (isset($_SESSION['account_loggedin'])): ?>
+                    <?php if (SessionService::getInstance()->isLoggedIn()): ?>
                         <a href="#" id="btn-logout">
                             Log out
                         </a>
@@ -81,10 +82,6 @@ $links = !empty($links);
                                 logout();
                             });
                         </script>
-                    <?php else: ?>
-                        <a href="/login">
-                            Log in
-                        </a>
                     <?php endif ?>
                 </account-wrapper>
                 <social-container>

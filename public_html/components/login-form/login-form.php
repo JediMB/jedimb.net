@@ -1,19 +1,17 @@
 <?php declare(strict_types=1);
 
-namespace Account;
+namespace Components;
 
-use DateTime;
+require_once 'utilities/component.utility.php';
 
-$title = 'Login';
+use Utilities\Component;
 
-if (isset($_SESSION[SESSION_STATUS_KEY])) {
-    header('Location: /');
-    exit;
-}
+Component::renderCSS(__FILE__);
+Component::queueJS(__FILE__);
 
 ?>
 
-<div class="w-80 mx-auto">
+<login-form-container>
     <form id="form-login" class="flex flex-col gap-3">
         <div>
             <label for="username">Username</label>
@@ -48,21 +46,24 @@ if (isset($_SESSION[SESSION_STATUS_KEY])) {
         <button type="submit" class="btn btn-login">Login</button>
     </form>
     <div id="login-errors"></div>
-</div>
+</login-form-container>
 
 <script type="module">
     import UserApiService from '/js/services/api/user-api.service.js';
 
     const userApiService = new UserApiService();
 
-    const form = document.querySelector('#form-login');
+    const component = document.querySelector('login-form-container');
+
+    const form = component.querySelector('#form-login');
     const inputs = form.querySelectorAll('[pattern]');
     const loginBtn = form.querySelector('[type=submit]');
-    const errorContainer = document.querySelector('#login-errors');
+    const errorContainer = component.querySelector('#login-errors');
+    
     const cookieKeys = [
-        document.querySelector('meta[name="cookie-user-key"]'),
-        document.querySelector('meta[name="cookie-token-key"]'),
-        document.querySelector('meta[name="cookie-validator-key"]')
+        document.querySelector('meta[name="cookie-user-key"]').content,
+        document.querySelector('meta[name="cookie-token-key"]').content,
+        document.querySelector('meta[name="cookie-validator-key"]').content
     ];
 
     const addErrorMessage = (element, message) => {
@@ -82,9 +83,9 @@ if (isset($_SESSION[SESSION_STATUS_KEY])) {
         if (data.success) {
             if (data.value.token) {
                 const expires = data.value.expiresOn.toUTCString();
-                document.cookie = `${cookieKeys[0].content}=${data.value.userId}; expires=${expires};`
-                document.cookie = `${cookieKeys[1].content}=${data.value.token}; expires=${expires};`
-                document.cookie = `${cookieKeys[2].content}=${data.value.validator}; expires=${expires};`;
+                document.cookie = `${cookieKeys[0]}=${data.value.userId}; expires=${expires};`
+                document.cookie = `${cookieKeys[1]}=${data.value.token}; expires=${expires};`
+                document.cookie = `${cookieKeys[2]}=${data.value.validator}; expires=${expires};`;
             }
             
             setTimeout(() => window.location.href = '/', 5000);
