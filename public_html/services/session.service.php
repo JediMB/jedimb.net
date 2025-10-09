@@ -35,7 +35,7 @@ class SessionService extends Singleton {
         return true;
     }
 
-    public function setSession(int $userId, string $tokenSelector) {
+    public function setSession(int $userId, ?string $tokenSelector) {
         session_regenerate_id();
         $_SESSION[SESSION_STATUS_KEY] = true;
         $_SESSION[SESSION_TOKEN_KEY] = $tokenSelector;

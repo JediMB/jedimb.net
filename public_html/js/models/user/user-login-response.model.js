@@ -5,6 +5,6 @@ export default class UserLoginResponse {
         this.userId = Number(userId);
         this.token = token;
         this.validator = validator;
-        this.expiresOn = new Date(expiresOn.date + expiresOn.timezone);
+        this.expiresOn = expiresOn ? new Date(expiresOn.date + expiresOn.timezone) : null;
     }
 }
