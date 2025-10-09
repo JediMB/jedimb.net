@@ -1,17 +1,22 @@
 <?php declare(strict_types=1);
 
-    if (!isset($pageDate) && !isset($pagePath))
-        throw new Exception('Copyright component requires pageDate or pagePath variable');
+namespace Components;
 
-    $siteYear = trim(SITE_CREATEDYEAR);
+use Exception;
 
-    if (isset($pageDate))
-        $year = $pageDate->format('Y');
-    else
-        $year = date('Y', filectime($pagePath));
+if (!isset($pageDate) && !isset($pagePath))
+    throw new Exception('Copyright component requires pageDate or pagePath variable');
 
-    if ($year !== $siteYear)
-        $year = $siteYear . '–' . $year;
+$siteYear = trim(SITE_CREATEDYEAR);
+
+if (isset($pageDate))
+    $year = $pageDate->format('Y');
+else
+    $year = date('Y', filectime($pagePath));
+
+if ($year !== $siteYear)
+    $year = $siteYear . '–' . $year;
+
 ?>
 
 © <?= $year ?> <?= SITE_AUTHOR ?>

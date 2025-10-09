@@ -1,5 +1,7 @@
 <?php declare(strict_types=1);
 
+namespace Components;
+
 require_once 'services/db/social-link.db.service.php';
 
 use Models\DB\SocialLink;

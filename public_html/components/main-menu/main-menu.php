@@ -1,5 +1,7 @@
 <?php declare(strict_types=1);
 
+namespace Components;
+
 require_once 'services/navigation.service.php';
 require_once 'utilities/component.utility.php';
 require_once 'utilities/menu-link.utility.php';

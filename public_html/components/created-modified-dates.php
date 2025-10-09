@@ -1,5 +1,9 @@
 <?php declare(strict_types=1);
 
+namespace Components;
+
+use Exception;
+
 if (!isset($createdOn) || !isset($modifiedOn))
     throw new Exception('Created/Modified Dates component requires createdOn and modifiedOn and variables');
 

@@ -1,5 +1,9 @@
 <?php declare(strict_types=1);
 
+namespace Components;
+
+use Exception;
+
 if (!isset($cssPath))
     throw new Exception('CSS Revision Link component requires cssPath variable');
 
