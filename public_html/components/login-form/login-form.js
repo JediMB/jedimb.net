@@ -1,6 +1,8 @@
+export { loginForm as default };
+
 import UserApiService from '/js/services/api/user-api.service.js';
 
-export class LoginForm {
+class LoginForm {
     #userApiService;
 
     #form;
