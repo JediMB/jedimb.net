@@ -18,7 +18,7 @@ account-menu-container account-menu {
     z-index: 4;
     min-width: 10rem;
     border-radius: 1rem;
-    background-color: red;
+    background-color: var(--color-hotpink-700);
     padding: 0.5rem;
 }
 
