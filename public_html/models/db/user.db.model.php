@@ -21,10 +21,10 @@ class User extends DBObject {
 
     public function __construct(array $dbRow) {
         parent::__construct($dbRow);
-
+        
         $this->username = $dbRow['username'];
         $this->email = $dbRow['email'];
-        $this->role = $dbRow['role'];
+        $this->role = UserRole::from($dbRow['role']);
         $this->roleString = $dbRow['role_string'];
         $this->password = $dbRow['password'];
         $this->passwordTimestamp = DateTime::createFromFormat(DB_DATETIME_FORMAT, $dbRow['password_timestamp'])

@@ -2,22 +2,28 @@
 
 namespace Services;
 
+require_once 'models/user/user.model.php';
 require_once 'services/base/singleton.php';
+require_once 'services/user.service.php';
 require_once 'services/db/user-token.db.service.php';
 
 use DateTime;
 use Exception;
 use Models\DB\UserToken;
+use Models\User\User;
 use Services\Base\Singleton;
+use Services\UserService;
 use Services\DB\UserTokenDBService;
 
 class SessionService extends Singleton {
     private UserTokenDBService $tokenDBService;
+    private UserService $userService;
 
     protected function __construct() {
         session_start();
 
         $this->tokenDBService = UserTokenDBService::getInstance();
+        $this->userService = UserService::getInstance();
     }
 
     public function isLoggedIn() : bool {
@@ -30,16 +36,21 @@ class SessionService extends Singleton {
         if (!$token)
             return false;
 
-        $this->setSession($token->userId, $token->selector);
+        $user = $this->userService->getUser($token->userId);
+
+        if (!$user)
+            return false;
+
+        $this->setSession($user, $token->selector);
         $this->tokenDBService->refreshUserToken($token->id);
         return true;
     }
 
-    public function setSession(int $userId, ?string $tokenSelector) {
+    public function setSession(User $user, ?string $tokenSelector) {
         session_regenerate_id();
         $_SESSION[SESSION_STATUS_KEY] = true;
         $_SESSION[SESSION_TOKEN_KEY] = $tokenSelector;
-        $_SESSION[SESSION_USER_KEY] = $userId;
+        $_SESSION[SESSION_USER_KEY] = $user;
     }
 
     public function clearSession() {

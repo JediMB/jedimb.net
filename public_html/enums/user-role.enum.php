@@ -2,9 +2,10 @@
 
 namespace Enums;
 
-enum UserRole {
-    case Administrator;
-    case Contributor;
+enum UserRole : int {
+    case User = 0;
+    case Administrator = 1;
+    case Contributor = 2;
 }
 
 ?>

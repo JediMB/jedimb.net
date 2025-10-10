@@ -34,7 +34,9 @@ switch ( $_SERVER['REQUEST_METHOD'] ) {
             else
                 $response = new UserLoginResponse($userId);
 
-            $sessionService->setSession($userId, $response->token);
+            $user = $userService->getUser($userId);
+
+            $sessionService->setSession($user, $response->token);
 
             return [ 'success' => true, 'value' => $response ];
         }

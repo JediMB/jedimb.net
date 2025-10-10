@@ -23,7 +23,7 @@ define('COOKIE_EXPIRATION', '1 year');
 
 define('SESSION_STATUS_KEY', 'account_loggedin');
 define('SESSION_TOKEN_KEY', 'account_token');
-define('SESSION_USER_KEY', 'account_id');
+define('SESSION_USER_KEY', 'account_user');
 
 define('INPUT_LENGTH', [
     'username' => ['min' => 5, 'max' => 50],
