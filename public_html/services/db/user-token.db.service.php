@@ -30,12 +30,12 @@ class UserTokenDBService extends Singleton {
 
             if ($token)
                 return new UserToken($token);
-
-            return false;
         }
         catch (Exception $e) {
             throw new Exception('Database error: ' . $e->getMessage());
         }
+
+        return false;
     }
 
     public function setUserToken(int $userId, string $selector, string $validatorHash, string $expiresOn) : UserToken {
@@ -71,12 +71,12 @@ class UserTokenDBService extends Singleton {
 
             if ($token)
                 return new UserToken($token);
-
-            return false;
         }
         catch (PDOException $e) {
             throw new Exception('Database error: ' . $e->getMessage());
         }
+
+        return false;
     }
 
     public function removeUserToken(string $tokenSelector) : int|false {

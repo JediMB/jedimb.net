@@ -11,6 +11,7 @@ use PDO;
 use PDOException;
 use Enums\DBFetch;
 use Enums\PublishedStatus;
+use Exception;
 use Models\DB\BlogPost;
 use Services\Base\Singleton;
 
@@ -25,14 +26,13 @@ class BlogPostDBService extends Singleton {
     public function getBlogPosts(PublishedStatus $publishedStatus = PublishedStatus::Published) {
         try {
             $posts = $this->dbService->selectView('blog_posts_published', DBFetch::All);
-        }
-        catch (PDOException $e) {
-            $posts = [ [ 'title' => 'Error', 'content' => $e->getMessage() ] ];
-        }
-        finally {
+
             return array_map(function($post) {
                 return new BlogPost($post);
             }, $posts);
+        }
+        catch (PDOException $e) {
+            throw new Exception('Database error: ' . $e->getMessage());
         }
     }
 
@@ -43,18 +43,15 @@ class BlogPostDBService extends Singleton {
                     1 => [ 'value' => $permalink, 'type' => PDO::PARAM_STR ]
                 ]
             );
-        }
-        catch (PDOException $e) {
-            $post['permalink'] = $permalink;
-            $post['title'] = 'Error';
-            $post['content'] = $e->getMessage();
-        }
-        finally {
+
             if ($post)
                 return new BlogPost($post);
-
-            return false;
         }
+        catch (PDOException $e) {
+            throw new Exception('Database error: ' . $e->getMessage());
+        }
+
+        return false;
     }
 }
 
