@@ -2,12 +2,15 @@
 
 namespace Services;
 
+require_once 'models/user/user.model.php';
 require_once 'models/user/user-login-response.model.php';
 require_once 'services/base/singleton.php';
 require_once 'services/db/user.db.service.php';
 
 use DateTime;
 use SensitiveParameter;
+use Models\DB\User as UserDB;
+use Models\User\User;
 use Models\User\UserLoginResponse;
 use Services\Base\Singleton;
 use Services\DB\UserDBService;
@@ -47,6 +50,15 @@ class UserService extends Singleton {
         $token = $this->tokenDbService->setUserToken($userId, $selector, $validatorHash, $expiresOn);
 
         return new UserLoginResponse($token->userId, $token->selector, $validator, $token->expiresOn);
+    }
+
+    public function getUser(int $userId) : User|false {
+        $user = $this->userDbService->getUser($userId);
+
+        if ($user)
+            return new User($user);
+
+        return false;
     }
 }
 

@@ -22,7 +22,7 @@ class UserDBService extends Singleton {
         $this->dbService = DatabaseService::getInstance();
     }
 
-    public function getUser(int $userId) {
+    public function getUser(int $userId) : User|false {
         try {
             $user = $this->dbService->selectById('user', $userId);
 
