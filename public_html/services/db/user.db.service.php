@@ -27,16 +27,15 @@ class UserDBService extends Singleton {
                     1 => [ 'value' => $userName, 'type' => PDO::PARAM_STR ]
                 ]
             );
+
+            if ($user)
+                return new UserPassword($user);
         }
         catch (PDOException $e) {
             throw new Exception('Database error: ' . $e->getMessage());
         }
-        finally {
-            if ($user)
-                return new UserPassword($user);
 
-            return false;
-        }
+        return false;
     }
 }
 
