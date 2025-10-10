@@ -2,8 +2,11 @@
 
 namespace Models\DB;
 
-class SocialLink {
-    public int $id;
+require_once 'models/base/db-object.model.php';
+
+use Models\Base\DBObject;
+
+class SocialLink extends DBObject {
     public string $name;
     public string $description;
     public string $url;
@@ -13,14 +16,15 @@ class SocialLink {
     public bool $isVisible;
 
     public function __construct(array $dbRow) {
-        $this->id = $dbRow['id'] ?? 0;
-        $this->name = $dbRow['name'] ?? '';
-        $this->description = $dbRow['description'] ?? '';
-        $this->url = $dbRow['url'] ?? '';
-        $this->svgViewBox = $dbRow['svg_viewbox'] ?? '';
-        $this->svgContent = $dbRow['svg_content'] ?? '';
-        $this->order = $dbRow['order'] ?? 0;
-        $this->isVisible = $dbRow['is_visible'] ?? false;
+        parent::__construct($dbRow);
+
+        $this->name = $dbRow['name'];
+        $this->description = $dbRow['description'];
+        $this->url = $dbRow['url'];
+        $this->svgViewBox = $dbRow['svg_viewbox'];
+        $this->svgContent = $dbRow['svg_content'];
+        $this->order = $dbRow['order'];
+        $this->isVisible = $dbRow['is_visible'];
     }
 }
 
