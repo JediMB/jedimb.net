@@ -1,7 +1,9 @@
+import sessionService from '/js/services/session.service.js';
 import userApiService from '/js/services/api/user-api.service.js';
 
 class LoginForm {
-    #userApiService;
+    #userApiService = userApiService;
+    #sessionService = sessionService;
 
     #form;
     #inputs;
@@ -11,8 +13,6 @@ class LoginForm {
     #cookieKeys;
 
     constructor() {
-        this.#userApiService = userApiService;
-
         const component = document.querySelector('login-form-container');
         const form = component.querySelector('#form-login');
         this.#form = form;
@@ -78,7 +78,7 @@ class LoginForm {
             document.cookie = `${this.#cookieKeys[2]}=${validator}; expires=${expires};`;
         }
 
-        // TODO: Let the site know the user is logged in
+        this.#sessionService.isLoggedIn.setValue(true);
         return;
     }
 

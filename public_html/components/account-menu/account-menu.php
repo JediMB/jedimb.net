@@ -2,12 +2,17 @@
 
 namespace Components;
 
+require_once 'services/session.service.php';
 require_once 'utilities/component.utility.php';
 
+use Services\SessionService;
 use Utilities\Component;
 
+Component::renderOnce(__FILE__);
 Component::renderCSS(__FILE__);
 Component::queueJS(__FILE__);
+
+$sessionService = SessionService::getInstance(); /** @var SessionService $sessionService */
 
 ?>
 
@@ -18,10 +23,12 @@ Component::queueJS(__FILE__);
         </a>
     </account-menu-button>
 
-    <account-menu class="">
-        <h2>Login</h2>
-        <?php Component::include('login-form/login-form.php') ?>
-        <ul>
+    <account-menu class=""><!-- hidden -->
+        <div menu-logged-out class="<?= $sessionService->isLoggedIn() ? 'hidden' : null ?>">
+            <h2>Login</h2>
+            <?php Component::include('login-form/login-form.php') ?>
+        </div>
+        <ul menu-logged-in class="<?= $sessionService->isLoggedIn() ? null : 'hidden' ?>">
             <li>Administration</li>
             <li>Logout</li>
         </ul>
