@@ -2,10 +2,15 @@
 
 namespace Utilities;
 
+use Exception;
+
 class Component {
     private static array $components;
 
     static function include(string $includePath, array $variables = [], bool $returnResult = false) {
+        if (!empty(static::$components[$includePath]['renderOnce']))
+            throw new Exception('Trying to render a renderOnce component more than once.');
+
         extract($variables);
 
         ob_start();
@@ -18,30 +23,41 @@ class Component {
         echo $output;
     }
 
-    static function renderCSS(string $componentFile) {
-        $fileType = 'css';
+    static function renderOnce(string $componentPath) {
+        $componentKey = static::relativeComponentPath($componentPath);
 
-        if (isset(static::$components[$componentFile][$fileType]))
+        if (!empty(static::$components[$componentKey]['renderOnce']))
+            throw new Exception('Trying to set a renderOnce component to renderOnce twice.');
+        
+        static::$components[$componentKey]['renderOnce'] = true;
+    }
+
+    static function renderCSS(string $componentPath) {
+        $fileType = 'css';
+        $componentKey = static::relativeComponentPath($componentPath);
+
+        if (isset(static::$components[$componentKey][$fileType]))
             return;
 
-        if ( ($filePath = realpath(rtrim($componentFile, 'php') . $fileType)) ) {
+        if ( ($filePath = realpath(rtrim($componentPath, 'php') . $fileType)) ) {
             $fileContents = file_get_contents($filePath);
             echo '<style type="text/css">' . $fileContents . '</style>';
         }
         
-        static::$components[$componentFile][$fileType] = !!$filePath;
+        static::$components[$componentKey][$fileType] = !!$filePath;
     }
 
-    static function queueJS(string $componentFile) {
+    static function queueJS(string $componentPath) {
         $fileType = 'js';
+        $componentKey = static::relativeComponentPath($componentPath);
 
-        if (isset(static::$components[$componentFile][$fileType]))
+        if (isset(static::$components[$componentKey][$fileType]))
             return;
 
-        if ( ($filePath = realpath(rtrim($componentFile, 'php') . $fileType)) )
-            static::$components[$componentFile][$fileType] = file_get_contents($filePath);
+        if ( ($filePath = realpath(rtrim($componentPath, 'php') . $fileType)) )
+            static::$components[$componentKey][$fileType] = file_get_contents($filePath);
         else
-            static::$components[$componentFile][$fileType] = false;
+            static::$components[$componentKey][$fileType] = false;
     }
 
     static function renderQueuedJS() {
@@ -55,6 +71,10 @@ class Component {
                     </script>
                 HTML;
         }
+    }
+
+    private static function relativeComponentPath(string $realPath) {
+        return ltrim(str_replace(realpath('components/'), '', $realPath), '/');
     }
 }
 
