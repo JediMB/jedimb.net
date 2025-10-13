@@ -13,9 +13,7 @@
 </template>
 
 <script type="module">
-    import BlogPostApiService from "/js/services/api/blog-post-api.service.js";
-
-    const blogPostApiService = new BlogPostApiService();
+    import blogPostApiService from "/js/services/api/blog-post-api.service.js";
 
     const output = document.querySelector('main');
     const template = output.querySelector('template');

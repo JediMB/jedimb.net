@@ -1,12 +1,13 @@
-export default class HttpClient {
-    constructor() {
-        this.baseApiUrl = '/api/';
-        this.requestTypeCss = 'background-color: red; color: white;';
-    }
-    static httpClient = new HttpClient();
+export { httpClient as default };
+
+export class HttpClient {
+    #baseApiUrl = '/api/';
+    #requestTypeCss = 'background-color: red; color: white;';
+
+    constructor() { }
 
     async get(api) {
-        const response = await fetch(this.baseApiUrl + api).catch(
+        const response = await fetch(this.#baseApiUrl + api).catch(
             error => ({
                 ok: false,
                 errors: [ error.message ]
@@ -14,7 +15,7 @@ export default class HttpClient {
         );
 
         if (!response.ok) {
-            console.error(`Error ${response.status}: %c GET %c '${this.baseApiUrl + api}' failed.`, this.requestTypeCss);
+            console.error(`Error ${response.status}: %c GET %c '${this.#baseApiUrl + api}' failed.`, this.#requestTypeCss);
 
             return { success: false, errors: response.errors ?? [ response.error ] };
         }
@@ -30,7 +31,7 @@ export default class HttpClient {
     }
 
     async post(api, body = null) {
-        const response = await fetch(this.baseApiUrl + api, {
+        const response = await fetch(this.#baseApiUrl + api, {
             method: "POST",
             body: JSON.stringify(body)
         }).catch(
@@ -41,7 +42,7 @@ export default class HttpClient {
         );
 
         if (!response.ok) {
-            console.error(`Error ${response.status}: %c POST %c '${this.baseApiUrl + api}' failed.`, this.requestTypeCss);
+            console.error(`Error ${response.status}: %c POST %c '${this.#baseApiUrl + api}' failed.`, this.#requestTypeCss);
             
             return { success: false, errors: response.errors ?? [ response.error ]};
         }
@@ -70,3 +71,4 @@ export default class HttpClient {
         
     }
 }
+const httpClient = new HttpClient();

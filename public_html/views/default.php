@@ -59,10 +59,8 @@ $links = !empty($links);
                             Log out
                         </a>
                         <script type="module">
-                            import UserApiService from '/js/services/api/user-api.service.js';
+                            import userApiService from '/js/services/api/user-api.service.js';
                         
-                            const userApiService = new UserApiService();
-
                             async function logout() {
                                 const response = await userApiService.logout();
 

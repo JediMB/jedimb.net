@@ -1,13 +1,17 @@
-import HttpClient from '../../http-client.js';
+import httpClient from '../../http-client.js';
 import BlogPost from '../../models/blog-post.js';
 
-export default class BlogPostApiService {
-    constructor(httpClient = HttpClient.httpClient) {
-        this.httpClient = httpClient;
+export { blogPostApiService as default };
+
+class BlogPostApiService {
+    #httpClient;
+
+    constructor() {
+        this.#httpClient = httpClient;
     }
 
     async getBlogPosts() {
-        const response = await this.httpClient.get('blog/posts');
+        const response = await this.#httpClient.get('blog/posts');
 
         if (!response.success)
             return response;
@@ -17,3 +21,4 @@ export default class BlogPostApiService {
         return response;
     }
 }
+const blogPostApiService = new BlogPostApiService();

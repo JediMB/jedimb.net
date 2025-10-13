@@ -1,6 +1,6 @@
-import UserApiService from '/js/services/api/user-api.service.js';
+import userApiService from '/js/services/api/user-api.service.js';
 
-export class LoginForm {
+class LoginForm {
     #userApiService;
 
     #form;
@@ -10,9 +10,10 @@ export class LoginForm {
 
     #cookieKeys;
 
-    constructor(component = document.querySelector('login-form-container')) {
-        this.#userApiService = new UserApiService(); // Should use singleton implementation?
+    constructor() {
+        this.#userApiService = userApiService;
 
+        const component = document.querySelector('login-form-container');
         const form = component.querySelector('#form-login');
         this.#form = form;
 
