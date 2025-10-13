@@ -26,6 +26,15 @@ class SessionService extends Singleton {
         $this->userService = UserService::getInstance();
     }
 
+    public function clearSession() {
+        session_unset();
+        session_destroy();
+    }
+
+    public function getUser() : User|false {
+        return $_SESSION[SESSION_USER_KEY] ?? false;
+    }
+
     public function isLoggedIn() : bool {
         return isset($_SESSION[SESSION_STATUS_KEY]);
     }
@@ -51,11 +60,6 @@ class SessionService extends Singleton {
         $_SESSION[SESSION_STATUS_KEY] = true;
         $_SESSION[SESSION_TOKEN_KEY] = $tokenSelector;
         $_SESSION[SESSION_USER_KEY] = $user;
-    }
-
-    public function clearSession() {
-        session_unset();
-        session_destroy();
     }
 
     public function verifyCookie() : UserToken|false {
