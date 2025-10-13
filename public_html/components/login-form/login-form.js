@@ -89,11 +89,11 @@ class LoginForm {
             inputField.nextElementSibling.textContent = '';
             
             if (inputField.validity.tooShort)
-                addErrorMessage(inputField.nextElementSibling, inputField.dataset.tooShort);
+                this.#addErrorMessage(inputField.nextElementSibling, inputField.dataset.tooShort);
             else if (inputField.validity.tooLong)
-                addErrorMessage(inputField.nextElementSibling, inputField.dataset.tooLong);
+                this.#addErrorMessage(inputField.nextElementSibling, inputField.dataset.tooLong);
             if (inputField.validity.patternMismatch)
-                addErrorMessage(inputField.nextElementSibling, inputField.dataset.mismatch);
+                this.#addErrorMessage(inputField.nextElementSibling, inputField.dataset.mismatch);
         }
     }
 
@@ -111,8 +111,10 @@ class LoginForm {
             if (eventType === 'change' && input === source)
                 this.#updateErrorStatus(input);
 
-            this.#loginButton.disabled = !isValid;
+            isValid = false;
         });
+
+        this.#loginButton.disabled = !isValid;
     }
 }
 const loginForm = new LoginForm();
