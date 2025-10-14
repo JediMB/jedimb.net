@@ -23,13 +23,13 @@ $sessionService = SessionService::getInstance(); /** @var SessionService $sessio
         </a>
     </account-menu-button>
 
-    <account-menu class=""><!-- hidden -->
+    <account-menu class="hidden">
         <div menu-logged-out class="<?= $sessionService->isLoggedIn() ? 'hidden' : null ?>">
             <h2>Login</h2>
             <?php Component::include('login-form/login-form.php') ?>
         </div>
         <ul menu-logged-in class="<?= $sessionService->isLoggedIn() ? null : 'hidden' ?>">
-            <li>Administration</li>
+            <li><a href="/admin">Administration</a></li>
             <li><a href="#" account-menu-logout>Logout</a></li>
         </ul>
     </account-menu>
