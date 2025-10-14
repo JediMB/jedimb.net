@@ -12,6 +12,15 @@ class SessionApiService {
         this.#httpClient = httpClient;
     }
 
+    async getStatus() {
+        const response = await this.#httpClient.get('session/status');
+
+        if (!response.success)
+            return false;
+
+        return response.value;
+    }
+
     async getUser() {
         const response = await this.#httpClient.get('session/user');
 

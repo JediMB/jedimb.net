@@ -7,7 +7,7 @@ export { sessionService as default };
 class SessionService {
     #sessionApiService;
 
-    isLoggedIn = new Emitter(false);
+    isLoggedIn = new Emitter(undefined);
     user = new Emitter(undefined);
 
     #cookieKeys = [
@@ -18,6 +18,18 @@ class SessionService {
 
     constructor() {
         this.#sessionApiService = sessionApiService;
+
+        this.isLoggedIn.subscribe(value => {
+            if (value === true)
+                this.#fetchUser();
+            else
+                this.user.setValue(null);
+        });
+
+        this.#sessionApiService.getStatus().then(status => {
+            this.isLoggedIn.setValue(status);
+        });
+    }
 
     async login(formData) {
         const response = await this.#sessionApiService.login(formData);
@@ -52,13 +64,13 @@ class SessionService {
         document.cookie = `${this.#cookieKeys[2]}=${validator}; expires=${expires};`;
     }
 
-                if (!response.success || !response.value)
-                    return;
+    async #fetchUser() {
+        const response = await this.#sessionApiService.getUser();
 
-                this.isLoggedIn.setValue(true);
-                this.user.setValue(response.value);
-            }
-        );
+        if (!response.success || !response.value)
+            return;
+
+        this.user.setValue(response.value);
     }
 }
 const sessionService = new SessionService();
