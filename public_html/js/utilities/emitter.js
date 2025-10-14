@@ -9,6 +9,9 @@ export default class Emitter {
     getValue() { return this.#value; }
 
     setValue(value) {
+        if (this.#value === value)
+            return;
+
         this.#value = value;
 
         this.#listeners.forEach(listener => {
