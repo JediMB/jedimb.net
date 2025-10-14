@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace API\User;
+namespace API\Session;
 
 require_once 'services/session.service.php';
 

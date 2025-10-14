@@ -30,7 +30,7 @@ $sessionService = SessionService::getInstance(); /** @var SessionService $sessio
         </div>
         <ul menu-logged-in class="<?= $sessionService->isLoggedIn() ? null : 'hidden' ?>">
             <li>Administration</li>
-            <li>Logout</li>
+            <li><a href="#" account-menu-logout>Logout</a></li>
         </ul>
     </account-menu>
 </account-menu-container>

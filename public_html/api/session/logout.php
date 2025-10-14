@@ -1,8 +1,11 @@
 <?php declare(strict_types=1);
 
+namespace API\Session;
+
 require_once 'services/session.service.php';
 require_once 'services/db/user-token.db.service.php';
 
+use Exception;
 use Services\SessionService;
 use Services\DB\UserTokenDBService;
 

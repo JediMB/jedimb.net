@@ -53,35 +53,6 @@ $links = !empty($links);
                         </svg>
                     </a>
                 </home-wrapper>
-                <account-wrapper>
-                    <?php if (SessionService::getInstance()->isLoggedIn()): ?>
-                        <a href="#" id="btn-logout">
-                            Log out
-                        </a>
-                        <script type="module">
-                            import userApiService from '/js/services/api/user-api.service.js';
-                        
-                            async function logout() {
-                                const response = await userApiService.logout();
-
-                                if (response.success) {
-                                    const expires = (new Date(0)).toUTCString();
-                                    document.cookie = `<?= COOKIE_USER_KEY ?>=; expires=${expires};`
-                                    document.cookie = `<?= COOKIE_TOKEN_KEY ?>=; expires=${expires};`
-                                    document.cookie = `<?= COOKIE_VALIDATOR_KEY ?>=; expires=${expires};`;
-                                    
-                                    setTimeout(() => location.reload(), 5000);
-                                    return;
-                                }
-                            }
-
-                            document.querySelector('#btn-logout').addEventListener('click', () => {
-                                event.preventDefault();
-                                logout();
-                            });
-                        </script>
-                    <?php endif ?>
-                </account-wrapper>
                 <social-container>
                     <?php Component::include('social-links.php') ?>
                 </social-container>

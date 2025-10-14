@@ -62,24 +62,15 @@ class LoginForm {
         this.#errorContainer.textContent = '';
         const formData = new FormData(this.#form);
 
-        const response = await this.#userApiService.login(formData);
+        const response = await this.#sessionService.login(formData);
 
-        if (!response.success) {
-            this.#errorContainer.innerHTML = '';
-            response.errors.forEach(error => this.#addErrorMessage(this.#errorContainer, error));
+        if (response.success) {
+            this.#form.reset();
             return;
         }
 
-        if (response.value.token) {
-            const { userId, token, validator, expiresOn } = response.value;
-            const expires = expiresOn.toUTCString();
-            document.cookie = `${this.#cookieKeys[0]}=${userId}; expires=${expires};`
-            document.cookie = `${this.#cookieKeys[1]}=${token}; expires=${expires};`
-            document.cookie = `${this.#cookieKeys[2]}=${validator}; expires=${expires};`;
-        }
-
-        this.#sessionService.isLoggedIn.setValue(true);
-        return;
+        this.#errorContainer.innerHTML = '';
+        response.errors.forEach(error => this.#addErrorMessage(this.#errorContainer, error));
     }
 
     #updateErrorStatus(inputField) {
