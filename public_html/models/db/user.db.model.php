@@ -3,13 +3,13 @@
 namespace Models\DB;
 
 require_once 'enums/user-role.enum.php';
-require_once 'models/base/db-object.model.php';
+require_once 'models/base/db-base.model.php';
 
 use DateTime;
 use Enums\UserRole;
-use Models\Base\DBObject;
+use Models\Base\DBBase;
 
-class User extends DBObject {
+class User extends DBBase {
     public string $username;
     public string $email;
     public UserRole $role;

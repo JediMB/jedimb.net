@@ -2,12 +2,12 @@
 
 namespace Models\DB;
 
-require_once 'models/base/db-object.model.php';
+require_once 'models/base/db-base.model.php';
 
 use DateTime;
-use Models\Base\DBObject;
+use Models\Base\DBBase;
 
-class UserToken extends DBObject {
+class UserToken extends DBBase {
     public int $userId;
     public string $selector;
     public string $validator_hash;

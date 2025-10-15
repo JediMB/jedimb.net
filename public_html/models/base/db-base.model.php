@@ -2,7 +2,7 @@
 
 namespace Models\Base;
 
-class DBObject {
+class DBBase {
     public int $id;
 
     public function __construct(array $dbRow) {

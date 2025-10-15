@@ -2,11 +2,11 @@
 
 namespace Models\DB;
 
-require_once 'models/base/db-object.model.php';
+require_once 'models/base/db-base.model.php';
 
-use Models\Base\DBObject;
+use Models\Base\DBBase;
 
-class SocialLink extends DBObject {
+class SocialLink extends DBBase {
     public string $name;
     public string $description;
     public string $url;
