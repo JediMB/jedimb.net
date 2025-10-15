@@ -24,7 +24,7 @@ class User extends DBBase {
         
         $this->username = $dbRow['username'];
         $this->email = $dbRow['email'];
-        $this->role = UserRole::from($dbRow['role']);
+        $this->role = UserRole::tryFrom($dbRow['role']) ?: UserRole::User;
         $this->roleString = $dbRow['role_string'];
         $this->password = $dbRow['password'];
         $this->passwordTimestamp = DateTime::createFromFormat(DB_DATETIME_FORMAT, $dbRow['password_timestamp'])
