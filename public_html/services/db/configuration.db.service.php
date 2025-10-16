@@ -2,25 +2,21 @@
 
 namespace Services\DB;
 
-require_once 'services/base/singleton.php';
-require_once 'services/db/database.service.php';
+require_once 'services/base/base.db.service.php';
 
 use Exception;
 use PDOException;
-use Services\Base\Singleton;
-use Services\DB\DatabaseService;
+use Services\Base\BaseDBService;
 
-class ConfigurationDBService extends Singleton {
-    private DatabaseService $dbService;
-
+class ConfigurationDBService extends BaseDBService {
     protected function __construct() {
-        $this->dbService = DatabaseService::getInstance();
+        parent::__construct();
     }
 
     public function hasRows() : bool {
         try {
             $result = $this->dbService->hasRows('configuration');
-
+            
             return $result;
         }
         catch (PDOException $e) {

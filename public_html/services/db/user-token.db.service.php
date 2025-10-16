@@ -3,21 +3,18 @@
 namespace Services\DB;
 
 require_once 'models/db/user-token.db.model.php';
-require_once 'services/base/singleton.php';
-require_once 'services/db/database.service.php';
+require_once 'services/base/base.db.service.php';
 
 use DateTime;
 use Exception;
 use PDO;
 use PDOException;
 use Models\DB\UserToken;
-use Services\Base\Singleton;
+use Services\Base\BaseDBService;
 
-class UserTokenDBService extends Singleton {
-    private DatabaseService $dbService;
-
+class UserTokenDBService extends BaseDBService {
     protected function __construct() {
-        $this->dbService = DatabaseService::getInstance();
+        parent::__construct();
     }
 
     public function getUserToken(string $selector) : UserToken|false {

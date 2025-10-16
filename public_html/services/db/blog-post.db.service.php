@@ -4,8 +4,7 @@ namespace Services\DB;
 
 require_once 'enums/published-status.enum.php';
 require_once 'models/db/blog-post.db.model.php';
-require_once 'services/base/singleton.php';
-require_once 'services/db/database.service.php';
+require_once 'services/base/base.db.service.php';
 
 use PDO;
 use PDOException;
@@ -13,13 +12,11 @@ use Enums\DBFetch;
 use Enums\PublishedStatus;
 use Exception;
 use Models\DB\BlogPost;
-use Services\Base\Singleton;
+use Services\Base\BaseDBService;
 
-class BlogPostDBService extends Singleton {
-    private DatabaseService $dbService;
-
+class BlogPostDBService extends BaseDBService {
     protected function __construct() {
-        $this->dbService = DatabaseService::getInstance();
+        parent::__construct();
     }
 
     // TODO: expand functionality to cover 'unpublished' and 'any'

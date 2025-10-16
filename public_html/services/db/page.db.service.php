@@ -3,18 +3,17 @@
 namespace Services\DB;
 
 require_once 'models/db/page.db.model.php';
-require_once 'services/base/singleton.php';
-require_once 'services/db/database.service.php';
+require_once 'services/base/base.db.service.php';
 
 use Exception;
 use PDOException;
 use Models\DB\Page;
-use Services\Base\Singleton;
+use Services\Base\BaseDBService;
 
-class PageDBService extends Singleton {
+class PageDBService extends BaseDBService {
     public function getPage(int $id) : Page|false {
         try {
-            $page = DatabaseService::getInstance()->selectById(
+            $page = $this->dbService->selectById(
                 'page', $id
             );
 
