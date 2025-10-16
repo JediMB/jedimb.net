@@ -5,7 +5,6 @@ namespace Views;
 require_once 'utilities/component.utility.php';
 
 use Enums\PageType;
-use Services\SessionService;
 use Utilities\Component;
 
 $links = !empty($links);

@@ -9,7 +9,6 @@ require_once 'services/db/user.db.service.php';
 
 use DateTime;
 use SensitiveParameter;
-use Models\DB\User as UserDB;
 use Models\User\User;
 use Models\User\UserLoginResponse;
 use Services\Base\Singleton;
