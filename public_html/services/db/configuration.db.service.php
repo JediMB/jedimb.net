@@ -2,10 +2,12 @@
 
 namespace Services\DB;
 
+require_once 'models/db/configuration.db.model.php';
 require_once 'services/base/base.db.service.php';
 
 use Exception;
 use PDOException;
+use Models\DB\Configuration;
 use Services\Base\BaseDBService;
 
 class ConfigurationDBService extends BaseDBService {
@@ -24,6 +26,21 @@ class ConfigurationDBService extends BaseDBService {
         }
 
         return false;
+    }
+
+    public function getConfiguration() : array {
+        try {
+            $result = $this->dbService->selectView('configuration');
+
+            return array_map(function($configRow) {
+                return new Configuration($configRow);
+            }, $result);
+        }
+        catch (PDOException $e) {
+            throw new Exception('Database error: ' . $e->getMessage());
+        }
+
+        return [];
     }
 }
 
