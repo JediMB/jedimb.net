@@ -13,7 +13,7 @@ class Configuration extends DBCreatedModified {
     public string $value;
     public ConfigType $type;
     public string $typeString;
-    public string $isActive;
+    public bool $isActive;
 
     public function __construct(array $dbRow) {
         parent::__construct($dbRow);
