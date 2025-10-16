@@ -12,6 +12,7 @@ define('SPECIAL_PATHS', [
 ]);
 
 define('SITE_TITLE', 'JediMB.net');
+define('SITE_TAGLINE', 'Cool tagline goes here. In theory.');
 define('SITE_AUTHOR', 'JediMB');
 define('SITE_CREATEDYEAR', '2025');
 define('SITE_VIEW', 'default.php');
