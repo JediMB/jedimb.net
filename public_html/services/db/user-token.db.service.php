@@ -3,6 +3,7 @@
 namespace Services\DB;
 
 require_once 'models/db/user-token.db.model.php';
+require_once 'services/configuration.service.php';
 require_once 'services/base/base.db.service.php';
 
 use DateTime;
@@ -10,11 +11,16 @@ use Exception;
 use PDO;
 use PDOException;
 use Models\DB\UserToken;
+use Services\ConfigurationService;
 use Services\Base\BaseDBService;
 
 class UserTokenDBService extends BaseDBService {
+    private readonly ConfigurationService $configService;
+
     protected function __construct() {
         parent::__construct();
+
+        $this->configService = ConfigurationService::getInstance();
     }
 
     public function getUserToken(string $selector) : UserToken|false {
@@ -57,7 +63,7 @@ class UserTokenDBService extends BaseDBService {
 
     public function refreshUserToken(int $tokenId) : UserToken|false {
         try {
-            $formattedExpirationDate = (new DateTime('+' . COOKIE_EXPIRATION))->format(DB_DATETIME_FORMAT);
+            $formattedExpirationDate = (new DateTime('+' . $this->configService->getUserConstant('COOKIE_EXPIRATION')))->format(DB_DATETIME_FORMAT);
 
             $token = $this->dbService->selectFunction(
                 'update_user_token_expiration', [

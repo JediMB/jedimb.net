@@ -2,10 +2,18 @@
 
 namespace Views;
 
+require_once 'services/configuration.service.php';
 require_once 'utilities/component.utility.php';
 
 use Enums\PageType;
+use Services\ConfigurationService;
 use Utilities\Component;
+
+$config = ConfigurationService::getInstance(); /** @var ConfigurationService $config */
+extract($config->getUserConstants([
+    'SITE_TITLE', 'SITE_TAGLINE', 'SITE_AUTHOR',
+    'META_DESCRIPTION', 'META_KEYWORDS'
+]));
 
 $links = !empty($links);
 
@@ -17,11 +25,11 @@ $links = !empty($links);
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <meta name="author" content="<?= SITE_AUTHOR ?>">
-    <meta name="description" content="<?= META_DESCRIPTION ?>">
-    <meta name="keywords" content="<?= META_KEYWORDS ?>">
+    <meta name="author" content="<?= $site_author ?>">
+    <meta name="description" content="<?= $meta_description ?>">
+    <meta name="keywords" content="<?= $meta_keywords ?>">
 
-    <title><?= empty($title) ? SITE_TITLE : "$title – ". SITE_TITLE ?></title>
+    <title><?= empty($title) ? $site_title : "$title – ". $site_title ?></title>
     
     <?php Component::include('css-revision-link.php', [ 'cssPath' => PATH_CSS_DEFAULT ]) ?>
 
@@ -58,13 +66,13 @@ $links = !empty($links);
             </header-links>
             <menu-container>
                 <desktop-title>
-                    <h1><a href="/"><?= SITE_TITLE ?></a></h1>
+                    <h1><a href="/"><?= $site_title ?></a></h1>
                     <!-- <img src="images/logo.svg"> -->
-                    <div class="tagline">Cool tagline goes here. In theory.</div>
+                    <div class="tagline"><?= $site_tagline ?></div>
                 </desktop-title>
 
                 <mobile-title>
-                    <h1><?= SITE_TITLE ?></h1>
+                    <h1><?= $site_title ?></h1>
                 </mobile-title>
 
                 <mobile-menu>
@@ -107,9 +115,9 @@ $links = !empty($links);
 
     <footer>
         <?php if ($pageType === PageType::PHP): ?>
-            <?php Component::include('copyright.php', [ 'pagePath' => $pagePath ]) ?>
+            <?php Component::include('copyright.php', [ 'pagePath' => $pagePath, 'siteAuthor' => $site_author ]) ?>
         <?php else: ?>
-            <?php Component::include('copyright.php', [ 'pageDate' => $modifiedOn ?: $createdOn ]) ?>
+            <?php Component::include('copyright.php', [ 'pageDate' => $modifiedOn ?: $createdOn, 'siteAuthor' => $site_author ]) ?>
         <?php endif ?>
         <br/>
         Made in PHP, HTML, CSS and JavaScript, with Visual Studio Code and PHP Intelephense.

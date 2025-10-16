@@ -6,6 +6,8 @@ use Exception;
 
 if (!isset($pageDate) && !isset($pagePath))
     throw new Exception('Copyright component requires pageDate or pagePath variable');
+if (!isset($siteAuthor))
+    throw new Exception('Copyright component requires siteAuthor variable');
 
 $siteYear = trim(SITE_CREATEDYEAR);
 
@@ -19,4 +21,4 @@ if ($year !== $siteYear)
 
 ?>
 
-© <?= $year ?> <?= SITE_AUTHOR ?>
+© <?= $year ?> <?= $siteAuthor ?>

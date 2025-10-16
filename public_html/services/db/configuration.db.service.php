@@ -32,9 +32,13 @@ class ConfigurationDBService extends BaseDBService {
         try {
             $result = $this->dbService->selectView('configuration');
 
-            return array_map(function($configRow) {
-                return new Configuration($configRow);
-            }, $result);
+            $return = [];
+            foreach ($result as $row) {
+                $row = new Configuration($row);
+                $return[$row->name] = $row;
+            }
+
+            return $return;
         }
         catch (PDOException $e) {
             throw new Exception('Database error: ' . $e->getMessage());
