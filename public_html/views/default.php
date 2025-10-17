@@ -31,7 +31,7 @@ $links = !empty($links);
 
     <title><?= empty($title) ? $site_title : "$title – ". $site_title ?></title>
     
-    <?php Component::include('css-revision-link.php', [ 'cssPath' => PATH_CSS_DEFAULT ]) ?>
+    <?php Component::include('css-revision-link', [ 'cssPath' => PATH_CSS_DEFAULT ]) ?>
 
     <link rel="icon" type="image/x-icon" href="/favicon.svg" />
     
@@ -49,7 +49,7 @@ $links = !empty($links);
     <header>
         <header-container>
             <account-container>
-                <?php Component::include('account-menu/account-menu.php') ?>
+                <?php Component::include('account-menu') ?>
             </account-container>
             <header-links>
                 <home-wrapper>
@@ -61,7 +61,7 @@ $links = !empty($links);
                     </a>
                 </home-wrapper>
                 <social-container>
-                    <?php Component::include('social-links.php') ?>
+                    <?php Component::include('social-links') ?>
                 </social-container>
             </header-links>
             <menu-container>
@@ -76,16 +76,16 @@ $links = !empty($links);
                 </mobile-title>
 
                 <mobile-menu>
-                    <?php Component::include('mobile-menu/mobile-menu.php') ?>
+                    <?php Component::include('mobile-menu') ?>
                 </mobile-menu>
                 
                 <desktop-menu>
-                    <?php Component::include('main-menu/main-menu.php') ?>
+                    <?php Component::include('main-menu') ?>
                 </desktop-menu>
             </menu-container>
         </header-container>
         <sub-menu>
-            <?php Component::include('sub-menu/sub-menu.php') ?>
+            <?php Component::include('sub-menu') ?>
         </sub-menu>
     </header>
     
@@ -95,7 +95,7 @@ $links = !empty($links);
                 <h2><?= $title ?></h2>
             <?php endif ?>
             <?php if ($pageType === PageType::BlogPost): ?>
-                <div><?php Component::include('created-modified-dates.php', [
+                <div><?php Component::include('created-modified-dates', [
                     'createdOn' => $createdOn,
                     'modifiedOn' => $modifiedOn
                 ]) ?></div>
@@ -110,14 +110,14 @@ $links = !empty($links);
     </content-container>
 
     <?php if ($pageType === PageType::BlogPost): ?>
-        <?php Component::include('mastodon-comments.php', [ 'mastolink' => $mastolink ]) ?>
+        <?php Component::include('mastodon-comments', [ 'mastolink' => $mastolink ]) ?>
     <?php endif ?>
 
     <footer>
         <?php if ($pageType === PageType::PHP): ?>
-            <?php Component::include('copyright.php', [ 'pagePath' => $pagePath, 'siteAuthor' => $site_author ]) ?>
+            <?php Component::include('copyright', [ 'pagePath' => $pagePath, 'siteAuthor' => $site_author ]) ?>
         <?php else: ?>
-            <?php Component::include('copyright.php', [ 'pageDate' => $modifiedOn ?: $createdOn, 'siteAuthor' => $site_author ]) ?>
+            <?php Component::include('copyright', [ 'pageDate' => $modifiedOn ?: $createdOn, 'siteAuthor' => $site_author ]) ?>
         <?php endif ?>
         <br/>
         Made in PHP, HTML, CSS and JavaScript, with Visual Studio Code and PHP Intelephense.

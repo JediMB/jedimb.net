@@ -26,7 +26,7 @@ $sessionService = SessionService::getInstance(); /** @var SessionService $sessio
     <account-menu class="hidden">
         <div menu-logged-out class="<?= $sessionService->isLoggedIn() ? 'hidden' : null ?>">
             <h2>Login</h2>
-            <?php Component::include('login-form/login-form.php') ?>
+            <?php Component::include('login-form') ?>
         </div>
         <ul menu-logged-in class="<?= $sessionService->isLoggedIn() ? null : 'hidden' ?>">
             <li><a href="/admin">Administration</a></li>

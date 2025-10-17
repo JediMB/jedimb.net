@@ -5,22 +5,42 @@ namespace Utilities;
 use Exception;
 
 class Component {
-    private static array $components;
+    private static array $components = [];
 
-    static function include(string $includePath, array $variables = [], bool $returnResult = false) {
-        if (!empty(static::$components[$includePath]['renderOnce']))
+    static function include(string $component, array $variables = [], bool $returnResult = false) {
+        if (!empty(static::$components[$component]['renderOnce']))
             throw new Exception('Trying to render a renderOnce component more than once.');
+
+        if ( !($realPath = static::findPath($component)) )
+            echo "Can't find component: $component.";
 
         extract($variables);
 
         ob_start();
-        include 'components/' . $includePath;
+        include $realPath;
         $output = ob_get_clean();
 
         if ($returnResult)
             return $output;
 
         echo $output;
+    }
+
+    private static function findPath($component) : string|false {
+        if ( ($path = realpath("components/$component.php")) )
+            return $path;
+
+        if ( ($path = realpath("components/$component/$component.php")) )
+            return $path;
+
+        if ( !($filenamePos = strripos($component, '/')) )
+            return false;
+        
+        $filename = substr($component, $filenamePos);
+        if ( ($path = realpath('components/' . $component . $filename . '.php')) )
+            return $path;
+
+        return false;
     }
 
     static function renderOnce(string $componentPath) {
