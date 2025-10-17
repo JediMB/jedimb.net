@@ -23,13 +23,16 @@ class ConfigurationService extends Singleton {
         $this->constants = get_defined_constants(true)['user'] ?? [];
     }
 
-    public function getUserConstant(string $name) : string {
+    public function getUserConstant(string $name, bool $getFullConfigObject = false) : Configuration|string {
         if (empty($this->constants[$name]))
             throw new Exception('Trying to access nonexistent constant');
 
-        if ($this->noActiveConstant($name))
+        if ($this->noActiveConfiguration($name))
             return $this->constants[$name];
         
+        if ($getFullConfigObject)
+            return $this->configuration[$name];
+
         return $this->configuration[$name]->value;
     }
 
@@ -43,11 +46,7 @@ class ConfigurationService extends Singleton {
         return $constants;
     }
 
-    public function hasConfiguration() : bool {
-        return !!$this->configuration;
-    }
-
-    private function noActiveConstant(string $name) : bool {
+    private function noActiveConfiguration(string $name) : bool {
         return isset($this->configuration[$name]) === false
             || $this->configuration[$name]->isActive === false;
     }

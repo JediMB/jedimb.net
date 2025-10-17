@@ -28,7 +28,7 @@ define('SESSION_USER_KEY', 'account_user');
 
 define('INPUT_LENGTH', [
     'username' => ['min' => 5, 'max' => 50],
-    'password' => ['min' => 10, 'max' => 100] 
+    'password' => ['min' => 10, 'max' => 100]
 ]);
 
 define('REGEX_BLOG_PATH', '/^blog(\/[0-9]{4}\/[0-9]{2}\/[0-9]{2}\/[-a-z0-9]*)$/');
@@ -36,7 +36,8 @@ define('REGEX_MASTOLINK', '/^http[s]?:\/\/([-.a-z0-9]+)\/@([-.a-z0-9]+)\/([0-9]+
 
 define('REGEX_INPUT', [
     'username' => '/^(?!\s)[\w@.!?\-\' à-æÀ-Æè-ïÈ-Ïò-öÒ-Öø-ýØ-Ýÿ]+(?<!\s)$/',
-    'password' => '/^(?=.*[a-z])(?=.*[A-Z])[\w@.!#$&?*+\-\$£€à-æÀ-Æè-ïÈ-Ïò-öÒ-Öø-ýØ-Ýÿ]+$/'
+    'password' => '/^(?=.*[a-z])(?=.*[A-Z])[\w@.!#$&?*+\-\$£€à-æÀ-Æè-ïÈ-Ïò-öÒ-Öø-ýØ-Ýÿ]+$/',
+    'text' => '/^(?!\s)[\w@.!?\-\' à-æÀ-Æè-ïÈ-Ïò-öÒ-Öø-ýØ-Ýÿ]+(?<!\s)$/'
 ]);
 
 define('META_DESCRIPTION', "JediMB's indie website");
@@ -54,6 +55,10 @@ define('TEXT_PASSWORD_LENGTH', INPUT_LENGTH['password']['min'] . '–' . INPUT_L
 define('TEXT_USERNAME_CHARS', 'A-Z, ÅÄÖÆØ, accented vowels, numbers, apostrophes, spaces between words, and @.!?-.');
 define('TEXT_PASSWORD_CHARS', 'Uppercase and lowercase characters required. A-Z, ÅÄÖÆØ, accented vowels, numbers, and @.!#$&?*+-$£€.');
 define('TEXT_INCORRECT_LOGIN', 'Incorrect username or password');
+
+define('PAGE_ADMIN_TITLE', 'Administration');
+define('PAGE_ADMIN_SECTION_SITE', 'Site settings');
+define('PAGE_ADMIN_USEDEFAULT', 'Use default');
 
 define('DB_OPTIONS', [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]);
 define('DB_DATETIME_FORMAT', 'Y-m-d H:i:s.u e');
