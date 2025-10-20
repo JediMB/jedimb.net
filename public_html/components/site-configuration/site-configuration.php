@@ -21,24 +21,20 @@ $configService = ConfigurationService::getInstance(); /** @var ConfigurationServ
         <input type="button" class="btn" value="Save">
     </div>
 
-    <?php Component::include('site-configuration/config-field', [
-        'id' => 'site-title', 'label' => 'Title',
-        'input' => $configService->getUserConstant('SITE_TITLE', true)
-    ]) ?>
-    <?php Component::include('site-configuration/config-field', [
-        'id' => 'site-tagline', 'label' => 'Tagline',
-        'input' => $configService->getUserConstant('SITE_TAGLINE', true)
-    ]) ?>
-    <?php Component::include('site-configuration/config-field', [
-        'id' => 'site-author', 'label' => 'Author',
-        'input' => $configService->getUserConstant('SITE_AUTHOR')
-    ]) ?>
-    <?php Component::include('site-configuration/config-field', [
-        'id' => 'meta-description', 'label' => 'Meta Description',
-        'input' => $configService->getUserConstant('META_DESCRIPTION')
-    ]) ?>
-    <?php Component::include('site-configuration/config-field', [
-        'id' => 'meta-keywords', 'label' => 'Meta Keywords',
-        'input' => $configService->getUserConstant('META_KEYWORDS')
-    ]) ?>
+    <?php $constants = [
+        'SITE_TITLE', 'SITE_TAGLINE', 'SITE_AUTHOR',
+        'META_DESCRIPTION', 'META_KEYWORDS'
+    ] ?>
+
+    <?php foreach ($constants as $constant): ?>
+        <?php
+        $id = strtolower(str_replace('_', '-', $constant));
+        $label =  ucwords(str_replace('-', ' ', $id));
+
+        Component::include('site-configuration/config-field', [
+            'id' => $id, 'label' => $label,
+            'input' => $configService->getUserConstant($constant, true)
+        ]);
+        ?>
+    <?php endforeach ?>
 </form>
