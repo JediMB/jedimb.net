@@ -18,7 +18,7 @@ $configService = ConfigurationService::getInstance(); /** @var ConfigurationServ
 <form id="site-settings">
     <div class="category-head">
         <h3 style="margin: 0;"><?= PAGE_ADMIN_SECTION_SITE ?></h3>
-        <input type="button" class="btn" value="Save">
+        <button type="submit" class="btn">Save</button>
     </div>
 
     <?php foreach (CONFIGURABLE_CONSTANTS as $constantName): ?>
