@@ -1,0 +1,12 @@
+site-configuration-component form {
+    display: flex;
+    flex-direction: column;
+    gap: 1em;
+}
+
+site-configuration-component .category-head {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+}

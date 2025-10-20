@@ -1,5 +1,13 @@
 <?php declare(strict_types=1);
 
+define('CONFIGURABLE_CONSTANTS', [
+    'SITE_TITLE',
+    'SITE_TAGLINE',
+    'SITE_AUTHOR',
+    'META_DESCRIPTION',
+    'META_KEYWORDS'
+]);
+
 define('PATH_HOMEPAGE', 'pages/blog.php');
 define('PATH_API_DIR', 'api');
 define('PATH_REALPAGES_DIR', 'pages');
