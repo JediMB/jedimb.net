@@ -27,7 +27,7 @@ Component::queueJS(__FILE__);
 ?>
 
 <config-field-container id="<?= $id ?>-container">
-    <label for="site-title"><?= $label ?></label>
+    <label for="<?= $id ?>"><?= $label ?></label>
     <input type="text" name="<?= $id ?>" id="<?= $id ?>" placeholder="<?= $label ?>"
         value="<?= $value ?>" <?= $default ? 'disabled' : null ?>>
     <div input-errors></div>
