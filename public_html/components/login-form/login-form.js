@@ -1,16 +1,12 @@
 import sessionService from '/js/services/session.service.js';
-import userApiService from '/js/services/api/user-api.service.js';
 
 class LoginForm {
-    #userApiService = userApiService;
     #sessionService = sessionService;
 
     #form;
     #inputs;
     #loginButton;
     #errorContainer;
-
-    #cookieKeys;
 
     constructor() {
         const component = document.querySelector('login-form-container');
@@ -20,12 +16,6 @@ class LoginForm {
         this.#inputs = form.querySelectorAll('[pattern]');
         this.#loginButton = form.querySelector('[type="submit"]');
         this.#errorContainer = component.querySelector('#login-errors');
-
-        this.#cookieKeys = [
-            document.querySelector('meta[name="cookie-user-key"]').content,
-            document.querySelector('meta[name="cookie-token-key"]').content,
-            document.querySelector('meta[name="cookie-validator-key"]').content
-        ];
 
         let disableInput = false;
         this.#inputs.forEach(input => {
