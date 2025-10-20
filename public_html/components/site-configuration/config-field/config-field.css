@@ -1,4 +1,4 @@
-config-field-container input[type="text"] {
+config-field-component input[type="text"] {
     display: block;
     width: 100%;
     padding: 0.5em 1em;
@@ -6,7 +6,7 @@ config-field-container input[type="text"] {
     border-radius: 1em;
 }
 
-config-field-container label {
+config-field-component label {
     display: flex;
     flex-direction: row;
     align-items: center;
@@ -15,7 +15,7 @@ config-field-container label {
     font-size: 0.8em;
 }
 
-config-field-container input[type="checkbox"] {
+config-field-component input[type="checkbox"] {
     box-sizing: content-box;
     position: relative;
     appearance: none;
@@ -30,11 +30,11 @@ config-field-container input[type="checkbox"] {
     transition: 0.35s;
 }
 
-config-field-container input[type="checkbox"]:checked {
+config-field-component input[type="checkbox"]:checked {
     background-color: white;
 }
 
-config-field-container input[type="checkbox"]::before {
+config-field-component input[type="checkbox"]::before {
     content: '';
     position: absolute;
     margin: 0.15em;
@@ -46,7 +46,7 @@ config-field-container input[type="checkbox"]::before {
     transition: 0.35s;
 }
 
-config-field-container input[type="checkbox"]:checked::before {
+config-field-component input[type="checkbox"]:checked::before {
     background-color: #009900;
     left: 1em;
 }
