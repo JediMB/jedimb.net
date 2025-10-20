@@ -7,18 +7,26 @@ require_once 'utilities/component.utility.php';
 use Exception;
 use Utilities\Component;
 
-if (!isset($id) || !isset($label))
-    throw new Exception('Config Field component requires id and label variables');
+$missingArgs = [];
+if (empty($id)) $missingArgs[] = 'id';
+if (empty($label)) $missingArgs[] = 'label';
+if (empty($name)) $missingArgs = 'name';
+if (empty($default)) $missingArgs = 'default';
 
-$input ??= null;
-
-if (gettype($input) === 'string') {
-    $value = $input;
-    $default = true;
+if (!empty($missingArgs)) {
+    $missingArgs = implode(', ', $missingArgs);
+    throw new Exception("Config Field component missing variables: $missingArgs");
 }
-else { /** @var \Models\DB\Configuration $input */
-    $value = $input->value;
-    $default = !$input->isActive;
+
+if (empty($config)) {
+    $dbId = 0;
+    $value = $default;
+    $isDefault = true;
+}
+else { /** @var \Models\DB\Configuration $config */
+    $dbId = $config->id;
+    $value = $config->value;
+    $isDefault = !$config->isActive;
 }
 
 Component::renderCSS(__FILE__);
@@ -26,14 +34,16 @@ Component::queueJS(__FILE__);
 
 ?>
 
-<config-field-container id="<?= $id ?>-container">
-    <label for="<?= $id ?>"><?= $label ?></label>
-    <input type="text" name="<?= $id ?>" id="<?= $id ?>" placeholder="<?= $label ?>"
-        value="<?= $value ?>" <?= $default ? 'disabled' : null ?>>
-    <div input-errors></div>
-    <label>
-        <input type="checkbox" name="<?= $id ?>-is-default" id="<?= $id ?>-is-default"
-            <?= $default ? 'checked' : null ?>>
-        <?= PAGE_ADMIN_USEDEFAULT ?>
-    </label>
-</config-field-container>
+<input type="hidden" name="<?= $id ?>-id" id="<?= $id ?>-id" value="<?= $dbId ?>">
+<input type="hidden" name="<?= $id ?>-constant" id="<?= $id ?>-constant" value="<?= $name ?>">
+<input type="hidden" name="<?= $id ?>-default" id="<?= $id ?>-default" value="<?= $default ?>">
+<input type="hidden" name="<?= $id ?>-value" id="<?= $id ?>-value" value="<?= $value ?>">
+<label for="<?= $id ?>"><?= $label ?></label>
+<input type="text" name="<?= $id ?>" id="<?= $id ?>" placeholder="<?= $label ?>"
+    value="<?= $value ?>" <?= $isDefault ? 'disabled' : null ?>>
+<div input-errors></div>
+<label>
+    <input type="checkbox" name="<?= $id ?>-is-default" id="<?= $id ?>-is-default"
+        <?= $isDefault ? 'checked' : null ?>>
+    <?= PAGE_ADMIN_USEDEFAULT ?>
+</label>

@@ -21,15 +21,14 @@ $configService = ConfigurationService::getInstance(); /** @var ConfigurationServ
         <input type="button" class="btn" value="Save">
     </div>
 
-    <?php foreach (CONFIGURABLE_CONSTANTS as $constant): ?>
+    <?php foreach (CONFIGURABLE_CONSTANTS as $constantName): ?>
         <?php
-        $id = strtolower(str_replace('_', '-', $constant));
+        $id = strtolower(str_replace('_', '-', $constantName));
         $label =  ucwords(str_replace('-', ' ', $id));
 
         Component::include('site-configuration/config-field', [
-            'id' => $id, 'label' => $label, 'constant' => $constant,
-            'input' => $configService->getUserConstant($constant, true)
-        ]);
+            'id' => $id, 'label' => $label, 'name' => $constantName
+        ] + $configService->getConfiguration($constantName));
         ?>
     <?php endforeach ?>
 </form>
