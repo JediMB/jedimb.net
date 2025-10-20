@@ -16,9 +16,11 @@ class Component {
 
         extract($variables);
 
+        $componentTag = basename($realPath, '.php') . "-component";
+
         ob_start();
         include $realPath;
-        $output = ob_get_clean();
+        $output = "<$componentTag>" . ob_get_clean() . "</$componentTag>";
 
         if ($returnResult)
             return $output;
