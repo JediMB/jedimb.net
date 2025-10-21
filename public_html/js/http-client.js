@@ -32,7 +32,7 @@ export class HttpClient {
 
     async post(api, body = null) {
         const response = await fetch(this.#baseApiUrl + api, {
-            method: "POST",
+            method: 'POST',
             body: JSON.stringify(body)
         }).catch(
             error => ({
@@ -58,13 +58,59 @@ export class HttpClient {
     }
 
     // Full replacement
-    async put(api) {
+    async put(api, body) {
+        const response = await fetch(this.#baseApiUrl + api, {
+            method: 'PUT',
+            body: JSON.stringify(body)
+        }).catch(
+            error => ({
+                ok: false,
+                errors: [ error.message ]
+            })
+        );
 
+        if (!response.ok) {
+            console.error(`Error ${response.status}: %c PUT %c '${this.#baseApiUrl + api}' failed.`, this.#requestTypeCss);
+
+            return { success: false, errors: response.errors ?? [ response.error ]};
+        }
+
+        const data = await response.json().catch(
+            error => ({
+                success: false,
+                errors: [ `Failed to parse JSON: ${error.message}` ]
+            })
+        );
+
+        return data;
     }
 
     // Partial replacement
-    async patch(api) {
+    async patch(api, body) {
+        const response = await fetch(this.#baseApiUrl + api, {
+            method: 'PATCH',
+            body: JSON.stringify(body)
+        }).catch(
+            error => ({
+                ok: false,
+                errors: [ error.message ]
+            })
+        );
 
+        if (!response.ok) {
+            console.error(`Error ${response.status}: %c PATCH %c '${this.#baseApiUrl + api}' failed.`, this.#requestTypeCss);
+
+            return { success: false, errors: response.errors ?? [ response.error ]};
+        }
+
+        const data = await response.json().catch(
+            error => ({
+                success: false,
+                errors: [ `Failed to parse JSON: ${error.message}` ]
+            })
+        );
+
+        return data;
     }
 
     async delete(api) {
