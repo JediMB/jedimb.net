@@ -809,7 +809,7 @@ account-container {
     padding: 0.5rem;
 }
 
-social-container {
+social-container > * {
     display: flex;
     justify-content: flex-end;
     gap: var(--spacing-buttons);
