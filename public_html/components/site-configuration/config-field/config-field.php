@@ -39,6 +39,7 @@ Component::queueJS(__FILE__);
 <input type="hidden" name="<?= $id ?>-default" id="<?= $id ?>-default" value="<?= $default ?>">
 <input type="hidden" name="<?= $id ?>-value" id="<?= $id ?>-value" value="<?= $value ?>">
 <input type="hidden" name="<?= $id ?>-unchanged-value" id="<?= $id ?>-unchanged-value" value="<?= $value ?>">
+<input type="hidden" name="<?= $id ?>-was-default" id="<?= $id ?>-was-default" value="<?= $isDefault ?>">
 <label for="<?= $id ?>"><?= $label ?></label>
 <input type="text" name="<?= $id ?>" id="<?= $id ?>" placeholder="<?= $label ?>"
     value="<?= $value ?>" <?= $isDefault ? 'disabled' : null ?>>
