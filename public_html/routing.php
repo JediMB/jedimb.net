@@ -59,26 +59,36 @@ function handleApiRequests(string $path) {
     if (strpos($path, PATH_API_DIR . '/') !== 0)
         return;
 
-    header('Content-Type: application/json');
-
     $apiPath = PATH_API_DIR;
     $pathComponents = explode('/', $path, 10);
     $pathComponents = array_splice($pathComponents, 1);
+
+    header('Content-Type: application/json');
     
     foreach ($pathComponents as $index => $component) {
         $apiPath = "$apiPath/$component";
         
         if ( ($filePath = realpath("$apiPath.php")) ) {
             $GLOBALS['api_params'] = array_slice($pathComponents, $index + 1);
-            echo json_encode(
-                ( include $filePath )
-                ?? [ 'success' => false, 'errors' => ['No data from API'] ]
-            );
+
+            if ( !($result = include $filePath) ) {
+                header('HTTP/1.1 500 Internal Server Error');
+                echo json_encode([ 'success' => false, 'errors' => [ 'No data from API' ] ]);
+                exit;
+            }
+
+            if (isset($result['header'])) {
+                header($result['header']);
+                unset($result['header']);
+            }
+
+            echo json_encode($result);
             exit;
         }
     }
 
-    echo json_encode([ 'success' => false, 'errors' => ['Invalid URI'] ]);
+    header('HTTP/1.1 404 Not Found');
+    echo json_encode([ 'success' => false, 'errors' => [ 'Invalid API address' ] ]);
     exit;
 }
 

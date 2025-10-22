@@ -45,6 +45,18 @@ class SessionService extends Singleton {
     }
 
     public function enforcePermissions(array $permissionRequirements) {
+        if (!$this->hasPermissions($permissionRequirements))
+            servePHP([
+                'header' => 'HTTP/1.1 403 Forbidden',
+                'pagePath' => PATH_ERROR403
+            ]);
+    }
+
+    public function getUser() : User|false {
+        return $_SESSION[SESSION_USER_KEY] ?? false;
+    }
+
+    public function hasPermissions(array $permissionRequirements) : bool {
         $user = $this->getUser();
 
         if (!$user)
@@ -67,15 +79,10 @@ class SessionService extends Singleton {
             }
 
             if (!$match)
-                servePHP([
-                    'header' => 'HTTP/1.1 403 Forbidden',
-                    'pagePath' => PATH_ERROR403
-                ]);
+                return false;
         }
-    }
 
-    public function getUser() : User|false {
-        return $_SESSION[SESSION_USER_KEY] ?? false;
+        return true;
     }
 
     public function isLoggedIn() : bool {

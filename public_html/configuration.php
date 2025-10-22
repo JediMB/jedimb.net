@@ -52,6 +52,8 @@ define('META_DESCRIPTION', "JediMB's indie website");
 define('META_KEYWORDS', 'indie, programming, games, blog, webdev');
 
 define('TEXT_INVALID_REQUEST', 'Invalid request method');
+define('TEXT_NOT_LOGGED_IN', 'User not logged in');
+define('TEXT_INSUFFICIENT_PERMISSIONS', 'Insufficient user permissions');
 define('TEXT_USERNAME', 'username');
 define('TEXT_PASSWORD', 'password');
 define('TEXT_INPUT_MISSING', ' required');
