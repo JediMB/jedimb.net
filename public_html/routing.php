@@ -122,6 +122,23 @@ function handleBots() {
             ]);
 }
 
+function handleComponentModules(string $path) {
+    if (strpos($path, PATH_COMPONENT_MODULE_DIR_ALIAS . '/') !== 0)
+        return;
+
+    if (substr($path, -10) !== '.module.js')
+        return;
+
+    if ( ($realPath = realpath(str_replace(PATH_COMPONENT_MODULE_DIR_ALIAS, PATH_COMPONENTS_DIR, $path))) ) {
+        header('Content-Type: text/javascript; charset=utf-8');
+        echo file_get_contents($realPath);
+        exit;
+    }
+    
+    header('HTTP/1.1 404 Not Found');
+    exit;
+}
+
 function handleVirtualPages(string $requestPath) {
     $nav = NavigationService::getInstance(); /** @var NavigationService $nav */
 

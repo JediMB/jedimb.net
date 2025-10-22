@@ -37,6 +37,8 @@ handleBots();
 
 handleApiRequests($requestPath);
 
+handleComponentModules($requestPath);
+
 if (!$sessionService->isLoggedIn())
     $sessionService->loginFromCookie();
 

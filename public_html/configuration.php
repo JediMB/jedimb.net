@@ -10,6 +10,8 @@ define('CONFIGURABLE_CONSTANTS', [
 
 define('PATH_HOMEPAGE', 'pages/blog.php');
 define('PATH_API_DIR', 'api');
+define('PATH_COMPONENT_MODULE_DIR_ALIAS', 'js/components');
+define('PATH_COMPONENTS_DIR', 'components');
 define('PATH_REALPAGES_DIR', 'pages');
 define('PATH_ERROR403', 'errors/403.php');
 define('PATH_ERROR404', 'errors/404.php');

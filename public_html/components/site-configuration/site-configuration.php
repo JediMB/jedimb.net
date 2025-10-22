@@ -9,7 +9,7 @@ use Services\ConfigurationService;
 use Utilities\Component;
 
 Component::renderCSS(__FILE__);
-Component::queueJS(__FILE__);
+Component::addJSModule(__FILE__);
 
 $configService = ConfigurationService::getInstance(); /** @var ConfigurationService $configService */
 

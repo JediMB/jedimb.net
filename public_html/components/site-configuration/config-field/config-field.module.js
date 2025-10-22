@@ -1,3 +1,5 @@
+export { configField as default };
+
 class ConfigField {
     constructor() {
         const components = document.querySelectorAll('config-field-component');

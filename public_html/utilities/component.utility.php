@@ -69,6 +69,27 @@ class Component {
         static::$components[$componentKey][$fileType] = !!$filePath;
     }
 
+    static function addJSModule(string $componentPath) {
+        $fileType = 'module.js';
+        $componentKey = static::relativeComponentPath($componentPath);
+
+        if (isset(static::$components[$componentKey][$fileType]))
+            return;
+
+        if ( ($filePath = realpath(rtrim($componentPath, 'php') . $fileType)) ) {
+            $filePath = str_replace(
+                getcwd() . DIRECTORY_SEPARATOR . PATH_COMPONENTS_DIR,
+                DIRECTORY_SEPARATOR . PATH_COMPONENT_MODULE_DIR_ALIAS,
+                $filePath
+            );
+            echo <<<HTML
+                <script type="module" src="{$filePath}"></script>
+            HTML;
+        }
+        
+        static::$components[$componentKey][$fileType] = !!$filePath;
+    }
+
     static function queueJS(string $componentPath) {
         $fileType = 'js';
         $componentKey = static::relativeComponentPath($componentPath);

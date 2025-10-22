@@ -30,7 +30,7 @@ else { /** @var \Models\DB\Configuration $config */
 }
 
 Component::renderCSS(__FILE__);
-Component::queueJS(__FILE__);
+Component::addJSModule(__FILE__);
 
 ?>
 
