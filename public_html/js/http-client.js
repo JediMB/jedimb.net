@@ -6,18 +6,16 @@ export class HttpClient {
 
     constructor() { }
 
-    async get(api) {
-        const response = await fetch(this.#baseApiUrl + api).catch(
-            error => ({
-                ok: false,
-                errors: [ error.message ]
-            })
-        );
-
+    async #responseHandling(response, httpMethod) {
         if (!response.ok) {
-            console.error(`Error ${response.status}: %c GET %c '${this.#baseApiUrl + api}' failed.`, this.#requestTypeCss);
+            console.error(`Error ${response.status}: %c ${httpMethod} %c '${this.#baseApiUrl + api}' failed.`, this.#requestTypeCss);
 
-            return { success: false, errors: response.errors ?? [ response.error ] };
+            try {
+                return { success: false, errors: (await response.json()).errors };
+            }
+            catch (error) {
+                return { success: false, errors: [ error.message ] };
+            }
         }
 
         const data = await response.json().catch(
@@ -28,6 +26,17 @@ export class HttpClient {
         );
 
         return data;
+    }
+
+    async get(api) {
+        const response = await fetch(this.#baseApiUrl + api).catch(
+            error => ({
+                ok: false,
+                errors: [ error.message ]
+            })
+        );
+
+        return await this.#responseHandling(response, 'GET');
     }
 
     async post(api, body = null) {
@@ -41,20 +50,7 @@ export class HttpClient {
             })
         );
 
-        if (!response.ok) {
-            console.error(`Error ${response.status}: %c POST %c '${this.#baseApiUrl + api}' failed.`, this.#requestTypeCss);
-            
-            return { success: false, errors: response.errors ?? [ response.error ]};
-        }
-        
-        const data = await response.json().catch(
-            error => ({
-                success: false,
-                errors: [ `Failed to parse JSON: ${error.message}` ]
-            })
-        );
-
-        return data;
+        return await this.#responseHandling(response, 'POST');
     }
 
     // Full replacement
@@ -69,20 +65,7 @@ export class HttpClient {
             })
         );
 
-        if (!response.ok) {
-            console.error(`Error ${response.status}: %c PUT %c '${this.#baseApiUrl + api}' failed.`, this.#requestTypeCss);
-
-            return { success: false, errors: response.errors ?? [ response.error ]};
-        }
-
-        const data = await response.json().catch(
-            error => ({
-                success: false,
-                errors: [ `Failed to parse JSON: ${error.message}` ]
-            })
-        );
-
-        return data;
+        return await this.#responseHandling(response, 'PUT');
     }
 
     // Partial replacement
@@ -97,20 +80,7 @@ export class HttpClient {
             })
         );
 
-        if (!response.ok) {
-            console.error(`Error ${response.status}: %c PATCH %c '${this.#baseApiUrl + api}' failed.`, this.#requestTypeCss);
-
-            return { success: false, errors: response.errors ?? [ response.error ]};
-        }
-
-        const data = await response.json().catch(
-            error => ({
-                success: false,
-                errors: [ `Failed to parse JSON: ${error.message}` ]
-            })
-        );
-
-        return data;
+        return await this.#responseHandling(response, 'PATCH');
     }
 
     async delete(api) {

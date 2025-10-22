@@ -3,7 +3,6 @@
 require_once 'services/session.service.php';
 require_once 'utilities/component.utility.php';
 
-use Dom\Comment;
 use Enums\UserPermission;
 use Services\SessionService;
 use Utilities\Component;
