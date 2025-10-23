@@ -7,16 +7,15 @@ class SiteConfiguration {
 
     constructor() {
         this.#configApiService = configurationApiService;
-        const components = document.querySelectorAll('site-configuration-component');
+        const component = document.querySelector('site-configuration-component');
 
-        components.forEach(component => {
-            const form = component.querySelector('form');
-            const saveButton = form.querySelector('button[type="submit"]');
+        const form = component.querySelector('form');
+        const saveButton = form.querySelector('button[type="submit"]');
 
-            form.addEventListener("submit", event => {
-                event.preventDefault();
-                this.#save(form, saveButton);
-            });
+        form.addEventListener("submit", event => {
+            event.preventDefault();
+            this.#save(form, saveButton);
+        });
         });
     }
 
@@ -28,16 +27,16 @@ class SiteConfiguration {
         const updatedConfigs = [];
 
         components.forEach(component => {
-            const domId = component.querySelector('input[type="text"]').id;
+            const textField = component.querySelector('input[type="text"]');
             
-            const dbId = Number(component.querySelector(`#${domId}-id`).value);
-            const constant = component.querySelector(`#${domId}-constant`).value;
-            const value = component.querySelector(`#${domId}-value`).value;
-            const unchangedValue = component.querySelector(`#${domId}-unchanged-value`).value;
-            const isDefault = Boolean(component.querySelector(`#${domId}-is-default`).checked);
-            const wasDefault = Boolean(component.querySelector(`#${domId}-was-default`).value);
+            const dbId = Number(textField.dataset.id);
+            const value = textField.dataset.inputValue;
 
-            const textChanged = ( (value !== unchangedValue) && !isDefault);
+            const toggle = component.querySelector('input[type="checkbox"]');
+            const isDefault = Boolean(toggle.checked);
+            const wasDefault = Boolean(toggle.dataset.originalValue);
+
+            const textChanged = ( (value !== textField.dataset.originalValue) && !isDefault);
             const toggleChanged = (isDefault !== wasDefault);
 
             switch (dbId) {
@@ -47,7 +46,7 @@ class SiteConfiguration {
 
                     newConfigs.push(new Configuration({
                         id: 0,
-                        name: constant,
+                        name: textField.dataset.constant,
                         value: value,
                         isActive: true
                     }));
@@ -57,7 +56,7 @@ class SiteConfiguration {
                     if (!textChanged && !toggleChanged)
                         return;
 
-                    const config = { id: dbId, name: constant };
+                    const config = { id: dbId, name: textField.dataset.constant };
 
                     if (textChanged)
                         config.value = value;

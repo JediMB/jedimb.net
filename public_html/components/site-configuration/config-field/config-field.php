@@ -34,18 +34,21 @@ Component::addJSModule(__FILE__);
 
 ?>
 
-<input type="hidden" name="<?= $id ?>-id" id="<?= $id ?>-id" value="<?= $dbId ?>">
-<input type="hidden" name="<?= $id ?>-constant" id="<?= $id ?>-constant" value="<?= $name ?>">
-<input type="hidden" name="<?= $id ?>-default" id="<?= $id ?>-default" value="<?= $default ?>">
-<input type="hidden" name="<?= $id ?>-value" id="<?= $id ?>-value" value="<?= $value ?>">
-<input type="hidden" name="<?= $id ?>-unchanged-value" id="<?= $id ?>-unchanged-value" value="<?= $value ?>">
-<input type="hidden" name="<?= $id ?>-was-default" id="<?= $id ?>-was-default" value="<?= $isDefault ?>">
 <label for="<?= $id ?>"><?= $label ?></label>
 <input type="text" name="<?= $id ?>" id="<?= $id ?>" placeholder="<?= $label ?>"
-    value="<?= $value ?>" <?= $isDefault ? 'disabled' : null ?>>
+    value="<?= $value ?>"
+    data-id="<?= $dbId ?>"
+    data-constant="<?= $name ?>"
+    data-input-value="<?= $value ?>"
+    data-original-value="<?= $value ?>"
+    data-default-value="<?= $default ?>"
+    pattern="<?= trim(REGEX_INPUT['config-text'], '/') ?>" required
+    data-mismatch="<?= TEXT_CONFIG_CHARS ?>"
+    title="<?= TEXT_CONFIG_CHARS ?>"
+    <?= $isDefault ? 'disabled' : null ?>>
 <div input-errors></div>
 <label>
     <input type="checkbox" name="<?= $id ?>-is-default" id="<?= $id ?>-is-default"
-        <?= $isDefault ? 'checked' : null ?>>
+        <?= $isDefault ? 'checked' : null ?> data-original-value="<?= $isDefault ?>">
     <?= PAGE_ADMIN_USEDEFAULT ?>
 </label>
