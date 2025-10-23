@@ -38,7 +38,7 @@ Component::queueJS(__FILE__);
                 maxlength="<?= INPUT_LENGTH['password']['max'] ?>"
                 title="<?= TEXT_PASSWORD_LENGTH . ' ' . TEXT_PASSWORD_CHARS ?>"
                 class="w-full p-1 text-black">
-            <div input-error></div>
+            <div input-errors></div>
         </div>
         <div>
             <input type="checkbox" name="rememberme" id="rememberme">

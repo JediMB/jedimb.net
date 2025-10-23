@@ -43,7 +43,7 @@ class LoginForm {
     #clearErrorStatus(inputField) {
         inputField.classList.remove('error');
 
-        if (inputField.nextElementSibling?.hasAttribute('input-error'))
+        if (inputField.nextElementSibling?.hasAttribute('input-errors'))
             inputField.nextElementSibling.innerHTML = '';
     }
 
@@ -66,7 +66,7 @@ class LoginForm {
     #updateErrorStatus(inputField) {
         inputField.classList.add('error');
             
-        if (inputField.nextElementSibling?.hasAttribute('input-error')) {
+        if (inputField.nextElementSibling?.hasAttribute('input-errors')) {
             inputField.nextElementSibling.textContent = '';
             
             if (inputField.validity.tooShort)
