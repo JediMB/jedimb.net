@@ -43,7 +43,8 @@ Component::addJSModule(__FILE__);
     data-original-value="<?= $value ?>"
     data-default-value="<?= $default ?>"
     pattern="<?= trim(REGEX_INPUT['config-text'], '/') ?>" required
-    data-mismatch="<?= TEXT_CONFIG_CHARS ?>"
+    data-error-value-missing="Field can't be empty"
+    data-error-pattern-mismatch="<?= TEXT_CONFIG_CHARS ?>"
     title="<?= TEXT_CONFIG_CHARS ?>"
     <?= $isDefault ? 'disabled' : null ?>>
 <div input-errors></div>

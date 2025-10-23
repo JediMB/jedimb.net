@@ -6,6 +6,14 @@ config-field-component input[type="text"] {
     border-radius: 1em;
 }
 
+config-field-component input[type="text"]:valid {
+    background-color: #99ff99;
+}
+
+config-field-component input[type="text"]:invalid {
+    background-color: #ff9999;
+}
+
 config-field-component label {
     display: flex;
     flex-direction: row;

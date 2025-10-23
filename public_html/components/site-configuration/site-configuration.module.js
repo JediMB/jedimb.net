@@ -1,6 +1,7 @@
 import Configuration from "/js/models/configuration.model.js";
 import configurationApiService from "/js/services/api/configuration-api.service.js";
 import configField from "/js/components/site-configuration/config-field/config-field.module.js";
+import formValidationService from "/js/services/form-validation.service.js";
 
 class SiteConfiguration {
     #configApiService;
@@ -16,6 +17,15 @@ class SiteConfiguration {
             event.preventDefault();
             this.#save(form, saveButton);
         });
+
+        const textFields = configField.getTextFields();
+        textFields.forEach(textField => {
+            textField.addEventListener('input', event => {
+                formValidationService.onInput(textField, textFields, saveButton);
+            });
+            textField.addEventListener('change', event => {
+                formValidationService.onChange(textField);
+            });
         });
     }
 
