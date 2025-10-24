@@ -35,18 +35,25 @@ Component::addJSModule(__FILE__);
 ?>
 
 <label for="<?= $id ?>"><?= $label ?></label>
-<input type="text" name="<?= $id ?>" id="<?= $id ?>" placeholder="<?= $label ?>"
-    value="<?= $value ?>"
-    data-id="<?= $dbId ?>"
-    data-constant="<?= $name ?>"
-    data-input-value="<?= $value ?>"
-    data-original-value="<?= $value ?>"
-    data-default-value="<?= $default ?>"
-    pattern="<?= trim(REGEX_INPUT['config-text'], '/') ?>" required
-    data-error-value-missing="Field can't be empty"
-    data-error-pattern-mismatch="<?= TEXT_CONFIG_CHARS ?>"
-    title="<?= TEXT_CONFIG_CHARS ?>"
-    <?= $isDefault ? 'disabled' : null ?>>
+<input-container>
+    <input type="text" name="<?= $id ?>" id="<?= $id ?>" placeholder="<?= $label ?>"
+        value="<?= $value ?>"
+        data-id="<?= $dbId ?>"
+        data-constant="<?= $name ?>"
+        data-input-value="<?= $value ?>"
+        data-original-value="<?= $value ?>"
+        data-default-value="<?= $default ?>"
+        pattern="<?= trim(REGEX_INPUT['config-text'], '/') ?>" required
+        data-error-value-missing="Field can't be empty"
+        data-error-pattern-mismatch="<?= TEXT_CONFIG_CHARS ?>"
+        title="<?= TEXT_CONFIG_CHARS ?>"
+        <?= $isDefault ? 'disabled' : null ?>>
+    <button type="button" restore-input class="hidden">
+        <svg width="100%" height="100%">
+            <use xlink:href="#svg-config-restore" href="#svg-config-restore"></use>
+        </svg>
+    </button>
+</input-container>
 <div input-errors></div>
 <label>
     <input type="checkbox" name="<?= $id ?>-is-default" id="<?= $id ?>-is-default"

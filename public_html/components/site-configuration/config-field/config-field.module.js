@@ -1,32 +1,100 @@
+import formValidationService from "/js/services/form-validation.service.js";
+
 export { configField as default };
 
 class ConfigField {
-    #textFields = [];
-    #toggles = [];
+    #onChanges = [];
 
     constructor() {
         const components = Array.from(document.querySelectorAll('config-field-component'));
-        this.#textFields = components.map(component => component.querySelector('input[type="text"]'));
-        this.#toggles = components.map(component => component.querySelector('input[type="checkbox"]'));
+        const textFields = components.map(c => c.querySelector('input[type="text"]'));
+        const toggles = components.map(c => c.querySelector('input[type="checkbox"]'));
+        const errorContainers = components.map(c => c.querySelector('[input-errors]'));
+        const restoreButtons = components.map(c => c.querySelector('button[restore-input]'));
         
-        this.#textFields.forEach((textField, key) => {
-            const toggle = this.#toggles[key];
+        components.forEach((component, key) => {
+            const textField = textFields[key];
+            const restoreButton = restoreButtons[key];
+            const toggle = toggles[key];
+            const errorContainer = errorContainers[key];
 
-            toggle.addEventListener('change', event => {
-                const isChecked = event.target.checked;
+            toggle.addEventListener('change', () => {
+                const isDefault = toggle.checked;
 
-                textField.value = isChecked ? textField.dataset.defaultValue : textField.dataset.inputValue;
+                textField.disabled = isDefault;
+                textField.value = isDefault
+                    ? textField.dataset.defaultValue
+                    : textField.dataset.originalValue;
 
-                textField.disabled = event.target.checked;
+                const textChanges = !isDefault && this.#hasNewValue(textField);
+                const hasChanges = textChanges || this.#hasNewValue(toggle);
+
+                if (isDefault)
+                    errorContainer.innerHTML = '';
+
+                if (textChanges)
+                    formValidationService.validateField(textField, errorContainer);
+
+                restoreButton.classList.toggle('hidden', !textChanges);
+                component.toggleAttribute('has-changes', hasChanges);
+
+                this.#emitChanges(
+                    components.some(c => c.hasAttribute('has-changes'))
+                    && textFields.every(t => t.checkValidity())
+                );
             });
 
-            textField.addEventListener('input', event => {
+            textField.addEventListener('input', () => {
                 textField.dataset.inputValue = textField.value;
+
+                const hasChanges = this.#hasNewValue(textField);
+                restoreButton.classList.toggle('hidden', !hasChanges);
+                component.toggleAttribute('has-changes', hasChanges);
+                
+                this.#emitChanges(
+                    components.some(c => c.hasAttribute('has-changes'))
+                    && textFields.every(t => t.checkValidity())
+                );
+            });
+
+            textField.addEventListener('change', () => { formValidationService.validateField(textField, errorContainer); });
+
+            restoreButton.addEventListener('click', event => {
+                event.preventDefault();
+                textField.value = textField.dataset.originalValue;
+                textField.dataset.inputValue = textField.value;
+                restoreButton.classList.add('hidden');
+
+                const hasChanges = this.#hasNewValue(toggle);
+                component.toggleAttribute('has-changes', hasChanges);
+                this.#emitChanges(
+                    components.some(c => c.hasAttribute('has-changes'))
+                    && textFields.every(t => t.checkValidity())
+                );
             });
         });
     }
 
-    getTextFields() { return this.#textFields; }
-    getToggles() { return this.#toggles; }
+    #emitChanges(hasValidChanges) {
+        this.#onChanges.forEach(func => func.call(this, hasValidChanges));
+    }
+
+    #hasNewValue(inputElement) {
+        const originalValue = inputElement.dataset.originalValue;
+
+        switch (inputElement.getAttribute('type')) {
+            case 'text':
+                return inputElement.value !== originalValue;
+            case 'checkbox':
+                return inputElement.checked !== Boolean(originalValue);
+            default:
+                throw new Error('Input type not implemented!');
+        }
+    }
+
+    onChanges(func) {
+        if (typeof func === 'function')
+            this.#onChanges.push(func);
+    }
 }
 const configField = new ConfigField();

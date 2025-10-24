@@ -1,17 +1,33 @@
-config-field-component input[type="text"] {
-    display: block;
+config-field-component input-container {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: center;
     width: 100%;
     padding: 0.5em 1em;
+    background-color: #fff;
     color: black;
     border-radius: 1em;
 }
 
-config-field-component input[type="text"]:valid {
+config-field-component input-container:has(input[type="text"]:disabled) {
+    background-color: #999999;
+}
+
+config-field-component input-container:has(input[type="text"]:valid) {
     background-color: #99ff99;
 }
 
-config-field-component input[type="text"]:invalid {
+config-field-component input-container:has(input[type="text"]:invalid) {
     background-color: #ff9999;
+}
+
+config-field-component input-container input[type="text"] {
+    background-color: inherit;
+}
+
+config-field-component input-container button {
+    aspect-ratio: 1/1;
+    height: 1.25em;
 }
 
 config-field-component label {

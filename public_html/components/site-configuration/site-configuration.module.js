@@ -1,7 +1,6 @@
 import Configuration from "/js/models/configuration.model.js";
 import configurationApiService from "/js/services/api/configuration-api.service.js";
 import configField from "/js/components/site-configuration/config-field/config-field.module.js";
-import formValidationService from "/js/services/form-validation.service.js";
 
 class SiteConfiguration {
     #configApiService;
@@ -13,27 +12,8 @@ class SiteConfiguration {
         const form = component.querySelector('form');
         const saveButton = form.querySelector('button[type="submit"]');
 
-        form.addEventListener("submit", event => {
-            event.preventDefault();
-            this.#save(form, saveButton);
-        });
-
-        const textFields = configField.getTextFields();
-        textFields.forEach(textField => {
-            textField.addEventListener('input', () => {
-                formValidationService.onInput(textField, textFields, saveButton);
-            });
-            textField.addEventListener('change', () => {
-                formValidationService.onChange(textField);
-            });
-        });
-
-        configField.getToggles().forEach((toggle, key) => {
-            toggle.addEventListener('change', () => {
-                formValidationService.onInput(textFields[key], textFields, saveButton);
-                if (!toggle.checked)
-                    formValidationService.onChange(textFields[key]);
-            });
+        configField.onChanges(hasValidChanges => {
+            saveButton.disabled = !hasValidChanges;
         });
     }
 
