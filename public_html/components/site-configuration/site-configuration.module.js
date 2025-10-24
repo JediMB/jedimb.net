@@ -20,11 +20,19 @@ class SiteConfiguration {
 
         const textFields = configField.getTextFields();
         textFields.forEach(textField => {
-            textField.addEventListener('input', event => {
+            textField.addEventListener('input', () => {
                 formValidationService.onInput(textField, textFields, saveButton);
             });
-            textField.addEventListener('change', event => {
+            textField.addEventListener('change', () => {
                 formValidationService.onChange(textField);
+            });
+        });
+
+        configField.getToggles().forEach((toggle, key) => {
+            toggle.addEventListener('change', () => {
+                formValidationService.onInput(textFields[key], textFields, saveButton);
+                if (!toggle.checked)
+                    formValidationService.onChange(textFields[key]);
             });
         });
     }

@@ -2,14 +2,15 @@ export { configField as default };
 
 class ConfigField {
     #textFields = [];
+    #toggles = [];
 
     constructor() {
         const components = Array.from(document.querySelectorAll('config-field-component'));
         this.#textFields = components.map(component => component.querySelector('input[type="text"]'));
-        const toggles = components.map(component => component.querySelector('input[type="checkbox"]'));
+        this.#toggles = components.map(component => component.querySelector('input[type="checkbox"]'));
         
         this.#textFields.forEach((textField, key) => {
-            const toggle = toggles[key];
+            const toggle = this.#toggles[key];
 
             toggle.addEventListener('change', event => {
                 const isChecked = event.target.checked;
@@ -26,5 +27,6 @@ class ConfigField {
     }
 
     getTextFields() { return this.#textFields; }
+    getToggles() { return this.#toggles; }
 }
 const configField = new ConfigField();
