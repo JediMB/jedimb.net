@@ -31,7 +31,7 @@ $links = !empty($links);
 
     <title><?= empty($title) ? $site_title : "$title – ". $site_title ?></title>
     
-    <?php Component::include('css-revision-link', [ 'cssPath' => PATH_CSS_DEFAULT ]) ?>
+    <?php Component::include('css-revision-link', [ 'noContainer' => true, 'cssPath' => PATH_CSS_DEFAULT ]) ?>
 
     <link rel="icon" type="image/x-icon" href="/favicon.svg" />
     

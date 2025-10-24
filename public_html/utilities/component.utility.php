@@ -15,12 +15,16 @@ class Component {
             echo "Can't find component: $component.";
 
         extract($variables);
-
-        $componentTag = basename($realPath, '.php') . "-component";
+        $noContainer ??= false;
 
         ob_start();
         include $realPath;
-        $output = "<$componentTag>" . ob_get_clean() . "</$componentTag>";
+        $output = ob_get_clean();
+
+        if (!$noContainer) {
+            $componentTag = basename($realPath, '.php') . "-component";
+            $output = "<$componentTag>$output</$componentTag>";
+        }
 
         if ($returnResult)
             return $output;
