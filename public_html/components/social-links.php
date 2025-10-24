@@ -31,7 +31,7 @@ $symbolPrefix = 'svg-social-link-';
         class="social-link"
         aria-label="Social link to <?= $link->description ?>">
         <svg width="2rem" height="2rem">
-            <use xlink:href="#<?= $href ?>"
+            <use xlink:href="<?= $href ?>"
                 href="<?= $href ?>"></use>
         </svg>
     </a>
