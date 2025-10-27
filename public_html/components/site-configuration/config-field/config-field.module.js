@@ -72,6 +72,8 @@ class ConfigField {
                     && textFields.every(t => t.checkValidity())
                 );
             });
+
+            component.removeAttribute('style');
         });
     }
 

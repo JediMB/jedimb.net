@@ -29,6 +29,7 @@ else { /** @var \Models\DB\Configuration $config */
     $isDefault = !$config->isActive;
 }
 
+Component::hide();
 Component::renderCSS(__FILE__);
 Component::addJSModule(__FILE__);
 
