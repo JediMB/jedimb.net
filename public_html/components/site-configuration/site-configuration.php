@@ -17,21 +17,23 @@ $configService = ConfigurationService::getInstance(); /** @var ConfigurationServ
 ?>
 
 <form id="site-settings">
-    <div class="category-head">
-        <h3 style="margin: 0;"><?= PAGE_ADMIN_SECTION_SITE ?></h3>
-        <button type="submit" class="btn" disabled>Save</button>
-    </div>
+    <fieldset>
+        <div class="category-head">
+            <h3 style="margin: 0;"><?= PAGE_ADMIN_SECTION_SITE ?></h3>
+            <button type="submit" class="btn" disabled>Save</button>
+        </div>
 
-    <?php foreach (CONFIGURABLE_CONSTANTS as $constantName): ?>
-        <?php
-        $id = strtolower(str_replace('_', '-', $constantName));
-        $label =  ucwords(str_replace('-', ' ', $id));
+        <?php foreach (CONFIGURABLE_CONSTANTS as $constantName): ?>
+            <?php
+            $id = strtolower(str_replace('_', '-', $constantName));
+            $label =  ucwords(str_replace('-', ' ', $id));
 
-        Component::include('site-configuration/config-field', [
-            'id' => $id, 'label' => $label, 'name' => $constantName
-        ] + $configService->getConfiguration($constantName));
-        ?>
-    <?php endforeach ?>
+            Component::include('site-configuration/config-field', [
+                'id' => $id, 'label' => $label, 'name' => $constantName
+            ] + $configService->getConfiguration($constantName));
+            ?>
+        <?php endforeach ?>
+    </fieldset>
 </form>
 
 <svg class="hidden" xmlns="http://www.w3.org/2000/svg">

@@ -9,6 +9,7 @@ class SiteConfiguration {
         const component = document.querySelector('site-configuration-component');
 
         const form = component.querySelector('form');
+        const fieldset = form.querySelector('fieldset');
         const saveButton = form.querySelector('button[type="submit"]');
 
         configField.onChanges(hasValidChanges => {
@@ -17,27 +18,30 @@ class SiteConfiguration {
 
         form.addEventListener('submit', event => {
             event.preventDefault();
-            this.#save(form, saveButton);
+            this.#save(fieldset);
         });
     }
 
-    async #save(form, saveButton) {
-        saveButton.disabled = true;
+    async #save(fieldset) {
+        fieldset.disabled = true;
 
         const changes = await configField.getChanges();
 
         const newConfigs = changes.filter(c => c.id === 0);
         const updatedConfigs = changes.filter(c => c.id > 0);
 
-        if (newConfigs.length > 0) {
-            const responseNew = await this.#configApiService.createConfigurations(newConfigs);
-            console.log(responseNew);
-        }
+        const responses = [];
 
-        if (updatedConfigs.length > 0){
-            const responseUpdated = await this.#configApiService.updateConfigurations(updatedConfigs);
-            console.log(responseUpdated);
-        }
+        if (newConfigs.length > 0)
+            responses.push(this.#configApiService.createConfigurations(newConfigs));
+
+        if (updatedConfigs.length > 0)
+            responses.push(this.#configApiService.updateConfigurations(updatedConfigs));
+
+        Promise.all(responses).then(response => {
+            response.forEach(r => console.log(r));
+            //setTimeout(() => location.reload(), 5000);
+        })
     }
 }
 const siteConfiguration = new SiteConfiguration();
