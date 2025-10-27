@@ -6,6 +6,7 @@ use Exception;
 
 class Component {
     private static array $components = [];
+    private static bool $hide = false;
 
     static function include(string $component, array $variables = [], bool $returnResult = false) {
         if (!empty(static::$components[$component]['renderOnce']))
@@ -23,7 +24,13 @@ class Component {
 
         if (!$noContainer) {
             $componentTag = basename($realPath, '.php') . "-component";
-            $output = "<$componentTag>$output</$componentTag>";
+
+            if (static::$hide) {
+                static::$hide = false;
+                $output = "<$componentTag style=\"display: none;\">$output</$componentTag>";
+            }
+            else
+                $output = "<$componentTag>$output</$componentTag>";
         }
 
         if ($returnResult)
@@ -47,6 +54,10 @@ class Component {
             return $path;
 
         return false;
+    }
+
+    static function hide() {
+        static::$hide = true;
     }
 
     static function renderOnce(string $componentPath) {
