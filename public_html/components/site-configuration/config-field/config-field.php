@@ -35,6 +35,7 @@ Component::addJSModule(__FILE__);
 
 ?>
 
+<input type="hidden" name="<?= $id ?>-id" id="<?= $id ?>-id" value="<?= $dbId ?>">
 <label for="<?= $id ?>"><?= $label ?></label>
 <input-container>
     <input type="text" name="<?= $id ?>" id="<?= $id ?>" placeholder="<?= $label ?>"

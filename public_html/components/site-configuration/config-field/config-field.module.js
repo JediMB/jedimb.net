@@ -1,12 +1,16 @@
+import Configuration from "/js/models/configuration.model.js";
 import formValidationService from "/js/services/form-validation.service.js";
 
 export { configField as default };
 
 class ConfigField {
+    #components;
     #onChanges = [];
 
     constructor() {
         const components = Array.from(document.querySelectorAll('config-field-component'));
+        this.#components = components;
+
         const textFields = components.map(c => c.querySelector('input[type="text"]'));
         const toggles = components.map(c => c.querySelector('input[type="checkbox"]'));
         const errorContainers = components.map(c => c.querySelector('[input-errors]'));
@@ -79,6 +83,35 @@ class ConfigField {
 
     #emitChanges(hasValidChanges) {
         this.#onChanges.forEach(func => func.call(this, hasValidChanges));
+    }
+
+    async getChanges() {
+        return this.#components
+            .filter(c => c.hasAttribute('has-changes'))
+            .map(c => {
+                const id = Number(c.querySelector('input[type="hidden"]').value);
+                const textBox = c.querySelector('input[type="text"]');
+
+                if (id < 1)
+                    return new Configuration({
+                        id: 0,
+                        name: textBox.dataset.constant,
+                        value: textBox.value,
+                        isActive: true
+                    });
+
+                const toggle = c.querySelector('input[type="checkbox"]');
+
+                const data = { id: id, name: textBox.dataset.constant };
+
+                if (toggle.checked !== Boolean(toggle.dataset.originalValue))
+                    data.isActive = !toggle.checked;
+
+                if (!toggle.checked && textBox.value !== textBox.dataset.originalValue)
+                    data.value = textBox.value;
+                
+                return new Configuration(data);
+            });
     }
 
     #hasNewValue(inputElement) {
