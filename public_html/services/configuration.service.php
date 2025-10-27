@@ -59,6 +59,10 @@ class ConfigurationService extends Singleton {
         return isset($this->configuration[$name]) === false
             || $this->configuration[$name]->isActive === false;
     }
+
+    public function updateConfiguration(Configuration $object) : Configuration {
+        return $this->configDbService->updateConfiguration($object);
+    }
 }
 
 ?>

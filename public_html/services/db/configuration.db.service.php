@@ -6,6 +6,7 @@ require_once 'models/db/configuration.db.model.php';
 require_once 'services/base/base.db.service.php';
 
 use Exception;
+use PDO;
 use PDOException;
 use Models\DB\Configuration;
 use Services\Base\BaseDBService;
@@ -45,6 +46,24 @@ class ConfigurationDBService extends BaseDBService {
         }
 
         return [];
+    }
+
+    public function updateConfiguration(Configuration $object) : Configuration {
+        try {
+            $result = $this->dbService->selectFunction(
+                'update_configuration', [
+                    1 => [ 'value' => $object->id, 'type' => PDO::PARAM_INT ],
+                    2 => [ 'value' => $object->name, 'type' => PDO::PARAM_STR ],
+                    3 => [ 'value' => $object->value, 'type' => PDO::PARAM_STR ],
+                    4 => [ 'value' => $object->isActive, 'type' => PDO::PARAM_BOOL ]
+                    ]
+                );
+
+            return new Configuration($result);
+        }
+        catch (PDOException $e) {
+            throw new Exception('Database error: ' . $e->getMessage());
+        }
     }
 }
 
