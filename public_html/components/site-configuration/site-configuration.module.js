@@ -39,8 +39,8 @@ class SiteConfiguration {
             responses.push(this.#configApiService.updateConfigurations(updatedConfigs));
 
         Promise.all(responses).then(response => {
-            response.forEach(r => console.log(r));
-            //setTimeout(() => location.reload(), 5000);
+            //response.forEach(r => console.log(r));
+            setTimeout(() => location.reload(), 1000);
         })
     }
 }

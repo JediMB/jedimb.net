@@ -9,6 +9,7 @@ use Exception;
 use PDO;
 use PDOException;
 use Models\DB\Configuration;
+use Models\DTO\Configuration as DTOConfiguration;
 use Services\Base\BaseDBService;
 
 class ConfigurationDBService extends BaseDBService {
@@ -46,6 +47,22 @@ class ConfigurationDBService extends BaseDBService {
         }
 
         return [];
+    }
+
+    public function createConfiguration(DTOConfiguration $object) : Configuration {
+        try {
+            $result = $this->dbService->selectFunction(
+                'create_configuration', [
+                    1 => [ 'value' => $object->name, 'type' => PDO::PARAM_STR ],
+                    2 => [ 'value' => $object->value, 'type' => PDO::PARAM_STR ]
+                    ]
+                );
+
+            return new Configuration($result);
+        }
+        catch (PDOException $e) {
+            throw new Exception('Database error: ' . $e->getMessage());
+        }
     }
 
     public function updateConfiguration(Configuration $object) : Configuration {

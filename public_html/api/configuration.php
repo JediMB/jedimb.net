@@ -28,7 +28,30 @@ $configService = ConfigurationService::getInstance(); /** @var ConfigurationServ
 
 switch ( $_SERVER['REQUEST_METHOD'] ) {
     case 'POST':
-        return Response::Success($input);
+        try {
+            foreach ($input as $config) {
+                $configDTO = new Configuration($config);
+
+                if ($configDTO->id !== 0) {
+                    $errors[] = 'Attempted to create new configuration with non-zero id';
+                    continue;
+                }
+
+                if (empty( ($result = $configService->createConfiguration($configDTO)) ))
+                    $errors[] = "Failed to create: {$configDTO->name}";
+            }
+
+            if ($errors)
+                return Response::Error($errors);
+
+            return Response::Success(count($input));
+        }
+        catch (InvalidArgumentException $e) {
+            return Response::BadRequest('Malformed request body: ' . $e->getMessage());
+        }
+        catch (Exception $e) {
+            return Response::Error([$e->getMessage()]);
+        }
 
     case 'PATCH':
         try {
@@ -53,7 +76,6 @@ switch ( $_SERVER['REQUEST_METHOD'] ) {
         catch (Exception $e) {
             return Response::Error([$e->getMessage()]);
         }
-        return Response::Success($input);
 
     default:
         return Response::InvalidRequest();
