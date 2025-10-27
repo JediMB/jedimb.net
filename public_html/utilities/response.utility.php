@@ -3,6 +3,22 @@
 namespace Utilities;
 
 class Response {
+    public static function BadRequest(string $reason) : array {
+        return [
+            'success' => false,
+            'header' => 'HTTP/1.1 400 Bad Request',
+            'errors' => [ $reason ]
+        ];
+    }
+
+    public static function Error(array $reasons) : array {
+        return [
+            'success' => false,
+            'header' => 'HTTP/1.1 500 Internal Server Error',
+            'errors' => $reasons
+        ];
+    }
+
     public static function Forbidden(string $reason) : array {
         return [
             'success' => false,
