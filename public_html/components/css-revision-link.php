@@ -2,10 +2,10 @@
 
 namespace Components;
 
-use Exception;
+\Utilities\Component::noContainer();
 
 if (!isset($cssPath))
-    throw new Exception('CSS Revision Link component requires cssPath variable');
+    throw new \Exception('CSS Revision Link component requires cssPath variable');
 
 $realPath = realpath($cssPath);
 

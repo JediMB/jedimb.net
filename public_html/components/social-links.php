@@ -7,6 +7,8 @@ require_once 'services/db/social-link.db.service.php';
 use Models\DB\SocialLink;
 use Services\DB\SocialLinkDBService;
 
+\Utilities\Component::noContainer();
+
 $socials = SocialLinkDBService::getInstance()->getSocialLinks();
 $symbolPrefix = 'svg-social-link-';
 

@@ -7,6 +7,7 @@ use Exception;
 class Component {
     private static array $components = [];
     private static bool $hide = false;
+    private static bool $noContainer = false;
 
     static function include(string $component, array $variables = [], bool $returnResult = false) {
         if (!empty(static::$components[$component]['renderOnce']))
@@ -16,27 +17,30 @@ class Component {
             echo "Can't find component: $component.";
 
         extract($variables);
-        $noContainer ??= false;
 
         ob_start();
         include $realPath;
         $output = ob_get_clean();
 
-        if (!$noContainer) {
+        if (!static::$noContainer) {
             $componentTag = basename($realPath, '.php') . "-component";
 
-            if (static::$hide) {
-                static::$hide = false;
-                $output = "<$componentTag style=\"display: none;\">$output</$componentTag>";
-            }
-            else
-                $output = "<$componentTag>$output</$componentTag>";
+            $style = static::$hide ? ' style="display: none;"' : null;
+
+            $output = "<$componentTag" . $style . ">$output</$componentTag>";
         }
+        
+        static::resetSettings();
 
         if ($returnResult)
             return $output;
 
         echo $output;
+    }
+
+    private static function resetSettings() {
+        static::$noContainer = false;
+        static::$hide = false;
     }
 
     private static function findPath($component) : string|false {
@@ -54,6 +58,10 @@ class Component {
             return $path;
 
         return false;
+    }
+
+    static function noContainer() {
+        static::$noContainer = true;
     }
 
     static function hide() {
