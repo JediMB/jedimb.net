@@ -32,6 +32,11 @@ switch ( $_SERVER['REQUEST_METHOD'] ) {
             foreach ($input as $config) {
                 $configDTO = new Configuration($config);
 
+                if (!in_array($configDTO->name, CONFIGURABLE_CONSTANTS)) {
+                    $errors[] = 'Attempted to create new configuration for disallowed constant';
+                    continue;
+                }
+
                 if ($configDTO->id !== 0) {
                     $errors[] = 'Attempted to create new configuration with non-zero id';
                     continue;
@@ -57,6 +62,12 @@ switch ( $_SERVER['REQUEST_METHOD'] ) {
         try {
             foreach ($input as $config) {
                 $configDTO = new Configuration($config);
+
+                if (!in_array($configDTO->name, CONFIGURABLE_CONSTANTS)) {
+                    $errors[] = 'Attempted to create new configuration for disallowed constant';
+                    continue;
+                }
+                
                 $configDB = $configService->getConfiguration($configDTO->name)['config'];
 
                 Configuration::update($configDB, $configDTO);
