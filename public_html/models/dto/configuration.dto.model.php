@@ -14,8 +14,8 @@ class Configuration {
 
     public function __construct(array $input) {
         $this->id = $input['id'];
-        $this->name = $input['name'];
-        $this->value = $input['value'] ?? null;
+        $this->name = trim($input['name']);
+        $this->value = isset($input['value']) ? trim($input['value']) : null;
         $this->isActive = $input['isActive'] ?? null;
     }
 

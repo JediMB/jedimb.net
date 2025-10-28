@@ -42,7 +42,7 @@ Component::addJSModule(__FILE__);
         value="<?= $isDefault ? $default : $value ?>"
         data-constant="<?= $name ?>"
         data-input-value="<?= $value ?>"
-        data-original-value="<?= $value ?>"
+        data-original-value="<?= $isDefault ? '' : $value ?>"
         data-default-value="<?= $default ?>"
         pattern="<?= trim(REGEX_INPUT['config-text'], '/') ?>" required
         data-error-value-missing="Field can't be empty"

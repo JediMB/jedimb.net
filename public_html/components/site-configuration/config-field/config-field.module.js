@@ -27,9 +27,10 @@ class ConfigField {
 
                 textField.disabled = isDefault;
                 textField.value = isDefault
-                    ? textField.dataset.defaultValue
-                    : textField.dataset.originalValue;
+                    ? textField.dataset.defaultValue.trim()
+                    : textField.dataset.inputValue.trim();
 
+                    
                 const textChanges = !isDefault && this.#hasNewValue(textField);
                 const hasChanges = textChanges || this.#hasNewValue(toggle);
 
@@ -39,7 +40,8 @@ class ConfigField {
                 if (textChanges)
                     formValidationService.validateField(textField, errorContainer);
 
-                restoreButton.classList.toggle('hidden', !textChanges);
+                const isNew = Boolean(toggle.dataset.originalValue.trim());
+                restoreButton.classList.toggle('hidden', !textChanges || isNew);
                 component.toggleAttribute('has-changes', hasChanges);
 
                 this.#emitChanges(
@@ -49,10 +51,11 @@ class ConfigField {
             });
 
             textField.addEventListener('input', () => {
-                textField.dataset.inputValue = textField.value;
+                textField.dataset.inputValue = textField.value.trim();
 
                 const hasChanges = this.#hasNewValue(textField);
-                restoreButton.classList.toggle('hidden', !hasChanges);
+                const isNew = Boolean(toggle.dataset.originalValue.trim());
+                restoreButton.classList.toggle('hidden', !hasChanges || isNew);
                 component.toggleAttribute('has-changes', hasChanges);
                 
                 this.#emitChanges(
@@ -61,12 +64,21 @@ class ConfigField {
                 );
             });
 
-            textField.addEventListener('change', () => { formValidationService.validateField(textField, errorContainer); });
+            textField.addEventListener('change', () => {
+                textField.value = textField.value.trim();
+                formValidationService.validateField(textField, errorContainer);
+            });
 
             restoreButton.addEventListener('click', event => {
                 event.preventDefault();
-                textField.value = textField.dataset.originalValue;
-                textField.dataset.inputValue = textField.value;
+                const isNew = Boolean(toggle.dataset.originalValue.trim());
+
+                if (isNew)
+                    textField.value = textField.dataset.defaultValue.trim();
+                else
+                    textField.value = textField.dataset.originalValue.trim();
+                
+                textField.dataset.inputValue = textField.value.trim();
                 restoreButton.classList.add('hidden');
 
                 const hasChanges = this.#hasNewValue(toggle);
@@ -89,26 +101,26 @@ class ConfigField {
         return this.#components
             .filter(c => c.hasAttribute('has-changes'))
             .map(c => {
-                const id = Number(c.querySelector('input[type="hidden"]').value);
+                const id = Number(c.querySelector('input[type="hidden"]').value.trim());
                 const textBox = c.querySelector('input[type="text"]');
 
                 if (id < 1)
                     return new Configuration({
                         id: 0,
-                        name: textBox.dataset.constant,
-                        value: textBox.value,
+                        name: textBox.dataset.constant.trim(),
+                        value: textBox.value.trim(),
                         isActive: true
                     });
 
                 const toggle = c.querySelector('input[type="checkbox"]');
 
-                const data = { id: id, name: textBox.dataset.constant };
+                const data = { id: id, name: textBox.dataset.constant.trim() };
 
                 if (toggle.checked !== Boolean(toggle.dataset.originalValue))
                     data.isActive = !toggle.checked;
 
                 if (!toggle.checked && textBox.value !== textBox.dataset.originalValue)
-                    data.value = textBox.value;
+                    data.value = textBox.value.trim();
                 
                 return new Configuration(data);
             });
@@ -119,9 +131,9 @@ class ConfigField {
 
         switch (inputElement.getAttribute('type')) {
             case 'text':
-                return inputElement.value !== originalValue;
+                return inputElement.value.trim() !== originalValue.trim();
             case 'checkbox':
-                return inputElement.checked !== Boolean(originalValue);
+                return inputElement.checked !== Boolean(originalValue.trim());
             default:
                 throw new Error('Input type not implemented!');
         }
