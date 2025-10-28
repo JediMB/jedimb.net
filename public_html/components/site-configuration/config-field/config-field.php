@@ -39,7 +39,7 @@ Component::addJSModule(__FILE__);
 <label for="<?= $id ?>"><?= $label ?></label>
 <input-container>
     <input type="text" name="<?= $id ?>" id="<?= $id ?>" placeholder="<?= $label ?>"
-        value="<?= $value ?>"
+        value="<?= $isDefault ? $default : $value ?>"
         data-id="<?= $dbId ?>"
         data-constant="<?= $name ?>"
         data-input-value="<?= $value ?>"
