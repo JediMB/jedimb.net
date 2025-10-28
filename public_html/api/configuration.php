@@ -50,7 +50,7 @@ switch ( $_SERVER['REQUEST_METHOD'] ) {
             return Response::BadRequest('Malformed request body: ' . $e->getMessage());
         }
         catch (Exception $e) {
-            return Response::Error([$e->getMessage()]);
+            return Response::Error($errors + [$e->getMessage()]);
         }
 
     case 'PATCH':
@@ -74,7 +74,7 @@ switch ( $_SERVER['REQUEST_METHOD'] ) {
             return Response::BadRequest('Malformed request body: ' . $e->getMessage());
         }
         catch (Exception $e) {
-            return Response::Error([$e->getMessage()]);
+            return Response::Error($errors + [$e->getMessage()]);
         }
 
     default:
