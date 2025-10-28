@@ -1,0 +1,90 @@
+config-csv-component input-container {
+    display: flex;
+    flex-direction: row;
+    gap: 1em;
+    align-items: center;
+}
+
+config-csv-component label {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 0.5em;
+    padding-inline-start: 1.25em;
+    font-size: 0.8em;
+}
+
+config-csv-component input-container {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 0.5em;
+}
+
+config-csv-component ul {
+    display: contents;
+}
+
+config-csv-component li {
+    display: flex;
+    flex-direction: row;
+    border-radius: 1em;
+    padding: 0.5em 1em;
+}
+
+config-csv-component li:has(input[type="text"]:disabled) {
+    background-color: #999999;
+}
+
+config-csv-component li:has(input[type="text"]:valid) {
+    background-color: #99ff99;
+}
+
+config-csv-component li:has(input[type="text"]:invalid) {
+    background-color: #ff9999;
+}
+
+config-csv-component li input[type="text"] {
+    background-color: inherit;
+    color: #000;
+}
+
+config-csv-component [btn-delete] {
+    aspect-ratio: 1/1;
+    height: 1.25em;
+    color: #000;
+}
+
+config-csv-component li:not(:hover) [btn-delete] {
+    display: none;
+}
+
+config-csv-component li button:hover {
+    color: #900;
+}
+
+config-csv-component size-adjuster {
+    display: inline-grid;
+    position: relative;
+    padding: 0;
+}
+
+config-csv-component size-adjuster::after {
+    content: attr(data-value) "  ";
+    white-space: pre-wrap;
+    visibility: hidden;
+}
+
+config-csv-component input[type="text"] {
+    position: absolute;
+    width: 100%;
+}
+
+config-csv-component [btn-add] {
+    aspect-ratio: 1/1;
+    height: 1.25em;
+}
+
+config-csv-component [btn-add]:hover {
+    color: #99ff99;
+}

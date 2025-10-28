@@ -1,4 +1,5 @@
-site-configuration-component form {
+site-configuration-component form,
+site-configuration-component fieldset {
     display: flex;
     flex-direction: column;
     gap: 1em;
