@@ -40,7 +40,6 @@ Component::addJSModule(__FILE__);
 <input-container>
     <input type="text" name="<?= $id ?>" id="<?= $id ?>" placeholder="<?= $label ?>"
         value="<?= $isDefault ? $default : $value ?>"
-        data-id="<?= $dbId ?>"
         data-constant="<?= $name ?>"
         data-input-value="<?= $value ?>"
         data-original-value="<?= $value ?>"
