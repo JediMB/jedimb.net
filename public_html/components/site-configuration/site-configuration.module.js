@@ -1,8 +1,11 @@
 import configurationApiService from "/js/services/api/configuration-api.service.js";
 import configField from "/js/components/site-configuration/config-field/config-field.module.js";
+import configCSV from "/js/components/site-configuration/config-csv/config-csv.module.js";
 
 class SiteConfiguration {
     #configApiService;
+    #fieldsUnchanged = true;
+    #csvUnchanged = true;
 
     constructor() {
         this.#configApiService = configurationApiService;
@@ -12,9 +15,15 @@ class SiteConfiguration {
         const fieldset = form.querySelector('fieldset');
         const saveButton = form.querySelector('button[type="submit"]');
 
-        configField.onChanges(hasValidChanges => {
-            saveButton.disabled = !hasValidChanges;
+        configField.onChanges((hasChanges, isValid) => {
+            this.#fieldsUnchanged = !hasChanges;
+            saveButton.disabled = !isValid || (this.#fieldsUnchanged && this.#csvUnchanged);
         });
+
+        configCSV.onChanges((hasChanges, isValid) => {
+            this.#csvUnchanged = !hasChanges;
+            saveButton.disabled = !isValid || (this.#fieldsUnchanged && this.#csvUnchanged);
+        })
 
         form.addEventListener('submit', event => {
             event.preventDefault();
@@ -25,7 +34,8 @@ class SiteConfiguration {
     async #save(fieldset) {
         fieldset.disabled = true;
 
-        const changes = await configField.getChanges();
+        let changes = await configField.getChanges();
+        changes = [...changes, ...await configCSV.getChanges()];
 
         const newConfigs = changes.filter(c => c.id === 0);
         const updatedConfigs = changes.filter(c => c.id > 0);
@@ -39,7 +49,7 @@ class SiteConfiguration {
             responses.push(this.#configApiService.updateConfigurations(updatedConfigs));
 
         Promise.all(responses).then(response => {
-            //response.forEach(r => console.log(r));
+            // response.forEach(r => console.log(r));
             setTimeout(() => location.reload(), 1000);
         })
     }

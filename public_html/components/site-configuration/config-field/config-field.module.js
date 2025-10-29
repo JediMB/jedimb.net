@@ -45,8 +45,8 @@ class ConfigField {
                 component.toggleAttribute('has-changes', hasChanges);
 
                 this.#emitChanges(
-                    components.some(c => c.hasAttribute('has-changes'))
-                    && textFields.every(t => t.checkValidity())
+                    components.some(c => c.hasAttribute('has-changes')),
+                    textFields.every(t => t.checkValidity())
                 );
             });
 
@@ -59,8 +59,8 @@ class ConfigField {
                 component.toggleAttribute('has-changes', hasChanges);
                 
                 this.#emitChanges(
-                    components.some(c => c.hasAttribute('has-changes'))
-                    && textFields.every(t => t.checkValidity())
+                    components.some(c => c.hasAttribute('has-changes')),
+                    textFields.every(t => t.checkValidity())
                 );
             });
 
@@ -84,8 +84,8 @@ class ConfigField {
                 const hasChanges = this.#hasNewValue(toggle);
                 component.toggleAttribute('has-changes', hasChanges);
                 this.#emitChanges(
-                    components.some(c => c.hasAttribute('has-changes'))
-                    && textFields.every(t => t.checkValidity())
+                    components.some(c => c.hasAttribute('has-changes')),
+                    textFields.every(t => t.checkValidity())
                 );
             });
 
@@ -93,8 +93,8 @@ class ConfigField {
         });
     }
 
-    #emitChanges(hasValidChanges) {
-        this.#onChanges.forEach(func => func.call(this, hasValidChanges));
+    #emitChanges(hasChanges, isValid) {
+        this.#onChanges.forEach(func => func.call(this, hasChanges, isValid));
     }
 
     async getChanges() {
@@ -119,7 +119,7 @@ class ConfigField {
                 if (toggle.checked !== Boolean(toggle.dataset.originalValue))
                     data.isActive = !toggle.checked;
 
-                if (!toggle.checked && textBox.value !== textBox.dataset.originalValue)
+                if (!toggle.checked && this.#hasNewValue(textBox))
                     data.value = textBox.value.trim();
                 
                 return new Configuration(data);

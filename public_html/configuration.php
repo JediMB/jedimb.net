@@ -69,7 +69,7 @@ define('TEXT_USERNAME_CHARS', 'A-Z, ÅÄÖÆØ, accented vowels, numbers, apostr
 define('TEXT_PASSWORD_CHARS', 'Uppercase and lowercase characters required. A-Z, ÅÄÖÆØ, accented vowels, numbers, and @.!#$&?*+-$£€.');
 define('TEXT_INCORRECT_LOGIN', 'Incorrect username or password');
 define('TEXT_CONFIG_CHARS', 'A-Z, ÅÄÖÆØ, accented vowels, numbers, apostrophes, spaces between words, and @.,!?-.');
-define('TEXT_CONFIG_ITEM_CHARS', 'A-Z, ÅÄÖÆØ, accented vowels, numbers, apostrophes, and spaces between words.');
+define('TEXT_CONFIG_ITEM_CHARS', 'Lowercase characters, numbers, apostrophes, and spaces between words.');
 
 define('PAGE_ADMIN_TITLE', 'Administration');
 define('PAGE_ADMIN_SECTION_SITE', 'Site settings');

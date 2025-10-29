@@ -38,53 +38,60 @@ $initialValue = $isDefault ? $default : $value;
 ?>
 
 
-<input type="hidden" name="<?= $id ?>-id" id="<?= $id ?>-id" value="<?= $dbId ?>">
+<input type="hidden" config-id name="<?= $id ?>-id" id="<?= $id ?>-id" value="<?= $dbId ?>">
 <label for="<?= $id ?>"><?= $label ?></label>
-<input-container>
-    <input type="hidden" name="<?= $id ?>" id="<?= $id ?>"
-        value="<?= $initialValue ?>"
-        data-constant="<?= $name ?>"
-        data-input-value="<?= $value ?>"
-        data-original-value="<?= $value ?>"
-        data-default-value="<?= $default ?>"
-        pattern="<?= trim(REGEX_INPUT['config-text'], '/') ?>" required>
-    <ul>
-        <?php foreach (explode(', ', $initialValue) as $key => $item): ?>
-            <li>
-                <size-adjuster data-value="<?= $item ?>">
-                    <input type="text" id="<?= "$id-$key" ?>" placeholder="Type here"
-                        value="<?= $item ?>" oninput="this.parentNode.dataset.value = this.value"
-                        size="1"
-                        pattern="<?= trim(REGEX_INPUT['config-item'], '/') ?>" required
-                        title="<?= TEXT_CONFIG_ITEM_CHARS ?>">
-                </size-adjuster>
-                <button type="button" btn-delete>
-                    <svg width="100%" height="100%">
-                        <use xlink:href="#svg-config-delete" href="#svg-config-delete"></use>
-                    </svg>
-                </button>
-            </li>
-        <?php endforeach ?>
-        <template>
-            <li>
-                <size-adjuster data-value="Type here">
-                    <input type="text" id="<?= "$id-template" ?>" placeholder="Type here"
-                        value="" oninput="this.parentNode.dataset.value = this.value"
-                        size="1"
-                        pattern="<?= trim(REGEX_INPUT['config-item'], '/') ?>" required
-                        title="<?= TEXT_CONFIG_ITEM_CHARS ?>">
-                </size-adjuster>
-                <button type="button" btn-delete>
-                    <svg width="100%" height="100%">
-                        <use xlink:href="#svg-config-delete" href="#svg-config-delete"></use>
-                    </svg>
-                </button>
-            </li>
-        </template>
-    </ul>
-    <button type="button" btn-add>
-        <svg width="100%" height="100%">
-            <use xlink:href="#svg-config-add" href="#svg-config-add"></use>
-        </svg>
-    </button>
+<default-value <?= $isDefault ? null : 'style="display: none;"' ?>><?= $default ?></default-value>
+<input-container <?= $isDefault ? 'style="display: none;"' : null ?>>
+    <fieldset>
+        <input type="hidden" input-string name="<?= $id ?>" id="<?= $id ?>"
+            value="<?= $initialValue ?>"
+            data-constant="<?= $name ?>"
+            data-original-value="<?= $value ?>"
+            data-default-value="<?= $default ?>" <?php // removable? ?>
+            pattern="<?= trim(REGEX_INPUT['config-text'], '/') ?>" required>
+        <ul>
+            <?php foreach (explode(', ', $initialValue) as $key => $item): ?>
+                <li>
+                    <size-adjuster data-value="<?= $item ?>">
+                        <input type="text" text-item id="<?= "$id-$key" ?>" placeholder="Type here"
+                            value="<?= $item ?>" oninput="this.parentNode.dataset.value = this.value"
+                            size="1"
+                            pattern="<?= trim(REGEX_INPUT['config-item'], '/') ?>" required
+                            title="<?= TEXT_CONFIG_ITEM_CHARS ?>">
+                    </size-adjuster>
+                    <button type="button" btn-delete>
+                        <svg width="100%" height="100%">
+                            <use xlink:href="#svg-config-delete" href="#svg-config-delete"></use>
+                        </svg>
+                    </button>
+                </li>
+            <?php endforeach ?>
+            <template>
+                <li>
+                    <size-adjuster data-value="Type here">
+                        <input type="text" text-item id="<?= "$id-template" ?>" placeholder="Type here"
+                            value="" oninput="this.parentNode.dataset.value = this.value"
+                            size="1"
+                            pattern="<?= trim(REGEX_INPUT['config-item'], '/') ?>" required
+                            title="<?= TEXT_CONFIG_ITEM_CHARS ?>">
+                    </size-adjuster>
+                    <button type="button" btn-delete>
+                        <svg width="100%" height="100%">
+                            <use xlink:href="#svg-config-delete" href="#svg-config-delete"></use>
+                        </svg>
+                    </button>
+                </li>
+            </template>
+        </ul>
+        <button type="button" btn-add>
+            <svg width="100%" height="100%">
+                <use xlink:href="#svg-config-add" href="#svg-config-add"></use>
+            </svg>
+        </button>
+    </fieldset>
 </input-container>
+<label>
+    <input type="checkbox" default-toggle name="<?= $id ?>-is-default" id="<?= $id ?>-is-default"
+        <?= $isDefault ? 'checked' : null ?> data-original-value="<?= $isDefault ?>">
+    <?= PAGE_ADMIN_USEDEFAULT ?>
+</label>
