@@ -26,6 +26,19 @@ class DatabaseService extends Singleton {
         $this->service = null;
     }
 
+    public function hasRows(string $table) : bool {
+        $query = $this->service->prepare(
+            "SELECT id FROM {$this->schema}.$table LIMIT 1"
+        );
+
+        $query->execute();
+
+        if ($query->fetch())
+            return true;
+
+        return false;
+    }
+
     public function selectById(string $table, int $id) {
         $query = $this->service->prepare(
             "SELECT * FROM {$this->schema}.$table WHERE id = :id"
@@ -35,6 +48,16 @@ class DatabaseService extends Singleton {
         $query->execute();
 
         return $query->fetch();
+    }
+
+    public function selectCount(string $table) : int {
+        $query = $this->service->prepare(
+            "SELECT count(*) FROM {$this->schema}.$table"
+        );
+        
+        $query->execute();
+
+        return (int) $query->fetch()['count'];
     }
 
     public function selectFunction(string $function, array $parameters, DBFetch $amount = DBFetch::One) {

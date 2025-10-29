@@ -1,9 +1,13 @@
 <?php declare(strict_types=1);
 
+namespace Components;
+
 require_once 'services/db/social-link.db.service.php';
 
 use Models\DB\SocialLink;
 use Services\DB\SocialLinkDBService;
+
+\Utilities\Component::noContainer();
 
 $socials = SocialLinkDBService::getInstance()->getSocialLinks();
 $symbolPrefix = 'svg-social-link-';
@@ -29,7 +33,7 @@ $symbolPrefix = 'svg-social-link-';
         class="social-link"
         aria-label="Social link to <?= $link->description ?>">
         <svg width="2rem" height="2rem">
-            <use xlink:href="#<?= $href ?>"
+            <use xlink:href="<?= $href ?>"
                 href="<?= $href ?>"></use>
         </svg>
     </a>

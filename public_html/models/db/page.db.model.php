@@ -16,9 +16,9 @@ class Page extends DBPageContent {
         parent::__construct($dbRow);
 
         $this->parentId = $dbRow['parent_id'] ?? null;
-        $this->pathPart = $dbRow['path_part'] ?? '';
+        $this->pathPart = $dbRow['path_part'];
         $this->menuTitle = $dbRow['menu_title'] ?? null;
-        $this->order = $dbRow['order'] ?? 0;
+        $this->order = $dbRow['order'];
     }
 }
 

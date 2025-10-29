@@ -59,26 +59,36 @@ function handleApiRequests(string $path) {
     if (strpos($path, PATH_API_DIR . '/') !== 0)
         return;
 
-    header('Content-Type: application/json');
-
     $apiPath = PATH_API_DIR;
     $pathComponents = explode('/', $path, 10);
     $pathComponents = array_splice($pathComponents, 1);
+
+    header('Content-Type: application/json');
     
     foreach ($pathComponents as $index => $component) {
         $apiPath = "$apiPath/$component";
         
         if ( ($filePath = realpath("$apiPath.php")) ) {
             $GLOBALS['api_params'] = array_slice($pathComponents, $index + 1);
-            echo json_encode(
-                ( include $filePath )
-                ?? [ 'success' => false, 'errors' => ['No data from API'] ]
-            );
+
+            if ( !($result = include $filePath) ) {
+                header('HTTP/1.1 500 Internal Server Error');
+                echo json_encode([ 'success' => false, 'errors' => [ 'No data from API' ] ]);
+                exit;
+            }
+
+            if (isset($result['header'])) {
+                header($result['header']);
+                unset($result['header']);
+            }
+
+            echo json_encode($result);
             exit;
         }
     }
 
-    echo json_encode([ 'success' => false, 'errors' => ['Invalid URI'] ]);
+    header('HTTP/1.1 404 Not Found');
+    echo json_encode([ 'success' => false, 'errors' => [ 'Invalid API address' ] ]);
     exit;
 }
 
@@ -110,6 +120,23 @@ function handleBots() {
                 'header' => 'HTTP/1.1 404 Not Found',
                 'pagePath' => PATH_ERROR404
             ]);
+}
+
+function handleComponentModules(string $path) {
+    if (strpos($path, PATH_COMPONENT_MODULE_DIR_ALIAS . '/') !== 0)
+        return;
+
+    if (substr($path, -10) !== '.module.js')
+        return;
+
+    if ( ($realPath = realpath(str_replace(PATH_COMPONENT_MODULE_DIR_ALIAS, PATH_COMPONENTS_DIR, $path))) ) {
+        header('Content-Type: text/javascript; charset=utf-8');
+        echo file_get_contents($realPath);
+        exit;
+    }
+    
+    header('HTTP/1.1 404 Not Found');
+    exit;
 }
 
 function handleVirtualPages(string $requestPath) {

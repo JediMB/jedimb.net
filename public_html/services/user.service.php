@@ -2,24 +2,30 @@
 
 namespace Services;
 
+require_once 'models/user/user.model.php';
 require_once 'models/user/user-login-response.model.php';
+require_once 'services/configuration.service.php';
 require_once 'services/base/singleton.php';
 require_once 'services/db/user.db.service.php';
 
 use DateTime;
 use SensitiveParameter;
+use Models\User\User;
 use Models\User\UserLoginResponse;
+use Services\ConfigurationService;
 use Services\Base\Singleton;
 use Services\DB\UserDBService;
 use Services\DB\UserTokenDBService;
 
 class UserService extends Singleton {
-    private UserDBService $userDbService;
-    private UserTokenDBService $tokenDbService;
+    private readonly UserDBService $userDbService;
+    private readonly UserTokenDBService $tokenDbService;
+    private readonly ConfigurationService $configService;
 
     protected function __construct() {
         $this->userDbService = UserDBService::getInstance();
         $this->tokenDbService = UserTokenDBService::getInstance();
+        $this->configService = ConfigurationService::getInstance();
     }
 
     public function authenticateUser(string $username, #[SensitiveParameter] string $password) : int|false {
@@ -42,11 +48,20 @@ class UserService extends Singleton {
         
         $validatorHash = password_hash($validator, PASSWORD_BCRYPT);
 
-        $expiresOn = (new DateTime('+' . COOKIE_EXPIRATION))->format(DB_DATETIME_FORMAT);
+        $expiresOn = (new DateTime('+' . $this->configService->getUserConstant('COOKIE_EXPIRATION')))->format(DB_DATETIME_FORMAT);
 
         $token = $this->tokenDbService->setUserToken($userId, $selector, $validatorHash, $expiresOn);
 
         return new UserLoginResponse($token->userId, $token->selector, $validator, $token->expiresOn);
+    }
+
+    public function getUser(int $userId) : User|false {
+        $user = $this->userDbService->getUser($userId);
+
+        if ($user)
+            return new User($user);
+
+        return false;
     }
 }
 

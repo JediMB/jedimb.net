@@ -1,10 +1,13 @@
 <?php declare(strict_types=1);
 
+namespace API\Session;
+
 require_once 'models/user/user-login-request.model.php';
 require_once 'models/user/user-login-response.model.php';
 require_once 'services/session.service.php';
 require_once 'services/user.service.php';
 
+use Exception;
 use Models\Exceptions\InputException;
 use Models\User\UserLoginRequest;
 use Models\User\UserLoginResponse;
@@ -34,7 +37,9 @@ switch ( $_SERVER['REQUEST_METHOD'] ) {
             else
                 $response = new UserLoginResponse($userId);
 
-            $sessionService->setSession($userId, $response->token);
+            $user = $userService->getUser($userId);
+
+            $sessionService->setSession($user, $response->token);
 
             return [ 'success' => true, 'value' => $response ];
         }

@@ -4,27 +4,29 @@ namespace Services\DB;
 
 require_once 'enums/db-fetch.enum.php';
 require_once 'models/db/social-link.db.model.php';
-require_once 'services/base/singleton.php';
-require_once 'services/db/database.service.php';
+require_once 'services/base/base.db.service.php';
 
 use PDOException;
 use Enums\DBFetch;
+use Exception;
 use Models\DB\SocialLink;
-use Services\Base\Singleton;
+use Services\Base\BaseDBService;
 
-class SocialLinkDBService extends Singleton {
+class SocialLinkDBService extends BaseDBService {
+    protected function __construct() {
+        parent::__construct();
+    }
+
     public function getSocialLinks() : array {
         try {
-            $service = DatabaseService::getInstance(); /** @var DatabaseService $service */
-            $links = $service->selectView('social_link', DBFetch::All);
-        }
-        catch (PDOException $e) {
-            $links = [];
-        }
-        finally {
+            $links = $this->dbService->selectView('social_link', DBFetch::All);
+
             return array_map(function($link) {
                 return new SocialLink($link);
             }, $links);
+        }
+        catch (PDOException $e) {
+            throw new Exception('Database error: ' . $e->getMessage());
         }
     }
 }

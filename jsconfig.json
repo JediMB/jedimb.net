@@ -1,0 +1,12 @@
+{
+    "compilerOptions": {
+        "module": "CommonJS",
+        "target": "ES6",
+        "baseUrl": ".",
+        "paths": {
+            "/js/*": ["./public_html/js/*"],
+            "/js/components/*": ["./public_html/components/*"]
+        }
+    },
+    "include": ["public_html/**/*"]
+}

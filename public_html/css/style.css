@@ -802,6 +802,13 @@ header-links a:focus svg {
     fill: var(--color-primary);
 }
 
+account-container {
+    position: fixed;
+    right: 0;
+    top: 0;
+    padding: 0.5rem;
+}
+
 social-container {
     display: flex;
     justify-content: flex-end;

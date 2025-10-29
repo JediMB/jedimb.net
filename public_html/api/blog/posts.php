@@ -4,11 +4,9 @@ require_once 'services/db/blog-post.db.service.php';
 
 use Services\DB\BlogPostDBService;
 
-$input = json_decode(file_get_contents('php://input'), true);
-
 // $params = $GLOBALS['api_params'];
 
-switch( $_SERVER['REQUEST_METHOD'] ) {
+switch ( $_SERVER['REQUEST_METHOD'] ) {
     case 'GET':
         try {
             $service = BlogPostDBService::getInstance(); /** @var BlogPostDBService $service */

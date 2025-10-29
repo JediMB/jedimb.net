@@ -1,0 +1,160 @@
+config-csv-component input-container {
+    display: flex;
+    flex-direction: row;
+    gap: 1em;
+    align-items: center;
+}
+
+config-csv-component label {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 0.5em;
+    padding-inline-start: 1.25em;
+    font-size: 0.8em;
+}
+
+config-csv-component default-value {
+    display: block;
+    background-color: #999;
+    color: black;
+}
+
+config-csv-component input-container {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 0.5em;
+}
+
+config-csv-component fieldset {
+    display: contents;
+}
+
+config-csv-component ul {
+    display: contents;
+}
+
+config-csv-component li {
+    display: flex;
+    flex-direction: row;
+}
+
+config-csv-component default-value,
+config-csv-component li {
+    border-radius: 1em;
+    padding: 0.5em 1em;
+}
+
+config-csv-component li:has(input[type="text"]:disabled) {
+    background-color: #999;
+}
+
+config-csv-component li:has(input[type="text"]:valid) {
+    background-color: #9f9;
+}
+
+config-csv-component li:has(input[type="text"]:invalid) {
+    background-color: #f99;
+}
+
+config-csv-component li input[type="text"] {
+    background-color: inherit;
+    color: #000;
+}
+
+config-csv-component [btn-delete] {
+    aspect-ratio: 1/1;
+    height: 1.25em;
+    color: #000;
+}
+
+config-csv-component li:not(:hover) [btn-delete],
+config-csv-component [btn-delete]:disabled {
+    display: none;
+}
+
+config-csv-component li button:hover {
+    color: #900;
+}
+
+config-csv-component size-adjuster {
+    display: inline-grid;
+    position: relative;
+    padding: 0;
+}
+
+config-csv-component size-adjuster::after {
+    content: attr(data-value) "  ";
+    white-space: pre-wrap;
+    visibility: hidden;
+}
+
+config-csv-component input[type="text"] {
+    position: absolute;
+    width: 100%;
+}
+
+config-csv-component [btn-add] {
+    aspect-ratio: 1/1;
+    height: 1.25em;
+}
+
+config-csv-component [btn-add]:hover {
+    color: #9f9;
+}
+
+config-csv-component [btn-add]:disabled {
+    color: #999;
+}
+
+config-csv-component [btn-add]:disabled:hover {
+    color: #f99;
+}
+
+config-csv-component fieldset:disabled [btn-add] {
+    display: none;
+}
+
+config-csv-component input[type="checkbox"] {
+    box-sizing: content-box;
+    position: relative;
+    appearance: none;
+    -webkit-appearance: none;
+    width: 2em;
+    height: 1em;
+    border-width: 1px;
+    border-color: white;
+    border-radius: 0.5em;
+    background-color: black;
+    box-shadow: inset 0 0 2px #ccc;
+    transition: 0.35s;
+}
+
+config-csv-component input[type="checkbox"]:checked {
+    background-color: white;
+}
+
+config-csv-component input[type="checkbox"]:disabled {
+    background-color: #444;
+}
+
+config-csv-component input[type="checkbox"]::before {
+    content: '';
+    position: absolute;
+    margin: 0.15em;
+    width: 0.7em;
+    height: 0.7em;
+    left: 0;
+    background-color: #444;
+    border-radius: 0.3em;
+    transition: 0.35s;
+}
+
+config-csv-component input[type="checkbox"]:checked::before {
+    background-color: #090;
+    left: 1em;
+}
+config-csv-component input[type="checkbox"]:disabled::before {
+    background-color: #999;
+}

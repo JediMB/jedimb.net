@@ -2,11 +2,11 @@
 
 namespace Models\Base;
 
-class DBObject {
+class DBBase {
     public int $id;
 
     public function __construct(array $dbRow) {
-        $this->id = $dbRow['id'] ?? 0;
+        $this->id = $dbRow['id'];
     }
 }
 

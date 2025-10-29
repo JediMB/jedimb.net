@@ -1,26 +1,13 @@
-import HttpClient from "../../http-client.js";
-import UserLoginRequest from "../../models/user/user-login-request.model.js";
-import UserLoginResponse from "../../models/user/user-login-response.model.js";
+import httpClient from "../../http-client.js";
+import User from "../../models/user/user.model.js";
 
-export default class UserApiService {
-    constructor(httpClient = HttpClient.httpClient) {
-        this.httpClient = httpClient;
-    }
+export { userApiService as default };
 
-    async login(formData) {
-        const response = await this.httpClient.post('user/login', new UserLoginRequest(formData));
+class UserApiService {
+    #httpClient;
 
-        if (!response.success)
-            return response;
-
-        response.value = new UserLoginResponse(response.value);
-
-        return response;
-    }
-
-    async logout() {
-        const response = await this.httpClient.post('user/logout');
-
-        return response;
+    constructor() {
+        this.#httpClient = httpClient;
     }
 }
+const userApiService = new UserApiService();

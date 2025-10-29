@@ -1,7 +1,11 @@
 <?php declare(strict_types=1);
 
+namespace Components;
+
+\Utilities\Component::noContainer();
+
 if (!isset($cssPath))
-    throw new Exception('CSS Revision Link component requires cssPath variable');
+    throw new \Exception('CSS Revision Link component requires cssPath variable');
 
 $realPath = realpath($cssPath);
 

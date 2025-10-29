@@ -1,5 +1,9 @@
 <?php declare(strict_types=1);
 
+namespace Components;
+
+use Exception;
+
 if (!isset($mastolink))
     throw new Exception('Mastodon Comments component requires mastolink variable');
 

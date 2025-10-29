@@ -15,10 +15,10 @@ class BlogPost extends DBPageContent {
     public function __construct(array $dbRow) {
         parent::__construct($dbRow);
 
-        $this->permalink = $dbRow['permalink'] ?? '';
+        $this->permalink = $dbRow['permalink'];
         $this->mastolink = $dbRow['mastolink'] ?? null;
-        $this->isPublished = $dbRow['is_published'] ?? false;
-        $this->isPinned = $dbRow['is_pinned'] ?? false;
+        $this->isPublished = $dbRow['is_published'];
+        $this->isPinned = $dbRow['is_pinned'];
     }
 }
 

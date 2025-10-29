@@ -1,0 +1,83 @@
+config-field-component input-container {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: center;
+    width: 100%;
+    padding: 0.5em 1em;
+    background-color: #fff;
+    color: black;
+    border-radius: 1em;
+}
+
+config-field-component input-container:has(input[type="text"]:disabled) {
+    background-color: #999999;
+}
+
+config-field-component input-container:has(input[type="text"]:valid) {
+    background-color: #99ff99;
+}
+
+config-field-component input-container:has(input[type="text"]:invalid) {
+    background-color: #ff9999;
+}
+
+config-field-component input-container input[type="text"] {
+    background-color: inherit;
+}
+
+config-field-component input-container button {
+    aspect-ratio: 1/1;
+    height: 1.25em;
+}
+
+config-field-component label {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 0.5em;
+    padding-inline-start: 1.25em;
+    font-size: 0.8em;
+}
+
+config-field-component input[type="checkbox"] {
+    box-sizing: content-box;
+    position: relative;
+    appearance: none;
+    -webkit-appearance: none;
+    width: 2em;
+    height: 1em;
+    border-width: 1px;
+    border-color: white;
+    border-radius: 0.5em;
+    background-color: black;
+    box-shadow: inset 0 0 2px #ccc;
+    transition: 0.35s;
+}
+
+config-field-component input[type="checkbox"]:checked {
+    background-color: white;
+}
+
+config-field-component input[type="checkbox"]:disabled {
+    background-color: #444;
+}
+
+config-field-component input[type="checkbox"]::before {
+    content: '';
+    position: absolute;
+    margin: 0.15em;
+    width: 0.7em;
+    height: 0.7em;
+    left: 0;
+    background-color: #444;
+    border-radius: 0.3em;
+    transition: 0.35s;
+}
+
+config-field-component input[type="checkbox"]:checked::before {
+    background-color: #009900;
+    left: 1em;
+}
+config-field-component input[type="checkbox"]:disabled::before {
+    background-color: #999;
+}

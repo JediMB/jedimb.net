@@ -2,10 +2,18 @@
 
 namespace Views;
 
+require_once 'services/configuration.service.php';
 require_once 'utilities/component.utility.php';
 
 use Enums\PageType;
+use Services\ConfigurationService;
 use Utilities\Component;
+
+$config = ConfigurationService::getInstance(); /** @var ConfigurationService $config */
+extract($config->getUserConstants([
+    'SITE_TITLE', 'SITE_TAGLINE', 'SITE_AUTHOR',
+    'META_DESCRIPTION', 'META_KEYWORDS'
+]));
 
 $links = !empty($links);
 
@@ -17,13 +25,13 @@ $links = !empty($links);
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <meta name="author" content="<?= SITE_AUTHOR ?>">
-    <meta name="description" content="<?= META_DESCRIPTION ?>">
-    <meta name="keywords" content="<?= META_KEYWORDS ?>">
+    <meta name="author" content="<?= $site_author ?>">
+    <meta name="description" content="<?= $meta_description ?>">
+    <meta name="keywords" content="<?= $meta_keywords ?>">
 
-    <title><?= empty($title) ? SITE_TITLE : "$title – ". SITE_TITLE ?></title>
+    <title><?= empty($title) ? $site_title : "$title – ". $site_title ?></title>
     
-    <?php Component::include('css-revision-link.php', [ 'cssPath' => PATH_CSS_DEFAULT ]) ?>
+    <?php Component::include('css-revision-link', [ 'cssPath' => PATH_CSS_DEFAULT ]) ?>
 
     <link rel="icon" type="image/x-icon" href="/favicon.svg" />
     
@@ -40,6 +48,9 @@ $links = !empty($links);
 <body>
     <header>
         <header-container>
+            <account-container>
+                <?php Component::include('account-menu') ?>
+            </account-container>
             <header-links>
                 <home-wrapper>
                     <a href="/" aria-label="Home button">
@@ -49,67 +60,32 @@ $links = !empty($links);
                         </svg>
                     </a>
                 </home-wrapper>
-                <account-wrapper>
-                    <?php if (isset($_SESSION['account_loggedin'])): ?>
-                        <a href="#" id="btn-logout">
-                            Log out
-                        </a>
-                        <script type="module">
-                            import UserApiService from '/js/services/api/user-api.service.js';
-                        
-                            const userApiService = new UserApiService();
-
-                            async function logout() {
-                                const response = await userApiService.logout();
-
-                                if (response.success) {
-                                    const expires = (new Date(0)).toUTCString();
-                                    document.cookie = `<?= COOKIE_USER_KEY ?>=; expires=${expires};`
-                                    document.cookie = `<?= COOKIE_TOKEN_KEY ?>=; expires=${expires};`
-                                    document.cookie = `<?= COOKIE_VALIDATOR_KEY ?>=; expires=${expires};`;
-                                    
-                                    setTimeout(() => location.reload(), 5000);
-                                    return;
-                                }
-                            }
-
-                            document.querySelector('#btn-logout').addEventListener('click', () => {
-                                event.preventDefault();
-                                logout();
-                            });
-                        </script>
-                    <?php else: ?>
-                        <a href="/login">
-                            Log in
-                        </a>
-                    <?php endif ?>
-                </account-wrapper>
                 <social-container>
-                    <?php Component::include('social-links.php') ?>
+                    <?php Component::include('social-links') ?>
                 </social-container>
             </header-links>
             <menu-container>
                 <desktop-title>
-                    <h1><a href="/"><?= SITE_TITLE ?></a></h1>
+                    <h1><a href="/"><?= $site_title ?></a></h1>
                     <!-- <img src="images/logo.svg"> -->
-                    <div class="tagline">Cool tagline goes here. In theory.</div>
+                    <div class="tagline"><?= $site_tagline ?></div>
                 </desktop-title>
 
                 <mobile-title>
-                    <h1><?= SITE_TITLE ?></h1>
+                    <h1><?= $site_title ?></h1>
                 </mobile-title>
 
                 <mobile-menu>
-                    <?php Component::include('mobile-menu/mobile-menu.php') ?>
+                    <?php Component::include('mobile-menu') ?>
                 </mobile-menu>
                 
                 <desktop-menu>
-                    <?php Component::include('main-menu/main-menu.php') ?>
+                    <?php Component::include('main-menu') ?>
                 </desktop-menu>
             </menu-container>
         </header-container>
         <sub-menu>
-            <?php Component::include('sub-menu/sub-menu.php') ?>
+            <?php Component::include('sub-menu') ?>
         </sub-menu>
     </header>
     
@@ -119,7 +95,7 @@ $links = !empty($links);
                 <h2><?= $title ?></h2>
             <?php endif ?>
             <?php if ($pageType === PageType::BlogPost): ?>
-                <div><?php Component::include('created-modified-dates.php', [
+                <div><?php Component::include('created-modified-dates', [
                     'createdOn' => $createdOn,
                     'modifiedOn' => $modifiedOn
                 ]) ?></div>
@@ -128,20 +104,20 @@ $links = !empty($links);
         </main>
         <?php if ($links): ?>
             <aside class="links max-md:bg-hotpink-950 max-md:p-2 max-md:rounded-lg">
-            <?php Component::include('button-links.php') ?>
+            <?php Component::include('button-links') ?>
         </aside>
         <?php endif ?>
     </content-container>
 
     <?php if ($pageType === PageType::BlogPost): ?>
-        <?php Component::include('mastodon-comments.php', [ 'mastolink' => $mastolink ]) ?>
+        <?php Component::include('mastodon-comments', [ 'mastolink' => $mastolink ]) ?>
     <?php endif ?>
 
     <footer>
         <?php if ($pageType === PageType::PHP): ?>
-            <?php Component::include('copyright.php', [ 'pagePath' => $pagePath ]) ?>
+            <?php Component::include('copyright', [ 'pagePath' => $pagePath, 'siteAuthor' => $site_author ]) ?>
         <?php else: ?>
-            <?php Component::include('copyright.php', [ 'pageDate' => $modifiedOn ?: $createdOn ]) ?>
+            <?php Component::include('copyright', [ 'pageDate' => $modifiedOn ?: $createdOn, 'siteAuthor' => $site_author ]) ?>
         <?php endif ?>
         <br/>
         Made in PHP, HTML, CSS and JavaScript, with Visual Studio Code and PHP Intelephense.

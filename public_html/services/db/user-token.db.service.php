@@ -3,21 +3,24 @@
 namespace Services\DB;
 
 require_once 'models/db/user-token.db.model.php';
-require_once 'services/base/singleton.php';
-require_once 'services/db/database.service.php';
+require_once 'services/configuration.service.php';
+require_once 'services/base/base.db.service.php';
 
 use DateTime;
 use Exception;
 use PDO;
 use PDOException;
 use Models\DB\UserToken;
-use Services\Base\Singleton;
+use Services\ConfigurationService;
+use Services\Base\BaseDBService;
 
-class UserTokenDBService extends Singleton {
-    private DatabaseService $dbService;
+class UserTokenDBService extends BaseDBService {
+    private readonly ConfigurationService $configService;
 
     protected function __construct() {
-        $this->dbService = DatabaseService::getInstance();
+        parent::__construct();
+
+        $this->configService = ConfigurationService::getInstance();
     }
 
     public function getUserToken(string $selector) : UserToken|false {
@@ -30,12 +33,12 @@ class UserTokenDBService extends Singleton {
 
             if ($token)
                 return new UserToken($token);
-
-            return false;
         }
         catch (Exception $e) {
             throw new Exception('Database error: ' . $e->getMessage());
         }
+
+        return false;
     }
 
     public function setUserToken(int $userId, string $selector, string $validatorHash, string $expiresOn) : UserToken {
@@ -60,7 +63,7 @@ class UserTokenDBService extends Singleton {
 
     public function refreshUserToken(int $tokenId) : UserToken|false {
         try {
-            $formattedExpirationDate = (new DateTime('+' . COOKIE_EXPIRATION))->format(DB_DATETIME_FORMAT);
+            $formattedExpirationDate = (new DateTime('+' . $this->configService->getUserConstant('COOKIE_EXPIRATION')))->format(DB_DATETIME_FORMAT);
 
             $token = $this->dbService->selectFunction(
                 'update_user_token_expiration', [
@@ -71,12 +74,12 @@ class UserTokenDBService extends Singleton {
 
             if ($token)
                 return new UserToken($token);
-
-            return false;
         }
         catch (PDOException $e) {
             throw new Exception('Database error: ' . $e->getMessage());
         }
+
+        return false;
     }
 
     public function removeUserToken(string $tokenSelector) : int|false {

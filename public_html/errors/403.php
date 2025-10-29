@@ -4,4 +4,4 @@ $title = '403 Forbidden';
     
 ?>
 
-<p>Directory access forbidden.</p>
+<p>You do not have permission to view this page.</p>
