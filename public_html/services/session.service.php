@@ -60,10 +60,7 @@ class SessionService extends Singleton {
         $user = $this->getUser();
 
         if (!$user)
-            servePHP([
-                'header' => 'HTTP/1.1 403 Forbidden',
-                'pagePath' => PATH_ERROR403
-            ]);
+            return false;
 
         if (empty($this->userRolePermissions[$user->role->value]))
             throw new Exception('No permissions defined for user role');
