@@ -1,0 +1,40 @@
+blog-head-component {
+    display: flex;
+    flex-direction: column;
+    gap: 1em;
+}
+
+blog-head-component .btn-add {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    border-radius: 9999px;
+    color: var(--color-text);
+}
+
+blog-head-component > .btn-add:hover {
+    background-color: var(--color-primary);
+    color: var(--color-background);
+}
+
+blog-head-component text-box-wrapper {
+    display: block;
+    width: 100%;
+    height: 15em;
+    overflow: scroll;
+}
+
+blog-head-component text-box {
+    display: block;
+    width: 100%;
+    min-height: 15em;
+    background-color: var(--color-text);
+    color: var(--color-background);
+}
+
+blog-head-component html-output {
+    display: block;
+    padding: 0.5em;
+    border: 2px dashed currentColor;
+    white-space: pre;
+}
