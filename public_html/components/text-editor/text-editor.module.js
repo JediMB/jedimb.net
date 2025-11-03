@@ -322,10 +322,25 @@ class TextEditor {
     #replaceWithContents(node, selection) {
         console.log('replaceWithContents()');
 
+        const range = document.createRange();
+
         if (!node.hasChildNodes()) {
+            if (node.previousSibling)
+                range.setStartAfter(node.previousSibling);
+            else if (node.nextSibling)
+                range.setStartBefore(node.nextSibling);
+            else
+                range.setStart(node.parentNode, 0);
+
             node.remove();
+
+            selection.removeAllRanges();
+            selection.addRange(range);
             return;
         }
+
+        const currentNode = selection.anchorNode;
+        const currentOffset = selection.anchorOffset;
 
         const children = Array.from(node.childNodes);
         const parent = node.parentNode;
@@ -336,6 +351,12 @@ class TextEditor {
 
         node.remove();
         parent.normalize();
+
+        // TODO: Figure out how to get this to work when normalizing text nodes together
+        range.setStart(currentNode, currentOffset);
+        range.collapse();
+        selection.removeAllRanges();
+        selection.addRange(range);
     }
 }
 const textEditor = new TextEditor();
