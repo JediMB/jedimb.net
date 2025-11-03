@@ -15,6 +15,7 @@ Component::addJSModule(__FILE__);
     <button btn-bold><b>B</b></button>
     <button btn-italics><i>I</i></button>
     <button btn-h2><b>H2</b></button>
+    <button btn-cleanup>Clean Up</button>
 </div>
 <text-box-wrapper>
     <text-box contenteditable><b><i>Bold and cursive</i><u>Bold and underscored</u></b></text-box>

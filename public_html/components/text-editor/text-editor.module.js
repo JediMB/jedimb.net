@@ -19,6 +19,8 @@ class TextEditor {
             component.querySelector('[btn-bold]').addEventListener('click', () => this.#toggleTag('B', textBox, { htmlOutput: htmlOutput }));
             component.querySelector('[btn-italics]').addEventListener('click', () => this.#toggleTag('I', textBox, { htmlOutput: htmlOutput }));
             component.querySelector('[btn-h2]').addEventListener('click', () => this.#toggleTag('H2', textBox, { htmlOutput: htmlOutput, inline: false }));
+
+            component.querySelector('[btn-cleanup').addEventListener('click', () => this.#removeEmptyNodes(textBox));
         });
     }
 
@@ -51,7 +53,7 @@ class TextEditor {
                     break;
                 }
 
-                this.#insertElement(node, tagType, selection);
+                this.#appendElement(node, tagType, selection);
                 break;
 
             case Node.TEXT_NODE:
@@ -84,11 +86,32 @@ class TextEditor {
     }
 
     /**
+     * Appends a new element child to the selected node
+     * @param {Node} node 
+     * @param {string} tagType 
+     * @param {Selection} selection 
+     */
+    #appendElement(node, tagType, selection) {
+        console.log('insertElement()');
+
+        const element = document.createElement(tagType)
+        node.appendChild(element);
+        
+        const range = document.createRange();
+        range.setStart(element, 0);
+        range.collapse(true);
+        selection.removeAllRanges();
+        selection.addRange(range);
+    }
+
+    /**
      * 
      * @param {Selection} selection 
      * @returns {Node[]}
      */
     #createTextSiblings(selection) {
+        console.log('createTextSiblings()');
+
         if (selection.isCollapsed)
             return [];
 
@@ -119,6 +142,7 @@ class TextEditor {
 
         node.textContent = textContent.substring(start, end);
 
+        console.log('siblings created');
         return siblings;
     }
 
@@ -129,11 +153,13 @@ class TextEditor {
      * @param {Selection} selection 
      */
     #encloseNode(node, tagType) {
+        console.log('encloseNode()');
+
         const element = document.createElement(tagType);
         const parent = node.parentElement;
         parent.insertBefore(element, node);
         element.appendChild(node);
-}
+    }
 
     /**
      * Encloses a selected text node in a new element with the specified tag
@@ -142,6 +168,8 @@ class TextEditor {
      * @param {Selection} selection 
      */
     #encloseSelection(textNode, tagType, selection) {
+        console.log('encloseSelection()');
+
         const newElement = document.createElement(tagType);
         const range = document.createRange();
 
@@ -162,6 +190,8 @@ class TextEditor {
      * @param {boolean} inline 
      */
     #encloseSurroundings(selection, tagType, isInline) {
+        console.log('encloseSurroundings()');
+
         const node = selection.anchorNode;
 
         if (!isInline) {
@@ -174,19 +204,21 @@ class TextEditor {
 
         const textContent = node.textContent;
         const offset = selection.anchorOffset;
-        let start = textContent.lastIndexOf(' ', offset) + 1;
+
+        console.log(`Offset: ${offset}, char: '${textContent[offset]}'`);
+        if (offset === 0 || offset === textContent.length || textContent[offset] === ' ') {
+            this.#insertElement(selection, tagType);
+            console.log('node enclosed');
+            return;
+        }
+
+        let start = textContent.lastIndexOf(' ', offset);
         let end = textContent.indexOf(' ', offset);
 
-        // TODO: Fix off-by-one for [end] when cursor is between a word and a blankspace
-
-        console.log(offset, ':', start, end);
-
-        start = start === -1 ? 0 : start;
         end = end === -1 ? textContent.length : end;
 
-        
         const range = document.createRange();
-        range.setStart(node, start);
+        range.setStart(node, start + 1);
         range.setEnd(node, end);
         selection.removeAllRanges();
         selection.addRange(range);
@@ -204,6 +236,8 @@ class TextEditor {
      * @returns {(Node|false)}
      */
     #getAncestor(node, tagType, endNode) {
+        console.log('getAncestor()');
+
         if (node.nodeType === Node.TEXT_NODE)
             node = node.parentElement;
 
@@ -224,6 +258,8 @@ class TextEditor {
      * @returns {(Node[])}
      */
     #getSiblings(ancestor, selection) {
+        console.log('getSiblings()');
+
         if (selection.isCollapsed)
             return [];
 
@@ -241,21 +277,41 @@ class TextEditor {
         return foundFamily;
     }
 
-    /**
-     * 
-     * @param {Node} node 
-     * @param {string} tagType 
-     * @param {Selection} selection 
-     */
-    #insertElement(node, tagType, selection) {
-        const element = document.createElement(tagType)
-        node.appendChild(element);
+    #insertElement(selection, tagType) {
+        if (!selection.isCollapsed)
+            return;
+
+        const textNode = selection.anchorNode;
+
+        if (textNode.nodeType !== Node.TEXT_NODE)
+            return;
         
         const range = document.createRange();
-        range.setStart(element, 0);
-        range.collapse(true);
+        range.setStart(selection.anchorNode, selection.anchorOffset);
+        range.collapse();
+        const element = document.createElement(tagType);
+        element.innerHTML = '&nbsp;';
+        range.insertNode(element);
+        range.selectNodeContents(element);
         selection.removeAllRanges();
         selection.addRange(range);
+    }
+
+    #removeEmptyNodes(textBox) {
+        const treeWalker = document.createTreeWalker(textBox, NodeFilter.SHOW_ELEMENT);
+        const emptyNodes = [];
+        const isEmpty = node => !node.textContent.trim();
+
+        let currentNode = treeWalker.currentNode;
+
+        while (currentNode) {
+            if (isEmpty(currentNode))
+                emptyNodes.push(currentNode);
+
+            currentNode = treeWalker.nextNode();
+        }
+
+        emptyNodes.forEach(node => node.parentNode.removeChild(node));
     }
 
     /**
@@ -264,19 +320,22 @@ class TextEditor {
      * @param {Selection} selection 
      */
     #replaceWithContents(node, selection) {
-        // TODO: If contents is a text node, merge with adjacent text nodes
+        console.log('replaceWithContents()');
 
-        if (!node.hasChildNodes()){
+        if (!node.hasChildNodes()) {
             node.remove();
+            return;
         }
 
         const children = Array.from(node.childNodes);
+        const parent = node.parentNode;
 
         children.forEach(child => {
-            node.parentNode.insertBefore(child, node);
+            parent.insertBefore(child, node);
         });
 
         node.remove();
+        parent.normalize();
     }
 }
 const textEditor = new TextEditor();
