@@ -502,9 +502,15 @@ class TextEditor {
         if (!container || !source)
             return;
 
-        container.textContent = source.innerHTML
-            .replace('</div>', '</div>\r\n')
-            .replace('</p>', '</p>\r\n');
+        let textContent = source.innerHTML.trim()
+            .replace(new RegExp(/( +<)/, 'g'), '<');
+
+        this.#blockElements.forEach(e => textContent = textContent
+            .replace(`<${e}>`, `<${e}>\r\n`)
+            .replace(`</${e}>`, `\r\n</${e}>`)
+        );
+        
+        container.textContent = textContent;
     }
 }
 const textEditor = new TextEditor();
