@@ -16,8 +16,27 @@ class TextEditor {
 
             textBox.addEventListener('input', () => this.#outputHtml(htmlOutput, textBox));
 
-            component.querySelector('[btn-bold]').addEventListener('click', () => this.#toggleTag('b', textBox, htmlOutput));
-            component.querySelector('[btn-italics]').addEventListener('click', () => this.#toggleTag('i', textBox, htmlOutput));
+            const buttons = Array.from(component.querySelectorAll('button[data-tag]'));
+
+            buttons.forEach(button => {
+                button.addEventListener('click', () => this.#toggleTag(button.dataset.tag, textBox, htmlOutput));
+            });
+
+            textBox.addEventListener('keydown', event => {
+                if (event.key === "Control")
+                    return;
+
+                if (!event.ctrlKey)
+                    return;
+
+                event.preventDefault();
+
+                const button = buttons.find(b => b.dataset.shortcut?.toUpperCase() === event.key.toUpperCase());
+
+                if (button)
+                    this.#toggleTag(button.dataset.tag, textBox, htmlOutput);
+            });
+
             component.querySelector('[btn-h2]').addEventListener('click', () => this.#toggleTag('h2', textBox, htmlOutput));
 
             component.querySelector('[btn-cleanup').addEventListener('click', () => {
