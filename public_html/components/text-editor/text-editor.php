@@ -18,7 +18,12 @@ Component::addJSModule(__FILE__);
     <button btn-cleanup>Clean Up</button>
 </div>
 <text-box-wrapper>
-    <text-box contenteditable><b><i>Bold and cursive</i><u>Bold and underscored</u></b></text-box>
+    <text-box contenteditable>
+        <b>
+            <i>Bold and cursive</i>
+            <u>Bold and underscored</u>
+        </b>
+    </text-box>
 </text-box-wrapper>
 
 <html-output></html-output>

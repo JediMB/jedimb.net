@@ -20,7 +20,13 @@ class TextEditor {
             component.querySelector('[btn-italics]').addEventListener('click', () => this.#toggleTag('I', textBox, { htmlOutput: htmlOutput }));
             component.querySelector('[btn-h2]').addEventListener('click', () => this.#toggleTag('H2', textBox, { htmlOutput: htmlOutput, inline: false }));
 
-            component.querySelector('[btn-cleanup').addEventListener('click', () => this.#removeEmptyNodes(textBox));
+            component.querySelector('[btn-cleanup').addEventListener('click', () => {
+                this.#removeEmptyNodes(textBox);
+
+                htmlOutput.textContent = textBox.innerHTML
+                    .replace('</div>', '</div>\r\n')
+                    .replace('</p>', '</p>\r\n');
+            });
         });
     }
 
