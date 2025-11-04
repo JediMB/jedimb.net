@@ -1,6 +1,10 @@
 export { textEditor as default };
 
 class TextEditor {
+    blockElements = [
+        "h2", "h3", "h4", "h5", "div", "p"
+    ];
+
     constructor() {
         const components = Array.from(document.querySelectorAll('text-editor-component'));
         const textBoxes = components.map(c => c.querySelector('text-box'));
@@ -50,7 +54,7 @@ class TextEditor {
         const node = selection.anchorNode;
 
         console.log(selection);
-                const ancestor = this.#getAncestor(node, tagType, textBox);
+        const ancestor = this.#getAncestor(node, tagType, textBox);
 
         switch (node.nodeType) {
             case Node.ELEMENT_NODE:
@@ -73,13 +77,23 @@ class TextEditor {
                     break;
                 }
 
-                if (selection.isCollapsed) {
-                    this.#encloseSurroundings(selection, tagType, inline);
+                if (!selection.isCollapsed) {
+                    this.#encloseSelection(node, tagType, selection)
                     break;
                 }
 
-                this.#encloseSelection(node, tagType, selection)
+                if (!inline) {
+                    this.#encloseNode(node, tagType);
+                    break;
+                }
+
+                if (this.#isOnEdge(selection)) {
+                    this.#insertElement(selection, tagType);
+                }
+
+                this.#encloseSurroundings(selection, tagType);
                 break;
+
 
             default:
                 console.error('This node is something else...');
@@ -195,28 +209,16 @@ class TextEditor {
      * @param {Selection} selection 
      * @param {boolean} inline 
      */
-    #encloseSurroundings(selection, tagType, isInline) {
+    #encloseSurroundings(selection, tagType) {
         console.log('encloseSurroundings()');
 
         const node = selection.anchorNode;
-
-        if (!isInline) {
-            this.#encloseNode(node, tagType);
-            return;
-        }
 
         if (node.nodeType !== Node.TEXT_NODE)
             return;
 
         const textContent = node.textContent;
         const offset = selection.anchorOffset;
-
-        console.log(`Offset: ${offset}, char: '${textContent[offset]}'`);
-        if (offset === 0 || offset === textContent.length || textContent[offset] === ' ') {
-            this.#insertElement(selection, tagType);
-            console.log('node enclosed');
-            return;
-        }
 
         let start = textContent.lastIndexOf(' ', offset);
         let end = textContent.indexOf(' ', offset);
@@ -232,6 +234,13 @@ class TextEditor {
         this.#createTextSiblings(selection);
 
         this.#encloseNode(node, tagType);
+    }
+
+    #isOnEdge(selection) {
+        const textContent = selection.anchorNode.textContent;
+        const offset = selection.anchorOffset;
+
+        return (offset === 0 || offset === textContent.length || textContent[offset] === ' ');
     }
 
     /**
@@ -356,10 +365,27 @@ class TextEditor {
         });
 
         node.remove();
+
+        let newOffset = currentOffset;
+        const newSiblings = Array.from(parent.childNodes);
+
+        for (const sibling of newSiblings) {
+            if (currentNode === sibling)
+                break;
+
+            if (sibling.nodeType === Node.TEXT_NODE)
+                newOffset += sibling.textContent.length;
+        }
+
         parent.normalize();
 
-        // TODO: Figure out how to get this to work when normalizing text nodes together
-        range.setStart(currentNode, currentOffset);
+        if (parent.contains(currentNode))
+            range.setStart(currentNode, currentOffset);
+        else {
+            const newTextNode = Array.from(parent.childNodes).find(c => c.nodeType === Node.TEXT_NODE);
+            range.setStart(newTextNode, newOffset);
+        }
+
         range.collapse();
         selection.removeAllRanges();
         selection.addRange(range);
