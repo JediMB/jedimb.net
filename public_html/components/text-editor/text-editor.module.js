@@ -90,68 +90,10 @@ class TextEditor {
 
             const selection = window.getSelection();
 
-            if (hasModifiers(event, mod.shift)) {
-                selection.deleteFromDocument();
-                const range = document.createRange();
-
-                let node = selection.anchorNode;
-                const offset = selection.anchorOffset;
-                
-                switch (offset) {
-                    case 0:
-                        while (node.parentElement !== textBox) {
-                            if (this.#isBlockType(node.parentElement.tagName))
-                                break;
-
-                            if (node.previousSibling && node.previousSibling.textContent.trim())
-                                break;
-
-                            node = node.parentElement;
-                        }
-                        range.setStartBefore(node);
-                        break;
-
-                    case node.textContent.length:
-                        while (node.parentElement !== textBox) {
-                            if (this.#isBlockType(node.parentElement.tagName))
-                                break;
-
-                            if (node.nextSibling && node.nextSibling.textContent.trim())
-                                break;
-
-                            node = node.parentElement;
-                        }
-                        range.setStartAfter(node);
-                        break;
-
-                    default:
-                        range.setStart(node, offset);
-                        break;
-                }   
-
-                range.collapse();
-                const linebreak = document.createElement('br');
-                range.insertNode(linebreak);
-
-                if (!linebreak.nextSibling || !linebreak.nextSibling.textContent.trim()) {
-                    const textNode = document.createTextNode(' ');
-                    linebreak.parentNode.insertBefore(textNode, linebreak);
-                    linebreak.parentNode.insertBefore(linebreak, textNode);
-                    range.selectNode(textNode);
-                }
-                else
-                    range.setStartAfter(linebreak);
-
-                range.collapse();
-                selection.removeAllRanges();
-                selection.addRange(range);
-            }
-            else if (hasModifiers(event, mod.none)) {
-                selection.deleteFromDocument();
-                // Identify current block type; create one if necessary
-                // Append new block of same type
-                // Move caret to new position
-            }
+            if (hasModifiers(event, mod.shift))
+                this.#insertBreak(selection, textBox);
+            else if (hasModifiers(event, mod.none))
+                this.#splitBlock(selection, textBox);
 
             this.#outputHtml(htmlOutput, textBox);
             return;
@@ -198,6 +140,11 @@ class TextEditor {
             case Node.ELEMENT_NODE:
                 if (ancestor) {
                     this.#replaceWithContents(ancestor, selection);
+                    break;
+                }
+
+                if (isBlock) {
+                    this.#changeBlockType(node, tagName, textBox, selection);
                     break;
                 }
 
@@ -314,18 +261,28 @@ class TextEditor {
         if (rangeData.start > rangeData.end)
             [rangeData.start, rangeData.end] = [rangeData.end, rangeData.start];
 
-        const blockElement = this.#getBlockElement(node, textBox);
+        const blockElement = this.#getBlockElement(node, textBox, tagName);
 
-        if (!blockElement || blockElement.tagName === tagName)
+        if (!blockElement)
             return;
 
-        const element = document.createElement(tagName);
-        element.replaceChildren(...blockElement.childNodes);
-        blockElement.replaceWith(element);
+        let container = blockElement;
+
+        if (blockElement.tagName !== tagName) {
+            container = document.createElement(tagName);
+            container.replaceChildren(...blockElement.childNodes);
+            blockElement.replaceWith(container);
+        }
 
         const range = document.createRange();
-        range.setStart(rangeData.node, rangeData.start);
-        range.setEnd(rangeData.node, rangeData.end);
+        if (container.contains(rangeData.node)) {
+            range.setStart(rangeData.node, rangeData.start);
+            range.setEnd(rangeData.node, rangeData.end);
+        }
+        else {
+            range.setStart(container, 0);
+            range.collapse();
+        }
         selection.removeAllRanges();
         selection.addRange(range);
     }
@@ -446,12 +403,12 @@ class TextEditor {
 
     /**
      * Searches through parent elements for a block element, until an end node is reached.
-     * Creates a new div in the endNode if none can be found.
+     * Creates a new block element in the endNode if none can be found.
      * @param {Node} node 
      * @param {Node} endNode 
      * @returns {HTMLElement}
      */
-    #getBlockElement(node, endNode) {
+    #getBlockElement(node, endNode, tagName = null) {
         console.log('getBlockElement()');
 
         if (!endNode)
@@ -465,7 +422,10 @@ class TextEditor {
                 return node;
 
             if (node.parentElement === endNode) {
-                const element = document.createElement('div');
+                if (!tagName)
+                    [tagName] = this.#blockElements.keys();
+                
+                const element = document.createElement(tagName);
                 node.parentElement.insertBefore(element, node);
                 element.appendChild(node);
                 return element;
@@ -501,6 +461,68 @@ class TextEditor {
         }
         
         return foundFamily;
+    }
+
+    /**
+     * Inserts a <br> element and a text node if necessary, then moves the caret
+     * @param {Selection} selection 
+     * @param {HTMLElement} textBox 
+     */
+    #insertBreak(selection, textBox) {
+        selection.deleteFromDocument();
+
+        const range = document.createRange();
+        let node = selection.anchorNode;
+        const offset = selection.anchorOffset;
+        
+        switch (offset) {
+            case 0:
+                while (node.parentElement !== textBox) {
+                    if (this.#isBlockType(node.parentElement.tagName))
+                        break;
+
+                    if (node.previousSibling && node.previousSibling.textContent.trim())
+                        break;
+
+                    node = node.parentElement;
+                }
+                range.setStartBefore(node);
+                break;
+
+            case node.textContent.length:
+                while (node.parentElement !== textBox) {
+                    if (this.#isBlockType(node.parentElement.tagName))
+                        break;
+
+                    if (node.nextSibling && node.nextSibling.textContent.trim())
+                        break;
+
+                    node = node.parentElement;
+                }
+                range.setStartAfter(node);
+                break;
+
+            default:
+                range.setStart(node, offset);
+                break;
+        }   
+
+        range.collapse();
+        const linebreak = document.createElement('br');
+        range.insertNode(linebreak);
+
+        if (!linebreak.nextSibling || !linebreak.nextSibling.textContent.trim()) {
+            const textNode = document.createTextNode(' ');
+            linebreak.parentNode.insertBefore(textNode, linebreak);
+            linebreak.parentNode.insertBefore(linebreak, textNode);
+            range.selectNode(textNode);
+        }
+        else
+            range.setStartAfter(linebreak);
+
+        range.collapse();
+        selection.removeAllRanges();
+        selection.addRange(range);
     }
 
     /**
@@ -630,6 +652,26 @@ class TextEditor {
 
         range.setStart(currentNode, currentOffset);
         range.collapse();
+        selection.removeAllRanges();
+        selection.addRange(range);
+    }
+
+    #splitBlock(selection, textBox) {
+        selection.deleteFromDocument();
+        const currentBlock = this.#getBlockElement(selection.anchorNode, textBox);
+
+        if (!currentBlock.hasChildNodes())
+            return;
+        
+
+        // Identify siblings and aunties to be divided between old and new block
+
+        const parent = currentBlock.parentNode;
+        const newBlock = document.createElement(currentBlock.tagName);
+        parent.insertBefore(newBlock, currentBlock);
+        parent.insertBefore(currentBlock, newBlock);
+        const range = document.createRange();
+        range.selectNodeContents(newBlock);
         selection.removeAllRanges();
         selection.addRange(range);
     }
