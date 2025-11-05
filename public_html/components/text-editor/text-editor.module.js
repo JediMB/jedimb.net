@@ -1,43 +1,66 @@
 export { textEditor as default };
 
 class TextEditor {
-    #blockElements = [
-        'h2', 'h3', 'h4', 'h5', 'div', 'p'
+    #blockElements = new Map([
+        ['div', 'Text'],
+        ['h2', 'Heading'],
+        ['h3', 'Heading 2'],
+        ['h4', 'Heading 3'],
+        ['h5', 'Heading 4'],
+        ['p', 'Paragraph']
+    ]);
+
+    #defaultKeys = [
+        'ArrowUp',
+        'ArrowDown',
+        'ArrowLeft',
+        'ArrowRight',
+        'Control',
+        'Delete'
     ];
 
     constructor() {
         const components = Array.from(document.querySelectorAll('text-editor-component'));
+        const blockSelects = components.map(c => c.querySelector('select[select-blocktype]'));
+        const buttonSets = components.map(c => Array.from(c.querySelectorAll('button[data-tag]')));
         const textBoxes = components.map(c => c.querySelector('text-box'));
         const htmlOutputs = components.map(c => c.querySelector('html-output'));
 
         components.forEach((component, key) => {
+            const blockSelect = blockSelects[key];
+            const buttons = buttonSets[key];
             const textBox = textBoxes[key];
             const htmlOutput = htmlOutputs[key];
+            const keyInfo = component.querySelector('key-info');
 
-            textBox.addEventListener('input', () => this.#outputHtml(htmlOutput, textBox));
-
-            const buttons = Array.from(component.querySelectorAll('button[data-tag]'));
+            this.#blockElements.forEach((value, key) => {
+                const option = document.createElement('option');
+                option.value = key;
+                option.textContent = value;
+                blockSelect.appendChild(option);
+            });
+            blockSelect.addEventListener('change', () => this.#toggleTag(blockSelect.value, textBox, htmlOutput));
 
             buttons.forEach(button => {
                 button.addEventListener('click', () => this.#toggleTag(button.dataset.tag, textBox, htmlOutput));
             });
 
+            if (!this.#isBlockType(textBox.firstElementChild?.tagName) || textBox.firstChild.textContent.trim()) {
+                const [blockType] = this.#blockElements.keys();
+                const element = document.createElement(blockType);
+                element.replaceChildren(...textBox.childNodes);
+                textBox.appendChild(element);
+                const range = document.createRange();
+                range.selectNodeContents(element);
+                window.getSelection().addRange(range);
+            }
+
+            textBox.addEventListener('input', () => this.#outputHtml(htmlOutput, textBox));
+
             textBox.addEventListener('keydown', event => {
-                if (event.key === "Control")
-                    return;
-
-                if (!event.ctrlKey)
-                    return;
-
-                event.preventDefault();
-
-                const button = buttons.find(b => b.dataset.shortcut?.toUpperCase() === event.key.toUpperCase());
-
-                if (button)
-                    this.#toggleTag(button.dataset.tag, textBox, htmlOutput);
+                this.#textboxInput(event, buttons, textBox, htmlOutput);
+                keyInfo.textContent = `:: Key: ${event.key} ::\r\n\r\n  Shift:   ${event.shiftKey}\r\n  Control: ${event.ctrlKey}\r\n  Alt:     ${event.altKey}`;
             });
-
-            component.querySelector('[btn-h2]').addEventListener('click', () => this.#toggleTag('h2', textBox, htmlOutput));
 
             component.querySelector('[btn-cleanup').addEventListener('click', () => {
                 this.#removeEmptyNodes(textBox);
@@ -49,13 +72,113 @@ class TextEditor {
     }
 
     /**
-     * 
-     * @param {string} tagType 
+     * Handle keydown events for the text editor
+     * @param {Event} event 
+     * @param {HTMLButtonElement[]} buttons 
+     * @param {HTMLElement} textBox
+     * @param {HTMLElement} htmlOutput 
+     */
+    #textboxInput(event, buttons, textBox, htmlOutput) {
+        if (this.#defaultKeys.some(k => k === event.key))
+            return;
+
+        const hasModifiers = (event, modifiers) => ((event.shiftKey * 0b1) + (event.ctrlKey * 0b10) + (event.altKey * 0b100)) === modifiers;
+        const mod = Object.freeze({ none: 0b0, shift: 0b1, ctrl: 0b10, alt: 0b100 });
+
+        if (event.key === 'Enter') {
+            event.preventDefault();
+
+            const selection = window.getSelection();
+
+            if (hasModifiers(event, mod.shift)) {
+                selection.deleteFromDocument();
+                const range = document.createRange();
+
+                let node = selection.anchorNode;
+                const offset = selection.anchorOffset;
+                
+                switch (offset) {
+                    case 0:
+                        while (node.parentElement !== textBox) {
+                            if (this.#isBlockType(node.parentElement.tagName))
+                                break;
+
+                            if (node.previousSibling && node.previousSibling.textContent.trim())
+                                break;
+
+                            node = node.parentElement;
+                        }
+                        range.setStartBefore(node);
+                        break;
+
+                    case node.textContent.length:
+                        while (node.parentElement !== textBox) {
+                            if (this.#isBlockType(node.parentElement.tagName))
+                                break;
+
+                            if (node.nextSibling && node.nextSibling.textContent.trim())
+                                break;
+
+                            node = node.parentElement;
+                        }
+                        range.setStartAfter(node);
+                        break;
+
+                    default:
+                        range.setStart(node, offset);
+                        break;
+                }   
+
+                range.collapse();
+                const linebreak = document.createElement('br');
+                range.insertNode(linebreak);
+
+                if (!linebreak.nextSibling || !linebreak.nextSibling.textContent.trim()) {
+                    const textNode = document.createTextNode(' ');
+                    linebreak.parentNode.insertBefore(textNode, linebreak);
+                    linebreak.parentNode.insertBefore(linebreak, textNode);
+                    range.selectNode(textNode);
+                }
+                else
+                    range.setStartAfter(linebreak);
+
+                range.collapse();
+                selection.removeAllRanges();
+                selection.addRange(range);
+            }
+            else if (hasModifiers(event, mod.none)) {
+                selection.deleteFromDocument();
+                // Identify current block type; create one if necessary
+                // Append new block of same type
+                // Move caret to new position
+            }
+
+            this.#outputHtml(htmlOutput, textBox);
+            return;
+        }
+
+        if (!hasModifiers(event, mod.ctrl))
+            return;
+
+        event.preventDefault();
+
+        const button = buttons.find(b => b.dataset.shortcut?.toUpperCase() === event.key.toUpperCase());
+
+        if (button)
+            this.#toggleTag(button.dataset.tag, textBox, htmlOutput);
+    }
+
+    /**
+     * Add or remove one or more tags of the specified type
+     * @param {string} tagName 
      * @param {Element} textBox 
      * @param {Object} param2 
      */
-    #toggleTag(tagType, textBox, htmlOutput = null) {
+    #toggleTag(tagName, textBox, htmlOutput = null) {
         const selection = window.getSelection();
+
+        if (selection.type === 'None')
+            return;
 
         if (!textBox.contains(selection.anchorNode))
             return;
@@ -63,13 +186,13 @@ class TextEditor {
         if (selection.anchorNode !== selection.focusNode)
             return;
 
-        tagType = tagType.toUpperCase();
-        const isBlock = this.#isBlockType(tagType);
+        tagName = tagName.toUpperCase();
+        const isBlock = this.#isBlockType(tagName);
 
         const node = selection.anchorNode;
 
         console.log(selection);
-        const ancestor = this.#getAncestor(node, tagType, textBox);
+        const ancestor = this.#getAncestor(node, tagName, textBox);
 
         switch (node.nodeType) {
             case Node.ELEMENT_NODE:
@@ -78,30 +201,30 @@ class TextEditor {
                     break;
                 }
 
-                this.#appendElement(node, tagType, selection);
+                this.#appendElement(node, tagName, selection);
                 break;
 
             case Node.TEXT_NODE:
                 if (ancestor) {
-                    this.#extractFromAncestor(ancestor, tagType, selection);
+                    this.#extractFromAncestor(ancestor, tagName, selection);
                     break;
                 }
 
                 if (isBlock) {
-                    this.#changeBlockType(node, tagType, textBox, selection);
+                    this.#changeBlockType(node, tagName, textBox, selection);
                     break;
                 }
 
                 if (!selection.isCollapsed) {
-                    this.#encloseSelection(node, tagType, selection)
+                    this.#encloseSelection(node, tagName, selection)
                     break;
                 }
 
                 if (this.#isOnEdge(selection)) {
-                    this.#insertElement(selection, tagType);
+                    this.#insertElement(selection, tagName);
                 }
 
-                this.#encloseSurroundings(selection, tagType);
+                this.#encloseSurroundings(selection, tagName);
                 break;
 
 
@@ -116,13 +239,13 @@ class TextEditor {
     /**
      * Appends a new element child to the selected node
      * @param {Node} node 
-     * @param {string} tagType 
+     * @param {string} tagName 
      * @param {Selection} selection 
      */
-    #appendElement(node, tagType, selection) {
+    #appendElement(node, tagName, selection) {
         console.log('insertElement()');
 
-        const element = document.createElement(tagType)
+        const element = document.createElement(tagName)
         node.appendChild(element);
         
         const range = document.createRange();
@@ -133,7 +256,7 @@ class TextEditor {
     }
 
     /**
-     * 
+     * Splits the current text node into up to three nodes and returns the new ones
      * @param {Selection} selection 
      * @returns {Node[]}
      */
@@ -177,10 +300,10 @@ class TextEditor {
     /**
      * 
      * @param {Node} node 
-     * @param {string} tagType 
+     * @param {string} tagName 
      * @param {HTMLElement} textBox 
      */
-    #changeBlockType(node, tagType, textBox, selection) {
+    #changeBlockType(node, tagName, textBox, selection) {
         console.log('changeBlockType()');
 
         let rangeData = {
@@ -193,10 +316,10 @@ class TextEditor {
 
         const blockElement = this.#getBlockElement(node, textBox);
 
-        if (!blockElement || blockElement.tagType === tagType)
+        if (!blockElement || blockElement.tagName === tagName)
             return;
 
-        const element = document.createElement(tagType);
+        const element = document.createElement(tagName);
         element.replaceChildren(...blockElement.childNodes);
         blockElement.replaceWith(element);
 
@@ -210,13 +333,13 @@ class TextEditor {
     /**
      * Encloses a selected text node in a new element with the specified tag
      * @param {Node} textNode 
-     * @param {string} tagType 
+     * @param {string} tagName 
      * @param {Selection} selection 
      */
-    #encloseSelection(textNode, tagType, selection) {
+    #encloseSelection(textNode, tagName, selection) {
         console.log('encloseSelection()');
 
-        const newElement = document.createElement(tagType);
+        const newElement = document.createElement(tagName);
         const range = document.createRange();
 
         let start = selection.anchorOffset,
@@ -235,7 +358,7 @@ class TextEditor {
      * @param {Selection} selection 
      * @param {boolean} inline 
      */
-    #encloseSurroundings(selection, tagType) {
+    #encloseSurroundings(selection, tagName) {
         console.log('encloseSurroundings()');
 
         const node = selection.anchorNode;
@@ -251,7 +374,7 @@ class TextEditor {
 
         end = end === -1 ? textContent.length : end;
 
-        const element = document.createElement(tagType);
+        const element = document.createElement(tagName);
         const wordRange = document.createRange();
         wordRange.setStart(node, ++start);
         wordRange.setEnd(node, end);
@@ -265,12 +388,13 @@ class TextEditor {
     }
 
     /**
-     * 
-     * @param {Node} ancestor 
-     * @param {string} tagType 
+     * Removes the ancestor element after moving its contents out of it
+     * Adds new elements of the same type where necessary
+     * @param {HTMLElement} ancestor 
+     * @param {string} tagName 
      * @param {Selection} selection 
      */
-    #extractFromAncestor(ancestor, tagType, selection) {
+    #extractFromAncestor(ancestor, tagName, selection) {
         console.log('extractFromAncestor()');
         
         const currentNode = selection.anchorNode;
@@ -283,7 +407,7 @@ class TextEditor {
 
         for (const sibling of siblings) {
             if (sibling.textContent.trim()) {
-                const element = document.createElement(tagType);
+                const element = document.createElement(tagName);
                 sibling.parentElement.insertBefore(element, sibling);
                 element.appendChild(sibling);
             }
@@ -300,18 +424,18 @@ class TextEditor {
     /**
      * Searches through parent elements for an ancestor, until an end node is reached
      * @param {Node} node 
-     * @param {string} tagType 
+     * @param {string} tagName 
      * @param {Node} endNode 
      * @returns {(Node|false)}
      */
-    #getAncestor(node, tagType, endNode) {
+    #getAncestor(node, tagName, endNode) {
         console.log('getAncestor()');
 
         if (node.nodeType === Node.TEXT_NODE)
             node = node.parentElement;
 
         while (node && node !== endNode) {
-            if (node.tagName === tagType)
+            if (node.tagName === tagName)
                 return node;
 
             node = node.parentElement;
@@ -382,9 +506,9 @@ class TextEditor {
     /**
      * Inserts an element at the caret position and fills it with a selected whitespace
      * @param {Selection} selection 
-     * @param {string} tagType
+     * @param {string} tagName
      */
-    #insertElement(selection, tagType) {
+    #insertElement(selection, tagName) {
         if (!selection.isCollapsed)
             return;
 
@@ -396,7 +520,7 @@ class TextEditor {
         const range = document.createRange();
         range.setStart(selection.anchorNode, selection.anchorOffset);
         range.collapse();
-        const element = document.createElement(tagType);
+        const element = document.createElement(tagName);
         element.innerHTML = '&nbsp;';
         range.insertNode(element);
         range.selectNodeContents(element);
@@ -406,13 +530,11 @@ class TextEditor {
 
     /**
      * Checks if the specified tag type is in the list of block tags
-     * @param {string} tagType 
+     * @param {string} tagName 
      * @returns {boolean}
      */
-    #isBlockType(tagType) {
-        tagType = tagType.toUpperCase();
-
-        return this.#blockElements.some(e => e.toUpperCase() === tagType)
+    #isBlockType(tagName) {
+        return this.#blockElements.has(tagName?.toLowerCase());
     }
 
     /**
@@ -521,15 +643,18 @@ class TextEditor {
         if (!container || !source)
             return;
 
-        let textContent = source.innerHTML.trim()
-            .replace(new RegExp(/( +<)/, 'g'), '<');
+        // let textContent = source.innerHTML.trim()
+        //     .replace(new RegExp(/( +<)/, 'g'), '<');
 
-        this.#blockElements.forEach(e => textContent = textContent
-            .replace(`<${e}>`, `<${e}>\r\n`)
-            .replace(`</${e}>`, `\r\n</${e}>`)
-        );
+        // for (const key in this.#blockElements.keys()) {
+        //     textContent = textContent
+        //         .replace(`<${key}>`, `<${key}>\r\n`)
+        //         .replace(`</${key}>`, `\r\n</${key}>`);
+        // }
         
-        container.textContent = textContent;
+        // container.textContent = textContent;
+
+        container.textContent = source.innerHTML;
     }
 }
 const textEditor = new TextEditor();

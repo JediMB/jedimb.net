@@ -19,7 +19,8 @@ text-editor-component text-box {
     color: var(--color-background);
 }
 
-text-editor-component html-output {
+text-editor-component html-output,
+text-editor-component key-info {
     display: block;
     padding: 0.5em;
     border: 2px dashed currentColor;

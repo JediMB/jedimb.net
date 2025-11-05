@@ -12,19 +12,15 @@ Component::addJSModule(__FILE__);
 ?>
 
 <div>
+    <select select-blocktype></select>
     <button btn-bold data-shortcut="B" data-tag="B"><b>B</b></button>
     <button btn-italics data-shortcut="I" data-tag="I"><i>I</i></button>
     <button btn-underline data-shortcut="U" data-tag="U"><u>U</u></button>
-    <button btn-h2><b>H2</b></button>
     <button btn-cleanup>Clean Up</button>
 </div>
 <text-box-wrapper>
-    <text-box contenteditable>
-        <b>
-            <i>Bold and cursive</i>
-            <u>Bold and underscored</u>
-        </b>
-    </text-box>
+    <text-box contenteditable></text-box>
 </text-box-wrapper>
 
 <html-output></html-output>
+<key-info></key-info>
