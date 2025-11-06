@@ -4,6 +4,16 @@ text-editor-component {
     gap: 1em;
 }
 
+text-editor-component .active {
+    --color-bg-active: var(--color-text);
+    --color-text-active: var(--color-background);
+}
+
+text-editor-component [data-tag] {
+    background-color: var(--color-bg-active, --color-background);
+    color: var(--color-text-active, --color-text);
+}
+
 text-editor-component text-box-wrapper {
     display: block;
     width: 100%;
