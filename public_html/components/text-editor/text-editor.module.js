@@ -358,9 +358,10 @@ class TextEditor {
         const hasSelection = !selection.isCollapsed;
 
         const siblings = this.#getSiblings(ancestor, selection);
-        siblings.push(...this.#createTextSiblings(selection));
+        const newSiblings = this.#createTextSiblings(selection); 
+        siblings.push(...newSiblings);
 
-        this.#replaceWithContents(ancestor, selection);
+        this.#replaceWithContents(ancestor, selection, !newSiblings.length);
 
         for (const sibling of siblings) {
             if (sibling.textContent.trim()) {
@@ -600,30 +601,12 @@ class TextEditor {
      * @param {Element} node 
      * @param {Selection} selection 
      */
-    #replaceWithContents(node, selection) {
+    #replaceWithContents(node, selection, mergeWithSiblings) {
         console.log('replaceWithContents()');
-
-        const range = document.createRange();
-
-        if (!node.hasChildNodes()) {
-            console.log('no child nodes');
-
-            if (node.previousSibling)
-                range.setStartAfter(node.previousSibling);
-            else if (node.nextSibling)
-                range.setStartBefore(node.nextSibling);
-            else
-                range.setStart(node.parentNode, 0);
-
-            node.remove();
-
-            selection.removeAllRanges();
-            selection.addRange(range);
-            return;
-        }
 
         const currentNode = selection.anchorNode;
         let currentOffset = selection.anchorOffset;
+        const hasSelection = !selection.isCollapsed;
 
         const children = Array.from(node.childNodes);
         const parent = node.parentNode;
@@ -637,23 +620,22 @@ class TextEditor {
         if (currentNode.nodeType !== Node.TEXT_NODE)
             return;
 
-        const prevSibling = currentNode.previousSibling;
-        if (prevSibling && prevSibling.nodeType === Node.TEXT_NODE) {
-            currentOffset += prevSibling.textContent.length;
-            currentNode.textContent = prevSibling.textContent + currentNode.textContent;
-            prevSibling.remove();
+        if (mergeWithSiblings) {
+            const prevSibling = currentNode.previousSibling;
+            if (prevSibling && prevSibling.nodeType === Node.TEXT_NODE) {
+                currentOffset += prevSibling.textContent.length;
+                currentNode.textContent = prevSibling.textContent + currentNode.textContent;
+                prevSibling.remove();
+            }
+
+            const nextSibling = currentNode.nextSibling;
+            if (nextSibling && nextSibling.nodeType === Node.TEXT_NODE) {
+                currentNode.textContent += nextSibling.textContent;
+                nextSibling.remove();
+            }
         }
 
-        const nextSibling = currentNode.nextSibling;
-        if (nextSibling && nextSibling.nodeType === Node.TEXT_NODE) {
-            currentNode.textContent += nextSibling.textContent;
-            nextSibling.remove();
-        }
-
-        range.setStart(currentNode, currentOffset);
-        range.collapse();
-        selection.removeAllRanges();
-        selection.addRange(range);
+        selection.setPosition(currentNode, currentOffset);
     }
 
     #splitBlock(selection, textBox) {
