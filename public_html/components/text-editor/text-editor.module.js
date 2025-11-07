@@ -1,6 +1,8 @@
 export { textEditor as default };
 
 class TextEditor {
+    logFuncs = false;
+
     #blockElements = new Map([
         ['div', 'Text'],
         ['h2', 'Heading'],
@@ -11,14 +13,10 @@ class TextEditor {
     ]);
 
     #defaultKeys = [
-        'ArrowUp',
-        'ArrowDown',
-        'ArrowLeft',
-        'ArrowRight',
         'Control',
+        'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight',
         'Enter',
-        'A',
-        'Z'
+        'A', 'C', 'V', 'X', 'Z'
     ].map(v => v.toUpperCase());
 
     #buttonSets;
@@ -43,19 +41,18 @@ class TextEditor {
                 return;
 
             const textBox = this.#textBoxes[boxIndex];
-            const anchorBlock = this.#getBlockElement(selection.anchorNode, textBox);
-            const focusBlock = this.#getBlockElement(selection.focusNode, textBox);
 
-            if (anchorBlock.tagName === focusBlock.tagName)
-                blockSelects[boxIndex].value = anchorBlock.tagName.toLowerCase();
-            else
-                blockSelects[boxIndex].value = null;
+            const selectedTextNodes = this.#getTextNodesFromSelection();
+            const selectedBlocks = selectedTextNodes.map(n => this.#getBlockElement(n, textBox));
+            const identicalBlocks = selectedBlocks.length > 0
+                && selectedBlocks.every((val, _, arr) => val.tagName === arr[0].tagName);
 
-            // Doesn't catch instances where three or more nodes are selected
-            // Should register as false unless all nodes match with the tag
+            blockSelects[boxIndex].value = identicalBlocks
+                ? selectedBlocks[0].tagName.toLowerCase()
+                : null;
+
             this.#buttonSets[boxIndex].forEach(b => b.classList.toggle('active',
-                this.#getAncestor(selection.anchorNode, b.dataset.tag, textBox)
-                && this.#getAncestor(selection.focusNode, b.dataset.tag, textBox)
+                selectedTextNodes.every(n => !!this.#getMatchingAncestor(n, b.dataset.tag, textBox))
             ));
         });
 
@@ -149,7 +146,7 @@ class TextEditor {
         tagName = tagName.toUpperCase();
 
         const node = selection.anchorNode;
-        const ancestor = this.#getAncestor(node, tagName, textBox);
+        const ancestor = this.#getMatchingAncestor(node, tagName, textBox);
         const isBlock = this.#isBlockType(tagName);
 
         switch (node.nodeType) {
@@ -205,7 +202,7 @@ class TextEditor {
      * @param {string} tagName 
      */
     #appendElement(node, tagName) {
-        console.log('appendElement()');
+        this.logFuncs && console.log('appendElement()');
 
         const element = document.createElement(tagName)
         node.appendChild(element);
@@ -219,7 +216,7 @@ class TextEditor {
      * @returns {Node[]}
      */
     #createTextSiblings(selection) {
-        console.log('createTextSiblings()');
+        this.logFuncs && console.log('createTextSiblings()');
 
         if (selection.isCollapsed)
             return [];
@@ -251,7 +248,6 @@ class TextEditor {
 
         node.textContent = textContent.substring(start, end);
 
-        console.log('siblings created');
         return siblings;
     }
 
@@ -263,7 +259,7 @@ class TextEditor {
      * @param {Selection} selection 
      */
     #changeBlockType(node, tagName, textBox, selection) {
-        console.log('changeBlockType()');
+        this.logFuncs && console.log('changeBlockType()');
 
         let rangeData = {
             node: selection.anchorNode,
@@ -301,7 +297,7 @@ class TextEditor {
      * @param {Selection} selection 
      */
     #encloseSelection(textNode, tagName, selection) {
-        console.log('encloseSelection()');
+        this.logFuncs && console.log('encloseSelection()');
 
         const newElement = document.createElement(tagName);
         const range = document.createRange();
@@ -324,7 +320,7 @@ class TextEditor {
      * @param {boolean} inline 
      */
     #encloseSurroundings(selection, tagName) {
-        console.log('encloseSurroundings()');
+        this.logFuncs && console.log('encloseSurroundings()');
 
         const node = selection.anchorNode;
 
@@ -357,7 +353,7 @@ class TextEditor {
      * @param {Selection} selection 
      */
     #extractFromAncestor(ancestor, tagName, selection) {
-        console.log('extractFromAncestor()');
+        this.logFuncs && console.log('extractFromAncestor()');
         
         const currentNode = selection.anchorNode;
         const hasSelection = !selection.isCollapsed;
@@ -385,29 +381,6 @@ class TextEditor {
     }
 
     /**
-     * Searches through parent elements for an ancestor, until an end node is reached
-     * @param {Node} node 
-     * @param {string} tagName 
-     * @param {Node} endNode 
-     * @returns {(Node|false)}
-     */
-    #getAncestor(node, tagName, endNode) {
-        console.log('getAncestor()');
-
-        if (node.nodeType === Node.TEXT_NODE)
-            node = node.parentElement;
-
-        while (node && node !== endNode) {
-            if (node.tagName === tagName)
-                return node;
-
-            node = node.parentElement;
-        }
-
-        return false;
-    }
-
-    /**
      * Searches through parent elements for a block element, until an end node is reached.
      * Creates a new block element in the endNode if none can be found.
      * @param {Node} node 
@@ -415,7 +388,7 @@ class TextEditor {
      * @returns {HTMLElement}
      */
     #getBlockElement(node, endNode, tagName = null) {
-        console.log('getBlockElement()');
+        this.logFuncs && console.log('getBlockElement()');
 
         if (!endNode)
             return null;
@@ -448,6 +421,29 @@ class TextEditor {
     }
 
     /**
+     * Searches through parent elements for an ancestor, until an end node is reached
+     * @param {Node} node 
+     * @param {string} tagName 
+     * @param {Node} endNode 
+     * @returns {(Node|false)}
+     */
+    #getMatchingAncestor(node, tagName, endNode) {
+        this.logFuncs && console.log('getAncestor()');
+
+        if (node.nodeType === Node.TEXT_NODE)
+            node = node.parentElement;
+
+        while (node && node !== endNode) {
+            if (node.tagName === tagName)
+                return node;
+
+            node = node.parentElement;
+        }
+
+        return false;
+    }
+
+    /**
      * Returns siblings/aunties
      * @param {Node} ancestor 
      * @param {Selection} selection 
@@ -455,7 +451,7 @@ class TextEditor {
      * @returns {(Node[]|Node[][])}
      */
     #getSiblings(ancestor, selection) {
-        console.log('getSiblings()');
+        this.logFuncs && console.log('getSiblings()');
 
         if (selection.isCollapsed)
             return [];
@@ -472,6 +468,62 @@ class TextEditor {
         }
         
         return foundFamily;
+    }
+
+    /**
+     * Retrieves an array of the text nodes in the current selection
+     * @returns {Text[]}
+     */
+    #getTextNodesFromSelection() {
+        const selection = window.getSelection();
+
+        if (!selection.anchorNode)
+            return [];
+
+        if (selection.anchorNode === selection.focusNode)
+            return [ selection.anchorNode ];
+
+        if (!(['forward', 'backward'].includes(selection.direction)))
+            return [];
+
+        const isForward = selection.direction === 'forward';
+
+        const startNode = isForward ? selection.anchorNode : selection.focusNode,
+            startOffset = isForward ? selection.anchorOffset : selection.focusOffset,
+            endNode = isForward ? selection.focusNode : selection.anchorNode,
+            endOffset = isForward ? selection.focusOffset : selection.anchorOffset;
+
+        const textNodes = [];
+
+        let foundStart = false,
+            foundEnd = false;
+
+        const searchChildren = (start) => {
+            for (const node of start.childNodes) {
+                if (foundEnd)
+                    return;
+
+                if (node === startNode)
+                    foundStart = true;
+
+                if (foundStart && node.nodeType === Node.TEXT_NODE) {
+                    textNodes.push(node);
+                }
+
+                searchChildren(node);
+
+                if (node === endNode)
+                    foundEnd = true;
+            }
+        }
+
+        const range = document.createRange();
+        range.setStart(startNode, startOffset);
+        range.setEnd(endNode, endOffset);
+
+        searchChildren(range.commonAncestorContainer);
+
+        return textNodes;
     }
 
     /**
@@ -585,7 +637,7 @@ class TextEditor {
      * @param {Selection} selection 
      */
     #replaceWithContents(node, selection, mergeWithSiblings) {
-        console.log('replaceWithContents()');
+        this.logFuncs && console.log('replaceWithContents()');
 
         const currentNode = selection.anchorNode;
         let currentOffset = selection.anchorOffset;
