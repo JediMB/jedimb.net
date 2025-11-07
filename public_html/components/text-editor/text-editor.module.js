@@ -131,70 +131,199 @@ class TextEditor {
      */
     #toggleTag(index, tagName) {
         const selection = window.getSelection();
-
-        if (selection.type === 'None')
-            return;
-
         const textBox = this.#textBoxes[index];
+        tagName = tagName.toUpperCase();
 
         if (!textBox.contains(selection.anchorNode) || !textBox.contains(selection.focusNode))
             return;
 
-        if (selection.anchorNode !== selection.focusNode)
+        const selectedTextNodes = this.#getTextNodesFromSelection();
+
+        if (selectedTextNodes.length < 1)
             return;
 
-        tagName = tagName.toUpperCase();
+        const oldSelection = {};
 
-        const node = selection.anchorNode;
-        const ancestor = this.#getMatchingAncestor(node, tagName, textBox);
-        const isBlock = this.#isBlockType(tagName);
+        const isForward = selection.direction === 'forward';
 
-        switch (node.nodeType) {
-            case Node.ELEMENT_NODE:
-                if (ancestor) {
-                    this.#replaceWithContents(ancestor, selection);
-                    break;
-                }
+        if (selection.isCollapsed || isForward) {
+            oldSelection.startNode = selection.anchorNode;
+            oldSelection.startOffset = selection.anchorOffset;
+        }
+        
+        if (isForward) {
+            oldSelection.endNode = selection.focusNode;
+            oldSelection.endOffset = selection.focusOffset;
+        }
+        else {
+            oldSelection.startNode = selection.focusNode;
+            oldSelection.startOffset = selection.focusOffset;
+            oldSelection.endNode = selection.anchorNode;
+            oldSelection.endOffset = selection.anchorOffset;
+        }
+        
 
-                if (isBlock) {
-                    this.#changeBlockType(node, tagName, textBox, selection);
-                    break;
-                }
+        if (this.#isBlockType(tagName)) {
+            const blockMatches = new Set(selectedTextNodes.map(text => this.#getBlockElement(text, textBox, tagName)));
 
-                this.#appendElement(node, tagName);
-                break;
+            for (const match of blockMatches) {
+                this.#replaceElement(match, tagName);
+            }
 
-            case Node.TEXT_NODE:
-                if (ancestor) {
-                    this.#extractFromAncestor(ancestor, tagName, selection);
-                    break;
-                }
-
-                if (isBlock) {
-                    this.#changeBlockType(node, tagName, textBox, selection);
-                    break;
-                }
-
-                if (!selection.isCollapsed) {
-                    this.#encloseSelection(node, tagName, selection)
-                    break;
-                }
-
-                if (this.#isOnEdge(selection)) {
-                    this.#insertElement(selection, tagName);
-                }
-
-                this.#encloseSurroundings(selection, tagName);
-                break;
-
-
-            default:
-                console.error('This node is something else...');
-                break;
+            this.#makeSelection(oldSelection);
+            this.#outputHtml(index);
+            return;
         }
 
-        this.#outputHtml(index);
+        const ancestorMatches = selectedTextNodes.map(n => this.#getMatchingAncestor(n, tagName, textBox));
+        const uniqueMatches = new Set(ancestorMatches.filter(match => !!match));
+        const noMatches = ancestorMatches.every(match => !match);
+
+
+
+
+        // const node = selection.anchorNode;
+        // const ancestor = this.#getMatchingAncestor(node, tagName, textBox);
+        
+
+        // switch (node.nodeType) {
+        //     case Node.ELEMENT_NODE:
+        //         if (ancestor) {
+        //             this.#replaceWithContents(ancestor, selection);
+        //             break;
+        //         }
+
+        //         if (isBlockType) {
+        //             this.#changeBlockType(node, tagName, textBox, selection);
+        //             break;
+        //         }
+
+        //         this.#appendElement(node, tagName);
+        //         break;
+
+        //     case Node.TEXT_NODE:
+        //         if (ancestor) {
+        //             this.#extractFromAncestor(ancestor, tagName, selection);
+        //             break;
+        //         }
+
+        //         if (isBlockType) {
+        //             this.#changeBlockType(node, tagName, textBox, selection);
+        //             break;
+        //         }
+
+        //         if (!selection.isCollapsed) {
+        //             this.#encloseSelection(node, tagName, selection)
+        //             break;
+        //         }
+
+        //         if (this.#isOnEdge(selection)) {
+        //             this.#insertElement(selection, tagName);
+        //         }
+
+        //         this.#encloseSurroundings(selection, tagName);
+        //         break;
+
+
+        //     default:
+        //         console.error('This node is something else...');
+        //         break;
+        // }
+
     }
+
+    /**
+     * Searches through parent elements for a block element, until an end node is reached.
+     * Creates a new block element in the endNode if none can be found.
+     * @param {Node} node 
+     * @param {Node} endNode 
+     * @returns {HTMLElement}
+     */
+    #getBlockElement(node, endNode, tagName = null) {
+        this.logFuncs && console.log('getBlockElement()');
+
+        if (!endNode)
+            return null;
+
+        if (!tagName)
+            [tagName] = this.#blockElements.keys();
+
+        if (!node) {
+            const newElement = document.createElement(tagName);
+            endNode.appendChild(newElement);
+            return newElement;
+        }
+
+        if (node.nodeType === Node.TEXT_NODE)
+            node = node.parentElement;
+
+        while (node && node !== endNode) {
+            if (this.#isBlockType(node.tagName))
+                return node;
+
+            if (node.parentElement === endNode) {
+                const newElement = document.createElement(tagName);
+                node.parentElement.insertBefore(newElement, node);
+                newElement.appendChild(node);
+                return newElement;
+            }
+
+            node = node.parentElement;
+        }
+    }
+
+    #makeSelection({startNode, startOffset, endNode = null, endOffset = null}) {
+        if (!endNode || !endOffset) {
+            window.getSelection().setPosition(startNode, startOffset);
+            return;
+        }
+
+        window.getSelection().setBaseAndExtent(startNode, startOffset, endNode, endOffset);
+    }
+
+    /**
+     * Replaces an element with one with a new tag that takes the old element's children
+     * @param {HTMLElement} element 
+     * @param {string} newTag 
+     * @returns {HTMLElement}
+     */
+    #replaceElement(element, newTag) {
+        if (element.tagName === newTag)
+            return element;
+
+        const newElement = document.createElement(newTag);
+
+        for (const child of element.childNodes) {
+            newElement.appendChild(child);
+        }
+
+        element.parentNode.insertBefore(newElement, element);
+        element.remove();
+
+        return newElement;
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     /**
      * Appends a new element child to the selected node
@@ -381,46 +510,6 @@ class TextEditor {
     }
 
     /**
-     * Searches through parent elements for a block element, until an end node is reached.
-     * Creates a new block element in the endNode if none can be found.
-     * @param {Node} node 
-     * @param {Node} endNode 
-     * @returns {HTMLElement}
-     */
-    #getBlockElement(node, endNode, tagName = null) {
-        this.logFuncs && console.log('getBlockElement()');
-
-        if (!endNode)
-            return null;
-
-        if (!tagName)
-            [tagName] = this.#blockElements.keys();
-
-        if (!node) {
-            const newElement = document.createElement(tagName);
-            endNode.appendChild(newElement);
-            return newElement;
-        }
-
-        if (node.nodeType === Node.TEXT_NODE)
-            node = node.parentElement;
-
-        while (node && node !== endNode) {
-            if (this.#isBlockType(node.tagName))
-                return node;
-
-            if (node.parentElement === endNode) {
-                const newElement = document.createElement(tagName);
-                node.parentElement.insertBefore(newElement, node);
-                newElement.appendChild(node);
-                return newElement;
-            }
-
-            node = node.parentElement;
-        }
-    }
-
-    /**
      * Searches through parent elements for an ancestor, until an end node is reached
      * @param {Node} node 
      * @param {string} tagName 
@@ -481,7 +570,10 @@ class TextEditor {
             return [];
 
         if (selection.anchorNode === selection.focusNode)
-            return [ selection.anchorNode ];
+            if (selection.anchorNode.nodeType === Node.TEXT_NODE)
+                return [ selection.anchorNode ];
+            else
+                return [];
 
         if (!(['forward', 'backward'].includes(selection.direction)))
             return [];
