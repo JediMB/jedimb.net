@@ -43,13 +43,19 @@ class TextEditor {
             const textBox = this.#textBoxes[boxIndex];
 
             const selectedTextNodes = this.#getTextNodesFromSelection();
-            const selectedBlocks = selectedTextNodes.map(n => this.#getBlockElement(n, textBox));
-            const identicalBlocks = selectedBlocks.length > 0
-                && selectedBlocks.every((val, _, arr) => val.tagName === arr[0].tagName);
 
-            blockSelects[boxIndex].value = identicalBlocks
-                ? selectedBlocks[0].tagName.toLowerCase()
-                : null;
+            if (selectedTextNodes.length === 0)
+                [blockSelects[boxIndex].value] = this.#blockElements.keys();
+            else {
+                const selectedBlocks = selectedTextNodes.map(n => this.#getBlockElement(n, textBox));
+
+                const identicalBlocks = selectedBlocks.length > 0
+                    && selectedBlocks.every((val, _, arr) => val.tagName === arr[0].tagName);
+
+                blockSelects[boxIndex].value = identicalBlocks
+                    ? selectedBlocks[0].tagName.toLowerCase()
+                    : null;
+            }
 
             this.#buttonSets[boxIndex].forEach(b => b.classList.toggle('active',
                 selectedTextNodes.every(n => !!this.#getMatchingAncestor(n, b.dataset.tag, textBox))
@@ -169,17 +175,17 @@ class TextEditor {
             for (const match of blockMatches) {
                 this.#replaceElement(match, tagName);
             }
+        }
+        else {
+            const ancestorMatches = selectedTextNodes.map(n => this.#getMatchingAncestor(n, tagName, textBox));
+            const uniqueMatches = new Set(ancestorMatches.filter(match => !!match));
+            const noMatches = ancestorMatches.every(match => !match);
 
-            this.#makeSelection(oldSelection);
-            this.#outputHtml(index);
-            return;
+
         }
 
-        const ancestorMatches = selectedTextNodes.map(n => this.#getMatchingAncestor(n, tagName, textBox));
-        const uniqueMatches = new Set(ancestorMatches.filter(match => !!match));
-        const noMatches = ancestorMatches.every(match => !match);
-
-
+        this.#makeSelection(oldSelection);
+        this.#outputHtml(index);
 
 
         // const node = selection.anchorNode;
