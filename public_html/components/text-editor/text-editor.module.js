@@ -251,6 +251,7 @@ class TextEditor {
      */
     #applyInlineTag(textNodes, tagName, oldSelection, textBox) {
         const selection = document.getSelection();
+        let collapsedOffset = false;
 
         if (selection.isCollapsed) {
             if (
@@ -264,21 +265,13 @@ class TextEditor {
                 return;
             }
 
-            selection.modify('move', 'left', 'word');
-            selection.modify('extend', 'right', 'word');
+            const start = textNodes[0].textContent.lastIndexOf(' ', oldSelection.startOffset) + 1;
+            const end = textNodes[0].textContent.indexOf(' ', oldSelection.startOffset);
 
-            const newParent = document.createElement(tagName);
-            const newOffset = oldSelection.startOffset - selection.anchorOffset
+            collapsedOffset = oldSelection.startOffset - start;
 
-            const range = document.createRange();
-            range.setStart(selection.anchorNode, selection.anchorOffset);
-            range.setEnd(selection.focusNode, selection.focusOffset);
-            range.surroundContents(newParent);
-
-            oldSelection.startNode = oldSelection.endNode = newParent.firstChild;
-            oldSelection.startOffset = oldSelection.endOffset = newOffset;
-
-            return;
+            oldSelection.startOffset = start;
+            oldSelection.endOffset = (end === -1) ? textNodes[0].textContent.length : end;
         }
 
         if (textNodes[0] === oldSelection.startNode && oldSelection.startOffset > 0) {
@@ -322,6 +315,10 @@ class TextEditor {
         }
 
         this.#encloseNodes(blockMembers, tagName);
+
+        if (typeof collapsedOffset === 'number') {
+            oldSelection.startOffset = oldSelection.endOffset = collapsedOffset;
+        }
     }
 
     /**
