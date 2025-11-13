@@ -146,7 +146,7 @@ class TextEditor {
         const selectedTextNodes = this.#getTextNodesFromSelection();
 
         if (selectedTextNodes.length < 1)
-            return;
+            return; // Create element at caret and append new text node?
 
         const oldSelection = {};
 
@@ -178,16 +178,25 @@ class TextEditor {
         }
         else {
             const ancestorMatches = selectedTextNodes.map(n => this.#getMatchingAncestor(n, tagName, textBox));
-            const uniqueMatches = new Set(ancestorMatches.filter(match => !!match));
             const noMatches = ancestorMatches.every(match => !match);
 
+            switch (noMatches) {
+                case true:
+                    this.#applyInlineTag(selectedTextNodes, tagName, oldSelection, textBox);
+                    break;
+            
+                case false:
+                    // If only some selectedTextNodes have ancestorMatches, remove those matches and reapply to all
+                    this.#removeTag(selectedTextNodes, ancestorMatches);
+                    break;
+            }
 
         }
 
         this.#makeSelection(oldSelection);
         this.#outputHtml(index);
 
-
+        /*
         // const node = selection.anchorNode;
         // const ancestor = this.#getMatchingAncestor(node, tagName, textBox);
         
@@ -213,11 +222,6 @@ class TextEditor {
         //             break;
         //         }
 
-        //         if (isBlockType) {
-        //             this.#changeBlockType(node, tagName, textBox, selection);
-        //             break;
-        //         }
-
         //         if (!selection.isCollapsed) {
         //             this.#encloseSelection(node, tagName, selection)
         //             break;
@@ -235,7 +239,138 @@ class TextEditor {
         //         console.error('This node is something else...');
         //         break;
         // }
+        */
 
+    }
+
+    /**
+     * 
+     * @param {Text[]} textNodes
+     * @param {string} tagName
+     * @param {Object} oldSelection 
+     */
+    #applyInlineTag(textNodes, tagName, oldSelection, textBox) {
+        const selection = document.getSelection();
+
+        if (selection.isCollapsed) {
+            if (
+                selection.anchorOffset === 0
+                || !selection.anchorNode.textContent[selection.anchorOffset-1].trim()
+                || selection.anchorOffset === selection.anchorNode.textContent.length
+                || !selection.anchorNode.textContent[selection.anchorOffset].trim()
+            ) {
+                // Create element at caret and append new text node
+
+                return;
+            }
+
+            selection.modify('move', 'left', 'word');
+            selection.modify('extend', 'right', 'word');
+
+            const newParent = document.createElement(tagName);
+            const newOffset = oldSelection.startOffset - selection.anchorOffset
+
+            const range = document.createRange();
+            range.setStart(selection.anchorNode, selection.anchorOffset);
+            range.setEnd(selection.focusNode, selection.focusOffset);
+            range.surroundContents(newParent);
+
+            oldSelection.startNode = oldSelection.endNode = newParent.firstChild;
+            oldSelection.startOffset = oldSelection.endOffset = newOffset;
+
+            return;
+        }
+
+        if (textNodes[0] === oldSelection.startNode && oldSelection.startOffset > 0) {
+            const node = textNodes[0];
+            const newNode = document.createTextNode(node.textContent.substring(0, oldSelection.startOffset));
+            node.parentNode.insertBefore(newNode, node);
+            node.textContent = node.textContent.substring(oldSelection.startOffset);
+
+            if (textNodes.length === 1)
+                oldSelection.endOffset -= oldSelection.startOffset;
+
+            oldSelection.startOffset = 0;
+
+        }
+
+        if (textNodes[textNodes.length-1] === oldSelection.endNode && oldSelection.endOffset < textNodes[textNodes.length-1].textContent.length) {
+            const node = textNodes[textNodes.length-1];
+            const newNode = document.createTextNode(node.textContent.substring(oldSelection.endOffset));
+            node.parentNode.insertBefore(newNode, node);
+            node.parentNode.insertBefore(node, newNode);
+            node.textContent = node.textContent.substring(0, oldSelection.endOffset);
+
+            oldSelection.endOffset = node.textContent.length;
+        }
+
+        let latestBlock = null;
+        let blockMembers = [ ];
+        
+        for (const node of textNodes) {
+            let newBlock = this.#getBlockElement(node, textBox);
+            latestBlock ??= newBlock;
+
+            if (newBlock === latestBlock) {
+                blockMembers.push(node);
+                continue;
+            }
+
+            latestBlock = newBlock;
+            this.#encloseNodes(blockMembers, tagName);
+            blockMembers = [node];
+        }
+
+        this.#encloseNodes(blockMembers, tagName);
+    }
+
+    /**
+     * 
+     * @param {Text[]} nodes 
+     * @param {string} tagName
+     */
+    #encloseNodes(nodes, tagName) {
+        const newElement = document.createElement(tagName);
+
+        if (nodes.length === 1) {
+            nodes[0].parentNode.insertBefore(newElement, nodes[0]);
+            newElement.appendChild(nodes[0]);
+            return;
+        }
+
+        const range = document.createRange();
+        range.setStart(nodes[0], 0);
+        const endNode = nodes[nodes.length-1]; 
+        range.setEnd(endNode, endNode.length);
+
+        const ancestor = range.commonAncestorContainer;
+        let inRange = false;
+        const relevantChildren = Array.from(ancestor.childNodes).filter(c => {
+            if (!inRange && c.contains(nodes[0]))
+                inRange = true;
+
+            if (inRange && c.contains(endNode)) {
+                inRange = false;
+                return true;
+            }
+
+            return inRange;
+        });
+
+        ancestor.insertBefore(newElement, relevantChildren[0]);
+        relevantChildren.forEach(c => newElement.appendChild(c));
+    }
+
+    /**
+     * 
+     * @param {Text[]} selectedText 
+     * @param {(HTMLElement|false)[]} elements 
+     */
+    #removeTag(selectedText, elements) {
+        const uniqueElements = new Set(elements.filter(match => !!match));
+        // Remove unique matches
+        // Split start and end nodes if necessary
+            // Re-enclose any newly created nodes
     }
 
     /**
@@ -520,7 +655,7 @@ class TextEditor {
      * @param {Node} node 
      * @param {string} tagName 
      * @param {Node} endNode 
-     * @returns {(Node|false)}
+     * @returns {(HTMLElement|false)}
      */
     #getMatchingAncestor(node, tagName, endNode) {
         this.logFuncs && console.log('getAncestor()');

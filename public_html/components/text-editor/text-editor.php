@@ -21,7 +21,7 @@ Component::addJSModule(__FILE__);
     </fieldset>
 </div>
 <text-box-wrapper>
-    <text-box contenteditable><b><u>Hej, hej</u>, <i><u>hemskt mycket</u> hej!</i></b></text-box>
+    <text-box contenteditable><h2>Heading</h2><div>Text block 1</div><div>Text block 2</div><p>Paragraph</p></text-box>
 </text-box-wrapper>
 
 <html-output></html-output>
