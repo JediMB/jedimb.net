@@ -16,7 +16,7 @@ class TextEditor {
         'Control',
         'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight',
         'Enter',
-        'A', 'C', 'V', 'X', 'Z'
+        'A', 'C', 'X', 'Z'
     ].map(v => v.toUpperCase());
 
     #buttonSets;
@@ -110,7 +110,7 @@ class TextEditor {
      * @param {Number} index
      * @param {Event} event 
      */
-    #textboxInput(index, event) {
+    async #textboxInput(index, event) {
         const keyUpper = event.key.toUpperCase();
 
         if (this.#defaultKeys.some(k => k === keyUpper))
@@ -124,10 +124,65 @@ class TextEditor {
 
         event.preventDefault();
 
+        if (keyUpper === 'V') {
+            const pasted = await navigator.clipboard.read();
+            for (const item of pasted) {
+                if (item.types.includes('text/html')) {
+                    const blob = await item.getType('text/html');
+                    let text = await blob.text();
+
+                    text = text.replace(/<[a-zA-z]*( [^>]*)>/g, '')
+                        .replace(/\s{2,}/g, '')
+                        .replace(/<\/?span>/g, '')
+                        .split(/<\/?div>|<\/?p>/g);
+
+                    console.log(text);
+                    this.#addParagraphBreak(window.getSelection().anchorNode, window.getSelection().anchorOffset, this.#textBoxes[index]);
+                }
+            }
+        }
+
         const button = this.#buttonSets[index].find(b => b.dataset.shortcut?.toUpperCase() === keyUpper);
 
         if (button)
             this.#toggleTag(index, button.dataset.tag);
+    }
+
+    #addParagraphBreak(textNode, offset, textBox) {
+        const blockNode = this.#getBlockElement(textNode, textBox);
+        const newBlock = document.createElement(blockNode.tagName);
+        blockNode.insertAdjacentElement('afterend', newBlock);
+
+        const splitTree = (start, destination) => {
+            let foundCenter = false;
+
+            for (const node of start.childNodes) {
+                if (node.contains(textNode)) {
+                    foundCenter = true;
+
+                    switch (node.nodeType) {
+                        case Node.ELEMENT_NODE:
+                            const twin = document.createElement(node.tagName);
+                            destination.appendChild(twin);
+                            splitTree(node, twin);
+                            break;
+
+                        case Node.TEXT_NODE:
+                            const newHalf = document.createTextNode(node.textContent.substring(offset));
+                            node.textContent = node.textContent.substring(0, offset);
+                            destination.appendChild(newHalf);
+                            break;
+                    }
+
+                    continue;
+                }
+
+                if (foundCenter)
+                    destination.appendChild(node);
+            }
+        }
+
+        splitTree(blockNode, newBlock);
     }
 
     /**
