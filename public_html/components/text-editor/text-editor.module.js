@@ -1,7 +1,7 @@
 export { textEditor as default };
 
 class TextEditor {
-    logFuncs = false;
+    logFuncs = true;
 
     #blockElements = new Map([
         ['div', 'Text'],
@@ -136,6 +136,8 @@ class TextEditor {
      * @param {string} tagName 
      */
     #toggleTag(index, tagName) {
+        this.logFuncs && console.clear();
+
         const selection = window.getSelection();
         const textBox = this.#textBoxes[index];
         tagName = tagName.toUpperCase();
@@ -148,24 +150,24 @@ class TextEditor {
         if (selectedTextNodes.length < 1)
             return; // Create element at caret and append new text node?
 
-        const oldSelection = {};
+        const selectionData = { isCollapsed: selection.isCollapsed };
 
-        const isForward = selection.direction === 'forward';
+        const isForward = selection.direction !== 'backward';
 
         if (selection.isCollapsed || isForward) {
-            oldSelection.startNode = selection.anchorNode;
-            oldSelection.startOffset = selection.anchorOffset;
+            selectionData.startNode = selection.anchorNode;
+            selectionData.startOffset = selection.anchorOffset;
         }
         
         if (isForward) {
-            oldSelection.endNode = selection.focusNode;
-            oldSelection.endOffset = selection.focusOffset;
+            selectionData.endNode = selection.focusNode;
+            selectionData.endOffset = selection.focusOffset;
         }
         else {
-            oldSelection.startNode = selection.focusNode;
-            oldSelection.startOffset = selection.focusOffset;
-            oldSelection.endNode = selection.anchorNode;
-            oldSelection.endOffset = selection.anchorOffset;
+            selectionData.startNode = selection.focusNode;
+            selectionData.startOffset = selection.focusOffset;
+            selectionData.endNode = selection.anchorNode;
+            selectionData.endOffset = selection.anchorOffset;
         }
         
 
@@ -182,119 +184,77 @@ class TextEditor {
 
             switch (noMatches) {
                 case true:
-                    this.#applyInlineTag(selectedTextNodes, tagName, oldSelection, textBox);
+                    this.#applyInlineTag(selectedTextNodes, tagName, selectionData, textBox);
                     break;
             
                 case false:
-                    // If only some selectedTextNodes have ancestorMatches, remove those matches and reapply to all
-                    this.#removeTag(selectedTextNodes, ancestorMatches);
+                    const actualMatches = ancestorMatches.filter(match => match !== false);
+
+                    if (actualMatches.length === selectedTextNodes.length) {
+                        this.#removeInlineTag(selectedTextNodes, actualMatches, selectionData);
+                        break;
+                    }
+
+                    this.#applyInlineTag(selectedTextNodes, tagName, selectionData, textBox);
                     break;
             }
 
         }
 
-        this.#makeSelection(oldSelection);
+        this.#makeSelection(selectionData);
         this.#outputHtml(index);
-
-        /*
-        // const node = selection.anchorNode;
-        // const ancestor = this.#getMatchingAncestor(node, tagName, textBox);
-        
-
-        // switch (node.nodeType) {
-        //     case Node.ELEMENT_NODE:
-        //         if (ancestor) {
-        //             this.#replaceWithContents(ancestor, selection);
-        //             break;
-        //         }
-
-        //         if (isBlockType) {
-        //             this.#changeBlockType(node, tagName, textBox, selection);
-        //             break;
-        //         }
-
-        //         this.#appendElement(node, tagName);
-        //         break;
-
-        //     case Node.TEXT_NODE:
-        //         if (ancestor) {
-        //             this.#extractFromAncestor(ancestor, tagName, selection);
-        //             break;
-        //         }
-
-        //         if (!selection.isCollapsed) {
-        //             this.#encloseSelection(node, tagName, selection)
-        //             break;
-        //         }
-
-        //         if (this.#isOnEdge(selection)) {
-        //             this.#insertElement(selection, tagName);
-        //         }
-
-        //         this.#encloseSurroundings(selection, tagName);
-        //         break;
-
-
-        //     default:
-        //         console.error('This node is something else...');
-        //         break;
-        // }
-        */
-
     }
 
     /**
      * 
      * @param {Text[]} textNodes
      * @param {string} tagName
-     * @param {Object} oldSelection 
+     * @param {Object} selectionData 
      */
-    #applyInlineTag(textNodes, tagName, oldSelection, textBox) {
-        const selection = document.getSelection();
+    #applyInlineTag(textNodes, tagName, selectionData, textBox) {
+        this.logFuncs && console.log('applyInlineTag()');
+
         let collapsedOffset = false;
 
-        if (selection.isCollapsed) {
+        if (selectionData.isCollapsed) {
             if (
-                selection.anchorOffset === 0
-                || !selection.anchorNode.textContent[selection.anchorOffset-1].trim()
-                || selection.anchorOffset === selection.anchorNode.textContent.length
-                || !selection.anchorNode.textContent[selection.anchorOffset].trim()
+                selectionData.startOffset === 0
+                || !selectionData.startNode.textContent[selectionData.startOffset-1].trim()
+                || selectionData.startOffset === selectionData.startNode.textContent.length
+                || !selectionData.startNode.textContent[selectionData.startOffset].trim()
             ) {
-                // Create element at caret and append new text node
-
+                this.#insertElement(selectionData, tagName);
                 return;
             }
+            const start = textNodes[0].textContent.lastIndexOf(' ', selectionData.startOffset) + 1;
+            const end = textNodes[0].textContent.indexOf(' ', selectionData.startOffset);
 
-            const start = textNodes[0].textContent.lastIndexOf(' ', oldSelection.startOffset) + 1;
-            const end = textNodes[0].textContent.indexOf(' ', oldSelection.startOffset);
+            collapsedOffset = selectionData.startOffset - start;
 
-            collapsedOffset = oldSelection.startOffset - start;
-
-            oldSelection.startOffset = start;
-            oldSelection.endOffset = (end === -1) ? textNodes[0].textContent.length : end;
+            selectionData.startOffset = start;
+            selectionData.endOffset = (end === -1) ? textNodes[0].textContent.length : end;
         }
 
-        if (textNodes[0] === oldSelection.startNode && oldSelection.startOffset > 0) {
+        if (textNodes[0] === selectionData.startNode && selectionData.startOffset > 0) {
             const node = textNodes[0];
-            const newNode = document.createTextNode(node.textContent.substring(0, oldSelection.startOffset));
+            const newNode = document.createTextNode(node.textContent.substring(0, selectionData.startOffset));
             node.parentNode.insertBefore(newNode, node);
-            node.textContent = node.textContent.substring(oldSelection.startOffset);
+            node.textContent = node.textContent.substring(selectionData.startOffset);
 
             if (textNodes.length === 1)
-                oldSelection.endOffset -= oldSelection.startOffset;
+                selectionData.endOffset -= selectionData.startOffset;
 
-            oldSelection.startOffset = 0;
-
+            selectionData.startOffset = 0;
         }
 
-        if (textNodes[textNodes.length-1] === oldSelection.endNode && oldSelection.endOffset < textNodes[textNodes.length-1].textContent.length) {
+        if (textNodes[textNodes.length-1] === selectionData.endNode && selectionData.endOffset < textNodes[textNodes.length-1].textContent.length) {
             const node = textNodes[textNodes.length-1];
-            const newNode = document.createTextNode(node.textContent.substring(oldSelection.endOffset));
+            const newNode = document.createTextNode(node.textContent.substring(selectionData.endOffset));
             node.parentNode.insertBefore(newNode, node);
             node.parentNode.insertBefore(node, newNode);
-            node.textContent = node.textContent.substring(0, oldSelection.endOffset);
+            node.textContent = node.textContent.substring(0, selectionData.endOffset);
 
-            oldSelection.endOffset = node.textContent.length;
+            selectionData.endOffset = node.textContent.length;
         }
 
         let latestBlock = null;
@@ -317,7 +277,7 @@ class TextEditor {
         this.#encloseNodes(blockMembers, tagName);
 
         if (typeof collapsedOffset === 'number') {
-            oldSelection.startOffset = oldSelection.endOffset = collapsedOffset;
+            selectionData.startOffset = selectionData.endOffset = collapsedOffset;
         }
     }
 
@@ -327,6 +287,8 @@ class TextEditor {
      * @param {string} tagName
      */
     #encloseNodes(nodes, tagName) {
+        this.logFuncs && console.log('encloseNodes()');
+
         const newElement = document.createElement(tagName);
 
         if (nodes.length === 1) {
@@ -356,18 +318,6 @@ class TextEditor {
 
         ancestor.insertBefore(newElement, relevantChildren[0]);
         relevantChildren.forEach(c => newElement.appendChild(c));
-    }
-
-    /**
-     * 
-     * @param {Text[]} selectedText 
-     * @param {(HTMLElement|false)[]} elements 
-     */
-    #removeTag(selectedText, elements) {
-        const uniqueElements = new Set(elements.filter(match => !!match));
-        // Remove unique matches
-        // Split start and end nodes if necessary
-            // Re-enclose any newly created nodes
     }
 
     /**
@@ -410,243 +360,6 @@ class TextEditor {
         }
     }
 
-    #makeSelection({startNode, startOffset, endNode = null, endOffset = null}) {
-        if (!endNode || !endOffset) {
-            window.getSelection().setPosition(startNode, startOffset);
-            return;
-        }
-
-        window.getSelection().setBaseAndExtent(startNode, startOffset, endNode, endOffset);
-    }
-
-    /**
-     * Replaces an element with one with a new tag that takes the old element's children
-     * @param {HTMLElement} element 
-     * @param {string} newTag 
-     * @returns {HTMLElement}
-     */
-    #replaceElement(element, newTag) {
-        if (element.tagName === newTag)
-            return element;
-
-        const newElement = document.createElement(newTag);
-
-        for (const child of element.childNodes) {
-            newElement.appendChild(child);
-        }
-
-        element.parentNode.insertBefore(newElement, element);
-        element.remove();
-
-        return newElement;
-    }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    /**
-     * Appends a new element child to the selected node
-     * @param {Node} node 
-     * @param {string} tagName 
-     */
-    #appendElement(node, tagName) {
-        this.logFuncs && console.log('appendElement()');
-
-        const element = document.createElement(tagName)
-        node.appendChild(element);
-        
-        window.getSelection().setPosition(element, 0);
-    }
-
-    /**
-     * Splits the current text node into up to three nodes and returns the new ones
-     * @param {Selection} selection 
-     * @returns {Node[]}
-     */
-    #createTextSiblings(selection) {
-        this.logFuncs && console.log('createTextSiblings()');
-
-        if (selection.isCollapsed)
-            return [];
-
-        const node = selection.anchorNode;
-
-        if (node.nodeType !== Node.TEXT_NODE)
-            return [];
-
-        let start = selection.anchorOffset,
-            end = selection.focusOffset;
-        if (start > end) [start, end] = [end, start];
-
-        const siblings = [];
-        const textContent = node.textContent;
-
-        if (start > 0) {
-            const newNode = document.createTextNode(textContent.substring(0, start));
-            node.parentNode.insertBefore(newNode, node);
-            siblings.push(newNode);
-        }
-
-        if (end < textContent.length) {
-            const newNode = document.createTextNode(textContent.substring(end));
-            node.parentNode.insertBefore(newNode, node);
-            node.parentNode.insertBefore(node, newNode);
-            siblings.push(newNode);
-        }
-
-        node.textContent = textContent.substring(start, end);
-
-        return siblings;
-    }
-
-    /**
-     * 
-     * @param {Node} node 
-     * @param {string} tagName 
-     * @param {HTMLElement} textBox 
-     * @param {Selection} selection 
-     */
-    #changeBlockType(node, tagName, textBox, selection) {
-        this.logFuncs && console.log('changeBlockType()');
-
-        let rangeData = {
-            node: selection.anchorNode,
-            start: selection.anchorOffset,
-            end: selection.focusOffset
-        };
-        if (rangeData.start > rangeData.end)
-            [rangeData.start, rangeData.end] = [rangeData.end, rangeData.start];
-
-        const blockElement = this.#getBlockElement(node, textBox, tagName);
-
-        if (!blockElement)
-            return;
-
-        let container = blockElement;
-
-        if (blockElement.tagName !== tagName) {
-            container = document.createElement(tagName);
-            container.replaceChildren(...blockElement.childNodes);
-            blockElement.replaceWith(container);
-        }
-
-        if (container.contains(rangeData.node)) {
-            selection.setBaseAndExtent(rangeData.node, rangeData.start, rangeData.node, rangeData.end);
-            return;
-        }
-        
-        selection.setPosition(container, 0);
-    }
-
-    /**
-     * Encloses a selected text node in a new element with the specified tag
-     * @param {Node} textNode 
-     * @param {string} tagName 
-     * @param {Selection} selection 
-     */
-    #encloseSelection(textNode, tagName, selection) {
-        this.logFuncs && console.log('encloseSelection()');
-
-        const newElement = document.createElement(tagName);
-        const range = document.createRange();
-
-        let start = selection.anchorOffset,
-            end = selection.focusOffset;
-        if (start > end) [start, end] = [end, start];
-        
-        range.setStart(textNode, start);
-        range.setEnd(textNode, end);
-        range.surroundContents(newElement);
-
-        selection.removeAllRanges();
-        selection.selectAllChildren(newElement);
-    }
-
-    /**
-     * Encloses the current word if inline; otherwise the entire text node
-     * @param {Selection} selection 
-     * @param {boolean} inline 
-     */
-    #encloseSurroundings(selection, tagName) {
-        this.logFuncs && console.log('encloseSurroundings()');
-
-        const node = selection.anchorNode;
-
-        if (node.nodeType !== Node.TEXT_NODE)
-            return;
-
-        const textContent = node.textContent;
-        const offset = selection.anchorOffset;
-
-        let start = textContent.lastIndexOf(' ', offset);
-        let end = textContent.indexOf(' ', offset);
-
-        end = end === -1 ? textContent.length : end;
-
-        const range = document.createRange();
-        range.setStart(node, ++start);
-        range.setEnd(node, end);
-
-        const element = document.createElement(tagName);
-        range.surroundContents(element);
-
-        selection.setPosition(element.firstChild, offset - start);
-    }
-
-    /**
-     * Removes the ancestor element after moving its contents out of it
-     * Adds new elements of the same type where necessary
-     * @param {HTMLElement} ancestor 
-     * @param {string} tagName 
-     * @param {Selection} selection 
-     */
-    #extractFromAncestor(ancestor, tagName, selection) {
-        this.logFuncs && console.log('extractFromAncestor()');
-        
-        const currentNode = selection.anchorNode;
-        const hasSelection = !selection.isCollapsed;
-
-        const siblings = this.#getSiblings(ancestor, selection);
-        const newSiblings = this.#createTextSiblings(selection); 
-        siblings.push(...newSiblings);
-
-        this.#replaceWithContents(ancestor, selection, !newSiblings.length);
-
-        for (const sibling of siblings) {
-            if (sibling.textContent.trim()) {
-                const element = document.createElement(tagName);
-                sibling.parentElement.insertBefore(element, sibling);
-                element.appendChild(sibling);
-            }
-        }
-
-        if (hasSelection) {
-            const range = document.createRange();
-            range.selectNode(currentNode);
-            selection.removeAllRanges();
-            selection.addRange(range);
-        }
-    }
-
     /**
      * Searches through parent elements for an ancestor, until an end node is reached
      * @param {Node} node 
@@ -671,37 +384,11 @@ class TextEditor {
     }
 
     /**
-     * Returns siblings/aunties
-     * @param {Node} ancestor 
-     * @param {Selection} selection 
-     * @param {Boolean} split Whether to split into before and after arrays
-     * @returns {(Node[]|Node[][])}
-     */
-    #getSiblings(ancestor, selection) {
-        this.logFuncs && console.log('getSiblings()');
-
-        if (selection.isCollapsed)
-            return [];
-
-        const selectedNode = selection.anchorNode;
-
-        let nonSibling = ancestor;
-        const foundFamily = [];
-
-        while (nonSibling && nonSibling !== selectedNode) {
-            const children = Array.from(nonSibling.childNodes);
-            foundFamily.push(...children.filter(n => !n.contains(selectedNode)));
-            nonSibling = children.find(n => n.contains(selectedNode));
-        }
-        
-        return foundFamily;
-    }
-
-    /**
      * Retrieves an array of the text nodes in the current selection
      * @returns {Text[]}
      */
     #getTextNodesFromSelection() {
+        this.logFuncs && console.log('getTextNodesFromSelection');
         const selection = window.getSelection();
 
         if (!selection.anchorNode)
@@ -757,33 +444,25 @@ class TextEditor {
     }
 
     /**
-     * Inserts an element at the caret position and fills it with a selected whitespace
-     * @param {Selection} selection 
+     * Inserts an element containing a text node
+     * @param {Object} selectionData 
      * @param {string} tagName
-     * @returns {(HTMLElement)}
      */
-    #insertElement(selection, tagName) {
-        if (!selection.isCollapsed)
-            return null;
-
-        const textNode = selection.anchorNode;
-
-        if (textNode.nodeType !== Node.TEXT_NODE)
-            return null;
-        
-        const range = document.createRange();
-        range.setStart(selection.anchorNode, selection.anchorOffset);
-        range.collapse();
+    #insertElement(selectionData, tagName) {
+        this.logFuncs && console.log('insertElement()');
 
         const element = document.createElement(tagName);
-        element.innerHTML = '&nbsp;';
+        element.appendChild(document.createTextNode(''));
+        
+        const range = document.createRange();
+        range.setStart(selectionData.startNode, selectionData.startOffset);
+        range.collapse();
         range.insertNode(element);
-        range.selectNodeContents(element);
 
-        selection.removeAllRanges();
-        selection.addRange(range);
-
-        return element;
+        selectionData.isCollapsed = false;
+        selectionData.startNode = selectionData.endNode = element;
+        selectionData.startOffset = 0;
+        selectionData.endOffset = 1;
     }
 
     /**
@@ -795,20 +474,124 @@ class TextEditor {
         return this.#blockElements.has(tagName?.toLowerCase());
     }
 
-    /**
-     * Checks if the caret is at the edge of a text, or on a whitespace
-     * @param {Selection} selection 
-     * @returns {boolean}
-     */
-    #isOnEdge(selection) {
-        if (!selection.isCollapsed)
-            false;
+    #makeSelection({startNode, startOffset, endNode = null, endOffset = null}) {
+        if (!endNode || !endOffset) {
+            window.getSelection().setPosition(startNode, startOffset);
+            return;
+        }
 
-        const textContent = selection.anchorNode.textContent;
-        const offset = selection.anchorOffset;
-
-        return (offset === 0 || offset === textContent.length || textContent[offset] === ' ');
+        window.getSelection().setBaseAndExtent(startNode, startOffset, endNode, endOffset);
     }
+
+    /**
+     * 
+     * @param {Text[]} selectedText 
+     * @param {HTMLElement[]} elements 
+     */
+    #removeInlineTag(textNodes, elements, selectionData) {
+        this.logFuncs && console.log('removeInlineTag()');
+
+        const uniqueElements = new Set(elements);
+        const tagName = elements[0].tagName;
+
+        if (!selectionData.isCollapsed) {
+            if (textNodes[0] === selectionData.startNode && selectionData.startOffset > 0) {
+                const node = textNodes[0];
+                const newText = document.createTextNode(node.textContent.substring(0, selectionData.startOffset));
+                const newElement = document.createElement(tagName);
+                newElement.appendChild(newText);
+                node.parentNode.insertBefore(newElement, node);
+                node.textContent = node.textContent.substring(selectionData.startOffset);
+
+                if (textNodes.length === 1)
+                    selectionData.endOffset -= selectionData.startOffset;
+
+                selectionData.startOffset = 0;
+            }
+
+            if (textNodes[textNodes.length-1] === selectionData.endNode && selectionData.endOffset < textNodes[textNodes.length-1].textContent.length) {
+                const node = textNodes[textNodes.length-1];
+                const newText = document.createTextNode(node.textContent.substring(selectionData.endOffset));
+                const newElement = document.createElement(tagName);
+                newElement.appendChild(newText);
+                node.parentNode.insertBefore(newElement, node);
+                node.parentNode.insertBefore(node, newElement);
+                node.textContent = node.textContent.substring(0, selectionData.endOffset);
+
+                selectionData.endOffset = node.textContent.length;
+            }
+        }
+
+        for (const element of uniqueElements) {
+            const parent = element.parentNode;
+            const children = Array.from(element.childNodes);
+            children.forEach(child => parent.insertBefore(child, element));
+            element.remove();
+
+            const firstChild = children[0];
+            const lastChild = children[children.length-1];
+            if (firstChild.nodeType === Node.TEXT_NODE && firstChild.previousSibling?.nodeType === Node.TEXT_NODE) {
+                if (element === elements[0]) {
+                    selectionData.startOffset += firstChild.previousSibling.textContent.length;
+
+                    if (selectionData.startNode === selectionData.endNode)
+                        selectionData.endOffset += firstChild.previousSibling.textContent.length;
+                }
+                firstChild.textContent = firstChild.previousSibling.textContent + firstChild.textContent;
+                firstChild.previousSibling.remove();
+            }
+            else if (lastChild.nodeType === Node.TEXT_NODE && lastChild.nextSibling?.nodeType === Node.TEXT_NODE) {
+                lastChild.textContent += lastChild.nextSibling.textContent;
+                lastChild.nextSibling.remove();
+            }
+        }
+    }
+
+    /**
+     * Replaces an element with one with a new tag that takes the old element's children
+     * @param {HTMLElement} element 
+     * @param {string} newTag 
+     * @returns {HTMLElement}
+     */
+    #replaceElement(element, newTag) {
+        this.logFuncs && console.log('replaceElement()');
+
+        if (element.tagName === newTag)
+            return element;
+
+        const newElement = document.createElement(newTag);
+
+        for (const child of Array.from(element.childNodes)) {
+            newElement.appendChild(child);
+        }
+
+        element.parentNode.insertBefore(newElement, element);
+        element.remove();
+
+        return newElement;
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     /**
      * Outputs the innerHTML of the textBox as textContent of the htmlOutput
@@ -818,17 +601,6 @@ class TextEditor {
         if (!(index >= 0))
             return;
 
-        // let textContent = source.innerHTML.trim()
-        //     .replace(new RegExp(/( +<)/, 'g'), '<');
-
-        // for (const key in this.#blockElements.keys()) {
-        //     textContent = textContent
-        //         .replace(`<${key}>`, `<${key}>\r\n`)
-        //         .replace(`</${key}>`, `\r\n</${key}>`);
-        // }
-        
-        // container.textContent = textContent;
-
         const textBox = this.#textBoxes[index];
         const {anchorNode, anchorOffset, focusNode, focusOffset} = window.getSelection();
         let nodeText = '';
@@ -837,7 +609,13 @@ class TextEditor {
             nodeText = `Anchor: ${anchorNode.tagName ?? 'text'} @ ${anchorOffset}\r\n` +
                         `Focus: ${focusNode.tagName ?? 'text'} @ ${focusOffset}\r\n\r\n`;
 
-        this.#htmlOutputs[index].textContent = nodeText + textBox.innerHTML;
+        let htmlOutput = textBox.innerHTML;
+
+        for (const [tag] of this.#blockElements) {
+            htmlOutput = htmlOutput.replaceAll(`><${tag}>`, `>\r\n<${tag}>`);
+        }
+
+        this.#htmlOutputs[index].textContent = nodeText + htmlOutput;
     }
 
     /**
@@ -859,48 +637,6 @@ class TextEditor {
         }
 
         emptyNodes.forEach(node => node.parentNode.removeChild(node));
-    }
-
-    /**
-     * Replaces the provided node with its contents
-     * @param {Element} node 
-     * @param {Selection} selection 
-     */
-    #replaceWithContents(node, selection, mergeWithSiblings) {
-        this.logFuncs && console.log('replaceWithContents()');
-
-        const currentNode = selection.anchorNode;
-        let currentOffset = selection.anchorOffset;
-        const hasSelection = !selection.isCollapsed;
-
-        const children = Array.from(node.childNodes);
-        const parent = node.parentNode;
-
-        children.forEach(child => {
-            parent.insertBefore(child, node);
-        });
-
-        node.remove();
-
-        if (currentNode.nodeType !== Node.TEXT_NODE)
-            return;
-
-        if (mergeWithSiblings) {
-            const prevSibling = currentNode.previousSibling;
-            if (prevSibling && prevSibling.nodeType === Node.TEXT_NODE) {
-                currentOffset += prevSibling.textContent.length;
-                currentNode.textContent = prevSibling.textContent + currentNode.textContent;
-                prevSibling.remove();
-            }
-
-            const nextSibling = currentNode.nextSibling;
-            if (nextSibling && nextSibling.nodeType === Node.TEXT_NODE) {
-                currentNode.textContent += nextSibling.textContent;
-                nextSibling.remove();
-            }
-        }
-
-        selection.setPosition(currentNode, currentOffset);
     }
 }
 const textEditor = new TextEditor();
