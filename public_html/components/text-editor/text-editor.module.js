@@ -156,7 +156,7 @@ class TextEditor {
         const splitTree = (start, destination) => {
             let foundCenter = false;
 
-            for (const node of start.childNodes) {
+            for (const node of Array.from(start.childNodes)) {
                 if (node.contains(textNode)) {
                     foundCenter = true;
 
