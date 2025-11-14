@@ -292,6 +292,9 @@ class TextEditor {
         const newElement = document.createElement(tagName);
 
         if (nodes.length === 1) {
+            if (nodes[0].tagName === tagName)
+                return;
+
             nodes[0].parentNode.insertBefore(newElement, nodes[0]);
             newElement.appendChild(nodes[0]);
             return;
@@ -318,6 +321,15 @@ class TextEditor {
 
         ancestor.insertBefore(newElement, relevantChildren[0]);
         relevantChildren.forEach(c => newElement.appendChild(c));
+
+        for (const child of relevantChildren) {
+            if (child?.tagName === tagName) {
+                Array.from(child.childNodes).forEach(grandchild => {
+                    child.parentNode.insertBefore(grandchild, child);
+                });
+                child.remove();
+            }
+        }
     }
 
     /**
