@@ -195,6 +195,7 @@ class TextEditor {
                     return;
                 
                 // TODO: Pasting a header treats that header like the preferred block type for pasted content
+                // Issue only sometimes occurs, due to selection quirks. Shouldn't paste headers into paragraphs to begin with 
                 const newBlock = this.#addParagraphBreak(selection.anchorNode, selection.anchorOffset, textBox);
                 const blockLength = newBlock.textContent.length;
                 const lastRow = textRows.pop();
