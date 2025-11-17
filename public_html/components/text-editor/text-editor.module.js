@@ -1,7 +1,7 @@
 export { textEditor as default };
 
 class TextEditor {
-    logFuncs = true;
+    logFuncs = false;
 
     #blockElements = new Map([
         ['div', 'Text'],
@@ -12,8 +12,9 @@ class TextEditor {
         ['p', 'Paragraph']
     ]);
 
+    #regexMatchAttributes = /<[a-zA-z\-]*( [^>]*)>/g;
     #allowedElements = ['br', ...this.#blockElements.keys()];
-    #regexAllowedElements;
+    #regexMatchDisallowedElements;
 
     #defaultKeys = [
         'Control',
@@ -22,7 +23,7 @@ class TextEditor {
         'A', 'C', 'X', 'Z'
     ].map(v => v.toUpperCase());
 
-    #buttonSets;
+    #tagButtonSets;
     #textBoxes;
     #htmlOutputs;
 
@@ -30,12 +31,12 @@ class TextEditor {
         const components = Array.from(document.querySelectorAll('text-editor-component'));
         const fieldsets = components.map(c => c.querySelector('fieldset'));
         const blockSelects = components.map(c => c.querySelector('select[select-blocktype]'));
-        this.#buttonSets = components.map(c => Array.from(c.querySelectorAll('button[data-tag]')));
+        this.#tagButtonSets = components.map(c => Array.from(c.querySelectorAll('button[data-tag]')));
         this.#textBoxes = components.map(c => c.querySelector('text-box'));
         this.#htmlOutputs = components.map(c => c.querySelector('html-output'));
 
-        this.#allowedElements.push(...this.#buttonSets[0].map(btn => btn.dataset.tag?.toLowerCase()));
-        this.#regexAllowedElements = new RegExp('(<\/?(?!(' + this.#allowedElements.join('|') + ')\\b)([a-z]*>))', "g");
+        this.#allowedElements.push(...this.#tagButtonSets[0].map(btn => btn.dataset.tag?.toLowerCase()));
+        this.#regexMatchDisallowedElements = new RegExp('(<\/?(?!(' + this.#allowedElements.join('|') + ')\\b)([a-z]*>))', "gi");
 
         document.addEventListener('selectionchange', () => {
             const selection = window.getSelection();
@@ -63,14 +64,14 @@ class TextEditor {
                     : null;
             }
 
-            this.#buttonSets[boxIndex].forEach(b => b.classList.toggle('active',
+            this.#tagButtonSets[boxIndex].forEach(b => b.classList.toggle('active',
                 selectedTextNodes.every(n => !!this.#getMatchingAncestor(n, b.dataset.tag, textBox))
             ));
         });
 
         components.forEach((component, index) => {
             const blockSelect = blockSelects[index];
-            const buttons = this.#buttonSets[index];
+            const buttons = this.#tagButtonSets[index];
             const textBox = this.#textBoxes[index];
             const keyInfo = component.querySelector('key-info');
 
@@ -116,7 +117,7 @@ class TextEditor {
      * @param {Number} index
      * @param {Event} event 
      */
-    async #textboxInput(index, event) {
+    #textboxInput(index, event) {
         const keyUpper = event.key.toUpperCase();
 
         if (this.#defaultKeys.some(k => k === keyUpper))
@@ -131,27 +132,84 @@ class TextEditor {
         event.preventDefault();
 
         if (keyUpper === 'V') {
-            const pasted = await navigator.clipboard.read();
-            for (const item of pasted) {
-                if (item.types.includes('text/html')) {
-                    const blob = await item.getType('text/html');
-                    let text = await blob.text();
-
-                    text = text.replace(/<[a-zA-z]*( [^>]*)>/g, '')
-                        .replace(/\s{2,}/g, '')
-                        .replace(this.#regexAllowedElements, '')
-                        .split(/<\/?div>|<\/?p>/g);
-
-                    console.log(text);
-                    this.#addParagraphBreak(window.getSelection().anchorNode, window.getSelection().anchorOffset, this.#textBoxes[index]);
-                }
-            }
+            this.#paste(this.#textBoxes[index]);
+            return;
         }
 
-        const button = this.#buttonSets[index].find(b => b.dataset.shortcut?.toUpperCase() === keyUpper);
+        const button = this.#tagButtonSets[index].find(b => b.dataset.shortcut?.toUpperCase() === keyUpper);
 
         if (button)
             this.#toggleTag(index, button.dataset.tag);
+    }
+
+    async #paste(textBox, contentType = 'text/html') {
+        const selection = window.getSelection();
+
+        const setPosition = (parent, originalLength, cumulativeLength = 0) => {
+            const children = Array.from(parent.childNodes).reverse();
+
+            for (const child of children) {
+                cumulativeLength += child.textContent.length;
+
+                if (originalLength > cumulativeLength)
+                    continue;
+
+                if (child.nodeType === Node.TEXT_NODE) {
+                    selection.setPosition(child, cumulativeLength - originalLength);
+                    break;
+                }
+
+                setPosition(child, originalLength, cumulativeLength - child.textContent.length);
+                break;
+            }
+        }
+
+        const pasted = await navigator.clipboard.read();
+        for (const item of pasted) {
+            if (item.types.includes(contentType)) {
+
+                selection.deleteFromDocument();
+
+                const isForward = selection.direction !== 'backward';
+
+                let node = isForward ? selection.anchorNode : selection.focusNode,
+                    offset = isForward ? selection.anchorOffset : selection.focusOffset;
+
+                let text = await (await item.getType('text/html')).text();
+
+                text = text.replace(this.#regexMatchAttributes, '')
+                    .replace(/\s{2,}/g, '')
+                    .replace(this.#regexMatchDisallowedElements, '');
+
+                const textRows = text
+                    .split(/<\/?div>|<\/?p>/g)
+                    .filter((row, _, arr) => arr.length === 1 || !!row.trim());
+
+                const parentElement = node.parentElement;
+                const parentLength = parentElement.textContent.length;
+                parentElement.innerHTML = parentElement.innerHTML.substring(0, offset) + textRows.shift() + parentElement.innerHTML.substring(offset);
+                setPosition(parentElement, parentLength - offset);
+
+                if (textRows.length === 1)
+                    return;
+                
+                const newBlock = this.#addParagraphBreak(selection.anchorNode, selection.anchorOffset, textBox);
+                const blockLength = newBlock.textContent.length;
+                const lastRow = textRows.pop();
+
+                newBlock.innerHTML = lastRow + newBlock.innerHTML;
+
+                for (const row of textRows) {
+                    const betweenBlock = document.createElement(newBlock.tagName);
+                    betweenBlock.innerHTML = row;
+                    newBlock.parentNode.insertBefore(betweenBlock, newBlock);
+                }
+
+                setPosition(newBlock, blockLength);
+
+                return;
+            }
+        }
     }
 
     #addParagraphBreak(textNode, offset, textBox) {
