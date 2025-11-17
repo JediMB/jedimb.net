@@ -194,6 +194,7 @@ class TextEditor {
                 if (textRows.length === 1)
                     return;
                 
+                // TODO: Pasting a header treats that header like the preferred block type for pasted content
                 const newBlock = this.#addParagraphBreak(selection.anchorNode, selection.anchorOffset, textBox);
                 const blockLength = newBlock.textContent.length;
                 const lastRow = textRows.pop();
