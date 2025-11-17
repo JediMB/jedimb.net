@@ -19,6 +19,7 @@ class TextEditor {
     #defaultKeys = [
         'Control',
         'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight',
+        'Home', 'End',
         'Enter',
         'A', 'C', 'X', 'Z'
     ].map(v => v.toUpperCase());
