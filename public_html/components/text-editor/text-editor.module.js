@@ -12,6 +12,9 @@ class TextEditor {
         ['p', 'Paragraph']
     ]);
 
+    #allowedElements = ['br', ...this.#blockElements.keys()];
+    #regexAllowedElements;
+
     #defaultKeys = [
         'Control',
         'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight',
@@ -30,6 +33,9 @@ class TextEditor {
         this.#buttonSets = components.map(c => Array.from(c.querySelectorAll('button[data-tag]')));
         this.#textBoxes = components.map(c => c.querySelector('text-box'));
         this.#htmlOutputs = components.map(c => c.querySelector('html-output'));
+
+        this.#allowedElements.push(...this.#buttonSets[0].map(btn => btn.dataset.tag?.toLowerCase()));
+        this.#regexAllowedElements = new RegExp('(<\/?(?!(' + this.#allowedElements.join('|') + ')\\b)([a-z]*>))', "g");
 
         document.addEventListener('selectionchange', () => {
             const selection = window.getSelection();
@@ -133,7 +139,7 @@ class TextEditor {
 
                     text = text.replace(/<[a-zA-z]*( [^>]*)>/g, '')
                         .replace(/\s{2,}/g, '')
-                        .replace(/<\/?span>/g, '')
+                        .replace(this.#regexAllowedElements, '')
                         .split(/<\/?div>|<\/?p>/g);
 
                     console.log(text);
@@ -183,6 +189,8 @@ class TextEditor {
         }
 
         splitTree(blockNode, newBlock);
+
+        return newBlock;
     }
 
     /**
