@@ -558,6 +558,11 @@ class TextEditor {
     #removeInlineTag(textNodes, elements, selectionData) {
         this.logFuncs && console.log('removeInlineTag()');
 
+        if (textNodes.length !== elements.length) {
+            console.error('removeInlineTag called without matching in-data');
+            return;
+        }
+
         const uniqueElements = new Set(elements);
         const tagName = elements[0].tagName;
 
