@@ -3,20 +3,27 @@ export { textEditor as default };
 class TextEditor {
     logFuncs = false;
 
-    #blockElements = new Map([
+    #blockElementData = [
         ['div', 'Text'],
         ['h2', 'Heading'],
         ['h3', 'Heading 2'],
         ['h4', 'Heading 3'],
         ['h5', 'Heading 4'],
         ['p', 'Paragraph']
-    ]);
+    ];
+
+    #blockElementTags = this.#blockElementData.map(pair => pair[0]);
 
     #regexMatchAttributes = /<[a-zA-z\-]*( [^>]*)>/g;
-    #allowedElements = ['br', ...this.#blockElements.keys()];
+    #regexMatchBlocks = new RegExp(
+        '<(?<tag>' +
+        this.#blockElementTags.join('|') +
+        ')\\b[ \\w=\\"\\-#;]*>(.*?)(<\\/\\k<tag>>)'
+    ); // /<(?<tag>div|h2|p)\b[ \w=\"\-#;]*>(.*?)<\/\k<tag>>/
+    #allowedElements = ['br', ...this.#blockElementTags];
     #regexMatchDisallowedElements;
 
-    #defaultKeys = [
+    #defaultKeysUpper = [
         'Control',
         'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight',
         'Home', 'End',
@@ -53,7 +60,7 @@ class TextEditor {
             const selectedTextNodes = this.#getTextNodesFromSelection();
 
             if (selectedTextNodes.length === 0)
-                [blockSelects[boxIndex].value] = this.#blockElements.keys();
+                [blockSelects[boxIndex].value] = this.#blockElementTags;
             else {
                 const selectedBlocks = selectedTextNodes.map(n => this.#getBlockElement(n, textBox));
 
@@ -76,10 +83,10 @@ class TextEditor {
             const textBox = this.#textBoxes[index];
             const keyInfo = component.querySelector('key-info');
 
-            this.#blockElements.forEach((value, key) => {
+            this.#blockElementData.forEach(([tag, name]) => {
                 const option = document.createElement('option');
-                option.value = key;
-                option.textContent = value;
+                option.value = tag;
+                option.textContent = name;
                 blockSelect.appendChild(option);
             });
             blockSelect.addEventListener('change', () => this.#toggleTag(index, blockSelect.value));
@@ -121,7 +128,7 @@ class TextEditor {
     #textboxInput(index, event) {
         const keyUpper = event.key.toUpperCase();
 
-        if (this.#defaultKeys.some(k => k === keyUpper))
+        if (this.#defaultKeysUpper.some(k => k === keyUpper))
             return;
 
         const hasModifiers = (modifiers) => modifiers === ((event.shiftKey * 0b1) + (event.ctrlKey * 0b10) + (event.altKey * 0b100));
@@ -182,29 +189,49 @@ class TextEditor {
                     .replace(/\s{2,}/g, '')
                     .replace(this.#regexMatchDisallowedElements, '');
 
-                const textRows = text
-                    .split(/<\/?div>|<\/?p>/g)
-                    .filter((row, _, arr) => arr.length === 1 || !!row.trim());
+                const textRows = [];
 
-                const parentElement = node.parentElement;
-                const parentLength = parentElement.textContent.length;
-                parentElement.innerHTML = parentElement.innerHTML.substring(0, offset) + textRows.shift() + parentElement.innerHTML.substring(offset);
-                setPosition(parentElement, parentLength - offset);
+                while (text) {
+                    const match = text.match(this.#regexMatchBlocks);
 
-                if (textRows.length === 1)
+                    if (!match) {
+                        textRows.push({tagName: null, content: text});
+                        break;
+                    }
+
+                    if (match.index > 0)
+                        textRows.push({tagName: null, content: text.substring(0, match.index)});
+
+                    textRows.push({tagName: match[1].toUpperCase(), content: match[2]});
+                    text = text.substring(match.index + match[0].length);
+                }
+
+                console.log(textRows);
+
+                const currentBlockTag = this.#getBlockElement(node, textBox).tagName;
+
+                if (!textRows[0].tagName || textRows[0].tagName === currentBlockTag) {
+                    const parentElement = node.parentElement;
+                    const parentLength = parentElement.textContent.length;
+                    parentElement.innerHTML = parentElement.innerHTML.substring(0, offset) + textRows.shift().content + parentElement.innerHTML.substring(offset);
+                    setPosition(parentElement, parentLength - offset);
+                }
+
+                if (textRows.length === 0)
                     return;
-                
-                // TODO: Pasting a header treats that header like the preferred block type for pasted content
-                // Issue only sometimes occurs, due to selection quirks. Shouldn't paste headers into paragraphs to begin with 
+
                 const newBlock = this.#addParagraphBreak(selection.anchorNode, selection.anchorOffset, textBox);
                 const blockLength = newBlock.textContent.length;
-                const lastRow = textRows.pop();
 
-                newBlock.innerHTML = lastRow + newBlock.innerHTML;
+                const lastTag = textRows[textRows.length - 1].tagName;
+                if (!lastTag || lastTag === currentBlockTag) {
+                    const lastRow = textRows.pop().content;
+                    newBlock.innerHTML = lastRow + newBlock.innerHTML;
+                }
 
                 for (const row of textRows) {
-                    const betweenBlock = document.createElement(newBlock.tagName);
-                    betweenBlock.innerHTML = row;
+                    const betweenBlock = document.createElement(row.tagName ?? this.#blockElementTags[0]);
+                    betweenBlock.innerHTML = row.content;
                     newBlock.parentNode.insertBefore(betweenBlock, newBlock);
                 }
 
@@ -470,7 +497,7 @@ class TextEditor {
             return null;
 
         if (!tagName)
-            [tagName] = this.#blockElements.keys();
+            [tagName] = this.#blockElementTags;
 
         if (!node) {
             const newElement = document.createElement(tagName);
@@ -607,7 +634,7 @@ class TextEditor {
      * @returns {boolean}
      */
     #isBlockType(tagName) {
-        return this.#blockElements.has(tagName?.toLowerCase());
+        return !!this.#blockElementTags.find(tag => tag == tagName?.toLowerCase());
     }
 
     #makeSelection({startNode, startOffset, endNode = null, endOffset = null}) {
@@ -752,7 +779,7 @@ class TextEditor {
 
         let htmlOutput = textBox.innerHTML;
 
-        for (const [tag] of this.#blockElements) {
+        for (const tag of this.#blockElementTags) {
             htmlOutput = htmlOutput.replaceAll(`><${tag}>`, `>\r\n<${tag}>`);
         }
 
