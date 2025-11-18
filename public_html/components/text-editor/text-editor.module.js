@@ -24,15 +24,16 @@ class TextEditor {
     #regexMatchDisallowedElements;
 
     #defaultKeysUpper = [
-        'Control',
+        'Control', 'Shift', 'Alt', 'Process', 'CapsLock',
         'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight',
         'Home', 'End',
         'Enter',
-        'A', 'C', 'X', 'Z'
+        'A', 'C', 'X'
     ].map(v => v.toUpperCase());
 
     #tagButtonSets;
     #textBoxes;
+    #undoHistories;
     #htmlOutputs;
 
     constructor() {
@@ -41,6 +42,7 @@ class TextEditor {
         const blockSelects = components.map(c => c.querySelector('select[select-blocktype]'));
         this.#tagButtonSets = components.map(c => Array.from(c.querySelectorAll('button[data-tag]')));
         this.#textBoxes = components.map(c => c.querySelector('text-box'));
+        this.#undoHistories = components.map(c => []);
         this.#htmlOutputs = components.map(c => c.querySelector('html-output'));
 
         this.#allowedElements.push(...this.#tagButtonSets[0].map(btn => btn.dataset.tag?.toLowerCase()));
@@ -83,6 +85,8 @@ class TextEditor {
             const textBox = this.#textBoxes[index];
             const keyInfo = component.querySelector('key-info');
 
+            this.#addUndo(index);
+
             this.#blockElementData.forEach(([tag, name]) => {
                 const option = document.createElement('option');
                 option.value = tag;
@@ -100,6 +104,8 @@ class TextEditor {
             );
 
             textBox.addEventListener('input', () => {
+                this.#addUndo(index);
+
                 if (!textBox.textContent.trim())
                     this.#getBlockElement(textBox.firstChild, textBox, blockSelect.value);
 
@@ -134,13 +140,21 @@ class TextEditor {
         const hasModifiers = (modifiers) => modifiers === ((event.shiftKey * 0b1) + (event.ctrlKey * 0b10) + (event.altKey * 0b100));
         const mod = Object.freeze({ none: 0b0, shift: 0b1, ctrl: 0b10, alt: 0b100 });
 
-        if (!hasModifiers(mod.ctrl))
+        if (!hasModifiers(mod.ctrl)) {
+
             return;
+        }
 
         event.preventDefault();
 
         if (keyUpper === 'V') {
+            this.#addUndo(index);
             this.#paste(this.#textBoxes[index]);
+            return;
+        }
+
+        if (keyUpper === 'Z') {
+            this.#undo(index);
             return;
         }
 
@@ -148,6 +162,22 @@ class TextEditor {
 
         if (button)
             this.#toggleTag(index, button.dataset.tag);
+    }
+
+    /**
+     * 
+     * @param {Node[]} nodesToRestore 
+     */
+    #addUndo(componentIndex) {
+        if (this.#undoHistories[componentIndex].length > 29)
+            this.#undoHistories[componentIndex].shift();
+
+        this.#undoHistories[componentIndex].push(this.#textBoxes[componentIndex].innerHTML);
+    }
+
+    #undo(componentIndex) {
+        if (this.#undoHistories[componentIndex].length > 0)
+            this.#textBoxes[componentIndex].innerHTML = this.#undoHistories[componentIndex].pop();
     }
 
     async #paste(textBox, contentType = 'text/html') {
@@ -320,7 +350,8 @@ class TextEditor {
             selectionData.endNode = selection.anchorNode;
             selectionData.endOffset = selection.anchorOffset;
         }
-        
+
+        this.#addUndo(index);
 
         if (this.#isBlockType(tagName)) {
             const blockMatches = new Set(selectedTextNodes.map(text => this.#getBlockElement(text, textBox, tagName)));
