@@ -38,6 +38,9 @@ class TextEditor {
     #undoHistories;
     #htmlOutputs;
 
+    #savedInnerHTML;
+    #savedSelectionData;
+
     constructor() {
         const components = Array.from(document.querySelectorAll('text-editor-component'));
         const fieldsets = components.map(c => c.querySelector('fieldset'));
@@ -104,7 +107,7 @@ class TextEditor {
             );
 
             textBox.addEventListener('input', () => {
-                this.#addUndo(index);
+                this.#addUndo(index, true);
 
                 if (!textBox.textContent.trim())
                     this.#getBlockElement(textBox.firstChild, textBox, blockSelect.value);
@@ -113,7 +116,7 @@ class TextEditor {
             });
 
             textBox.addEventListener('keydown', event => {
-                this.#textboxInput(index, event);
+                this.#textboxKeydown(index, event);
                 keyInfo.textContent = `:: Key: ${event.key} ::\r\n\r\n  Shift:   ${event.shiftKey}\r\n  Control: ${event.ctrlKey}\r\n  Alt:     ${event.altKey}`;
             });
 
@@ -131,7 +134,10 @@ class TextEditor {
      * @param {Number} index
      * @param {Event} event 
      */
-    #textboxInput(index, event) {
+    #textboxKeydown(index, event) {
+        this.#savedInnerHTML = this.#textBoxes[index].innerHTML;
+        this.#savedSelectionData = new SelectionData(window.getSelection());
+
         const keyUpper = event.key.toUpperCase();
 
         if (this.#defaultKeysUpper.some(k => k === keyUpper))
@@ -167,7 +173,7 @@ class TextEditor {
      * @param {Number} componentIndex
      * @param {Node[]} nodesToRestore 
      */
-    #addUndo(componentIndex) {
+    #addUndo(componentIndex, useSaved = false) {
         const getRoute = (start, target, route = []) => {
             let num = 0;
 
@@ -187,11 +193,16 @@ class TextEditor {
 
             throw new Error('Could not find target node');
         };
-        const selectionData = new SelectionData(window.getSelection());
+        const innerHTML = useSaved
+            ? this.#savedInnerHTML
+            : this.#textBoxes[componentIndex].innerHTML;
+        const selectionData = useSaved
+            ? this.#savedSelectionData
+            : new SelectionData(window.getSelection());
         const route = getRoute(this.#textBoxes[componentIndex], selectionData.startNode);
 
         const undo = {
-            innerHTML: this.#textBoxes[componentIndex].innerHTML,
+            innerHTML: innerHTML,
             route: route,
             offset: selectionData.startOffset
         };
