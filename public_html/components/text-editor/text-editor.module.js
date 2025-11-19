@@ -1,4 +1,5 @@
 import SelectionData from "/js/models/selection-data.model.js";
+import undoManagementService from "/js/services/undo-management.service.js";
 
 export { textEditor as default };
 
@@ -35,11 +36,9 @@ class TextEditor {
 
     #tagButtonSets;
     #textBoxes;
-    #undoHistories;
     #htmlOutputs;
 
-    #savedInnerHTML;
-    #savedSelectionData;
+    #undo = undoManagementService;
 
     constructor() {
         const components = Array.from(document.querySelectorAll('text-editor-component'));
@@ -47,7 +46,6 @@ class TextEditor {
         const blockSelects = components.map(c => c.querySelector('select[select-blocktype]'));
         this.#tagButtonSets = components.map(c => Array.from(c.querySelectorAll('button[data-tag]')));
         this.#textBoxes = components.map(c => c.querySelector('text-box'));
-        this.#undoHistories = components.map(c => []);
         this.#htmlOutputs = components.map(c => c.querySelector('html-output'));
 
         this.#allowedElements.push(...this.#tagButtonSets[0].map(btn => btn.dataset.tag?.toLowerCase()));
@@ -107,7 +105,7 @@ class TextEditor {
             );
 
             textBox.addEventListener('input', () => {
-                this.#addUndo(index, true);
+                this.#undo.addUndo(textBox, true);
 
                 if (!textBox.textContent.trim())
                     this.#getBlockElement(textBox.firstChild, textBox, blockSelect.value);
@@ -135,8 +133,7 @@ class TextEditor {
      * @param {Event} event 
      */
     #textboxKeydown(index, event) {
-        this.#savedInnerHTML = this.#textBoxes[index].innerHTML;
-        this.#savedSelectionData = new SelectionData(window.getSelection());
+        this.#undo.saveUndoData(this.#textBoxes[index], new SelectionData(window.getSelection()));
 
         const keyUpper = event.key.toUpperCase();
 
@@ -152,13 +149,13 @@ class TextEditor {
         event.preventDefault();
 
         if (keyUpper === 'V') {
-            this.#addUndo(index);
+            this.#undo.addUndo(this.#textBoxes[index]);
             this.#paste(this.#textBoxes[index]);
             return;
         }
 
         if (keyUpper === 'Z') {
-            this.#undo(index);
+            this.#undo.execute(this.#textBoxes[index]);
             return;
         }
 
@@ -166,76 +163,6 @@ class TextEditor {
 
         if (button)
             this.#toggleTag(index, button.dataset.tag);
-    }
-
-    /**
-     * 
-     * @param {Number} componentIndex
-     * @param {Node[]} nodesToRestore 
-     */
-    #addUndo(componentIndex, useSaved = false) {
-        const getRoute = (start, target, route = []) => {
-            let num = 0;
-
-            for (const child of start.childNodes) {
-                if (child === target) {
-                    route.push(num);
-                    return route;
-                }
-
-                if (child.contains(target)) {
-                    route.push(num);
-                    return getRoute(child, target, route);
-                }
-
-                num++;
-            }
-
-            throw new Error('Could not find target node');
-        };
-        const innerHTML = useSaved
-            ? this.#savedInnerHTML
-            : this.#textBoxes[componentIndex].innerHTML;
-        const selectionData = useSaved
-            ? this.#savedSelectionData
-            : new SelectionData(window.getSelection());
-        const route = getRoute(this.#textBoxes[componentIndex], selectionData.startNode);
-
-        const undo = {
-            innerHTML: innerHTML,
-            route: route,
-            offset: selectionData.startOffset
-        };
-
-        if (this.#undoHistories[componentIndex].length > 29)
-            this.#undoHistories[componentIndex].shift();
-
-        this.#undoHistories[componentIndex].push(undo);
-    }
-
-    #undo(componentIndex) {
-        const traceRoute = (start, route) => {
-            const target = route.shift();
-
-            if (target === undefined || target < 0)
-                throw new Error('Invalid route');
-
-            const node = Array.from(start.childNodes)[target];
-
-            if (route.length === 0)
-                return node;
-
-            return traceRoute(node, route);
-        };
-
-        if (this.#undoHistories[componentIndex].length === 0)
-            return;
-
-        const undo = this.#undoHistories[componentIndex].pop();
-        this.#textBoxes[componentIndex].innerHTML = undo.innerHTML;
-
-        const node = traceRoute(this.#textBoxes[componentIndex], undo.route);
-        window.getSelection().setPosition(node, undo.offset);
     }
 
     async #paste(textBox, contentType = 'text/html') {
@@ -391,7 +318,7 @@ class TextEditor {
 
         const selectionData = new SelectionData(selection);
 
-        this.#addUndo(index);
+        this.#undo.addUndo(textBox);
 
         if (this.#isBlockType(tagName)) {
             const blockMatches = new Set(selectedTextNodes.map(text => this.#getBlockElement(text, textBox, tagName)));
