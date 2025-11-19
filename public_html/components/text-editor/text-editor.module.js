@@ -1,3 +1,5 @@
+import SelectionData from "/js/models/selection-data.model.js";
+
 export { textEditor as default };
 
 class TextEditor {
@@ -85,8 +87,6 @@ class TextEditor {
             const textBox = this.#textBoxes[index];
             const keyInfo = component.querySelector('key-info');
 
-            this.#addUndo(index);
-
             this.#blockElementData.forEach(([tag, name]) => {
                 const option = document.createElement('option');
                 option.value = tag;
@@ -140,10 +140,8 @@ class TextEditor {
         const hasModifiers = (modifiers) => modifiers === ((event.shiftKey * 0b1) + (event.ctrlKey * 0b10) + (event.altKey * 0b100));
         const mod = Object.freeze({ none: 0b0, shift: 0b1, ctrl: 0b10, alt: 0b100 });
 
-        if (!hasModifiers(mod.ctrl)) {
-
+        if (!hasModifiers(mod.ctrl))
             return;
-        }
 
         event.preventDefault();
 
@@ -166,18 +164,67 @@ class TextEditor {
 
     /**
      * 
+     * @param {Number} componentIndex
      * @param {Node[]} nodesToRestore 
      */
     #addUndo(componentIndex) {
+        const getRoute = (start, target, route = []) => {
+            let num = 0;
+
+            for (const child of start.childNodes) {
+                if (child === target) {
+                    route.push(num);
+                    return route;
+                }
+
+                if (child.contains(target)) {
+                    route.push(num);
+                    return getRoute(child, target, route);
+                }
+
+                num++;
+            }
+
+            throw new Error('Could not find target node');
+        };
+        const selectionData = new SelectionData(window.getSelection());
+        const route = getRoute(this.#textBoxes[componentIndex], selectionData.startNode);
+
+        const undo = {
+            innerHTML: this.#textBoxes[componentIndex].innerHTML,
+            route: route,
+            offset: selectionData.startOffset
+        };
+
         if (this.#undoHistories[componentIndex].length > 29)
             this.#undoHistories[componentIndex].shift();
 
-        this.#undoHistories[componentIndex].push(this.#textBoxes[componentIndex].innerHTML);
+        this.#undoHistories[componentIndex].push(undo);
     }
 
     #undo(componentIndex) {
-        if (this.#undoHistories[componentIndex].length > 0)
-            this.#textBoxes[componentIndex].innerHTML = this.#undoHistories[componentIndex].pop();
+        const traceRoute = (start, route) => {
+            const target = route.shift();
+
+            if (target === undefined || target < 0)
+                throw new Error('Invalid route');
+
+            const node = Array.from(start.childNodes)[target];
+
+            if (route.length === 0)
+                return node;
+
+            return traceRoute(node, route);
+        };
+
+        if (this.#undoHistories[componentIndex].length === 0)
+            return;
+
+        const undo = this.#undoHistories[componentIndex].pop();
+        this.#textBoxes[componentIndex].innerHTML = undo.innerHTML;
+
+        const node = traceRoute(this.#textBoxes[componentIndex], undo.route);
+        window.getSelection().setPosition(node, undo.offset);
     }
 
     async #paste(textBox, contentType = 'text/html') {
@@ -331,25 +378,7 @@ class TextEditor {
         if (selectedTextNodes.length < 1)
             return; // Create element at caret and append new text node?
 
-        const selectionData = { isCollapsed: selection.isCollapsed };
-
-        const isForward = selection.direction !== 'backward';
-
-        if (selection.isCollapsed || isForward) {
-            selectionData.startNode = selection.anchorNode;
-            selectionData.startOffset = selection.anchorOffset;
-        }
-        
-        if (isForward) {
-            selectionData.endNode = selection.focusNode;
-            selectionData.endOffset = selection.focusOffset;
-        }
-        else {
-            selectionData.startNode = selection.focusNode;
-            selectionData.startOffset = selection.focusOffset;
-            selectionData.endNode = selection.anchorNode;
-            selectionData.endOffset = selection.anchorOffset;
-        }
+        const selectionData = new SelectionData(selection);
 
         this.#addUndo(index);
 
