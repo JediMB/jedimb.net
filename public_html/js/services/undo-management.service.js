@@ -8,12 +8,71 @@ class UndoManagementService {
     #savedInnerHTML;
     #savedSelectionData;
 
-    addUndo(textBox, useSaved = false) {
-        this.#undoHistories[textBox] ??= [];
+    /**
+     * 
+     * @param {HTMLElement} container The root element of the editable content
+     * @param {Boolean} useSaved Whether to use the data saved with the saveData function
+     */
+    add(container, useSaved = false) {
+        this.#undoHistories[container] ??= [];
+        this.#addTo(this.#undoHistories[container], container, useSaved);
+    }
 
+    /**
+     * Undo the latest change
+     * @param {HTMLElement} container The root element of the editable content
+     */
+    execute(container) {
+        this.#redoHistories[container] ??= [];
+        this.#restore(
+            this.#undoHistories[container],
+            this.#redoHistories[container],
+            container
+        );
+    }
+
+    redo(container) {
+        this.#undoHistories[container] ??= [];
+        this.#restore(
+            this.#redoHistories[container],
+            this.#undoHistories[container],
+            container
+        );
+    }
+
+    #restore(sourceList, targetList, container) {
+        if (!sourceList?.length)
+            return;
+
+        this.#addTo(targetList, container, false);
+
+        const undo = sourceList.pop();
+        container.innerHTML = undo.innerHTML;
+
+        const node = this.#traceRoute(container, undo.route);
+        window.getSelection().setPosition(node, undo.offset);
+    }
+
+    /**
+     * 
+     * @param {HTMLElement} containerElement 
+     * @param {SelectionData} selectionData 
+     */
+    saveData(containerElement, selectionData) {
+        this.#savedInnerHTML = containerElement.innerHTML;
+        this.#savedSelectionData = selectionData;
+    }
+
+    /**
+     * 
+     * @param {Object[]} list 
+     * @param {HTMLElement} container 
+     * @param {Boolean} useSaved 
+     */
+    #addTo(list, container, useSaved) {
         const innerHTML = useSaved
             ? this.#savedInnerHTML
-            : textBox.innerHTML;
+            : container.innerHTML;
         const selectionData = useSaved
             ? this.#savedSelectionData
             : new SelectionData(window.getSelection());
@@ -23,7 +82,7 @@ class UndoManagementService {
         const offset = selectionData.isCollapsed
             ? selectionData.startOffset
             : selectionData.endOffset;
-        const route = this.#getRoute(textBox, node);
+        const route = this.#getRoute(container, node);
         
         const undo = {
             innerHTML: innerHTML,
@@ -31,40 +90,15 @@ class UndoManagementService {
             offset: offset
         };
 
-        if (this.#undoHistories[textBox].length > 29)
-            this.#undoHistories[textBox].shift();
+        if (list.length > 29)
+            list.shift();
 
-        this.#undoHistories[textBox].push(undo);
+        list.push(undo);
     }
-
-    // addRedo(textBox) {
-
-    // }
-
-    execute(textBox) {
-        if (!this.#undoHistories[textBox]?.length)
-            return;
-
-        const undo = this.#undoHistories[textBox].pop();
-        textBox.innerHTML = undo.innerHTML;
-
-        const node = this.#traceRoute(textBox, undo.route);
-        window.getSelection().setPosition(node, undo.offset);
-    }
-
-    saveUndoData(containerNode, selectionData) {
-        this.#savedInnerHTML = containerNode.innerHTML;
-        this.#savedSelectionData = selectionData;
-    }
-
-    // #addToHistory(textBox, useSaved = false) {
-
-
-    // }
 
     /**
      * 
-     * @param {Node} start 
+     * @param {HTMLElement} start 
      * @param {Node} target 
      * @param {Number[]} route 
      * @returns {Number[]}
@@ -91,7 +125,7 @@ class UndoManagementService {
 
     /**
      * 
-     * @param {Node} start 
+     * @param {HTMLElement} start 
      * @param {Number[]} route 
      * @returns {Node}
      */

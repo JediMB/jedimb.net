@@ -105,7 +105,7 @@ class TextEditor {
             );
 
             textBox.addEventListener('input', () => {
-                this.#undo.addUndo(textBox, true);
+                this.#undo.add(textBox, true);
 
                 if (!textBox.textContent.trim())
                     this.#getBlockElement(textBox.firstChild, textBox, blockSelect.value);
@@ -133,7 +133,7 @@ class TextEditor {
      * @param {Event} event 
      */
     #textboxKeydown(index, event) {
-        this.#undo.saveUndoData(this.#textBoxes[index], new SelectionData(window.getSelection()));
+        this.#undo.saveData(this.#textBoxes[index], new SelectionData(window.getSelection()));
 
         const keyUpper = event.key.toUpperCase();
 
@@ -148,15 +148,18 @@ class TextEditor {
 
         event.preventDefault();
 
-        if (keyUpper === 'V') {
-            this.#undo.addUndo(this.#textBoxes[index]);
-            this.#paste(this.#textBoxes[index]);
-            return;
-        }
+        switch (keyUpper) {
+            case 'V':
+                this.#paste(this.#textBoxes[index]);
+                return;
 
-        if (keyUpper === 'Z') {
-            this.#undo.execute(this.#textBoxes[index]);
-            return;
+            case 'Z':
+                this.#undo.execute(this.#textBoxes[index]);
+                return;
+
+            case 'Y':
+                this.#undo.redo(this.#textBoxes[index]);
+                return;
         }
 
         const button = this.#tagButtonSets[index].find(b => b.dataset.shortcut?.toUpperCase() === keyUpper);
@@ -166,6 +169,8 @@ class TextEditor {
     }
 
     async #paste(textBox, contentType = 'text/html') {
+        this.#undo.add(textBox);
+
         const selection = window.getSelection();
 
         const setPosition = (parent, originalLength, cumulativeLength = 0) => {
@@ -318,7 +323,7 @@ class TextEditor {
 
         const selectionData = new SelectionData(selection);
 
-        this.#undo.addUndo(textBox);
+        this.#undo.add(textBox);
 
         if (this.#isBlockType(tagName)) {
             const blockMatches = new Set(selectedTextNodes.map(text => this.#getBlockElement(text, textBox, tagName)));
