@@ -1,4 +1,5 @@
 import SelectionData from "../models/selection-data.model.js";
+import UndoData from "../models/undo-data.model.js";
 
 export { undoManagementService as default };
 
@@ -9,20 +10,23 @@ class UndoManagementService {
     #savedSelectionData;
 
     /**
+     * Add an undo restore point and clear redo restore points
      * 
      * @param {HTMLElement} container The root element of the editable content
      * @param {Boolean} useSaved Whether to use the data saved with the saveData function
      */
     add(container, useSaved = false) {
         this.#undoHistories[container] ??= [];
+        this.#redoHistories[container] = [];
         this.#addTo(this.#undoHistories[container], container, useSaved);
     }
 
     /**
      * Undo the latest change
+     * 
      * @param {HTMLElement} container The root element of the editable content
      */
-    execute(container) {
+    undo(container) {
         this.#redoHistories[container] ??= [];
         this.#restore(
             this.#undoHistories[container],
@@ -31,6 +35,12 @@ class UndoManagementService {
         );
     }
 
+
+    /**
+     * Redo the latest undo, if still available
+     * 
+     * @param {HTMLElement} container The root element of the editable content
+     */
     redo(container) {
         this.#undoHistories[container] ??= [];
         this.#restore(
@@ -40,32 +50,21 @@ class UndoManagementService {
         );
     }
 
-    #restore(sourceList, targetList, container) {
-        if (!sourceList?.length)
-            return;
-
-        this.#addTo(targetList, container, false);
-
-        const undo = sourceList.pop();
-        container.innerHTML = undo.innerHTML;
-
-        const node = this.#traceRoute(container, undo.route);
-        window.getSelection().setPosition(node, undo.offset);
-    }
-
     /**
+     * Save a preliminary undo restore point, for use with add(..useSaved = true)
      * 
-     * @param {HTMLElement} containerElement 
+     * @param {HTMLElement} container 
      * @param {SelectionData} selectionData 
      */
-    saveData(containerElement, selectionData) {
-        this.#savedInnerHTML = containerElement.innerHTML;
+    saveData(container, selectionData) {
+        this.#savedInnerHTML = container.innerHTML;
         this.#savedSelectionData = selectionData;
     }
 
     /**
+     * Add a restore point to a provided list
      * 
-     * @param {Object[]} list 
+     * @param {UndoData[]} list 
      * @param {HTMLElement} container 
      * @param {Boolean} useSaved 
      */
@@ -84,11 +83,7 @@ class UndoManagementService {
             : selectionData.endOffset;
         const route = this.#getRoute(container, node);
         
-        const undo = {
-            innerHTML: innerHTML,
-            route: route,
-            offset: offset
-        };
+        const undo = new UndoData(innerHTML, route, offset);
 
         if (list.length > 29)
             list.shift();
@@ -97,6 +92,8 @@ class UndoManagementService {
     }
 
     /**
+     * Generates and returns instructions for how to navigate from the start node
+     * to its target descendant
      * 
      * @param {HTMLElement} start 
      * @param {Node} target 
@@ -124,6 +121,27 @@ class UndoManagementService {
     }
 
     /**
+     * Consume a restore point from one list after adding one to another
+     * 
+     * @param {UndoData[]} sourceList 
+     * @param {UndoData[]} targetList 
+     * @param {HTMLElement} container 
+     */
+    #restore(sourceList, targetList, container) {
+        if (!sourceList?.length)
+            return;
+
+        this.#addTo(targetList, container, false);
+
+        const undo = sourceList.pop();
+        container.innerHTML = undo.innerHTML;
+
+        const node = this.#traceRoute(container, undo.route);
+        window.getSelection().setPosition(node, undo.offset);
+    }
+
+    /**
+     * Uses the route data to navigate to and return a target node
      * 
      * @param {HTMLElement} start 
      * @param {Number[]} route 

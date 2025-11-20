@@ -154,7 +154,7 @@ class TextEditor {
                 return;
 
             case 'Z':
-                this.#undo.execute(this.#textBoxes[index]);
+                this.#undo.undo(this.#textBoxes[index]);
                 return;
 
             case 'Y':
