@@ -731,33 +731,11 @@ class TextEditor {
             return element;
 
         const newElement = document.createElement(newTag);
-
-        for (const child of Array.from(element.childNodes)) {
-            newElement.appendChild(child);
-        }
-
-        element.parentNode.insertBefore(newElement, element);
-        element.remove();
+        newElement.replaceChildren(...element.childNodes);
+        element.parentNode.replaceChild(newElement, element);
 
         return newElement;
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
