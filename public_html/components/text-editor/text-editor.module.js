@@ -155,9 +155,10 @@ class TextEditor {
             if (!linkUrl)
                 return;
 
-            const emailMatch = linkUrl.match(/(?!.*\.{2,})^((mailto:)?[\w\-\.\%\/\+]{1,64}\@[\w\.]{1,64}\.[a-zA-Z0-9\-]{1,32})$/);
+            const emailMatch = linkUrl.match(/(?!.*\.{2,})^(mailto:)?[\w\-\.\%\/\+]{1,64}\@[\w\.]{1,64}\.[a-zA-Z0-9\-]{1,32}$/);
+            console.log(emailMatch);
             if (emailMatch) {
-                if (!emailMatch[2])
+                if (!emailMatch[1])
                     linkUrl = `mailto:${linkUrl}`;
                 break;
             }
