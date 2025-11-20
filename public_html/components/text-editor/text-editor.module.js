@@ -138,7 +138,7 @@ class TextEditor {
         // TODO: alternate logic for if a link already exists
 
         const selection = window.getSelection();
-        let linkText = null;
+        let linkText;
 
         if (selection.isCollapsed) {
             linkText = prompt(button.dataset.textQuery, this.#getWord(selection));
@@ -147,9 +147,27 @@ class TextEditor {
                 return;
         }
         
-        let linkUrl = prompt(button.dataset.urlQuery, 'https://');
-        if (!linkUrl)
-            return;
+        let linkUrl;
+
+        do {
+            linkUrl = prompt(button.dataset.urlQuery, 'https://');
+            
+            if (!linkUrl)
+                return;
+
+            const emailMatch = linkUrl.match(/(?!.*\.{2,})^((mailto:)?[\w\-\.\%\/\+]{1,64}\@[\w\.]{1,64}\.[a-zA-Z0-9\-]{1,32})$/);
+            if (emailMatch) {
+                if (!emailMatch[2])
+                    linkUrl = `mailto:${linkUrl}`;
+                break;
+            }
+
+            if (!linkUrl.match(/^[a-z]{3,}:/))
+                linkUrl = `https://${linkUrl}`;
+
+            // Check if valid address
+        }
+        while(!linkUrl)
 
         this.#toggleTag(index, {
             name: 'a',
