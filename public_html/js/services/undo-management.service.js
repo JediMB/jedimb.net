@@ -4,9 +4,13 @@ import UndoData from "../models/undo-data.model.js";
 export { undoManagementService as default };
 
 class UndoManagementService {
+    /** @type {Map<HTMLElement, UndoData[]>} */
     #undoHistories = new Map();
+    /** @type {Map<HTMLElement, UndoData[]>} */
     #redoHistories = new Map();
+    /** @type {String} */
     #savedInnerHTML;
+    /** @type {SelectionData} */
     #savedSelectionData;
 
     /**
@@ -83,7 +87,7 @@ class UndoManagementService {
             : selectionData.endOffset;
         const route = this.#getRoute(container, node);
         
-        const undo = new UndoData(innerHTML, route, offset);
+        const undo = new UndoData({innerHTML, route, offset});
 
         if (list.length > 29)
             list.shift();

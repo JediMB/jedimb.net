@@ -363,7 +363,7 @@ class TextEditor {
      * 
      * @param {Text[]} textNodes
      * @param {string} tagName
-     * @param {Object} selectionData 
+     * @param {SelectionData} selectionData 
      */
     #applyInlineTag(textNodes, tagName, selectionData, textBox) {
         this.logFuncs && console.log('applyInlineTag()');
@@ -611,7 +611,7 @@ class TextEditor {
 
     /**
      * Inserts an element containing a text node
-     * @param {Object} selectionData 
+     * @param {SelectionData} selectionData 
      * @param {string} tagName
      */
     #insertElement(selectionData, tagName) {
