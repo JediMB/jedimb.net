@@ -35,6 +35,7 @@ class TextEditor {
     ].map(v => v.toUpperCase());
 
     #tagButtonSets;
+    #linkButtons;
     #textBoxes;
     #htmlOutputs;
 
@@ -43,8 +44,9 @@ class TextEditor {
     constructor() {
         const components = Array.from(document.querySelectorAll('text-editor-component'));
         const fieldsets = components.map(c => c.querySelector('fieldset'));
-        const blockSelects = components.map(c => c.querySelector('select[select-blocktype]'));
-        this.#tagButtonSets = components.map(c => Array.from(c.querySelectorAll('button[data-tag]')));
+        const blockSelects = fieldsets.map(fs => fs.querySelector('select[select-blocktype]'));
+        this.#tagButtonSets = fieldsets.map(fs => Array.from(fs.querySelectorAll('button[data-tag]')));
+        this.#linkButtons = fieldsets.map(fs => fs.querySelector('[btn-link]'));
         this.#textBoxes = components.map(c => c.querySelector('text-box'));
         this.#htmlOutputs = components.map(c => c.querySelector('html-output'));
 
@@ -75,6 +77,8 @@ class TextEditor {
                 blockSelects[boxIndex].value = identicalBlocks
                     ? selectedBlocks[0].tagName.toLowerCase()
                     : null;
+
+                this.#linkButtons[boxIndex].disabled = (new Set(selectedBlocks)).size !== 1;
             }
 
             this.#tagButtonSets[boxIndex].forEach(b => b.classList.toggle('active',
@@ -85,6 +89,7 @@ class TextEditor {
         components.forEach((component, index) => {
             const blockSelect = blockSelects[index];
             const buttons = this.#tagButtonSets[index];
+            const linkButton = this.#linkButtons[index];
             const textBox = this.#textBoxes[index];
             const keyInfo = component.querySelector('key-info');
 
@@ -94,10 +99,10 @@ class TextEditor {
                 option.textContent = name;
                 blockSelect.appendChild(option);
             });
-            blockSelect.addEventListener('change', () => this.#toggleTag(index, blockSelect.value));
+            blockSelect.addEventListener('change', () => this.#toggleTag(index, { name: blockSelect.value }));
 
             buttons.forEach(button => {
-                button.addEventListener('click', () => this.#toggleTag(index, button.dataset.tag));
+                button.addEventListener('click', () => this.#toggleTag(index, { name: button.dataset.tag }));
             });
 
             window.getSelection().setPosition(
@@ -118,6 +123,8 @@ class TextEditor {
                 keyInfo.textContent = `:: Key: ${event.key} ::\r\n\r\n  Shift:   ${event.shiftKey}\r\n  Control: ${event.ctrlKey}\r\n  Alt:     ${event.altKey}`;
             });
 
+            linkButton.addEventListener('click', () => this.#addLink(index, linkButton));
+
             component.querySelector('[btn-cleanup').addEventListener('click', () => {
                 this.#removeEmptyNodes(textBox);
                 this.#outputHtml(index);
@@ -125,6 +132,55 @@ class TextEditor {
 
             this.#outputHtml(index);
         });
+    }
+
+    #addLink(index, button) {
+        // TODO: alternate logic for if a link already exists
+
+        const selection = window.getSelection();
+        let linkText = null;
+
+        if (selection.isCollapsed) {
+            linkText = prompt(button.dataset.textQuery, this.#getWord(selection));
+
+            if (!linkText)
+                return;
+        }
+        
+        let linkUrl = prompt(button.dataset.urlQuery, 'https://');
+        if (!linkUrl)
+            return;
+
+        this.#toggleTag(index, {
+            name: 'a',
+            content: linkText,
+            attributes: {
+                href: linkUrl,
+                ...(linkUrl.includes('://') && { target: '_blank' })
+            }
+        });
+    }
+
+    /**
+     * 
+     * @param {Selection} selection 
+     */
+    #getWord({anchorNode, anchorOffset}) {
+        if (
+            anchorOffset === 0
+            || !anchorNode.textContent[anchorOffset-1].trim()
+            || anchorOffset === anchorNode.textContent.length
+            || !anchorNode.textContent[anchorOffset].trim()
+        )
+        return '';
+
+        const text = anchorNode.textContent;
+
+        return text.substring(
+            text.lastIndexOf(' ', anchorOffset) + 1,
+            text.indexOf(' ', anchorOffset)
+        );
+
     }
 
     /**
@@ -165,7 +221,7 @@ class TextEditor {
         const button = this.#tagButtonSets[index].find(b => b.dataset.shortcut?.toUpperCase() === keyUpper);
 
         if (button)
-            this.#toggleTag(index, button.dataset.tag);
+            this.#toggleTag(index, { name: button.dataset.tag });
     }
 
     async #paste(textBox, contentType = 'text/html') {
@@ -225,8 +281,6 @@ class TextEditor {
                     textRows.push({tagName: match[1].toUpperCase(), content: match[2]});
                     text = text.substring(match.index + match[0].length);
                 }
-
-                console.log(textRows);
 
                 const currentBlockTag = this.#getBlockElement(node, textBox).tagName;
 
@@ -303,15 +357,19 @@ class TextEditor {
 
     /**
      * Add or remove one or more tags of the specified type
+     * 
      * @param {Number} index 
-     * @param {string} tagName 
+     * @param {Object} tagInfo
+     * @param {string} tagInfo.name
+     * @param {string} tagInfo.content 
+     * @param {Object} tagInfo.attributes 
      */
-    #toggleTag(index, tagName) {
+    #toggleTag(index, tagInfo) {
         this.logFuncs && console.clear();
 
         const selection = window.getSelection();
         const textBox = this.#textBoxes[index];
-        tagName = tagName.toUpperCase();
+        tagInfo.name = tagInfo.name.toUpperCase();
 
         if (!textBox.contains(selection.anchorNode) || !textBox.contains(selection.focusNode))
             return;
@@ -319,26 +377,26 @@ class TextEditor {
         const selectedTextNodes = this.#getTextNodesFromSelection();
 
         if (selectedTextNodes.length < 1)
-            return; // Create element at caret and append new text node?
+            return;
 
         const selectionData = new SelectionData(selection);
 
         this.#undo.add(textBox);
 
-        if (this.#isBlockType(tagName)) {
+        if (this.#isBlockType(tagInfo.name)) {
             const blockMatches = new Set(selectedTextNodes.map(text => this.#getBlockElement(text, textBox, tagName)));
 
             for (const match of blockMatches) {
-                this.#replaceElement(match, tagName);
+                this.#replaceElement(match, tagInfo.name);
             }
         }
         else {
-            const ancestorMatches = selectedTextNodes.map(n => this.#getMatchingAncestor(n, tagName, textBox));
+            const ancestorMatches = selectedTextNodes.map(n => this.#getMatchingAncestor(n, tagInfo.name, textBox));
             const noMatches = ancestorMatches.every(match => !match);
 
             switch (noMatches) {
                 case true:
-                    this.#applyInlineTag(selectedTextNodes, tagName, selectionData, textBox);
+                    this.#applyInlineTag(selectedTextNodes, tagInfo, selectionData, textBox);
                     break;
             
                 case false:
@@ -349,7 +407,7 @@ class TextEditor {
                         break;
                     }
 
-                    this.#applyInlineTag(selectedTextNodes, tagName, selectionData, textBox);
+                    this.#applyInlineTag(selectedTextNodes, tagInfo, selectionData, textBox);
                     break;
             }
 
@@ -362,10 +420,10 @@ class TextEditor {
     /**
      * 
      * @param {Text[]} textNodes
-     * @param {string} tagName
+     * @param {Object} tagInfo
      * @param {SelectionData} selectionData 
      */
-    #applyInlineTag(textNodes, tagName, selectionData, textBox) {
+    #applyInlineTag(textNodes, tagInfo, selectionData, textBox) {
         this.logFuncs && console.log('applyInlineTag()');
 
         let collapsedOffset = false;
@@ -377,7 +435,7 @@ class TextEditor {
                 || selectionData.startOffset === selectionData.startNode.textContent.length
                 || !selectionData.startNode.textContent[selectionData.startOffset].trim()
             ) {
-                this.#insertElement(selectionData, tagName);
+                this.#insertElement(selectionData, tagInfo);
                 return;
             }
             const start = textNodes[0].textContent.lastIndexOf(' ', selectionData.startOffset) + 1;
@@ -424,11 +482,11 @@ class TextEditor {
             }
 
             latestBlock = newBlock;
-            this.#encloseNodes(blockMembers, tagName);
+            this.#encloseNodes(blockMembers, tagInfo);
             blockMembers = [node];
         }
 
-        this.#encloseNodes(blockMembers, tagName);
+        this.#encloseNodes(blockMembers, tagInfo);
 
         if (typeof collapsedOffset === 'number') {
             selectionData.startOffset = selectionData.endOffset = collapsedOffset;
@@ -438,15 +496,22 @@ class TextEditor {
     /**
      * 
      * @param {Text[]} nodes 
-     * @param {string} tagName
+     * @param {Object} tagInfo
+     * @param {String} tagInfo.name
+     * @param {String} tagInfo.content
+     * @param {Object} tagInfo.attributes
      */
-    #encloseNodes(nodes, tagName) {
+    #encloseNodes(nodes, tagInfo) {
         this.logFuncs && console.log('encloseNodes()');
 
-        const newElement = document.createElement(tagName);
+        const newElement = document.createElement(tagInfo.name);
+        
+        for (const attribute in tagInfo.attributes) {
+            newElement.setAttribute(attribute, tagInfo.attributes[attribute]);
+        }
 
         if (nodes.length === 1) {
-            if (nodes[0].tagName === tagName)
+            if (nodes[0].tagName === tagInfo.name)
                 return;
 
             nodes[0].parentNode.insertBefore(newElement, nodes[0]);
@@ -474,10 +539,10 @@ class TextEditor {
         });
 
         ancestor.insertBefore(newElement, relevantChildren[0]);
-        relevantChildren.forEach(c => newElement.appendChild(c));
+        newElement.replaceChildren(...relevantChildren);
 
         for (const child of relevantChildren) {
-            if (child?.tagName === tagName) {
+            if (child?.tagName === tagInfo.name) {
                 Array.from(child.childNodes).forEach(grandchild => {
                     child.parentNode.insertBefore(grandchild, child);
                 });
@@ -612,13 +677,21 @@ class TextEditor {
     /**
      * Inserts an element containing a text node
      * @param {SelectionData} selectionData 
-     * @param {string} tagName
+     * @param {Object} tagInfo
+     * @param {String} tagInfo.name
+     * @param {String} tagInfo.content
+     * @param {Object} tagInfo.attributes
      */
-    #insertElement(selectionData, tagName) {
+    #insertElement(selectionData, tagInfo) {
         this.logFuncs && console.log('insertElement()');
 
-        const element = document.createElement(tagName);
-        element.appendChild(document.createTextNode(''));
+        const element = document.createElement(tagInfo.name);
+
+        for (const attribute in tagInfo.attributes) {
+            element.setAttribute(attribute, tagInfo.attributes[attribute]);
+        }
+
+        element.appendChild(document.createTextNode(tagInfo.content ?? ''));
         
         const range = document.createRange();
         range.setStart(selectionData.startNode, selectionData.startOffset);

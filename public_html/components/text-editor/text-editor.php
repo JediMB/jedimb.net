@@ -17,6 +17,9 @@ Component::addJSModule(__FILE__);
         <button btn-bold data-shortcut="B" data-tag="B"><b>B</b></button>
         <button btn-italics data-shortcut="I" data-tag="I"><i>I</i></button>
         <button btn-underline data-shortcut="U" data-tag="U"><u>U</u></button>
+        <button btn-link
+            data-text-query="Please input display text:"
+            data-url-query="Please input link:">Link</button>
         <button btn-cleanup>Clean Up</button>
     </fieldset>
 </div>
