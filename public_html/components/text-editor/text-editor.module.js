@@ -216,7 +216,7 @@ class TextEditorComponent extends HTMLElement {
             collapsedOffset = selectionData.startOffset - start;
 
             selectionData.startOffset = start;
-            selectionData.endOffset = (end === -1) ? textNodes[0].textContent.length : end;
+            selectionData.endOffset = (end < 0) ? textNodes[0].textContent.length : end;
         }
 
         if (textNodes[0] === selectionData.startNode && selectionData.startOffset > 0) {
@@ -456,11 +456,14 @@ class TextEditorComponent extends HTMLElement {
 
         const text = anchorNode.textContent;
 
+        const end = text.indexOf(' ', anchorOffset);
+
         return text.substring(
             text.lastIndexOf(' ', anchorOffset) + 1,
-            text.indexOf(' ', anchorOffset)
+            (end < 0)
+                ? text.length
+                : end
         );
-
     }
 
     /**
