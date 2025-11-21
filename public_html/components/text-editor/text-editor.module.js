@@ -23,7 +23,7 @@ class TextEditorComponent extends HTMLElement {
         'A', 'C', 'X'
     ].map(v => v.toUpperCase());
 
-    #regexMatchAttributes = /<[a-zA-z\-]*( [^>]*)>/g;
+    #regexMatchAttributes = /<(?!a )[a-zA-z][a-zA-z0-9\-]*( [^>]*)>/g;
     #regexMatchBlocks = new RegExp(
         '<(?<tag>' +
         this.#blockElementTags.join('|') +
@@ -140,7 +140,7 @@ class TextEditorComponent extends HTMLElement {
         }
         while(!linkUrl)
 
-        this.#toggleTag(index, {
+        this.#toggleTag({
             name: 'a',
             content: linkText,
             attributes: {
@@ -566,8 +566,6 @@ class TextEditorComponent extends HTMLElement {
 
     /**
      * DEBUG FUNCTION: Outputs the innerHTML of the textBox as textContent of the htmlOutput
-     * 
-     * @param {Number} index 
      */
     #outputHtml() {
         const textBox = this.#textBox;
@@ -612,6 +610,17 @@ class TextEditorComponent extends HTMLElement {
             }
         }
 
+        const stripUnwantedLinkAttributes = (node) => {
+            /** @type {HTMLAnchorElement[]} */
+            const links = node.querySelectorAll?.call(this, 'a');
+            for (const link of links) {
+                for (const attribute of Array.from(link.attributes)) {
+                    if (!['href', 'target'].find(attrName => attrName === attribute.localName))
+                        link.removeAttribute(attribute.localName);
+                }
+            }
+        }
+
         const pasted = await navigator.clipboard.read();
         for (const item of pasted) {
             if (item.types.includes(contentType)) {
@@ -625,9 +634,9 @@ class TextEditorComponent extends HTMLElement {
 
                 let text = await (await item.getType('text/html')).text();
 
-                text = text.replace(this.#regexMatchAttributes, '')
-                    .replace(/\s{2,}/g, '')
-                    .replace(this.#regexMatchDisallowedElements, '');
+                 text = text.replace(this.#regexMatchAttributes, '')
+                     .replace(/\s{2,}/g, '')
+                     .replace(this.#regexMatchDisallowedElements, '');
 
                 const textRows = [];
 
@@ -652,11 +661,14 @@ class TextEditorComponent extends HTMLElement {
                     const parentElement = node.parentElement;
                     const parentLength = parentElement.textContent.length;
                     parentElement.innerHTML = parentElement.innerHTML.substring(0, offset) + textRows.shift().content + parentElement.innerHTML.substring(offset);
+                    stripUnwantedLinkAttributes(parentElement);
                     setPosition(parentElement, parentLength - offset);
                 }
 
-                if (textRows.length === 0)
+                if (textRows.length === 0) {
+                    this.#outputHtml();
                     return;
+                }
 
                 const newBlock = this.#addParagraphBreak(selection.anchorNode, selection.anchorOffset);
                 const blockLength = newBlock.textContent.length;
@@ -665,11 +677,13 @@ class TextEditorComponent extends HTMLElement {
                 if (!lastTag || lastTag === currentBlockTag) {
                     const lastRow = textRows.pop().content;
                     newBlock.innerHTML = lastRow + newBlock.innerHTML;
+                    stripUnwantedLinkAttributes(newBlock);
                 }
 
                 for (const row of textRows) {
                     const betweenBlock = document.createElement(row.tagName ?? this.#blockElementTags[0]);
                     betweenBlock.innerHTML = row.content;
+                    stripUnwantedLinkAttributes(betweenBlock);
                     newBlock.parentNode.insertBefore(betweenBlock, newBlock);
                 }
 
