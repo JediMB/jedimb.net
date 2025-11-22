@@ -38,6 +38,10 @@ class TextEditorComponent extends HTMLElement {
     #allowedElements = ['br', ...this.#blockElementTags];
     #regexMatchDisallowedElements;
 
+    #fieldset;
+    #blockSelector;
+    #tagButtons;
+    #linkButton;
     #textBox;
     #htmlOutput;
 
@@ -45,46 +49,46 @@ class TextEditorComponent extends HTMLElement {
         const self = this.#self;
         self.style.display = 'none';
 
-        const textBox = this.#textBox = self.querySelector('text-box');
-
-        const fieldset = self.querySelector('fieldset');
-        const blockSelector = fieldset.querySelector('[select-blocktype]');
-        const tagButtons = Array.from(fieldset.querySelectorAll('[data-tag]'));
-        const linkButton = fieldset.querySelector('[btn-link]');
+        this.#fieldset = self.querySelector('fieldset');
+        this.#blockSelector = fieldset.querySelector('[select-blocktype]');
+        this.#tagButtons = Array.from(fieldset.querySelectorAll('[data-tag]'));
+        this.#linkButton = fieldset.querySelector('[btn-link]');
+        this.#textBox = self.querySelector('text-box');
         this.#htmlOutput = self.querySelector('html-output');
+
         const keyInfo = self.querySelector('key-info');
         const cleanUp = fieldset.querySelector('[btn-cleanup');
 
-        this.#allowedElements.push(...tagButtons.map(btn => btn.dataset.tag?.toLowerCase()));
+        this.#allowedElements.push(...this.#tagButtons.map(btn => btn.dataset.tag?.toLowerCase()));
         this.#regexMatchDisallowedElements = new RegExp('(<\/?(?!(' + this.#allowedElements.join('|') + ')\\b)([a-z]*>))', "gi");
 
-        document.addEventListener('selectionchange', () => this.#onSelectionChange(fieldset, blockSelector, tagButtons, linkButton));
+        document.addEventListener('selectionchange', () => this.#onSelectionChange());
 
         for (const [tag, name] of this.#blockElementData) {
             const option = document.createElement('option');
             option.value  = tag;
             option.textContent = name;
-            blockSelector.appendChild(option);
+            this.#blockSelector.appendChild(option);
         }
-        blockSelector.addEventListener('change', () => this.#toggleTag({ name: blockSelector.value }));
+        this.#blockSelector.addEventListener('change', () => this.#toggleTag({ name: this.#blockSelector.value }));
 
-        tagButtons.forEach(button => button.addEventListener('click', () => this.#toggleTag({ name: button.dataset.tag })));
+        this.#tagButtons.forEach(button => button.addEventListener('click', () => this.#toggleTag({ name: button.dataset.tag })));
 
-        textBox.addEventListener('input', () => {
-            this.#undo.add(textBox, true);
+        this.#textBox.addEventListener('input', () => {
+            this.#undo.add(this.#textBox, true);
 
-            if (!textBox.textContent.trim())
-                this.#getBlockElement(textBox.firstChild, blockSelector.value);
+            if (!this.#textBox.textContent.trim())
+                this.#getBlockElement(this.#textBox.firstChild, this.#blockSelector.value);
 
             this.#outputHtml();
         });
 
-        textBox.addEventListener('keydown', event => {
-            this.#textboxKeydown(event, tagButtons);
+        this.#textBox.addEventListener('keydown', event => {
+            this.#textboxKeydown(event, this.#tagButtons);
             /* DEBUG FUNCTIONALITY */ keyInfo.textContent = `:: Key: ${event.key} ::\r\n\r\n  Shift:   ${event.shiftKey}\r\n  Control: ${event.ctrlKey}\r\n  Alt:     ${event.altKey}`;
         });
 
-        linkButton.addEventListener('click', () => this.#addLink(linkButton));
+        this.#linkButton.addEventListener('click', () => this.#addLink(this.#linkButton));
 
         cleanUp.addEventListener('click', () => {
             this.#removeEmptyNodes();
@@ -94,10 +98,14 @@ class TextEditorComponent extends HTMLElement {
         self.style.removeProperty('display');
 
         window.getSelection().setPosition(
-            this.#getBlockElement(textBox.firstChild, textBox, blockSelector.value), 0
+            this.#getBlockElement(this.#textBox.firstChild, this.#blockSelector.value), 0
         );
 
         this.#outputHtml();
+    }
+
+    disconnectedCallback() {
+        document.removeEventListener('selectionchange', () => this.#onSelectionChange());
     }
 
     /**
@@ -403,9 +411,6 @@ class TextEditorComponent extends HTMLElement {
             else
                 return [];
 
-        // if (!(['forward', 'backward'].includes(selection.direction)))
-        //     return [];
-
         const textNodes = [];
 
         let foundStart = false,
@@ -526,18 +531,14 @@ class TextEditorComponent extends HTMLElement {
     }
 
     /**
-     * 
-     * @param {HTMLFieldSetElement} fieldset 
-     * @param {HTMLSelectElement} blockSelector
-     * @param {HTMLButtonElement[]} tagButtons
-     * @param {HTMLButtonElement} linkButton
+     * SelectionChange event handler for the document root
      */
-    #onSelectionChange(fieldset, blockSelector, tagButtons, linkButton) {
+    #onSelectionChange() {
         const selection = window.getSelection();
         const textBox = this.#textBox;
         const isCurrentTextbox = textBox.contains(selection.anchorNode) && textBox.contains(selection.focusNode);
 
-        fieldset.disabled = !isCurrentTextbox;
+        this.#fieldset.disabled = !isCurrentTextbox;
 
         if (!isCurrentTextbox)
             return;
@@ -545,22 +546,22 @@ class TextEditorComponent extends HTMLElement {
         const selectedTextNodes = this.#getTextNodesFromSelection(new SelectionData(selection));
 
         if (selectedTextNodes.length === 0)
-                [blockSelector.value] = this.#blockElementTags;
+                [this.#blockSelector.value] = this.#blockElementTags;
             else {
-                const selectedBlocks = selectedTextNodes.map(n => this.#getBlockElement(n, textBox));
+                const selectedBlocks = selectedTextNodes.map(n => this.#getBlockElement(n));
 
                 const identicalBlocks = selectedBlocks.length > 0
                     && selectedBlocks.every((val, _, arr) => val.tagName === arr[0].tagName);
 
-                blockSelector.value = identicalBlocks
+                this.#blockSelector.value = identicalBlocks
                     ? selectedBlocks[0].tagName.toLowerCase()
                     : null;
 
-                linkButton.disabled = (new Set(selectedBlocks)).size !== 1;
+                this.#linkButton.disabled = (new Set(selectedBlocks)).size !== 1;
             }
 
-            tagButtons.forEach(b => b.classList.toggle('active',
-                selectedTextNodes.every(n => !!this.#getMatchingAncestor(n, b.dataset.tag, textBox))
+            this.#tagButtons.forEach(b => b.classList.toggle('active',
+                selectedTextNodes.every(n => !!this.#getMatchingAncestor(n, b.dataset.tag))
             ));
     }
 
@@ -655,7 +656,7 @@ class TextEditorComponent extends HTMLElement {
                     text = text.substring(match.index + match[0].length);
                 }
 
-                const currentBlockTag = this.#getBlockElement(node, textBox).tagName;
+                const currentBlockTag = this.#getBlockElement(node).tagName;
 
                 if (!textRows[0].tagName || textRows[0].tagName === currentBlockTag) {
                     const parentElement = node.parentElement;
