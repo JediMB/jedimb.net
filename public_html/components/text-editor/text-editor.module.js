@@ -72,7 +72,7 @@ class TextEditorComponent extends HTMLElement {
         }
         this.#blockSelector.addEventListener('change', () => this.#toggleTag({ name: this.#blockSelector.value }));
 
-        this.#tagButtons.forEach(button => button.addEventListener('click', () => this.#toggleTag({ name: button.dataset.tag })));
+        this.#tagButtons.forEach(button => button.dataset.shortcut && button.addEventListener('click', () => this.#toggleTag({ name: button.dataset.tag })));
 
         this.#textBox.addEventListener('input', () => {
             this.#undo.add(this.#textBox, true);
@@ -535,8 +535,8 @@ class TextEditorComponent extends HTMLElement {
      */
     #onSelectionChange() {
         const selection = window.getSelection();
-        const textBox = this.#textBox;
-        const isCurrentTextbox = textBox.contains(selection.anchorNode) && textBox.contains(selection.focusNode);
+        const isCurrentTextbox = this.#textBox.contains(selection.anchorNode)
+                              && this.#textBox.contains(selection.focusNode);
 
         this.#fieldset.disabled = !isCurrentTextbox;
 
@@ -561,7 +561,7 @@ class TextEditorComponent extends HTMLElement {
             }
 
             this.#tagButtons.forEach(b => b.classList.toggle('active',
-                selectedTextNodes.every(n => !!this.#getMatchingAncestor(n, b.dataset.tag))
+                selectedTextNodes.length && selectedTextNodes.every(n => !!this.#getMatchingAncestor(n, b.dataset.tag))
             ));
     }
 
