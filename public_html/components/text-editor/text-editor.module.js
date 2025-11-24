@@ -1,7 +1,7 @@
 import SelectionData from "/js/models/selection-data.model.js";
 import undoManagementService from "/js/services/undo-management.service.js";
 
-class TextEditorComponent extends HTMLElement {
+customElements.define('text-editor-component', class TextEditorComponent extends HTMLElement {
     /** @type {TextEditorComponent} */
     #self;
     #undo = undoManagementService;
@@ -42,6 +42,8 @@ class TextEditorComponent extends HTMLElement {
     #tagButtons;
     #linkButton;
     #textBox;
+    /** @type {MutationObserver} */
+    #mutationObserver;
     #htmlOutput;
 
     connectedCallback() {
@@ -73,7 +75,10 @@ class TextEditorComponent extends HTMLElement {
             option.textContent = name;
             this.#blockSelector.appendChild(option);
         }
-        this.#blockSelector.addEventListener('change', () => this.#toggleTag({ name: this.#blockSelector.value }));
+        this.#blockSelector.addEventListener('change', (event) => {
+            event.stopPropagation();
+            this.#toggleTag({ name: this.#blockSelector.value });
+        });
 
         this.#tagButtons.forEach(button => button.dataset.shortcut && button.addEventListener('click', () => this.#toggleTag({ name: button.dataset.tag })));
 
@@ -93,7 +98,19 @@ class TextEditorComponent extends HTMLElement {
             /* DEBUG FUNCTIONALITY */ keyInfo.textContent = `:: Key: ${event.key} ::\r\n\r\n  Shift:   ${event.shiftKey}\r\n  Control: ${event.ctrlKey}\r\n  Alt:     ${event.altKey}`;
         });
 
-        textarea.addEventListener('change', () => {
+        this.#mutationObserver = new MutationObserver(() => {
+            const event = new CustomEvent('change', {
+                bubbles: true,
+                cancelable: true,
+                detail: this.getContent()
+            });
+            this.dispatchEvent(event);
+        });
+        this.#mutationObserver.observe(this.#textBox, {characterData: true, childList: true, subtree: true});
+
+        textarea.addEventListener('change', (event) => {
+            event.stopPropagation();
+
             const lines = textarea.value.split(/\r?\n|\r|\n/g);
             this.#textBox.innerHTML = lines.map(line => line.trim()).join('');
         });
@@ -103,15 +120,13 @@ class TextEditorComponent extends HTMLElement {
             this.#outputHtml();
         });
 
-        htmlCheck.addEventListener('change', () => {
+        htmlCheck.addEventListener('change', (event) => {
+            event.stopPropagation();
+
             const editHtml = htmlCheck.checked;
 
-            if (editHtml) {
-                let htmlOutput = this.#textBox.innerHTML;
-                for (const tag of this.#blockElementTags)
-                    htmlOutput = htmlOutput.replaceAll(`><${tag}>`, `>\r\n<${tag}>`);
-                textarea.value = htmlOutput.replaceAll('><!--', '>\r\n<!--');
-            }
+            if (editHtml)
+                textarea.value = this.getContent(true);
 
             wrapper.classList.toggle('hidden', editHtml);
             textarea.classList.toggle('hidden', !editHtml);
@@ -128,6 +143,22 @@ class TextEditorComponent extends HTMLElement {
 
     disconnectedCallback() {
         document.removeEventListener('selectionchange', () => this.#onSelectionChange());
+    }
+
+    /**
+     * @param {Boolean} doFormat 
+     * @returns {String}
+     */
+    getContent(doFormat = false) {
+        let htmlOutput = this.#textBox.innerHTML;
+
+        if (!doFormat)
+            return htmlOutput;
+
+        for (const tag of this.#blockElementTags)
+            htmlOutput = htmlOutput.replaceAll(`><${tag}>`, `>\r\n<${tag}>`);
+
+        return htmlOutput.replaceAll('><!--', '>\r\n<!--');
     }
 
     /**
@@ -944,5 +975,4 @@ class TextEditorComponent extends HTMLElement {
         this.#makeSelection(selectionData);
         this.#outputHtml();
     }
-}
-customElements.define('text-editor-component', TextEditorComponent);
+});
