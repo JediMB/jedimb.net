@@ -349,6 +349,77 @@ class TextEditorComponent extends HTMLElement {
     }
 
     /**
+     * Extracts the selected text from the provided list of elements
+     * 
+     * @param {Text[]} textNodes 
+     * @param {HTMLElement[]} elements 
+     * @param {SelectionData} selectionData
+     */
+    #extractSelectionFromTags(textNodes, elements, selectionData) {
+        this.logFuncs && console.log('removeInlineTag()');
+
+        if (textNodes.length !== elements.length) {
+            console.error('removeInlineTag called without matching in-data');
+            return;
+        }
+
+        const uniqueElements = new Set(elements);
+        const tagName = elements[0].tagName;
+
+        if (!selectionData.isCollapsed) {
+            if (textNodes[0] === selectionData.startNode && selectionData.startOffset > 0) {
+                const node = textNodes[0];
+                const newText = document.createTextNode(node.textContent.substring(0, selectionData.startOffset));
+                const newElement = document.createElement(tagName);
+                newElement.appendChild(newText);
+                node.parentNode.insertBefore(newElement, node);
+                node.textContent = node.textContent.substring(selectionData.startOffset);
+
+                if (textNodes.length === 1)
+                    selectionData.endOffset -= selectionData.startOffset;
+
+                selectionData.startOffset = 0;
+            }
+
+            if (textNodes[textNodes.length-1] === selectionData.endNode && selectionData.endOffset < textNodes[textNodes.length-1].textContent.length) {
+                const node = textNodes[textNodes.length-1];
+                const newText = document.createTextNode(node.textContent.substring(selectionData.endOffset));
+                const newElement = document.createElement(tagName);
+                newElement.appendChild(newText);
+                node.parentNode.insertBefore(newElement, node);
+                node.parentNode.insertBefore(node, newElement);
+                node.textContent = node.textContent.substring(0, selectionData.endOffset);
+
+                selectionData.endOffset = node.textContent.length;
+            }
+        }
+
+        for (const element of uniqueElements) {
+            const parent = element.parentNode;
+            const children = Array.from(element.childNodes);
+            children.forEach(child => parent.insertBefore(child, element));
+            element.remove();
+
+            const firstChild = children[0];
+            const lastChild = children[children.length-1];
+            if (firstChild.nodeType === Node.TEXT_NODE && firstChild.previousSibling?.nodeType === Node.TEXT_NODE) {
+                if (element === elements[0]) {
+                    selectionData.startOffset += firstChild.previousSibling.textContent.length;
+
+                    if (selectionData.startNode === selectionData.endNode)
+                        selectionData.endOffset += firstChild.previousSibling.textContent.length;
+                }
+                firstChild.textContent = firstChild.previousSibling.textContent + firstChild.textContent;
+                firstChild.previousSibling.remove();
+            }
+            else if (lastChild.nodeType === Node.TEXT_NODE && lastChild.nextSibling?.nodeType === Node.TEXT_NODE) {
+                lastChild.textContent += lastChild.nextSibling.textContent;
+                lastChild.nextSibling.remove();
+            }
+        }
+    }
+
+    /**
      * Searches through parent elements for a block element, until an end node is reached.
      * Creates a new block element in the endNode if none can be found.
      * @param {Node} childNode 
@@ -733,76 +804,6 @@ class TextEditorComponent extends HTMLElement {
     }
 
     /**
-     * Extracts the selected text from the provided list of elements
-     * 
-     * @param {Text[]} selectedText 
-     * @param {HTMLElement[]} elements 
-     */
-    #removeInlineTag(textNodes, elements, selectionData) {
-        this.logFuncs && console.log('removeInlineTag()');
-
-        if (textNodes.length !== elements.length) {
-            console.error('removeInlineTag called without matching in-data');
-            return;
-        }
-
-        const uniqueElements = new Set(elements);
-        const tagName = elements[0].tagName;
-
-        if (!selectionData.isCollapsed) {
-            if (textNodes[0] === selectionData.startNode && selectionData.startOffset > 0) {
-                const node = textNodes[0];
-                const newText = document.createTextNode(node.textContent.substring(0, selectionData.startOffset));
-                const newElement = document.createElement(tagName);
-                newElement.appendChild(newText);
-                node.parentNode.insertBefore(newElement, node);
-                node.textContent = node.textContent.substring(selectionData.startOffset);
-
-                if (textNodes.length === 1)
-                    selectionData.endOffset -= selectionData.startOffset;
-
-                selectionData.startOffset = 0;
-            }
-
-            if (textNodes[textNodes.length-1] === selectionData.endNode && selectionData.endOffset < textNodes[textNodes.length-1].textContent.length) {
-                const node = textNodes[textNodes.length-1];
-                const newText = document.createTextNode(node.textContent.substring(selectionData.endOffset));
-                const newElement = document.createElement(tagName);
-                newElement.appendChild(newText);
-                node.parentNode.insertBefore(newElement, node);
-                node.parentNode.insertBefore(node, newElement);
-                node.textContent = node.textContent.substring(0, selectionData.endOffset);
-
-                selectionData.endOffset = node.textContent.length;
-            }
-        }
-
-        for (const element of uniqueElements) {
-            const parent = element.parentNode;
-            const children = Array.from(element.childNodes);
-            children.forEach(child => parent.insertBefore(child, element));
-            element.remove();
-
-            const firstChild = children[0];
-            const lastChild = children[children.length-1];
-            if (firstChild.nodeType === Node.TEXT_NODE && firstChild.previousSibling?.nodeType === Node.TEXT_NODE) {
-                if (element === elements[0]) {
-                    selectionData.startOffset += firstChild.previousSibling.textContent.length;
-
-                    if (selectionData.startNode === selectionData.endNode)
-                        selectionData.endOffset += firstChild.previousSibling.textContent.length;
-                }
-                firstChild.textContent = firstChild.previousSibling.textContent + firstChild.textContent;
-                firstChild.previousSibling.remove();
-            }
-            else if (lastChild.nodeType === Node.TEXT_NODE && lastChild.nextSibling?.nodeType === Node.TEXT_NODE) {
-                lastChild.textContent += lastChild.nextSibling.textContent;
-                lastChild.nextSibling.remove();
-            }
-        }
-    }
-
-    /**
      * Replaces an element with one with a new tag that takes the old element's children
      * 
      * @param {HTMLElement} element 
@@ -909,7 +910,7 @@ class TextEditorComponent extends HTMLElement {
                     const actualMatches = ancestorMatches.filter(match => match !== false);
 
                     if (actualMatches.length === selectedTextNodes.length) {
-                        this.#removeInlineTag(selectedTextNodes, actualMatches, selectionData);
+                        this.#extractSelectionFromTags(selectedTextNodes, actualMatches, selectionData);
                         break;
                     }
 
