@@ -50,14 +50,14 @@ class TextEditorComponent extends HTMLElement {
         self.style.display = 'none';
 
         this.#fieldset = self.querySelector('fieldset');
-        this.#blockSelector = fieldset.querySelector('[select-blocktype]');
-        this.#tagButtons = Array.from(fieldset.querySelectorAll('[data-tag]'));
-        this.#linkButton = fieldset.querySelector('[btn-link]');
+        this.#blockSelector = this.#fieldset.querySelector('[select-blocktype]');
+        this.#tagButtons = Array.from(this.#fieldset.querySelectorAll('[data-tag]'));
+        this.#linkButton = this.#fieldset.querySelector('[btn-link]');
         this.#textBox = self.querySelector('text-box');
         this.#htmlOutput = self.querySelector('html-output');
 
         const keyInfo = self.querySelector('key-info');
-        const cleanUp = fieldset.querySelector('[btn-cleanup');
+        const cleanUp = this.#fieldset.querySelector('[btn-cleanup');
 
         this.#allowedElements.push(...this.#tagButtons.map(btn => btn.dataset.tag?.toLowerCase()));
         this.#regexMatchDisallowedElements = new RegExp('(<\/?(?!(' + this.#allowedElements.join('|') + ')\\b)([a-z]*>))', "gi");
