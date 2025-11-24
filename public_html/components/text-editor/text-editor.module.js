@@ -8,11 +8,10 @@ class TextEditorComponent extends HTMLElement {
 
     #blockElementData = [
         ['div', 'Text'],
-        ['h2', 'Heading'],
-        ['h3', 'Heading 2'],
-        ['h4', 'Heading 3'],
-        ['h5', 'Heading 4'],
-        ['p', 'Paragraph']
+        ['p', 'Paragraph'],
+        ['h3', 'Subheading 1'],
+        ['h4', 'Subheading 2'],
+        ['h5', 'Subheading 3']
     ];
     #blockElementTags = this.#blockElementData.map(pair => pair[0]);
     #defaultKeysUpper = [
@@ -56,6 +55,10 @@ class TextEditorComponent extends HTMLElement {
         this.#textBox = self.querySelector('text-box');
         this.#htmlOutput = self.querySelector('html-output');
 
+        const htmlCheck = self.querySelector('[checkbox-html]');
+        const wrapper = self.querySelector('text-box-wrapper');
+        const textarea = self.querySelector('[html-editor]');
+
         const keyInfo = self.querySelector('key-info');
         const cleanUp = this.#fieldset.querySelector('[btn-cleanup');
 
@@ -74,6 +77,8 @@ class TextEditorComponent extends HTMLElement {
 
         this.#tagButtons.forEach(button => button.dataset.shortcut && button.addEventListener('click', () => this.#toggleTag({ name: button.dataset.tag })));
 
+        this.#linkButton.addEventListener('click', () => this.#addLink(this.#linkButton));
+
         this.#textBox.addEventListener('input', () => {
             this.#undo.add(this.#textBox, true);
 
@@ -88,11 +93,28 @@ class TextEditorComponent extends HTMLElement {
             /* DEBUG FUNCTIONALITY */ keyInfo.textContent = `:: Key: ${event.key} ::\r\n\r\n  Shift:   ${event.shiftKey}\r\n  Control: ${event.ctrlKey}\r\n  Alt:     ${event.altKey}`;
         });
 
-        this.#linkButton.addEventListener('click', () => this.#addLink(this.#linkButton));
+        textarea.addEventListener('change', () => {
+            const lines = textarea.value.split(/\r?\n|\r|\n/g);
+            this.#textBox.innerHTML = lines.map(line => line.trim()).join('');
+        });
 
         cleanUp.addEventListener('click', () => {
             this.#removeEmptyNodes();
             this.#outputHtml();
+        });
+
+        htmlCheck.addEventListener('change', () => {
+            const editHtml = htmlCheck.checked;
+
+            if (editHtml) {
+                let htmlOutput = this.#textBox.innerHTML;
+                for (const tag of this.#blockElementTags)
+                    htmlOutput = htmlOutput.replaceAll(`><${tag}>`, `>\r\n<${tag}>`);
+                textarea.value = htmlOutput.replaceAll('><!--', '>\r\n<!--');
+            }
+
+            wrapper.classList.toggle('hidden', editHtml);
+            textarea.classList.toggle('hidden', !editHtml);
         });
 
         self.style.removeProperty('display');

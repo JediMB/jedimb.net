@@ -23,9 +23,14 @@ Component::addJSModule(__FILE__);
         <button btn-cleanup>Clean Up</button>
     </fieldset>
 </div>
+<label>
+    <input type="checkbox" checkbox-html>
+    Edit HTML
+</label>
 <text-box-wrapper>
-    <text-box contenteditable><h2>Heading</h2><div>Text block 1</div><div>Text block 2</div><p>Paragraph</p></text-box>
+    <text-box contenteditable><div>Text block 1</div><h3>Heading</h3><div>Text block 2</div><p>Paragraph</p></text-box>
 </text-box-wrapper>
+<textarea html-editor class="hidden">Test</textarea>
 
 <html-output></html-output>
 <key-info></key-info>
