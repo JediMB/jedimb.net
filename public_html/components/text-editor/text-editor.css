@@ -19,12 +19,14 @@ text-editor-component [data-tag] {
     color: var(--color-text-active, --color-text);
 }
 
-text-editor-component text-box-wrapper {
+text-editor-component text-box-wrapper,
+text-editor-component textarea {
     display: block;
     width: 100%;
     height: 15em;
     overflow: scroll;
     background-color: var(--color-text);
+    color: var(--color-background);
 }
 
 text-editor-component text-box-wrapper:focus-within {
@@ -35,7 +37,6 @@ text-editor-component text-box-wrapper:focus-within {
 text-editor-component text-box {
     display: block;
     width: 100%;
-    min-height: 15em;
     background-color: var(--color-text);
     color: var(--color-background);
 }
