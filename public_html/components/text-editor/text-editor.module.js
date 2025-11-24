@@ -397,8 +397,7 @@ class TextEditorComponent extends HTMLElement {
         for (const element of uniqueElements) {
             const parent = element.parentNode;
             const children = Array.from(element.childNodes);
-            children.forEach(child => parent.insertBefore(child, element));
-            element.remove();
+            element.replaceWith(...element.childNodes);
 
             const firstChild = children[0];
             const lastChild = children[children.length-1];
@@ -818,7 +817,7 @@ class TextEditorComponent extends HTMLElement {
 
         const newElement = document.createElement(newTag);
         newElement.replaceChildren(...element.childNodes);
-        element.parentNode.replaceChild(newElement, element);
+        element.replaceWith(newElement);
 
         return newElement;
     }
