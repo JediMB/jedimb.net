@@ -114,11 +114,28 @@ class TextEditorComponent extends HTMLElement {
      * @param {HTMLButtonElement} button 
      */
     #addLink(button) {
-        // TODO: alternate logic for if a link already exists
-
         const selection = window.getSelection();
-        let linkText;
+        const tagName = button.dataset.tag.toUpperCase();
 
+        const anchorMatch = this.#getMatchingAncestor(selection.anchorNode, tagName);
+        const focusMatch = this.#getMatchingAncestor(selection.focusNode, tagName);
+
+        if (anchorMatch || focusMatch) {
+            if (anchorMatch === focusMatch) {
+                const selectionData = new SelectionData(selection);
+                anchorMatch.replaceWith(...anchorMatch.childNodes);
+                selection.setBaseAndExtent(
+                    selectionData.startNode,
+                    selectionData.startOffset,
+                    selectionData.endNode,
+                    selectionData.endOffset
+                );
+            }
+
+            return;
+        }
+
+        let linkText;
         if (selection.isCollapsed) {
             linkText = prompt(button.dataset.textQuery, this.#getWord(selection));
 
@@ -149,7 +166,7 @@ class TextEditorComponent extends HTMLElement {
         while(!linkUrl)
 
         this.#toggleTag({
-            name: 'a',
+            name: tagName,
             content: linkText,
             attributes: {
                 href: linkUrl,
@@ -561,7 +578,7 @@ class TextEditorComponent extends HTMLElement {
             }
 
             this.#tagButtons.forEach(b => b.classList.toggle('active',
-                selectedTextNodes.length && selectedTextNodes.every(n => !!this.#getMatchingAncestor(n, b.dataset.tag))
+                !!selectedTextNodes.length && selectedTextNodes.every(n => !!this.#getMatchingAncestor(n, b.dataset.tag))
             ));
     }
 
