@@ -26,6 +26,17 @@ class UndoManagementService {
     }
 
     /**
+     * Clear restore points for chosen container
+     * @param {HTMLElement} container The root elemment of the editable content
+     */
+    clear(container) {
+        this.#undoHistories[container] = [];
+        this.#redoHistories[container] = [];
+        this.#savedInnerHTML = '';
+        this.#savedSelectionData = null;
+    }
+
+    /**
      * Undo the latest change
      * 
      * @param {HTMLElement} container The root element of the editable content

@@ -111,6 +111,7 @@ customElements.define('text-editor-component', class TextEditorComponent extends
         textarea.addEventListener('change', (event) => {
             event.stopPropagation();
 
+            this.#undo.clear(this.#textBox);
             const lines = textarea.value.split(/\r?\n|\r|\n/g);
             this.#textBox.innerHTML = lines.map(line => line.trim()).join('');
         });
