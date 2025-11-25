@@ -1,12 +1,17 @@
-export { blogHead as default };
+customElements.define('blog-head-component', class BlogHead extends HTMLElement {
+    #self;
 
-class BlogHead {
     constructor() {
-        const component = document.querySelector('blog-head-component');
-        const addButton = component.querySelector('[btn-add]');
+        const component = super();
+        this.#self = component;
+    }
 
-        const textEditor = component.querySelector('text-editor-component');
+    connectedCallback() {
+        const self = this.#self;
+
+        const addButton = self.querySelector('[btn-add]');
+
+        const textEditor = self.querySelector('text-editor-component');
         textEditor.addEventListener('change', (event) => console.log(event.detail));
     }
-}
-const blogHead = new BlogHead();
+});
