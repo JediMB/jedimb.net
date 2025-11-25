@@ -19,7 +19,8 @@ Component::addJSModule(__FILE__);
         <button btn-underline data-shortcut="U" data-tag="U"><u>U</u></button>
         <button btn-link data-tag="A"
             data-text-query="Please input display text:"
-            data-url-query="Please input link:">Link</button>
+            data-url-query="Please input link:"
+            data-url-invalid="Invalid link. Please try again:">Link</button>
         <button btn-cleanup>Clean Up</button>
     </fieldset>
 </div>

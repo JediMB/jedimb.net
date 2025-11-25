@@ -22,6 +22,8 @@ customElements.define('text-editor-component', class TextEditorComponent extends
         'A', 'C', 'X'
     ].map(v => v.toUpperCase());
 
+    static #keyMods = Object.freeze({ none: 0b0, shift: 0b1, ctrl: 0b10, alt: 0b100 });
+
     #regexMatchAttributes = /<(?!a )[a-zA-z][a-zA-z0-9\-]*( [^>]*)>/g;
     #regexMatchBlocks = new RegExp(
         '<(?<tag>' +
@@ -32,6 +34,8 @@ customElements.define('text-editor-component', class TextEditorComponent extends
     constructor() {
         const component = super();
         this.#self = component;
+
+        this.#onSelectionChange = this.#onSelectionChange.bind(this);
     }
 
     #allowedElements = ['br', ...this.#blockElementTags];
@@ -67,7 +71,7 @@ customElements.define('text-editor-component', class TextEditorComponent extends
         this.#allowedElements.push(...this.#tagButtons.map(btn => btn.dataset.tag?.toLowerCase()));
         this.#regexMatchDisallowedElements = new RegExp('(<\/?(?!(' + this.#allowedElements.join('|') + ')\\b)([a-z]*>))', "gi");
 
-        document.addEventListener('selectionchange', this.#onSelectionChange.bind(this));
+        document.addEventListener('selectionchange', this.#onSelectionChange);
 
         for (const [tag, name] of this.#blockElementData) {
             const option = document.createElement('option');
@@ -84,6 +88,16 @@ customElements.define('text-editor-component', class TextEditorComponent extends
 
         this.#linkButton.addEventListener('click', () => this.#addLink(this.#linkButton));
 
+        this.#textBox.addEventListener('click', (event) => {
+            const link = this.#getMatchingAncestor(event.target, 'A');
+
+            if (link && link.href && this.#hasKeyMods(event, TextEditorComponent.#keyMods.ctrl)) {
+                event.preventDefault();
+                window.open(link.href, '_blank');
+                return;
+            }
+        });
+
         this.#textBox.addEventListener('input', () => {
             this.#undo.add(this.#textBox, true);
 
@@ -94,7 +108,7 @@ customElements.define('text-editor-component', class TextEditorComponent extends
         });
 
         this.#textBox.addEventListener('keydown', event => {
-            this.#textboxKeydown(event, this.#tagButtons);
+            this.#textboxKeydown(event);
             /* DEBUG FUNCTIONALITY */ keyInfo.textContent = `:: Key: ${event.key} ::\r\n\r\n  Shift:   ${event.shiftKey}\r\n  Control: ${event.ctrlKey}\r\n  Alt:     ${event.altKey}`;
         });
 
@@ -146,6 +160,8 @@ customElements.define('text-editor-component', class TextEditorComponent extends
         document.removeEventListener('selectionchange', this.#onSelectionChange);
     }
 
+    connectedMoveCallback() {}
+
     /**
      * Add a hyperlink to the selected text
      * 
@@ -175,16 +191,17 @@ customElements.define('text-editor-component', class TextEditorComponent extends
 
         let linkText;
         if (selection.isCollapsed) {
-            linkText = prompt(button.dataset.textQuery, this.#getWord(selection));
+            linkText = prompt(button.dataset.textQuery ?? 'Please input display text:', this.#getWord(selection));
 
             if (!linkText)
                 return;
         }
         
         let linkUrl;
+        let urlQuery = button.dataset.urlQuery ?? 'Please input link:';
 
         do {
-            linkUrl = prompt(button.dataset.urlQuery, 'https://');
+            linkUrl = prompt(urlQuery, 'https://');
             
             if (!linkUrl)
                 return;
@@ -196,10 +213,16 @@ customElements.define('text-editor-component', class TextEditorComponent extends
                 break;
             }
 
-            if (!linkUrl.match(/^[a-z]{3,}:/))
-                linkUrl = `https://${linkUrl}`;
+            if (!linkUrl.match(/^[\w\/][\w\-\.\/\?\+:#=%@]+$/)) {
+                linkUrl = '';
+                urlQuery = button.dataset.urlInvalid ?? 'Invalid link. Please try again:';
+                continue;
+            }
 
-            // Check if valid address
+            const isRelative = linkUrl.match(/^(?:\/?\w[\w\-]*)+(?:\.[a-zA-Z0-9]+)?(?:(?:\?|\#)[=\w%]*)?$/);
+
+            if (!isRelative && !linkUrl.match(/^[a-z]{3,}:/))
+                linkUrl = `https://${linkUrl}`;
         }
         while(!linkUrl)
 
@@ -354,7 +377,7 @@ customElements.define('text-editor-component', class TextEditorComponent extends
             
             if (tagInfo.content)
                 textNodes[0].textContent = tagInfo.content;
-            
+
             return;
         }
 
@@ -617,6 +640,18 @@ customElements.define('text-editor-component', class TextEditorComponent extends
     }
 
     /**
+     * Checks of the event has exactly the specified modifiers.
+     * Uses static keyModifiers enum
+     * 
+     * @param {Event} event 
+     * @param {Number} modifiers 
+     * @returns {Boolean}
+     */
+    #hasKeyMods(event, modifiers) {
+        return modifiers === ((event.shiftKey * 0b1) + (event.ctrlKey * 0b10) + (event.altKey * 0b100));
+    }
+
+    /**
      * Inserts an element containing a text node
      * @param {Object} tagInfo 
      * @param {String} tagInfo.name 
@@ -678,7 +713,7 @@ customElements.define('text-editor-component', class TextEditorComponent extends
     /**
      * SelectionChange event handler for the document root
      */
-    #onSelectionChange() {
+    #onSelectionChange = () => {
         const selection = window.getSelection();
         const isCurrentTextbox = this.#textBox.contains(selection.anchorNode)
                               && this.#textBox.contains(selection.focusNode);
@@ -761,7 +796,7 @@ customElements.define('text-editor-component', class TextEditorComponent extends
             const links = node.querySelectorAll?.call(this, 'a');
             for (const link of links) {
                 for (const attribute of Array.from(link.attributes)) {
-                    if (!['href', 'target'].find(attrName => attrName === attribute.localName))
+                    if (!['href', 'target', 'title'].find(attrName => attrName === attribute.localName))
                         link.removeAttribute(attribute.localName);
                 }
             }
@@ -883,9 +918,8 @@ customElements.define('text-editor-component', class TextEditorComponent extends
     /**
      * Handle keydown events for the text editor
      * @param {Event} event 
-     * @param {HTMLButtonElement[]} tagButtons
      */
-    #textboxKeydown(event, tagButtons) {
+    #textboxKeydown(event) {
         const textBox = this.#textBox;
 
         this.#undo.saveData(textBox, new SelectionData(window.getSelection()));
@@ -895,10 +929,7 @@ customElements.define('text-editor-component', class TextEditorComponent extends
         if (this.#defaultKeysUpper.some(k => k === keyUpper))
             return;
 
-        const hasModifiers = (modifiers) => modifiers === ((event.shiftKey * 0b1) + (event.ctrlKey * 0b10) + (event.altKey * 0b100));
-        const mod = Object.freeze({ none: 0b0, shift: 0b1, ctrl: 0b10, alt: 0b100 });
-
-        if (!hasModifiers(mod.ctrl))
+        if (!this.#hasKeyMods(event, TextEditorComponent.#keyMods.ctrl))
             return;
 
         event.preventDefault();
@@ -917,7 +948,7 @@ customElements.define('text-editor-component', class TextEditorComponent extends
                 return;
         }
 
-        const button = tagButtons.find(b => b.dataset.shortcut?.toUpperCase() === keyUpper);
+        const button = this.#tagButtons.find(b => b.dataset.shortcut?.toUpperCase() === keyUpper);
 
         if (button)
             this.#toggleTag({ name: button.dataset.tag });

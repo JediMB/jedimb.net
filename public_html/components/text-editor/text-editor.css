@@ -41,6 +41,10 @@ text-editor-component text-box {
     color: var(--color-background);
 }
 
+text-editor-component text-box a {
+    cursor: pointer;
+}
+
 text-editor-component text-box:focus {
     outline: 0px solid transparent;
 }
