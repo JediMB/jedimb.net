@@ -67,7 +67,7 @@ customElements.define('text-editor-component', class TextEditorComponent extends
         this.#allowedElements.push(...this.#tagButtons.map(btn => btn.dataset.tag?.toLowerCase()));
         this.#regexMatchDisallowedElements = new RegExp('(<\/?(?!(' + this.#allowedElements.join('|') + ')\\b)([a-z]*>))', "gi");
 
-        document.addEventListener('selectionchange', () => this.#onSelectionChange());
+        document.addEventListener('selectionchange', this.#onSelectionChange.bind(this));
 
         for (const [tag, name] of this.#blockElementData) {
             const option = document.createElement('option');
@@ -102,7 +102,7 @@ customElements.define('text-editor-component', class TextEditorComponent extends
             const event = new CustomEvent('change', {
                 bubbles: true,
                 cancelable: true,
-                detail: this.getContent()
+                detail: this.#getContent()
             });
             this.dispatchEvent(event);
         });
@@ -127,7 +127,7 @@ customElements.define('text-editor-component', class TextEditorComponent extends
             const editHtml = htmlCheck.checked;
 
             if (editHtml)
-                textarea.value = this.getContent(true);
+                textarea.value = this.#getContent(true);
 
             wrapper.classList.toggle('hidden', editHtml);
             textarea.classList.toggle('hidden', !editHtml);
@@ -143,23 +143,7 @@ customElements.define('text-editor-component', class TextEditorComponent extends
     }
 
     disconnectedCallback() {
-        document.removeEventListener('selectionchange', () => this.#onSelectionChange());
-    }
-
-    /**
-     * @param {Boolean} doFormat 
-     * @returns {String}
-     */
-    getContent(doFormat = false) {
-        let htmlOutput = this.#textBox.innerHTML;
-
-        if (!doFormat)
-            return htmlOutput;
-
-        for (const tag of this.#blockElementTags)
-            htmlOutput = htmlOutput.replaceAll(`><${tag}>`, `>\r\n<${tag}>`);
-
-        return htmlOutput.replaceAll('><!--', '>\r\n<!--');
+        document.removeEventListener('selectionchange', this.#onSelectionChange);
     }
 
     /**
@@ -508,6 +492,22 @@ customElements.define('text-editor-component', class TextEditorComponent extends
 
             childNode = childNode.parentElement;
         }
+    }
+
+    /**
+     * @param {Boolean} doFormat 
+     * @returns {String}
+     */
+    #getContent(doFormat = false) {
+        let htmlOutput = this.#textBox.innerHTML;
+
+        if (!doFormat)
+            return htmlOutput;
+
+        for (const tag of this.#blockElementTags)
+            htmlOutput = htmlOutput.replaceAll(`><${tag}>`, `>\r\n<${tag}>`);
+
+        return htmlOutput.replaceAll('><!--', '>\r\n<!--');
     }
 
     /**
