@@ -351,6 +351,10 @@ customElements.define('text-editor-component', class TextEditorComponent extends
 
             textNodes[0].parentNode.insertBefore(newElement, textNodes[0]);
             newElement.appendChild(textNodes[0]);
+            
+            if (tagInfo.content)
+                textNodes[0].textContent = tagInfo.content;
+            
             return;
         }
 
