@@ -1,0 +1,16 @@
+modal-popup-component {
+    position: fixed;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: hsl(0 0% 25% / 0.5);
+}
+
+modal-popup {
+    display: block;
+    border-radius: var(--spacing-inner, 1rem);
+    padding: var(--spacing-inner, 1rem);
+    background-color: var(--color-background, black);
+    color: var(--color-text, white);
+}

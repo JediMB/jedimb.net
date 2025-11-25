@@ -35,3 +35,5 @@ Component::addJSModule(__FILE__);
 
 <html-output></html-output>
 <key-info></key-info>
+
+<?php Component::include('modal-popup', [ 'include' => 'image-gallery' ]) ?>
