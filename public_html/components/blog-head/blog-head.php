@@ -6,9 +6,9 @@ require_once 'utilities/component.utility.php';
 
 use Utilities\Component;
 
-Component::renderOnce(__FILE__);
-Component::renderCSS(__FILE__);
-Component::addJSModule(__FILE__);
+Component::renderOnce();
+Component::renderCSS();
+Component::addJSModule();
 
 ?>
 

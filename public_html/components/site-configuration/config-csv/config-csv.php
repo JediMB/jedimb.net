@@ -30,8 +30,8 @@ else { /** @var \Models\DB\Configuration $config */
 }
 
 Component::hide();
-Component::renderCSS(__FILE__);
-Component::addJSModule(__FILE__);
+Component::renderCSS();
+Component::addJSModule();
 
 $initialValue = $isDefault ? $default : $value;
 

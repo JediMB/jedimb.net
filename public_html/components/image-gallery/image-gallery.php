@@ -6,7 +6,7 @@ require_once 'utilities/component.utility.php';
 
 use Utilities\Component;
 
-Component::renderCSS(__FILE__);
+Component::renderCSS();
 Component::queueJS(__FILE__);
 
 ?>

@@ -12,14 +12,12 @@ if (empty($include)) {
 }
 
 Component::hide();
-Component::renderCSS(__FILE__);
-Component::addJSModule(__FILE__);
+Component::renderCSS();
+Component::addJSModule();
 
 
 ?>
 
 <modal-popup>
-    <!-- BUG: Component within component means the hide()
-        is applied to the sub-component instead of the current one -->
     <?php Component::include($include) ?>
 </modal-popup>

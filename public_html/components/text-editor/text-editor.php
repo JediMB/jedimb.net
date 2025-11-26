@@ -6,8 +6,8 @@ require_once 'utilities/component.utility.php';
 
 use Utilities\Component;
 
-Component::renderCSS(__FILE__);
-Component::addJSModule(__FILE__);
+Component::renderCSS();
+Component::addJSModule();
 
 ?>
 
