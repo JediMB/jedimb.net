@@ -1,3 +1,17 @@
+label {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 0.5em;
+    width: fit-content;
+    font-size: 0.8em;
+}
+
+label:has(input[type="checkbox"]:not(:disabled)),
+input[type="checkbox"]:not(:disabled) {
+    cursor: pointer;
+}
+
 input[type="checkbox"] {
     box-sizing: content-box;
     position: relative;
@@ -40,12 +54,4 @@ input[type="checkbox"]:checked::before {
 
 input[type="checkbox"]:disabled::before {
     background-color: #999;
-}
-
-label {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    gap: 0.5em;
-    font-size: 0.8em;
 }

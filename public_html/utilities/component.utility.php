@@ -38,9 +38,16 @@ class Component {
         if ($options->componentTag) {
             $componentTag = basename($realPath, '.php') . "-component";
 
-            $style = $options->hidden ? ' style="display: none;"' : null;
+            $attr = $options->hidden ? ' style="display: none;"' : null;
 
-            $output = "<$componentTag" . $style . ">$output</$componentTag>";
+            if (!empty($attributes)) {
+                foreach (array_reverse($attributes, true) as $attrName => $attrValue) {
+                    $attr = " $attrName=\"$attrValue\"" . $attr;
+                }
+            }
+
+
+            $output = "<$componentTag" . $attr . ">$output</$componentTag>";
         }
 
         $includeType = 'css';

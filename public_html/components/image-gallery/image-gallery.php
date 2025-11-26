@@ -15,3 +15,5 @@ Component::renderCSS();
 Component::queueJS(__FILE__);
 
 ?>
+
+Hello World

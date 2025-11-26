@@ -4,9 +4,18 @@ text-editor-component {
     gap: 1em;
 }
 
-text-editor-component select {
+text-editor-component select,
+text-editor-component button {
+    border: 1px solid currentColor;
+    border-radius: var(--spacing-internal);
+    padding: var(--spacing-internal) calc(var(--spacing-internal) * 2);
     background-color: var(--color-background);
     color: var(--color-text);
+}
+
+text-editor-component select:disabled,
+text-editor-component button:disabled {
+    background-color: #444;
 }
 
 text-editor-component .active {

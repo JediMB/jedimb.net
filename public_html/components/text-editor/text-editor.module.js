@@ -65,6 +65,9 @@ customElements.define('text-editor-component', class TextEditorComponent extends
         const wrapper = self.querySelector('text-box-wrapper');
         const textarea = self.querySelector('[html-editor]');
 
+        const imagesModal = self.querySelector('[modal-images]');
+        const imagesButton = self.querySelector('[btn-images]');
+
         const keyInfo = self.querySelector('key-info');
         const cleanUp = this.#fieldset.querySelector('[btn-cleanup');
 
@@ -146,6 +149,8 @@ customElements.define('text-editor-component', class TextEditorComponent extends
             wrapper.classList.toggle('hidden', editHtml);
             textarea.classList.toggle('hidden', !editHtml);
         });
+
+        imagesButton.addEventListener('click', () => imagesModal.style.removeProperty('display'));
 
         self.style.removeProperty('display');
 
