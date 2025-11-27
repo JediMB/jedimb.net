@@ -21,7 +21,7 @@ Component::addJSModule();
             data-text-query="Please input display text:"
             data-url-query="Please input link:"
             data-url-invalid="Invalid link. Please try again:">Link</button>
-        <button btn-images>Images</button>
+        <button modal-target="images">Images</button>
         <button btn-cleanup>Clean Up</button>
     </fieldset>
 </div>
@@ -38,6 +38,6 @@ Component::addJSModule();
 <key-info></key-info>
 
 <?php Component::include('modal-popup', [
-    'attributes' => [ 'modal-images' => null ],
-    'include' => 'image-gallery'
+    'attributes' => [ 'modal-name="images"' => null ],
+    'include' => 'image-manager'
 ]) ?>

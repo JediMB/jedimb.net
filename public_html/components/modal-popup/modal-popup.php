@@ -11,13 +11,15 @@ if (empty($include)) {
     return;
 }
 
-Component::hide();
+//Component::hide();
 Component::renderCSS();
 Component::addJSModule();
 
 
 ?>
 
-<modal-popup>
-    <?php Component::include($include) ?>
-</modal-popup>
+<modal-popup-wrapper>
+    <modal-popup>
+        <?php Component::include($include) ?>
+    </modal-popup>
+</modal-popup-wrapper>
