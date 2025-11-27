@@ -2,66 +2,67 @@ text-editor-component {
     display: flex;
     flex-direction: column;
     gap: 1em;
-}
 
-text-editor-component select,
-text-editor-component button {
-    border: 1px solid currentColor;
-    border-radius: var(--spacing-internal);
-    padding: var(--spacing-internal) calc(var(--spacing-internal) * 2);
-    background-color: var(--color-background);
-    color: var(--color-text);
-}
+    & select,
+    & button {
+        border: 1px solid currentColor;
+        border-radius: var(--spacing-internal);
+        padding: var(--spacing-internal) calc(var(--spacing-internal) * 2);
+        background-color: var(--color-background);
+        color: var(--color-text);
+    }
 
-text-editor-component select:disabled,
-text-editor-component button:disabled {
-    background-color: #444;
-}
+    & select:disabled,
+    & button:disabled {
+        background-color: #444;
+    }
 
-text-editor-component .active {
-    --color-bg-active: var(--color-text);
-    --color-text-active: var(--color-background);
-}
+    & .active {
+        --color-bg-active: var(--color-text);
+        --color-text-active: var(--color-background);
+    }
 
-text-editor-component [data-tag] {
-    background-color: var(--color-bg-active, --color-background);
-    color: var(--color-text-active, --color-text);
-}
+    & button[data-tag] {
+        background-color: var(--color-bg-active, --color-background);
+        color: var(--color-text-active, --color-text);
+    }
 
-text-editor-component text-box-wrapper,
-text-editor-component textarea {
-    display: block;
-    width: 100%;
-    height: 15em;
-    overflow: scroll;
-    background-color: var(--color-text);
-    color: var(--color-background);
-}
+    & text-box-wrapper,
+    & textarea {
+        display: block;
+        width: 100%;
+        height: 15em;
+        overflow: scroll;
+        padding: var(--spacing-internal);
+        background-color: var(--color-text);
+        color: var(--color-background);
+    }
 
-text-editor-component text-box-wrapper:focus-within {
-    border-radius: 3px;
-    outline: 3px solid var(--color-primary, purple);
-}
+    & text-box-wrapper:focus-within {
+        border-radius: 3px;
+        outline: 3px solid var(--color-primary, purple);
+    }
 
-text-editor-component text-box {
-    display: block;
-    width: 100%;
-    background-color: var(--color-text);
-    color: var(--color-background);
-}
+    & text-box {
+        display: block;
+        width: 100%;
+        background-color: var(--color-text);
+        color: var(--color-background);
+    }
 
-text-editor-component text-box a {
-    cursor: pointer;
-}
+    & text-box a {
+        cursor: pointer;
+    }
 
-text-editor-component text-box:focus {
-    outline: 0px solid transparent;
-}
+    & text-box:focus {
+        outline: 0px solid transparent;
+    }
 
-text-editor-component html-output,
-text-editor-component key-info {
-    display: block;
-    padding: 0.5em;
-    border: 2px dashed currentColor;
-    white-space: pre;
+    & html-output,
+    & key-info {
+        display: block;
+        padding: 0.5em;
+        border: 2px dashed currentColor;
+        white-space: pre;
+    }
 }
