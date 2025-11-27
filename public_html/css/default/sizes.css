@@ -1,0 +1,13 @@
+:root {
+    --screens-sm: 20rem;
+    --screens-md: 37.5rem;
+    --screens-lg: 55rem;
+}
+
+body {
+    --spacing-internal: 0.25rem;
+    --spacing-edges: 0.5rem;
+    --spacing-buttons: 0.5rem;
+    --spacing-inner: 1rem;
+    --spacing-outer: 2rem;
+}
