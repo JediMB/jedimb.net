@@ -39,14 +39,18 @@ Component::addJSModule();
                 &nbsp;
             </div>
             <div>
-                <div>Title: Dog with hat</div>
-                <div>Description: The text that goes in the ALT field</div>
-                <div>Created on: 2025-11-27 13:45 (UTC+1)</div>
-                <div>Modified on: (unmodified)</div>
-                <div>Title: Dog with hat</div>
-                <div>Description: The text that goes in the ALT field</div>
-                <div>Created on: 2025-11-27 13:45 (UTC+1)</div>
-                <div>Modified on: (unmodified)</div>
+                <form>
+                    <div>
+                        <label for="title">Title:</label>
+                        <input type="text" name="title" value="Dog with hat">
+                    </div>
+                    <div>
+                        <label for="description">Description:</label>
+                        <textarea name="description" rows="3">Description: The text that goes in the ALT field</textarea>
+                    </div>
+                    <div>Created on: 2025-11-27 13:45 (UTC+1)</div>
+                    <div>Modified on: (unmodified)</div>
+                </form>
             </div>
         </manager-properties>
     </manager-content>

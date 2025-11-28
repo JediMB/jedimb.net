@@ -66,6 +66,12 @@ image-manager-component {
         display: block flex;
         flex-direction: column;
         gap: var(--spacing-inner);
+        font-size: 1rem;
+
+        & input,
+        & textarea {
+            width: 100%;
+        }
     }
 
     & .image-preview {

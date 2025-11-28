@@ -30,7 +30,7 @@ text-editor-component {
     }
 
     & text-box-wrapper,
-    & textarea {
+    & text-box-wrapper + textarea {
         display: block;
         width: 100%;
         height: 15em;
