@@ -31,5 +31,6 @@ config-field-component input-container button {
 }
 
 config-field-component label {
+    font-size: 0.8em;
     padding-inline-start: 1.25em;
 }

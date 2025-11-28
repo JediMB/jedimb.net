@@ -1,74 +1,71 @@
 image-manager-component {
-    display: block;
+    display: block flex;
+    flex-direction: column;
+    gap: var(--spacing-edges);
     height: 100%;
 
-    & image-manager {
+    & input[type="radio"] {
+        display: none;
+    }
+
+    & manager-tabs {
         display: block;
-        height: 100%;
+        margin-bottom: -1px;
+
+        & ul {
+            display: inline flex;
+            border: 1px solid currentColor;
+            border-radius: var(--spacing-internal) var(--spacing-internal) 0 0;
+
+            & li {
+                margin: -1px;
+                border: 1px solid currentColor;
+                border-radius: var(--spacing-internal) var(--spacing-internal) 0 0;
+
+                &:has(input:checked) {
+                    border-bottom-color: var(--color-background);
+                }
+
+                &:not(:has(input:checked)) {
+                    border-color: currentColor transparent;
+                }
+
+                & label {
+                    padding: var(--spacing-edges);
+                }
+            }
+        }
     }
 
-    & image-manager > ul {
-        display: flex;
-    }
+    & manager-content {
+        display: block flex;
+        max-height: calc(var(--container-max-height, 100%) - 12rem);
+        gap: var(--spacing-edges);
 
-    & images-container {
-        display: block grid;
-        grid-template-columns: 2fr 3fr;
-        grid-template-rows: 100%;
-        height: 100%;
-    }
-
-    & manager-panel {
-        display: block;
-        height: clamp(0, 600px, 100%);
-        overflow-y: auto;
-    }
-
-    & .image-preview {
-        display: block;
-        margin-inline: 2rem;
-        border: 1px dashed white;
-        aspect-ratio: 16/9;
-    }
-}
-
-/*image-manager-component {
-    display: block;
-    height: 100%;
-
-    & > *:not(:first-child),
-    & .gap > *:not(:first-child) {
-        margin-top: 1rem;
-    }
-
-    & .tabs {
-        display: flex;
-    }
-
-    & image-manager {
-        display: block;
-        overflow: hidden;
-    }
-
-    & images-container {
-        display: flex;
-        gap: 0.25rem;
         border: 1px solid currentColor;
-        border-radius: 0.25rem;
-        width: 600px;
-        max-width: 100%;
-        height: calc(100% - 6rem);
-        padding: 0.25rem;
-        font-size: 1rem;
 
         & > * {
-            height: 100%;
+            min-height: 0;
             overflow-y: scroll;
+            padding: var(--spacing-edges);
         }
+    }
 
-        & > *:first-child {
-            width: 40%;
+    & manager-list {
+        display: block;
+        flex-basis: 40%;
+
+        & label:has(input:checked) {
+            background-color: var(--color-text);
+            color: var(--color-background);
         }
+    }
+
+    & manager-properties {
+        flex-basis: 60%;
+        display: block flex;
+        flex-direction: column;
+        gap: var(--spacing-inner);
     }
 
     & .image-preview {
@@ -77,8 +74,8 @@ image-manager-component {
         aspect-ratio: 16/9;
     }
 
-    & .buttons {
-        display: flex;
+    & manager-buttons {
+        display: block flex;
         justify-content: space-between;
     }
-}*/
+}

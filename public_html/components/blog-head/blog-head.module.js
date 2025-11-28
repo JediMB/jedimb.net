@@ -12,6 +12,6 @@ customElements.define('blog-head-component', class BlogHead extends HTMLElement 
         const addButton = self.querySelector('[btn-add]');
 
         const textEditor = self.querySelector('text-editor-component');
-        textEditor.addEventListener('change', (event) => console.log(event.detail));
+        textEditor.addEventListener('change', (event) => event.detail && console.log(event.detail));
     }
 });

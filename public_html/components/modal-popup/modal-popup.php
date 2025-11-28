@@ -18,8 +18,8 @@ Component::addJSModule();
 
 ?>
 
-<modal-popup-wrapper>
-    <modal-popup>
+<modal-popup>
+    <modal-popup-content>
         <?php Component::include($include) ?>
-    </modal-popup>
-</modal-popup-wrapper>
+    </modal-popup-content>
+</modal-popup>

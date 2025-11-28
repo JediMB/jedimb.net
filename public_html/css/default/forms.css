@@ -4,11 +4,12 @@ label {
     align-items: center;
     gap: 0.5em;
     width: fit-content;
-    font-size: 0.8em;
 }
 
 label:has(input[type="checkbox"]:not(:disabled)),
-input[type="checkbox"]:not(:disabled) {
+input[type="checkbox"]:not(:disabled),
+label:has(input[type="radio"]:not(:disabled)),
+input[type="radio"]:not(:disabled) {
     cursor: pointer;
 }
 

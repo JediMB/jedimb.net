@@ -12,33 +12,28 @@ $sessionService = SessionService::getInstance(); /** @var SessionService $sessio
 $sessionService->enforcePermissions([UserPermission::Publishing]);
 
 Component::renderCSS();
-Component::queueJS(__FILE__);
+Component::addJSModule();
 
 ?>
 
-<div>
-    Image manager
-</div>
+<h2>Image manager</h2>
 <image-manager>
-    <ul>
-        <li><button>Images</button></li>
-        <li><button>Groups</button></li>
-    </ul>
-    <images-container>
-        <manager-panel>
+    <manager-tabs>
+        <ul>
+            <li><label><input type="radio" name="image-tabs" checked>Images</label></li>
+            <li><label><input type="radio" name="image-tabs">Groups</label></li>
+        </ul>
+    </manager-tabs>
+    <manager-content>
+        <manager-list>
             <ul>
-                <li style="background-color: white; color: black;">Dog with hat</li>
-                <li>Nice bike</li>
-                <li>Two stacks of bricks</li>
-                <li>Mahogany table</li>
-                <li>Funny cat</li>
+                <?php $items = ['Dog with hat', 'Nice bike', 'Two stacks of bricks', 'Mahogany table', 'Funny cat'];
+                    foreach ($items as $item): ?>
+                    <li><label><input type="radio" name="images"><?= $item ?></label></li>
+                <?php endforeach ?>
             </ul>
-            <div>
-                <button>Insert</button>
-                <button>Upload</button>
-            </div>
-        </manager-panel>
-        <manager-panel>
+        </manager-list>
+        <manager-properties>
             <div style="text-align: center;">20251127_0835721.jpg</div>
             <div class="image-preview">
                 &nbsp;
@@ -53,9 +48,10 @@ Component::queueJS(__FILE__);
                 <div>Created on: 2025-11-27 13:45 (UTC+1)</div>
                 <div>Modified on: (unmodified)</div>
             </div>
-        </manager-panel>
-    </images-container>
-    <groups-container hidden>
-
-    </groups-container>
+        </manager-properties>
+    </manager-content>
 </image-manager>
+<manager-buttons>
+    <button>Insert</button>
+    <button>Upload</button>
+</manager-buttons>

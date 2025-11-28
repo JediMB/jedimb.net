@@ -1,6 +1,8 @@
 customElements.define('modal-popup-component', class ModalPopupContainer extends HTMLElement {
     /** @type ModalPopupContainer */
     #self;
+    #popup;
+    #popupContent;
 
     constructor() {
         const component = super();
@@ -11,7 +13,8 @@ customElements.define('modal-popup-component', class ModalPopupContainer extends
         const self = this.#self;
         const root = document.querySelector('html');
         const body = document.querySelector('body');
-        const popup = self.querySelector('modal-popup');
+        this.#popup = self.querySelector('modal-popup');
+        this.#popupContent = this.#popup.querySelector('modal-popup-content');
 
         if (!self.style.display) {
             root.style.overflow = 'hidden';
@@ -30,7 +33,7 @@ customElements.define('modal-popup-component', class ModalPopupContainer extends
         self.addEventListener('click', (event) => {
             event.stopPropagation();
 
-            if (!popup.contains(event.target)) {
+            if (!this.#popup.contains(event.target)) {
                 event.preventDefault();
                 self.style.display = 'none';
                 root.style.removeProperty('overflow');

@@ -3,28 +3,30 @@ text-editor-component {
     flex-direction: column;
     gap: 1em;
 
-    & select,
-    & button {
-        border: 1px solid currentColor;
-        border-radius: var(--spacing-internal);
-        padding: var(--spacing-internal) calc(var(--spacing-internal) * 2);
-        background-color: var(--color-background);
-        color: var(--color-text);
-    }
+    & fieldset {
+        & select,
+        & button {
+            border: 1px solid currentColor;
+            border-radius: var(--spacing-internal);
+            padding: var(--spacing-internal) calc(var(--spacing-internal) * 2);
+            background-color: var(--color-background);
+            color: var(--color-text);
+        }
 
-    & select:disabled,
-    & button:disabled {
-        background-color: #444;
-    }
+        & select:disabled,
+        & button:disabled {
+            background-color: #444;
+        }
 
-    & .active {
-        --color-bg-active: var(--color-text);
-        --color-text-active: var(--color-background);
-    }
+        & .active {
+            --color-bg-active: var(--color-text);
+            --color-text-active: var(--color-background);
+        }
 
-    & button[data-tag] {
-        background-color: var(--color-bg-active, --color-background);
-        color: var(--color-text-active, --color-text);
+        & button[data-tag] {
+            background-color: var(--color-bg-active, --color-background);
+            color: var(--color-text-active, --color-text);
+        }
     }
 
     & text-box-wrapper,
