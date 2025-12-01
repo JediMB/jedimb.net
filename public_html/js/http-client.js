@@ -1,6 +1,6 @@
 export { httpClient as default };
 
-export class HttpClient {
+class HttpClient {
     #baseApiUrl = '/api/';
     #requestTypeCss = 'background-color: red; color: white;';
 
