@@ -19,9 +19,9 @@ Component::addJSModule();
 <h2>Image manager</h2>
 <image-manager>
     <manager-tabs>
-        <ul>
-            <li><label><input type="radio" name="image-tabs" checked>Images</label></li>
-            <li><label><input type="radio" name="image-tabs">Groups</label></li>
+        <ul class="tab-list">
+            <li class="tab-item"><label class="tab-label"><input hidden type="radio" name="image-tabs" checked>Images</label></li>
+            <li class="tab-item"><label class="tab-label"><input hidden type="radio" name="image-tabs">Groups</label></li>
         </ul>
     </manager-tabs>
     <manager-content>
@@ -29,7 +29,7 @@ Component::addJSModule();
             <ul>
                 <?php $items = ['Dog with hat', 'Nice bike', 'Two stacks of bricks', 'Mahogany table', 'Funny cat'];
                     foreach ($items as $item): ?>
-                    <li><label><input type="radio" name="images"><?= $item ?></label></li>
+                    <li class="manager-list-item"><label><input hidden type="radio" name="images"><?= $item ?></label></li>
                 <?php endforeach ?>
             </ul>
         </manager-list>
@@ -42,11 +42,11 @@ Component::addJSModule();
                 <form>
                     <div>
                         <label for="title">Title:</label>
-                        <input type="text" name="title" value="Dog with hat">
+                        <input full-width type="text" name="title" value="Dog with hat">
                     </div>
                     <div>
                         <label for="description">Description:</label>
-                        <textarea name="description" rows="3">Description: The text that goes in the ALT field</textarea>
+                        <textarea full-width name="description" rows="3">Description: The text that goes in the ALT field</textarea>
                     </div>
                     <div>Created on: 2025-11-27 13:45 (UTC+1)</div>
                     <div>Modified on: (unmodified)</div>

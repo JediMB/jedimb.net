@@ -3,85 +3,77 @@ image-manager-component {
     flex-direction: column;
     gap: var(--spacing-edges);
     height: 100%;
+}
 
-    & input[type="radio"] {
-        display: none;
+manager-tabs {
+    display: block;
+    margin-bottom: -1px;
+}
+
+.tab-list {
+    display: inline flex;
+    border: 1px solid currentColor;
+    border-radius: var(--spacing-internal) var(--spacing-internal) 0 0;
+}
+
+.tab-item {
+    margin: -1px;
+    border: 1px solid currentColor;
+    border-radius: var(--spacing-internal) var(--spacing-internal) 0 0;
+
+    &:has(input:checked) {
+        border-bottom-color: var(--color-background);
     }
 
-    & manager-tabs {
-        display: block;
-        margin-bottom: -1px;
-
-        & ul {
-            display: inline flex;
-            border: 1px solid currentColor;
-            border-radius: var(--spacing-internal) var(--spacing-internal) 0 0;
-
-            & li {
-                margin: -1px;
-                border: 1px solid currentColor;
-                border-radius: var(--spacing-internal) var(--spacing-internal) 0 0;
-
-                &:has(input:checked) {
-                    border-bottom-color: var(--color-background);
-                }
-
-                &:not(:has(input:checked)) {
-                    border-color: currentColor transparent;
-                }
-
-                & label {
-                    padding: var(--spacing-edges);
-                }
-            }
-        }
+    &:not(:has(input:checked)) {
+        border-color: currentColor transparent;
     }
+}
 
-    & manager-content {
-        display: block flex;
-        max-height: calc(var(--container-max-height, 100%) - 12rem);
-        gap: var(--spacing-edges);
+.tab-label {
+    padding: var(--spacing-edges);
+}
 
-        border: 1px solid currentColor;
+manager-content {
+    display: block flex;
+    max-height: calc(var(--container-max-height, 100%) - 12rem);
+    gap: var(--spacing-edges);
 
-        & > * {
-            min-height: 0;
-            overflow-y: scroll;
-            padding: var(--spacing-edges);
-        }
-    }
+    border: 1px solid currentColor;
+}
 
-    & manager-list {
-        display: block;
-        flex-basis: 40%;
+manager-list,
+manager-properties {
+    min-height: 0;
+    overflow-y: scroll;
+    padding: var(--spacing-edges);
+}
 
-        & label:has(input:checked) {
-            background-color: var(--color-text);
-            color: var(--color-background);
-        }
-    }
+manager-list {
+    display: block;
+    flex-basis: 40%;
+}
 
-    & manager-properties {
-        flex-basis: 60%;
-        display: block flex;
-        flex-direction: column;
-        gap: var(--spacing-inner);
-        font-size: 1rem;
+manager-properties {
+    flex-basis: 60%;
+    display: block flex;
+    flex-direction: column;
+    gap: var(--spacing-inner);
+    font-size: 1rem;
+}
 
-        & input,
-        & textarea {
-            width: 100%;
-        }
-    }
+.manager-list-item:has(input:checked) {
+    background-color: var(--color-text);
+    color: var(--color-background);
+}
 
-    & .image-preview {
-        margin-inline: 2rem;
-        border: 1px dashed white;
-        aspect-ratio: 16/9;
-    }
+.image-preview {
+    margin-inline: 2rem;
+    border: 1px dashed white;
+    aspect-ratio: 16/9;
+}
 
-    & manager-buttons {
-        display: block flex;
-        justify-content: space-between;
-    }
+manager-buttons {
+    display: block flex;
+    justify-content: space-between;
 }

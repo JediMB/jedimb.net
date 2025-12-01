@@ -4,6 +4,9 @@
 @import url('default/fonts.css');
 @import url('default/forms.css');
 
+[full-width] {
+    width: 100%;
+}
 
 *, ::before, ::after {
     --tw-border-spacing-x: 0;
