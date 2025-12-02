@@ -20,36 +20,40 @@ class ImageManagerService {
     async fetchImageData() {
         const imageModified = await tableModifiedApiService.getImageDate();
 
-        if (imageModified > this.#imageModified) {
-            this.#imageModified = imageModified;
-            const images = await imageManagerApiService.getImages();
+        console.log(imageModified);
 
-            if (images)
-                this.#images = images;
-        }
+        // if (imageModified > this.#imageModified) {
+        //     this.#imageModified = imageModified;
+        //     const images = await imageManagerApiService.getImages();
+
+        //     if (images)
+        //         this.#images = images;
+        // }
 
         const galleryModified = await tableModifiedApiService.getGalleryDate();
 
-        if (galleryModified > this.#galleryModified) {
-            this.#galleryModified = galleryModified;
-            const galleries = await imageManagerApiService.getImageGalleries();
+        console.log(galleryModified);
 
-            if (galleries)
-                this.#galleries = galleries;
-        }
+        // if (galleryModified > this.#galleryModified) {
+        //     this.#galleryModified = galleryModified;
+        //     const galleries = await imageManagerApiService.getImageGalleries();
 
-        if (this.#images.length === 0 || this.#galleries.length === 0)
-            return;
+        //     if (galleries)
+        //         this.#galleries = galleries;
+        // }
 
-        this.#images.forEach(image => 
-            image.imageGalleryList = image.imageGalleryIds.map(galleryId =>
-                this.#galleries.find(gallery => galleryId === gallery.id))
-        );
+        // if (this.#images.length === 0 || this.#galleries.length === 0)
+        //     return;
 
-        this.#galleries.forEach(gallery => 
-            gallery.imageList = gallery.imageIds.map(imageId =>
-                this.#images.find(image => imageId === image.id))
-        );
+        // this.#images.forEach(image => 
+        //     image.imageGalleryList = image.imageGalleryIds.map(galleryId =>
+        //         this.#galleries.find(gallery => galleryId === gallery.id))
+        // );
+
+        // this.#galleries.forEach(gallery => 
+        //     gallery.imageList = gallery.imageIds.map(imageId =>
+        //         this.#images.find(image => imageId === image.id))
+        // );
     }
 }
 const imageManagerService = new ImageManagerService();
