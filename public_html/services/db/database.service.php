@@ -39,6 +39,17 @@ class DatabaseService extends Singleton {
         return false;
     }
 
+    public function selectByColumnValue(string $table, string $column, mixed $value, int $pdoType = PDO::PARAM_STR) {
+        $query = $this->service->prepare(
+            "SELECT * FROM {$this->schema}.$table WHERE $column = :val"
+        );
+        $query->bindParam(':val', $value, $pdoType);
+
+        $query->execute();
+
+        return $query->fetch();
+    }
+
     public function selectById(string $table, int $id) {
         $query = $this->service->prepare(
             "SELECT * FROM {$this->schema}.$table WHERE id = :id"
