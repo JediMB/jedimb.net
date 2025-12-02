@@ -40,7 +40,7 @@ Component::addJSModule();
             </manager-buttons>
         </manager-list>
         <manager-properties>
-            <div style="text-align: center;">20251127_0835721.jpg</div>
+            <h3 class="image-header">20251127_0835721.jpg</h3>
             <div class="image-preview">
                 &nbsp;
             </div>

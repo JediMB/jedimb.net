@@ -69,6 +69,10 @@ manager-properties {
     color: var(--color-background);
 }
 
+.image-header {
+    text-align: center;
+}
+
 .image-preview {
     margin-inline: 2rem;
     border: 1px dashed white;

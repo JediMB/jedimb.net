@@ -8,6 +8,10 @@
     width: 100%;
 }
 
+[text-centered] {
+    text-align: center;
+}
+
 *, ::before, ::after {
     --tw-border-spacing-x: 0;
     --tw-border-spacing-y: 0;
@@ -454,7 +458,7 @@ main h2::before {
     content: '>';
 }
 
-h3 {
+[class^='h3'] {
     font-size: 1.5em;
     font-weight: 600;
     margin-block: 1.4em 0.667em;
@@ -648,7 +652,7 @@ about-me-content {
     padding: 1em;
 }
 
-about-me-content h3 {
+.h3-about-me {
     margin-block: 0 0.667em;
 }
 

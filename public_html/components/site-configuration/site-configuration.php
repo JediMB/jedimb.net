@@ -19,7 +19,7 @@ $configService = ConfigurationService::getInstance(); /** @var ConfigurationServ
 <form id="site-settings">
     <fieldset>
         <div class="category-head">
-            <h3 style="margin: 0;"><?= PAGE_ADMIN_SECTION_SITE ?></h3>
+            <h3 class="h3" style="margin: 0;"><?= PAGE_ADMIN_SECTION_SITE ?></h3>
             <button type="submit" class="btn" disabled>Save</button>
         </div>
 
