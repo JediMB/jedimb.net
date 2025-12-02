@@ -1,11 +1,15 @@
+import imageManagerService from "/js/services/image-manager.service.js";
+
 customElements.define('image-manager-component', class ImageManagerComponent extends HTMLElement {
     /** @type {ImageManagerComponent} */
     #self;
     #container;
+    #service;
     
     constructor() {
         const component = super();
         this.#self = component;
+        this.#service = imageManagerService;
     }
 
     connectedCallback() {

@@ -4,7 +4,9 @@ namespace Services\DB;
 
 require_once 'services/base/base.db.service.php';
 
+use DateTime;
 use Exception;
+use PDO;
 use PDOException;
 use Services\Base\BaseDBService;
 
@@ -13,15 +15,63 @@ class TableModifiedDBService extends BaseDBService {
         parent::__construct();
     }
 
-    public function getTableModifiedDate(string $table) : false {
+    public function getTableModifiedDate(string $table) : DateTime|false {
         try {
-            
+            $result = $this->dbService->selectByColumnValue('table_modified', 'table_name', $table);
+
+            // TODO: Make DateTime parsing a utility function so this can be "return parseDateTime(value, nullable) ?? false"
+            // Would also be used for createdOn and modifiedOn in DBCreatedModified
+            return $result && isset($result['modified_on'])
+                ? (
+                    DateTime::createFromFormat(DB_DATETIME_FORMAT, $result['modified_on'])
+                    ?: DateTime::createFromFormat(DB_DATETIME_FORMAT_FALLBACK, $result['modified_on'])
+                )
+                : false;
         }
         catch (PDOException $e) {
             throw new Exception('Database error: ' . $e->getMessage());
         }
 
         return false;
+    }
+
+    public function createTableModifiedDate(string $table) : DateTime {
+        try {
+            $result = $this->dbService->selectFunction(
+                'create_table_modified_date', [
+                    1 => [ 'value' => $table, 'type' => PDO::PARAM_STR ]
+                ]
+            );
+
+            if (!$result || empty($result['modified_on']))
+                throw new Exception('Table modified date creation failed to return value.');
+
+            return DateTime::createFromFormat(DB_DATETIME_FORMAT, $result['modified_on'])
+                    ?: DateTime::createFromFormat(DB_DATETIME_FORMAT_FALLBACK, $result['modified_on']);
+        }
+        catch (PDOException $e) {
+            throw new Exception('Database error: ' . $e->getMessage());
+        }
+    }
+
+    public function updateTableModifiedDate(string $table) : DateTime {
+        try {
+            $result = $this->dbService->selectFunction(
+                'update_table_modified_date', [
+                    1 => [ 'value' => $table, 'type' => PDO::PARAM_STR ]
+                ]
+            );
+
+            if (!$result || empty($result['modified_on']))
+                throw new Exception('Table modified date update failed to return value.');
+
+            return DateTime::createFromFormat(DB_DATETIME_FORMAT, $result['modified_on'])
+                    ?: DateTime::createFromFormat(DB_DATETIME_FORMAT_FALLBACK, $result['modified_on']);
+        }
+        catch (PDOException $e) {
+            throw new Exception('Database error: ' . $e->getMessage());
+        }
+        
     }
 }
 

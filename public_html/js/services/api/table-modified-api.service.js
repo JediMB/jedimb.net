@@ -22,7 +22,7 @@ class TableModifiedApiService {
         if (response.value)
             response.value = new Date(response.value.date + response.value.timezone);
 
-        return false;
+        return response.value;
     }
 
     async getImageDate() {
