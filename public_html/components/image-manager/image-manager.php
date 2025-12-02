@@ -26,12 +26,18 @@ Component::addJSModule();
     </manager-tabs>
     <manager-content>
         <manager-list>
-            <ul>
-                <?php $items = ['Dog with hat', 'Nice bike', 'Two stacks of bricks', 'Mahogany table', 'Funny cat'];
-                    foreach ($items as $item): ?>
-                    <li class="manager-list-item"><label><input hidden type="radio" name="images"><?= $item ?></label></li>
-                <?php endforeach ?>
-            </ul>
+            <manager-files>
+                <ul>
+                    <?php $items = ['Dog with hat', 'Nice bike', 'Two stacks of bricks', 'Mahogany table', 'Funny cat'];
+                        foreach ($items as $item): ?>
+                        <li class="manager-list-item"><label><input hidden type="radio" name="images"><?= $item ?></label></li>
+                    <?php endforeach ?>
+                </ul>
+            </manager-files>
+            <manager-buttons>
+                <button>Insert</button>
+                <button>Upload</button>
+            </manager-buttons>
         </manager-list>
         <manager-properties>
             <div style="text-align: center;">20251127_0835721.jpg</div>
@@ -55,7 +61,3 @@ Component::addJSModule();
         </manager-properties>
     </manager-content>
 </image-manager>
-<manager-buttons>
-    <button>Insert</button>
-    <button>Upload</button>
-</manager-buttons>

@@ -42,7 +42,7 @@ manager-content {
     border: 1px solid currentColor;
 }
 
-manager-list,
+manager-files,
 manager-properties {
     min-height: 0;
     overflow-y: scroll;
@@ -50,8 +50,10 @@ manager-properties {
 }
 
 manager-list {
-    display: block;
     flex-basis: 40%;
+    display: block flex;
+    flex-direction: column;
+    justify-content: space-between;
 }
 
 manager-properties {
@@ -76,4 +78,5 @@ manager-properties {
 manager-buttons {
     display: block flex;
     justify-content: space-between;
+    padding: var(--spacing-edges);
 }
