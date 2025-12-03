@@ -16,6 +16,7 @@ define('PATH_REALPAGES_DIR', 'pages');
 define('PATH_ERROR403', 'errors/403.php');
 define('PATH_ERROR404', 'errors/404.php');
 define('PATH_CSS_DEFAULT', 'css/style.css');
+define('PATH_IMAGE_GALLERY', 'images/gallery');
 
 define('SPECIAL_PATHS', [
     'login' => PATH_REALPAGES_DIR . '/account/login.php'

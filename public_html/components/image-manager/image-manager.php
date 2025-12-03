@@ -2,14 +2,22 @@
 
 namespace Components;
 
+require_once 'services/image-gallery.service.php';
 require_once 'utilities/component.utility.php';
 
 use Enums\UserPermission;
+use Models\DB\Image;
+use Services\ImageGalleryService;
 use Services\SessionService;
 use Utilities\Component;
 
 $sessionService = SessionService::getInstance(); /** @var SessionService $sessionService */
 $sessionService->enforcePermissions([UserPermission::Publishing]);
+
+$imgService = ImageGalleryService::getInstance(); /** @var ImageGalleryService $imgService */
+if (empty($GLOBALS['images']))
+    $GLOBALS['images'] = $imgService->getImages();
+$images = $GLOBALS['images'];
 
 Component::renderCSS();
 Component::addJSModule();
@@ -28,9 +36,21 @@ Component::addJSModule();
         <manager-list>
             <manager-files>
                 <ul>
-                    <?php $items = ['Dog with hat', 'Nice bike', 'Two stacks of bricks', 'Mahogany table', 'Funny cat'];
-                        foreach ($items as $item): ?>
-                        <li class="manager-list-item"><label><input hidden type="radio" name="images"><?= $item ?></label></li>
+                    <?php foreach ($images as $image): ?>
+                        <?php /** @var Image $image */ ?>
+                        <li class="manager-list-item">
+                            <label>
+                                <input hidden type="radio" name="images"
+                                    data-image-id="<?= $image->id ?>"
+                                    data-image-url="<?= '/' . PATH_IMAGE_GALLERY . "/$image->filename" ?>"
+                                    data-image-title="<?= htmlspecialchars($image->title) ?>"
+                                    data-image-description="<?= htmlspecialchars($image->description) ?>"
+                                    data-image-created-on="<?= $image->createdOn->format('Y-m-d H:i:s') ?>"
+                                    data-image-modified-on="<?= $image->modifiedOn?->format('Y-m-d H:i:s') ?>"
+                                >
+                                <?= $image->title ?>
+                            </label>
+                        </li>
                     <?php endforeach ?>
                 </ul>
             </manager-files>
