@@ -3,8 +3,10 @@ import imageManagerService from "/js/services/image-manager.service.js";
 customElements.define('image-manager-component', class ImageManagerComponent extends HTMLElement {
     /** @type {ImageManagerComponent} */
     #self;
-    #container;
     #service;
+    #properties;
+    /** @type HTMLTemplateElement */
+    #propertiesTemplate;
     
     constructor() {
         const component = super();
@@ -14,14 +16,27 @@ customElements.define('image-manager-component', class ImageManagerComponent ext
 
     connectedCallback() {
         const self = this.#self;
-        this.#container = this.querySelector('images-container');
 
-        // const tabs = self.querySelectorAll('manager-tabs > input[type="radio"]');
-        // for (const tab of tabs) {
-        //     tab.addEventListener('change', (event) => {
-        //         event.stopPropagation();
+        const fileList = self.querySelector('manager-files');
+        this.#properties = self.querySelector('manager-properties');
+        this.#propertiesTemplate = self.querySelector('manager-properties + template');
 
-        //     })
-        // }
+        fileList.addEventListener('change', event => {
+            if (!event.target.checked)
+                return;
+
+            event.stopPropagation();
+
+
+            console.log(event.target);
+
+            const template = this.#propertiesTemplate.content.cloneNode(true);
+            this.#properties.textContent = '';
+            this.#properties.appendChild(template);
+        });
+    }
+
+    #updateManagerProperties() {
+
     }
 });

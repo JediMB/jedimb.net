@@ -56,3 +56,7 @@ input[type="checkbox"]:checked::before {
 input[type="checkbox"]:disabled::before {
     background-color: #999;
 }
+
+input, textarea {
+    color: black;
+}
