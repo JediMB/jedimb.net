@@ -45,8 +45,8 @@ Component::addJSModule();
                                     data-image-url="<?= '/' . PATH_IMAGE_GALLERY . "/$image->filename" ?>"
                                     data-image-title="<?= htmlspecialchars($image->title) ?>"
                                     data-image-description="<?= htmlspecialchars($image->description) ?>"
-                                    data-image-created-on="<?= $image->createdOn->format('Y-m-d H:i:s') ?>"
-                                    data-image-modified-on="<?= $image->modifiedOn?->format('Y-m-d H:i:s') ?>"
+                                    data-image-created-on="<?= $image->createdOn->format('Y-m-d H:i:s O') ?>"
+                                    data-image-modified-on="<?= $image->modifiedOn?->format('Y-m-d H:i:s O') ?>"
                                 >
                                 <?= $image->title ?>
                             </label>

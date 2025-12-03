@@ -7,6 +7,8 @@ use Exception;
 if (!isset($createdOn) || !isset($modifiedOn))
     throw new Exception('Created/Modified Dates component requires createdOn and modifiedOn and variables');
 
+// TODO: Should be using 'Y-m-d H:i:s O' formatting for GMT-relative timezone
+// Also make sure that this change doesn't break frontend JS
 $createdString = $createdOn->format('Y-m-d H:i:s');
  
 ?>
