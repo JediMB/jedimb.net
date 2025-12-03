@@ -20,7 +20,7 @@ class BlogPostDBService extends BaseDBService {
     }
 
     // TODO: expand functionality to cover 'unpublished' and 'any'
-    public function getBlogPosts(PublishedStatus $publishedStatus = PublishedStatus::Published) {
+    public function getBlogPosts(PublishedStatus $publishedStatus = PublishedStatus::Published) : array {
         try {
             $posts = $this->dbService->selectView('blog_posts_published', DBFetch::All);
 
