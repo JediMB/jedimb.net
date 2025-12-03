@@ -10,6 +10,7 @@ class Image extends DBCreatedModified {
     public string $filename;
     public string $title;
     public string $description;
+    public array $galleryIds;
 
     public function __construct(array $dbRow) {
         parent::__construct($dbRow);
@@ -17,6 +18,7 @@ class Image extends DBCreatedModified {
         $this->filename = $dbRow['filename'];
         $this->title = $dbRow['title'];
         $this->description = $dbRow['description'];
+        $this->galleryIds = [];
     }
 }
 

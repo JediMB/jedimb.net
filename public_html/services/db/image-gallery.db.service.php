@@ -2,6 +2,7 @@
 
 namespace Services\DB;
 
+require_once 'models/db/image.db.model.php';
 require_once 'services/base/base.db.service.php';
 
 use Exception;
@@ -18,11 +19,26 @@ class ImageGalleryDBService extends BaseDBService {
 
     public function getImages() : array {
         try {
-            $images = $this->dbService->selectView('image');
+            $images = $this->dbService->selectView('images_plus_gallery_ids');
 
-            return array_map(function($image) {
+            $galleryIds = [];
+            $groupedImages = [];
+            foreach ($images as $image) {
+                $groupedImages[$image['id']] = $image;
+
+                if ($image['gallery_id'])
+                    $galleryIds[$image['id']][] = $image['gallery_id'];
+            }
+
+            $groupedImages = array_map(function($image) {
                 return new Image($image);
-            }, $images);
+            }, $groupedImages);
+
+            foreach ($galleryIds as $key => $ids) {
+                $groupedImages[$key]->galleryIds = $ids;
+            }
+
+            return $groupedImages;
         }
         catch (PDOException $e) {
             throw new Exception('Database error: ' . $e->getMessage());
