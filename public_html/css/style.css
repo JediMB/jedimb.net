@@ -566,18 +566,18 @@ header::before {
 } */
 
 .btn-login:not(:disabled):not(.disabled):hover {
-    background-color: var(--color-hotpink-500);
+    background-color: hsl(var(--color-hotpink-500));
     color: black;
 
 }
 
 input.error {
-    background-color: var(--color-hotpink-200);
+    background-color: hsl(var(--color-hotpink-200));
     color: black;
 }
 
 input.error::selection {
-    background-color: var(--color-hotpink-800);
+    background-color: hsl(var(--color-hotpink-800));
     color: white;
 }
 
