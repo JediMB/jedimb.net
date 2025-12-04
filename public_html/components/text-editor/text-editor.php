@@ -38,6 +38,6 @@ Component::addJSModule();
 <key-info></key-info>
 
 <?php Component::include('modal-popup', [
-    'attributes' => [ 'modal-name="images"' => null ],
+    'attributes' => [ 'modal-name' => 'images' ],
     'include' => 'image-manager'
 ]) ?>
