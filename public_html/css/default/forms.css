@@ -1,16 +1,6 @@
-label {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    gap: 0.5em;
-    width: fit-content;
-}
-
-label:has(input[type="checkbox"]:not(:disabled)),
-input[type="checkbox"]:not(:disabled),
-label:has(input[type="radio"]:not(:disabled)),
-input[type="radio"]:not(:disabled) {
-    cursor: pointer;
+button:disabled {
+    background-color: hsl(var(--color-gray-300));
+    color: hsl(var(--color-gray-100));
 }
 
 input[type="checkbox"] {
@@ -59,4 +49,19 @@ input[type="checkbox"]:disabled::before {
 
 input, textarea {
     color: black;
+}
+
+label {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 0.5em;
+    width: fit-content;
+}
+
+label:has(input[type="checkbox"]:not(:disabled)),
+input[type="checkbox"]:not(:disabled),
+label:has(input[type="radio"]:not(:disabled)),
+input[type="radio"]:not(:disabled) {
+    cursor: pointer;
 }

@@ -560,10 +560,10 @@ header::before {
     cursor: pointer;
 }
 
-.btn:disabled, .btn.disabled {
+/* .btn:disabled, .btn.disabled {
     background-color: var(--color-gray-300);
     color: var(--color-gray-100);
-}
+} */
 
 .btn-login:not(:disabled):not(.disabled):hover {
     background-color: var(--color-hotpink-500);

@@ -34,7 +34,7 @@ manager-tabs {
     padding: var(--spacing-edges);
 }
 
-manager-content {
+image-manager {
     display: block flex;
     max-height: calc(var(--container-max-height, 100%) - 12rem);
     gap: var(--spacing-edges);
@@ -43,7 +43,7 @@ manager-content {
 }
 
 manager-files,
-manager-properties {
+image-properties {
     min-height: 0;
     overflow-y: scroll;
     padding: var(--spacing-edges);
@@ -60,8 +60,28 @@ manager-properties {
     flex-basis: 60%;
     display: block flex;
     flex-direction: column;
-    gap: var(--spacing-inner);
+    justify-content: space-between;
+
+    & form {
+        display: contents;
+    }
+}
+
+image-properties {
+    display: block flex;
+    flex-direction: column;
+    gap: var(--spacing-internal);
     font-size: 1rem;
+}
+
+manager-buttons {
+    display: block flex;
+    justify-content: space-between;
+    padding: var(--spacing-edges);
+}
+
+[btn-reset]:disabled {
+    display: none;
 }
 
 .manager-list-item:has(input:checked) {
@@ -76,11 +96,16 @@ manager-properties {
 .image-preview {
     margin-inline: 2rem;
     border: 1px dashed white;
-    aspect-ratio: 16/9;
+
+    & img {
+        width: 100%;
+        height: auto;
+        aspect-ratio: 16/9;
+        object-fit: contain;
+    }
 }
 
-manager-buttons {
-    display: block flex;
-    justify-content: space-between;
-    padding: var(--spacing-edges);
+.image-dates {
+    font-size: 0.8em;
+    line-height: 1.5em;
 }
