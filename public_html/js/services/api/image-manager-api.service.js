@@ -1,6 +1,6 @@
 import httpClient from "/js/http-client.js";
-import Image from "/js/models/image.model.js";
-import ImageGallery from "/js/models/image-gallery.model.js";
+import Gallery from "/js/models/image-gallery/gallery.model.js";
+import Image from "/js/models/image-gallery/image.model.js";
 
 export { imageManagerApiService as default };
 
@@ -20,25 +20,38 @@ class ImageManagerApiService {
         if (!response.success)
             return false;
 
-        if (response.value)
-            return response.value.map(image => new Image(image));
+        if (!response.value)
+            return [];
 
-        return [];
+        const images = [];
+        for (const key in response.value) {
+            const image = response.value[key];
+            images.push(new Image(image));
+        }
+
+        return images;
+
     }
 
     /**
-     * @returns {Promise<(ImageGallery[]|false)}
+     * @returns {Promise<(Gallery[]|false)}
      */
     async getImageGalleries() {
-        const response = await this.#httpClient.get('images/galleries');
+        const response = await this.#httpClient.get('galleries');
 
         if (!response.success)
             return false;
 
-        if (response.value)
-            return response.value.map(gallery => new ImageGallery(gallery));
+        if (!response.value)
+            return [];
 
-        return [];
+        const galleries = [];
+        for (const key in response.value) {
+            const gallery = response.value[key];
+            galleries.push(new Gallery(gallery));
+        }
+
+        return galleries;
     }
 }
 const imageManagerApiService = new ImageManagerApiService();

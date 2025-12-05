@@ -1,6 +1,7 @@
 <?php declare(strict_types=1);
 
 require_once 'services/table-modified.service.php';
+require_once 'utilities/response.utility.php';
 
 use Services\TableModifiedService;
 use Utilities\Response;

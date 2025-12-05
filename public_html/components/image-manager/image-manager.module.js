@@ -1,3 +1,4 @@
+import ImageDTO from "/js/models/image-gallery/image.dto.model.js";
 import imageManagerService from "/js/services/image-manager.service.js";
 
 customElements.define('image-manager-component', class ImageManagerComponent extends HTMLElement {
@@ -92,15 +93,14 @@ customElements.define('image-manager-component', class ImageManagerComponent ext
     }
 
     /** @param {Event} event */
-    #save(event) {
+    async #save(event) {
         event.preventDefault();
         
         const form = event.target;
-        const formData = new FormData(form);
+        const imageDTO = new ImageDTO(new FormData(form));
         
-        for (const [key, value] of formData) {
-
-        }
+        const response = await this.#service.save(imageDTO);
+        
     }
 
     /**

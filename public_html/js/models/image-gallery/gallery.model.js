@@ -1,6 +1,6 @@
-import DBStatus from "../enums/db-status.enum.js";
+import DBStatus from "/js/enums/db-status.enum.js";
 
-export default class ImageGallery {
+export default class Gallery {
     constructor({id, title, description, createdOn, modifiedOn, imageIds, dbStatus}) {
         this.id = Number(id);
         this.title = title;
