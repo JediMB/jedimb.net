@@ -3,18 +3,23 @@
 namespace Components;
 
 require_once 'services/image-gallery.service.php';
+require_once 'services/table-modified.service.php';
 require_once 'utilities/component.utility.php';
+require_once 'utilities/datetime.utility.php';
 
 use Enums\UserPermission;
 use Models\DB\Image;
 use Services\ImageGalleryService;
 use Services\SessionService;
+use Services\TableModifiedService;
 use Utilities\Component;
 use Utilities\DateTime;
 
 
 $sessionService = SessionService::getInstance(); /** @var SessionService $sessionService */
 $sessionService->enforcePermissions([UserPermission::Publishing]);
+
+$tableModService = TableModifiedService::getInstance(); /** @var TableModifiedService $tableModService */
 
 $imgService = ImageGalleryService::getInstance(); /** @var ImageGalleryService $imgService */
 if (empty($GLOBALS['images']))
@@ -34,7 +39,7 @@ Component::addJSModule();
             <li class="tab-item"><label class="tab-label"><input hidden type="radio" name="image-tabs">Groups</label></li>
         </ul>
     </manager-tabs>
-    <image-manager>
+    <image-manager data-modified-on="<?= DateTime::ToString($tableModService->getOrCreateModifiedDate('image')) ?>">
         <manager-list>
             <manager-files>
                 <ul>
@@ -45,7 +50,7 @@ Component::addJSModule();
                             $imageDesc = htmlspecialchars($image->description);
                         ?>
                         <li class="manager-list-item">
-                            <label>
+                            <label full-width>
                                 <input hidden type="radio" name="images"
                                     data-image-id="<?= $image->id ?>"
                                     data-image-filename="<?= $image->filename ?>"
@@ -98,5 +103,7 @@ Component::addJSModule();
             </div>
         </template>
     </image-manager>
-    <group-manager></group-manager>
+    <gallery-manager data-modified-on="<?= DateTime::ToString($tableModService->getOrCreateModifiedDate('gallery')) ?>">
+
+    </gallery-manager>
 </div>
