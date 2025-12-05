@@ -69,7 +69,9 @@ Component::addJSModule();
         </manager-list>
         <manager-properties>
             <form autocomplete="off">
-                <image-properties></image-properties>
+                <image-properties>
+                    <div style="width: 100%; max-height: 100%; aspect-ratio: 1;">&nbsp;</div>
+                </image-properties>
                 <manager-buttons>
                     <div><button btn-reset type="reset" disabled>Undo</button></div>
                     <div><button btn-save type="submit" disabled>Save</button></div>

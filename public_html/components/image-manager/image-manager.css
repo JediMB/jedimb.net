@@ -8,6 +8,7 @@ image-manager-component {
 manager-tabs {
     display: block;
     margin-bottom: -1px;
+    user-select: none;
 }
 
 .tab-list {
@@ -54,6 +55,7 @@ manager-list {
     display: block flex;
     flex-direction: column;
     justify-content: space-between;
+    user-select: none;
 }
 
 manager-properties {
