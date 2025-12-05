@@ -5,9 +5,9 @@ namespace Models\DB;
 require_once 'enums/user-role.enum.php';
 require_once 'models/base/db-base.model.php';
 
-use DateTime;
 use Enums\UserRole;
 use Models\Base\DBBase;
+use Utilities\DateTime;
 
 class User extends DBBase {
     public string $username;
@@ -15,9 +15,9 @@ class User extends DBBase {
     public UserRole $role;
     public string $roleString;
     public string $password;
-    public DateTime $passwordTimestamp;
-    public DateTime $registeredOn;
-    public ?DateTime $lastLogin;
+    public \DateTime $passwordTimestamp;
+    public \DateTime $registeredOn;
+    public ?\DateTime $lastLogin;
 
     public function __construct(array $dbRow) {
         parent::__construct($dbRow);
@@ -27,16 +27,9 @@ class User extends DBBase {
         $this->role = UserRole::tryFrom($dbRow['role']) ?: UserRole::User;
         $this->roleString = $dbRow['role_string'];
         $this->password = $dbRow['password'];
-        $this->passwordTimestamp = DateTime::createFromFormat(DB_DATETIME_FORMAT, $dbRow['password_timestamp'])
-            ?: DateTime::createFromFormat(DB_DATETIME_FORMAT_FALLBACK, $dbRow['password_timestamp']);
-        $this->registeredOn = DateTime::createFromFormat(DB_DATETIME_FORMAT, $dbRow['registered_on'])
-            ?: DateTime::createFromFormat(DB_DATETIME_FORMAT_FALLBACK, $dbRow['registered_on']);
-        $this->lastLogin = isset($dbRow['last_login'])
-            ? (
-                DateTime::createFromFormat(DB_DATETIME_FORMAT, $dbRow['last_login'])
-                ?: DateTime::createFromFormat(DB_DATETIME_FORMAT_FALLBACK, $dbRow['last_login'])
-            )
-            : null;
+        $this->passwordTimestamp = DateTime::Parse($dbRow['password_timestamp']);
+        $this->registeredOn = DateTime::Parse($dbRow['registered_on']);
+        $this->lastLogin = DateTime::Parse($dbRow['last_login']);
     }
 }
 

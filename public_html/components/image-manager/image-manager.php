@@ -10,6 +10,8 @@ use Models\DB\Image;
 use Services\ImageGalleryService;
 use Services\SessionService;
 use Utilities\Component;
+use Utilities\DateTime;
+
 
 $sessionService = SessionService::getInstance(); /** @var SessionService $sessionService */
 $sessionService->enforcePermissions([UserPermission::Publishing]);
@@ -52,8 +54,8 @@ Component::addJSModule();
                                     data-image-default-title="<?= $imageTitle ?>"
                                     data-image-description="<?= $imageDesc ?>"
                                     data-image-default-description="<?= $imageDesc ?>"
-                                    data-image-created-on="<?= $image->createdOn->format('Y-m-d H:i:s O') ?>"
-                                    data-image-modified-on="<?= $image->modifiedOn?->format('Y-m-d H:i:s O') ?>"
+                                    data-image-created-on="<?= DateTime::ToString($image->createdOn) ?>"
+                                    data-image-modified-on="<?= DateTime::ToString($image->modifiedOn) ?>"
                                 >
                                 <?= $image->title ?>
                             </label>
