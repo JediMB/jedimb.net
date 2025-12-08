@@ -1,6 +1,7 @@
 import httpClient from "/js/http-client.js";
 import Gallery from "/js/models/image-gallery/gallery.model.js";
 import Image from "/js/models/image-gallery/image.model.js";
+import ImageDTO from "/js/models/image-gallery/image.dto.model.js";
 
 export { imageManagerApiService as default };
 
@@ -52,6 +53,28 @@ class ImageManagerApiService {
         }
 
         return galleries;
+    }
+
+    /**
+     * @param {ImageDTO} imageDTO 
+     * @returns {Promise<([Image, Date]|false)>}
+     */
+    async updateImage(imageDTO) {
+        const response = await this.#httpClient.patch('images', imageDTO);
+
+        if (!response.success)
+            return false; // TODO: A notification system should inform the user on failure in these cases
+
+        if (!response.value.object)
+            throw new Error('Update failed to return image data');
+
+        if (!response.value.modifiedOn)
+            throw new Error('Update failed to return table modified date');
+
+        return [
+            new Image(response.value.object),
+            new Date(response.value.modifiedOn.date + response.value.modifiedOn.timezone)
+        ];
     }
 }
 const imageManagerApiService = new ImageManagerApiService();
