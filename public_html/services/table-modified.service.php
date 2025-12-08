@@ -25,8 +25,13 @@ class TableModifiedService extends Singleton {
         return $date;
     }
 
-    public function createTableModifiedDate(string $table) : DateTime {
-        return $this->tableModifiedDbService->createTableModifiedDate($table);
+    public function createOrUpdateTableModifiedDate(string $table) : DateTime {
+        $date = $this->tableModifiedDbService->getTableModifiedDate($table);
+
+        if (!$date)
+            return $this->tableModifiedDbService->createTableModifiedDate($table);
+
+        return $this->tableModifiedDbService->updateTableModifiedDate($table);
     }
 }
 
