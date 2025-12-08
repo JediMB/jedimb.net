@@ -1,3 +1,4 @@
+import Emitter from "/js/utilities/emitter.js";
 import Gallery from "/js/models/image-gallery/gallery.model.js";
 import Image from "/js/models/image-gallery/image.model.js";
 import ImageDTO from "/js/models/image-gallery/image.dto.model.js";
@@ -9,55 +10,66 @@ export { imageManagerService as default };
 class ImageManagerService {
     #imageModified = new Date(0);
     #galleryModified = new Date(0);
-    /** @type {Image[]} */
-    #images = [];
-    /** @type {Gallery[]} */
-    #galleries = [];
+    #images = new Emitter([]);
+    #galleries = new Emitter([]);
 
     constructor() {
-        this.fetchImageData();
+        this.#fetchImageData();
     }
 
-    async fetchImageData() {
+    async #fetchImageData() {
         const imageModified = await tableModifiedApiService.getImageDate();
+        const galleryModified = await tableModifiedApiService.getGalleryDate();
+        let images;
+        let galleries;
 
         if (imageModified > this.#imageModified) {
             this.#imageModified = imageModified;
-            const images = await imageManagerApiService.getImages();
-
-            if (images)
-                this.#images = images;
+            images = await imageManagerApiService.getImages();
         }
-
-        const galleryModified = await tableModifiedApiService.getGalleryDate();
 
         if (galleryModified > this.#galleryModified) {
             this.#galleryModified = galleryModified;
-            const galleries = await imageManagerApiService.getImageGalleries();
-
-            if (galleries)
-                this.#galleries = galleries;
+            galleries = await imageManagerApiService.getImageGalleries();
         }
 
-        if (this.#images.length === 0 || this.#galleries.length === 0)
-            return;
+        if (images.length && galleries.length) {
+            images.forEach(image => 
+                image.galleryList = image.galleryIds.map(galleryId =>
+                    galleries.find(gallery => galleryId === gallery.id))
+            );
 
-        this.#images.forEach(image => 
-            image.galleryList = image.galleryIds.map(galleryId =>
-                this.#galleries.find(gallery => galleryId === gallery.id))
-        );
+            galleries.forEach(gallery => 
+                gallery.imageList = gallery.imageIds.map(imageId =>
+                    images.find(image => imageId === image.id))
+            );
+        }
 
-        this.#galleries.forEach(gallery => 
-            gallery.imageList = gallery.imageIds.map(imageId =>
-                this.#images.find(image => imageId === image.id))
-        );
+        if (images)
+            this.#images.setValue(images);
+
+        if (galleries)
+            this.#galleries.setValue(galleries);
     }
 
     /**
      * @param {ImageDTO} imageDTO 
+     * @returns {Promise<Date>}
      */
-    async save(imageDTO) {
+    async updateImage(imageDTO) {
+        const result = await imageManagerApiService.updateImage(imageDTO);
 
+        if (!result)
+            throw new Error('No result received from updateImage');
+
+        const [image, modifiedOn] = result;
+        
+        this.#imageModified = modifiedOn;
+
+        const index = this.#images.getValue().findIndex(i => i.id === image.id);
+        this.#images.setValue(image, index);
+
+        return this.#imageModified;
     }
 }
 const imageManagerService = new ImageManagerService();
