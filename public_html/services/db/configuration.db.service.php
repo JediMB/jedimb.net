@@ -9,7 +9,7 @@ use Exception;
 use PDO;
 use PDOException;
 use Models\DB\Configuration;
-use Models\DTO\Configuration as DTOConfiguration;
+use Models\DTO\Configuration as ConfigurationDTO;
 use Services\Base\BaseDBService;
 
 class ConfigurationDBService extends BaseDBService {
@@ -49,7 +49,7 @@ class ConfigurationDBService extends BaseDBService {
         return [];
     }
 
-    public function createConfiguration(DTOConfiguration $object) : Configuration {
+    public function createConfiguration(ConfigurationDTO $object) : Configuration {
         try {
             $result = $this->dbService->selectFunction(
                 'create_configuration', [

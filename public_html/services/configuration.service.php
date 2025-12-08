@@ -7,7 +7,7 @@ require_once 'services/db/configuration.db.service.php';
 
 use Exception;
 use Models\DB\Configuration;
-use Models\DTO\Configuration as DTOConfiguration;
+use Models\DTO\Configuration as ConfigurationDTO;
 use Services\Base\Singleton;
 use Services\DB\ConfigurationDBService;
 
@@ -61,7 +61,7 @@ class ConfigurationService extends Singleton {
             || $this->configuration[$name]->isActive === false;
     }
 
-    public function createConfiguration(DTOConfiguration $object) : Configuration {
+    public function createConfiguration(ConfigurationDTO $object) : Configuration {
         return $this->configDbService->createConfiguration($object);
     }
 
