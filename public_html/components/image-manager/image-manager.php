@@ -15,7 +15,6 @@ use Services\TableModifiedService;
 use Utilities\Component;
 use Utilities\DateTime;
 
-
 $sessionService = SessionService::getInstance(); /** @var SessionService $sessionService */
 $sessionService->enforcePermissions([UserPermission::Publishing]);
 

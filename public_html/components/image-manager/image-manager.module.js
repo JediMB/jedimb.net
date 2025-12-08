@@ -1,3 +1,4 @@
+import formatDate from "/js/utilities/format-date.js";
 import ImageDTO from "/js/models/image-gallery/image.dto.model.js";
 import imageManagerService from "/js/services/image-manager.service.js";
 
@@ -5,6 +6,9 @@ customElements.define('image-manager-component', class ImageManagerComponent ext
     /** @type {ImageManagerComponent} */
     #self;
     #service;
+
+    #imageManager;
+
     #insertButton;
     #uploadButton;
     #properties;
@@ -22,14 +26,14 @@ customElements.define('image-manager-component', class ImageManagerComponent ext
     connectedCallback() {
         const self = this.#self;
 
-        const imageManager = self.querySelector('image-manager');
-        const fileList = imageManager.querySelector('manager-files');
-        this.#insertButton = imageManager.querySelector('[btn-insert]');
-        const form = imageManager.querySelector('form');
-        this.#properties = imageManager.querySelector('image-properties');
-        this.#propertiesTemplate = imageManager.querySelector('manager-properties + template');
-        this.#resetButton = imageManager.querySelector('[btn-reset]');
-        this.#saveButton = imageManager.querySelector('[btn-save]');
+        this.#imageManager = self.querySelector('image-manager');
+        const fileList = this.#imageManager.querySelector('manager-files');
+        this.#insertButton = this.#imageManager.querySelector('[btn-insert]');
+        const form = this.#imageManager.querySelector('form');
+        this.#properties = this.#imageManager.querySelector('image-properties');
+        this.#propertiesTemplate = this.#imageManager.querySelector('manager-properties + template');
+        this.#resetButton = this.#imageManager.querySelector('[btn-reset]');
+        this.#saveButton = this.#imageManager.querySelector('[btn-save]');
 
         fileList.addEventListener('change', event => {
             if (!event.target.checked)
@@ -99,8 +103,10 @@ customElements.define('image-manager-component', class ImageManagerComponent ext
         const form = event.target;
         const imageDTO = new ImageDTO(new FormData(form));
         
-        const response = await this.#service.save(imageDTO);
-        
+        const imagesModifiedOn = await this.#service.updateImage(imageDTO);
+        this.#imageManager.dataset.modifiedOn = formatDate(imagesModifiedOn);
+
+        // TODO: Make this module subscribe to service changes and update the contents when changes occur
     }
 
     /**
