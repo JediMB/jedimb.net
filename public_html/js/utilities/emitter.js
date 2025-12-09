@@ -25,7 +25,7 @@ export default class Emitter {
             this.#value[arrayIndex] = value;
 
             this.#listeners.forEach(listener => {
-                listener.nextIndexed(this.#value[arrayIndex]);
+                listener.nextIndexed(arrayIndex, this.#value[arrayIndex]);
             });
 
             return;
