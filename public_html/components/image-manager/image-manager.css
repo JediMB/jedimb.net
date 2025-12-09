@@ -5,6 +5,13 @@ image-manager-component {
     height: 100%;
 }
 
+.image-manager-header {
+    display: block flex;
+    flex-direction: row;
+    gap: var(--spacing-inner);
+    align-items: center;
+}
+
 manager-tabs {
     display: block;
     margin-bottom: -1px;

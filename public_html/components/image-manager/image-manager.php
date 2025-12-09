@@ -30,7 +30,12 @@ Component::addJSModule();
 
 ?>
 
-<h2>Image manager</h2>
+<div class="image-manager-header">
+    <h2>Image manager</h2>
+    <button btn-upload>Upload</button>
+    <!-- Form with file input, title and description should appear below -->
+    <!-- <input type="file" name="image" accept="image/png, image/jpeg"> -->
+</div>
 <div>
     <manager-tabs>
         <ul class="tab-list">
@@ -78,7 +83,7 @@ Component::addJSModule();
             </manager-files>
             <manager-buttons>
                 <div><button btn-insert disabled>Insert</button></div>
-                <div><button btn-upload>Upload</button></div>
+                <div><button btn-delete disabled>Delete</button></div>
             </manager-buttons>
         </manager-list>
         <manager-properties>

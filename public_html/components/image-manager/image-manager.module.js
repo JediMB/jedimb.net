@@ -15,7 +15,7 @@ customElements.define('image-manager-component', class ImageManagerComponent ext
     /** @type {HTMLTemplateElement} */
     #imageItemTemplate;
     #insertButton;
-    #uploadButton;
+    #deleteButton;
     #imageProperties;
     #imagePropertiesContent;
     /** @type {HTMLTemplateElement} */
@@ -38,6 +38,7 @@ customElements.define('image-manager-component', class ImageManagerComponent ext
         this.#fileList = managerFiles.querySelector('ul');
         this.#imageItemTemplate = managerFiles.querySelector('template');
         this.#insertButton = this.#imageManager.querySelector('[btn-insert]');
+        this.#deleteButton = this.#imageManager.querySelector('[btn-delete]');
         const form = this.#imageManager.querySelector('form');
         this.#imageProperties = this.#imageManager.querySelector('image-properties');
         this.#imagePropertiesContent = this.#imageProperties.innerHTML;
@@ -52,6 +53,7 @@ customElements.define('image-manager-component', class ImageManagerComponent ext
             event.stopPropagation();
 
             this.#insertButton.disabled = false;
+            this.#deleteButton.disabled = false;
 
             this.#renderImageProperties(event.target.dataset);
         });
@@ -80,6 +82,7 @@ customElements.define('image-manager-component', class ImageManagerComponent ext
         this.#fileList.textContent = ''; // TODO: Loading spinner animation
         this.#imageProperties.innerHTML = this.#imagePropertiesContent;
         this.#insertButton.disabled = true;
+        this.#deleteButton.disabled = true;
         this.#resetButton.disabled = true;
         this.#saveButton.disabled = true;
 
