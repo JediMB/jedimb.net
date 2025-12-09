@@ -8,14 +8,23 @@ import tableModifiedApiService from "/js/services/api/table-modified-api.service
 export { imageManagerService as default };
 
 class ImageManagerService {
-    #imageModified = new Date(0);
     #galleryModified = new Date(0);
-    #images = new Emitter([]);
+    #imageModified = new Date(0);
     #galleries = new Emitter([]);
+    #images = new Emitter([]);
 
     constructor() {
         this.#fetchImageData();
     }
+
+    /** @returns {Date} */
+    get galleryModified() { return new Date(this.#galleryModified); }
+    /** @returns {Date} */
+    get imageModified() { return new Date(this.#imageModified); }
+    /** @returns {Emitter} */
+    get galleries() { return this.#galleries; }
+    /** @returns {Emitter} */
+    get images() { return this.#images; }
 
     async #fetchImageData() {
         const imageModified = await tableModifiedApiService.getImageDate();

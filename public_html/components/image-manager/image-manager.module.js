@@ -1,4 +1,5 @@
 import formatDate from "/js/utilities/format-date.js";
+import Image from "/js/models/image-gallery/image.model.js";
 import ImageDTO from "/js/models/image-gallery/image.dto.model.js";
 import imageManagerService from "/js/services/image-manager.service.js";
 
@@ -6,13 +7,18 @@ customElements.define('image-manager-component', class ImageManagerComponent ext
     /** @type {ImageManagerComponent} */
     #self;
     #service;
+    #galleryPath;
 
     #imageManager;
-
+    /** @type {HTMLUListElement} */
+    #fileList;
+    /** @type {HTMLTemplateElement} */
+    #imageItemTemplate;
     #insertButton;
     #uploadButton;
-    #properties;
-    /** @type HTMLTemplateElement */
+    #imageProperties;
+    #imagePropertiesContent;
+    /** @type {HTMLTemplateElement} */
     #propertiesTemplate;
     #resetButton;
     #saveButton;
@@ -27,15 +33,19 @@ customElements.define('image-manager-component', class ImageManagerComponent ext
         const self = this.#self;
 
         this.#imageManager = self.querySelector('image-manager');
-        const fileList = this.#imageManager.querySelector('manager-files');
+        const managerFiles = this.#imageManager.querySelector('manager-files');
+        this.#galleryPath = managerFiles.dataset.galleryPath;
+        this.#fileList = managerFiles.querySelector('ul');
+        this.#imageItemTemplate = managerFiles.querySelector('template');
         this.#insertButton = this.#imageManager.querySelector('[btn-insert]');
         const form = this.#imageManager.querySelector('form');
-        this.#properties = this.#imageManager.querySelector('image-properties');
+        this.#imageProperties = this.#imageManager.querySelector('image-properties');
+        this.#imagePropertiesContent = this.#imageProperties.innerHTML;
         this.#propertiesTemplate = this.#imageManager.querySelector('manager-properties + template');
         this.#resetButton = this.#imageManager.querySelector('[btn-reset]');
         this.#saveButton = this.#imageManager.querySelector('[btn-save]');
 
-        fileList.addEventListener('change', event => {
+        managerFiles.addEventListener('change', event => {
             if (!event.target.checked)
                 return;
 
@@ -52,11 +62,82 @@ customElements.define('image-manager-component', class ImageManagerComponent ext
             this.#saveButton.disabled = true;
         })
 
+        imageManagerService.images.subscribe(
+            images => this.#renderImageList(images), true,
+            (_, image) => this.#updateImageListItem(image)
+        );
+
         //fileList.querySelector('[type="radio"]')?.click();
     }
 
+    /** @param {Image[]} images  */
+    #renderImageList(images) {
+        const localDate = new Date(this.#imageManager.dataset.modifiedOn);
+
+        if (this.#service.imageModified <= localDate)
+            return;
+
+        this.#fileList.textContent = ''; // TODO: Loading spinner animation
+        this.#imageProperties.innerHTML = this.#imagePropertiesContent;
+        this.#insertButton.disabled = true;
+        this.#resetButton.disabled = true;
+        this.#saveButton.disabled = true;
+
+        images.forEach(image => {
+            const template = this.#imageItemTemplate.content.cloneNode(true);
+
+            const imageUrl = this.#galleryPath + image.filename;
+
+            /** @type {HTMLInputElement} */
+            const input = template.querySelector('input');
+            input.insertAdjacentText('afterend', image.title);
+
+            /** @type {DOMStringMap} */
+            const data = input.dataset;
+            data.imageId = image.id;
+            data.imageFilename = image.filename;
+            data.imageUrl = imageUrl;
+            data.imageTitle = image.title;
+            data.imageDefaultTitle = image.title;
+            data.imageDescription = image.description;
+            data.imageDefaultDescription = image.description;
+            data.imageCreatedOn = formatDate(image.createdOn);
+            data.imageModifiedOn = formatDate(image.modifiedOn);
+
+            /** @type {HTMLImageElement} */
+            const img = template.querySelector('img');
+            img.src = imageUrl;
+
+            this.#fileList.appendChild(template);
+        });
+    }
+
+    /** @param {Image} image  */
+    #updateImageListItem(image) {
+        /** @type {HTMLInputElement} */
+        const input = this.#fileList.querySelector(`input[data-image-id="${image.id}"]`);
+
+        if (!input)
+            throw new Error(`Image list item with id ${image.id} can't be found`);
+        
+        if (input.nextSibling)
+            input.nextSibling.textContent = image.title;
+        else
+            input.insertAdjacentText('afterend', image.title);
+
+        /** @type {DOMStringMap} */
+        const data = input.dataset;
+        data.imageTitle = image.title;
+        data.imageDefaultTitle = image.title;
+        data.imageDescription = image.description;
+        data.imageDefaultDescription = image.description;
+        data.imageModifiedOn = formatDate(image.modifiedOn);
+
+        this.#renderImageProperties(data);
+    }
+
     #renderImageProperties(data) {
-        this.#properties.textContent = '';
+        this.#imageProperties.textContent = ''; // TODO: Loading spinner animation
         this.#resetButton.disabled = true;
         this.#saveButton.disabled = true;
 
@@ -85,14 +166,14 @@ customElements.define('image-manager-component', class ImageManagerComponent ext
         if (data.imageModifiedOn)
             modifiedOn.textContent = data.imageModifiedOn;
         else
-            modifiedOn.parentElement.remove();
+            modifiedOn.parentElement.innerHTML = '&nbsp;';
 
         const img = document.createElement('img');
         img.src = data.imageUrl;
         img.alt = 'Image preview';
         template.querySelector('.image-preview').appendChild(img);
         
-        this.#properties.appendChild(template);
+        this.#imageProperties.appendChild(template);
         this.#setUndoSaveButtonStatus([name, description]);
     }
 
@@ -104,9 +185,8 @@ customElements.define('image-manager-component', class ImageManagerComponent ext
         const imageDTO = new ImageDTO(new FormData(form));
         
         const imagesModifiedOn = await this.#service.updateImage(imageDTO);
-        this.#imageManager.dataset.modifiedOn = formatDate(imagesModifiedOn);
 
-        // TODO: Make this module subscribe to service changes and update the contents when changes occur
+        this.#imageManager.dataset.modifiedOn = formatDate(imagesModifiedOn, true);
     }
 
     /**

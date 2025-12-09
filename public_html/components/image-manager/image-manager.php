@@ -38,13 +38,13 @@ Component::addJSModule();
             <li class="tab-item"><label class="tab-label"><input hidden type="radio" name="image-tabs">Groups</label></li>
         </ul>
     </manager-tabs>
-    <image-manager data-modified-on="<?= DateTime::ToString($tableModService->getOrCreateModifiedDate('image')) ?>">
+    <image-manager data-modified-on="<?= DateTime::ToPrecisionString($tableModService->getOrCreateModifiedDate('image')) ?>">
         <manager-list>
-            <manager-files>
+            <manager-files data-gallery-path="<?= ($galleryPath = '/' . PATH_IMAGE_GALLERY . '/') ?>">
                 <ul>
                     <?php foreach ($images as $image): ?>
                         <?php /** @var Image $image */
-                            $imageUrl = '/' . PATH_IMAGE_GALLERY . "/$image->filename";
+                            $imageUrl = $galleryPath . "$image->filename";
                             $imageTitle = htmlspecialchars($image->title);
                             $imageDesc = htmlspecialchars($image->description);
                         ?>
@@ -67,6 +67,14 @@ Component::addJSModule();
                         </li>
                     <?php endforeach ?>
                 </ul>
+                <template>
+                    <li class="manager-list-item">
+                        <label full-width>
+                            <input hidden type="radio" name="images">
+                        </label>
+                        <img hidden>
+                    </li>
+                </template>
             </manager-files>
             <manager-buttons>
                 <div><button btn-insert disabled>Insert</button></div>
