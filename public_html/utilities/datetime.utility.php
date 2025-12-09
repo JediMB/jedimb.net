@@ -11,6 +11,13 @@ class DateTime {
             ?: \DateTime::createFromFormat(DB_DATETIME_FORMAT_FALLBACK, $string);
     }
 
+    static function ToPrecisionString(?\DateTime $dateTime) : string {
+        if (empty($dateTime))
+            return '';
+
+        return $dateTime->format('Y-m-d H:i:s.v O');
+    }
+
     static function ToString(?\DateTime $dateTime) : string {
         if (empty($dateTime))
             return '';

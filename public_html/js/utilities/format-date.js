@@ -2,10 +2,13 @@ export { formatDate as default };
 
 /**
  * 
- * @param {Date} dt 
+ * @param {(Date|undefined)} dt 
+ * @param {Boolean} millisecondPrecision
  * @returns {string}
  */
-function formatDate(dt) {
+function formatDate(dt, millisecondPrecision = false) {
+    if (!dt) return '';
+
     let year = dt.getFullYear().toString().padStart(4, '0');
     let month = dt.getMonth().toString().padStart(2, '0');
     let date = dt.getDate().toString().padStart(2, '0');
@@ -18,6 +21,9 @@ function formatDate(dt) {
     timezone = Math.abs(timezone);
     let tzHours = Math.floor(timezone / 60).toString().padStart(2, '0');
     let tzMinutes = Math.floor(timezone % 60).toString().padStart(2, '0');
+
+    if (millisecondPrecision)
+        return `${year}-${month}-${date} ${hours}:${minutes}:${seconds}.${dt.getMilliseconds()} ${tzSign}${tzHours}${tzMinutes}`;
 
     return `${year}-${month}-${date} ${hours}:${minutes}:${seconds} ${tzSign}${tzHours}${tzMinutes}`;
 }
