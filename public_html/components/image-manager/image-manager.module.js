@@ -9,7 +9,10 @@ customElements.define('image-manager-component', class ImageManagerComponent ext
     #service;
     #galleryPath;
 
+    #uploadImageButton;
+    #cancelButton;
     #imageManager;
+    #filesFieldset;
     /** @type {HTMLUListElement} */
     #fileList;
     /** @type {HTMLTemplateElement} */
@@ -20,6 +23,7 @@ customElements.define('image-manager-component', class ImageManagerComponent ext
     #imagePropertiesContent;
     /** @type {HTMLTemplateElement} */
     #propertiesTemplate;
+    #uploadTemplete;
     #resetButton;
     #saveButton;
     
@@ -32,19 +36,42 @@ customElements.define('image-manager-component', class ImageManagerComponent ext
     connectedCallback() {
         const self = this.#self;
 
+        this.#uploadImageButton = self.querySelector('[btn-image-upload');
+        this.#cancelButton = self.querySelector('[btn-cancel]');
         this.#imageManager = self.querySelector('image-manager');
         const managerFiles = this.#imageManager.querySelector('manager-files');
+        const listFieldset = managerFiles.querySelector('fieldset');
         this.#galleryPath = managerFiles.dataset.galleryPath;
+        this.#filesFieldset = managerFiles.querySelector('fieldset');
         this.#fileList = managerFiles.querySelector('ul');
-        this.#imageItemTemplate = managerFiles.querySelector('template');
+        this.#imageItemTemplate = managerFiles.querySelector('[item-template]');
         this.#insertButton = this.#imageManager.querySelector('[btn-insert]');
         this.#deleteButton = this.#imageManager.querySelector('[btn-delete]');
         const form = this.#imageManager.querySelector('form');
         this.#imageProperties = this.#imageManager.querySelector('image-properties');
         this.#imagePropertiesContent = this.#imageProperties.innerHTML;
-        this.#propertiesTemplate = this.#imageManager.querySelector('manager-properties + template');
+        this.#propertiesTemplate = this.#imageManager.querySelector('[properties-template]');
+        this.#uploadTemplete = this.#imageManager.querySelector('[upload-template]');
         this.#resetButton = this.#imageManager.querySelector('[btn-reset]');
         this.#saveButton = this.#imageManager.querySelector('[btn-save]');
+
+        this.#uploadImageButton.addEventListener('click', () => {
+            this.#uploadImageButton.setAttribute('hidden', '');
+            this.#cancelButton.removeAttribute('hidden');
+            listFieldset.disabled = true;
+            const checked = this.#fileList.querySelector(':checked');
+            if (checked) checked.checked = false;
+            this.#saveButton.textContent = this.#saveButton.dataset.contentUpload;
+            this.#renderImageUpload();
+        });
+
+        this.#cancelButton.addEventListener('click', () => {
+            this.#uploadImageButton.removeAttribute('hidden');
+            this.#cancelButton.setAttribute('hidden', '');
+            listFieldset.disabled = false;
+            this.#saveButton.textContent = this.#saveButton.dataset.contentEdit;
+            this.#imageProperties.innerHTML = this.#imagePropertiesContent;
+        });
 
         managerFiles.addEventListener('change', event => {
             if (!event.target.checked)
@@ -62,6 +89,8 @@ customElements.define('image-manager-component', class ImageManagerComponent ext
         form.addEventListener('reset', () => {
             this.#resetButton.disabled = true;
             this.#saveButton.disabled = true;
+
+            this.#imageProperties.querySelector('[img-upload]')?.remove();
         })
 
         imageManagerService.images.subscribe(
@@ -69,6 +98,8 @@ customElements.define('image-manager-component', class ImageManagerComponent ext
             (_, image) => this.#updateImageListItem(image)
         );
 
+        this.#filesFieldset.disabled = false;
+        this.#uploadImageButton.disabled = false;
         //fileList.querySelector('[type="radio"]')?.click();
     }
 
@@ -180,12 +211,55 @@ customElements.define('image-manager-component', class ImageManagerComponent ext
         this.#setUndoSaveButtonStatus([name, description]);
     }
 
+    #renderImageUpload() {
+        const template = this.#uploadTemplete.content.cloneNode(true);
+        /** @type {HTMLDivElement} */
+        const imagePreview = template.querySelector('.image-preview');
+        /** @type {HTMLInputElement} */
+        const fileInput = template.querySelector('[type="file"]');
+        const titleInput = template.querySelector('[name="title"]');
+        const descInput = template.querySelector('[name="description"]');
+
+        const reader = new FileReader();
+        reader.addEventListener('load', event => {
+            const img = document.createElement('img');
+            img.src = event.target.result;
+            img.alt = 'Image preview';
+            img.setAttribute('img-upload', '');
+            imagePreview.replaceChildren(img);
+        });
+        
+        fileInput.addEventListener('change', event => {
+            event.stopPropagation();
+            
+            if (!fileInput.files.length)
+                return;
+
+            const file = fileInput.files.item(0);
+            reader.readAsDataURL(file);
+
+            this.#resetButton.disabled = false;
+            this.#setUndoSaveButtonStatus([fileInput, titleInput, descInput]);
+        });
+
+        [titleInput, descInput].forEach(input => input.addEventListener('input', event => {
+            event.stopPropagation();
+            this.#setUndoSaveButtonStatus([fileInput, titleInput, descInput]);
+        }));
+
+        this.#imageProperties.textContent = '';
+        this.#imageProperties.appendChild(template);
+    }
+
     /** @param {Event} event */
     async #save(event) {
         event.preventDefault();
         
-        const form = event.target;
-        const imageDTO = new ImageDTO(new FormData(form));
+        const formData = new FormData(event.target);
+
+        // TODO: Differentiate between save and upload based on formdata
+        
+        const imageDTO = new ImageDTO(formData);
         
         const imagesModifiedOn = await this.#service.updateImage(imageDTO);
 
@@ -196,6 +270,8 @@ customElements.define('image-manager-component', class ImageManagerComponent ext
      * @param {HTMLInputElement[]} fields 
      */
     #setUndoSaveButtonStatus(fields) {
-        this.#resetButton.disabled = this.#saveButton.disabled = fields.every(field => field.value === field.defaultValue);
+        const noChanges = fields.every(field => field.value === field.defaultValue);
+        this.#resetButton.disabled = noChanges;
+        this.#saveButton.disabled = noChanges || !!fields.find(field => !field.checkValidity());
     }
 });

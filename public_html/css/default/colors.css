@@ -75,6 +75,8 @@ body {
     --color-link: hsl(var(--color-hotpink-200));
     --color-link-hover: hsl(var(--color-bluelotus-200));
     --color-link-visited: hsl(var(--color-lightgreenishblue-200));
+    --color-disabled-background: hsl(var(--color-gray-300));
+    --color-disabled-text: hsl(var(--color-gray-100));
 
     --color-header-1: hsl(var(--color-gray-50) / 95%);
     --color-header-2: hsl(var(--color-gray-200) / 95%);

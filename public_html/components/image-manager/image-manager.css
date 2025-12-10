@@ -5,7 +5,7 @@ image-manager-component {
     height: 100%;
 }
 
-.image-manager-header {
+image-manager-header {
     display: block flex;
     flex-direction: row;
     gap: var(--spacing-inner);
@@ -93,7 +93,12 @@ manager-buttons {
     display: none;
 }
 
-.manager-list-item:hover {
+.manager-list-item:has(input:disabled) {
+    background-color: var(--color-disabled-background);
+    color: var(--color-disabled-text);
+}
+
+.manager-list-item:has(input:enabled):hover {
     background-color: var(--color-primary-dark);
 }
 
