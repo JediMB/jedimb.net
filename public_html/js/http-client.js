@@ -6,6 +6,11 @@ class HttpClient {
 
     constructor() { }
 
+    /**
+     * @param {Response} response 
+     * @param {string} httpMethod 
+     * @returns {Promise<any>}
+     */
     async #responseHandling(response, httpMethod) {
         if (!response.ok) {
             console.error(`Error ${response.status}: %c ${httpMethod} %c '${this.#baseApiUrl + api}' failed.`, this.#requestTypeCss);
@@ -28,6 +33,11 @@ class HttpClient {
         return data;
     }
 
+    /**
+     * Requests data from the API
+     * @param {string} api 
+     * @returns {Promise<any>}
+     */
     async get(api) {
         const response = await fetch(this.#baseApiUrl + api).catch(
             error => ({
@@ -39,6 +49,12 @@ class HttpClient {
         return await this.#responseHandling(response, 'GET');
     }
 
+    /**
+     * Submits new data to the API
+     * @param {string} api 
+     * @param {any} body 
+     * @returns {Promise<any>}
+     */
     async post(api, body = null) {
         const response = await fetch(this.#baseApiUrl + api, {
             method: 'POST',
@@ -53,7 +69,12 @@ class HttpClient {
         return await this.#responseHandling(response, 'POST');
     }
 
-    // Full replacement
+    /**
+     * Sends a full object update to the API
+     * @param {string} api 
+     * @param {any} body 
+     * @returns {Promise<any>}
+     */
     async put(api, body) {
         const response = await fetch(this.#baseApiUrl + api, {
             method: 'PUT',
@@ -68,7 +89,12 @@ class HttpClient {
         return await this.#responseHandling(response, 'PUT');
     }
 
-    // Partial replacement
+    /**
+     * Sends a partial object update to the API
+     * @param {string} api 
+     * @param {any} body 
+     * @returns {Promise<any>}
+     */
     async patch(api, body) {
         const response = await fetch(this.#baseApiUrl + api, {
             method: 'PATCH',
