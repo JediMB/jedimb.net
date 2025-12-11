@@ -4,5 +4,15 @@
 			"path": "."
 		}
 	],
-	"settings": {}
+	"settings": {
+		"liveServer.settings.port": 5500,
+		"liveServer.settings.root": "/public_html",
+		"liveServer.settings.CustomBrowser": "firefox",
+		"liveServer.settings.NoBrowser": false,
+		"liveServer.settings.fullReload": false,
+		"liveServer.settings.ignoreFiles" : [
+			"**/images",
+			"**/tmp"
+		]
+	}
 }
