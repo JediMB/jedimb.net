@@ -49,6 +49,49 @@ switch ( $_SERVER['REQUEST_METHOD'] ) {
             return Response::Error([$e->getMessage()]);
         }
 
+    case 'POST':
+        conditionChecks([ UserPermission::Publishing ]);
+
+        try {
+            if (empty($input['dto']) || empty($input['file']))
+                return Response::BadRequest(TEXT_MALFORMED_REQUEST);
+
+            if (strlen($input['file']) > UPLOAD_IMAGE_SIZE_LIMIT)
+                return Response::BadRequest(TEXT_IMAGE_SIZE_LIMIT);
+
+            $basename = date('Ymd_His_') . str_pad(dechex(rand(0x0000, 0xFFFF)), 4, '0', STR_PAD_LEFT);
+            $filepath = PATH_TEMP_DIR . '/' . $basename;
+
+            if ( !($file = fopen($filepath, 'wb')) )
+                return Response::Error([TEXT_IMAGE_COULD_NOT_BE_CREATED]);
+
+            stream_filter_append($file, 'convert.base64-decode');
+            fwrite($file, $input['file']);
+            fclose($file);
+
+            $mime = mime_content_type($filepath);
+
+            if (empty(UPLOAD_IMAGE_MIME_TYPES[$mime])) {
+                unlink($filepath);
+                return Response::BadRequest(TEXT_IMAGE_DISALLOWED_TYPE . $mime);
+            }
+
+            $finalName = "$basename." . UPLOAD_IMAGE_MIME_TYPES[$mime];
+            $input['dto']['filename'] = $finalName;
+            
+            $result = $service->createImage(new Image($input['dto']));
+
+            rename($filepath, PATH_IMAGE_GALLERY . "/$finalName");
+
+            return Response::Success($result);
+        }
+        catch (Exception $e) {
+            if ( isset($filepath) && ($realpath = realpath($filepath)) )
+                unlink($realpath);
+
+            return Response::Error([$e->getMessage()]);
+        }
+
     default:
         return Response::InvalidRequest();
 }

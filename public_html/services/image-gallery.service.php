@@ -23,6 +23,14 @@ class ImageGalleryService extends Singleton {
         $this->tableModifiedService = TableModifiedService::getInstance();
     }
 
+    /** @return array{'object': \Models\DB\Image, 'modifiedOn': \DateTime} */
+    public function createImage(ImageDTO $imageDTO) {
+        return [
+            'object' => $this->imageGalleryDbService->createImage($imageDTO),
+            'modifiedOn' => $this->tableModifiedService->createOrUpdateTableModifiedDate('image')
+        ];
+    }
+
     public function getGalleries() : array {
         return $this->imageGalleryDbService->getGalleries();
     }

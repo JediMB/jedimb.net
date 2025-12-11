@@ -59,8 +59,14 @@ customElements.define('image-manager-component', class ImageManagerComponent ext
             this.#uploadImageButton.setAttribute('hidden', '');
             this.#cancelButton.removeAttribute('hidden');
             listFieldset.disabled = true;
+
+            this.#insertButton.disabled = true;
+            this.#deleteButton.disabled = true;
             const checked = this.#fileList.querySelector(':checked');
             if (checked) checked.checked = false;
+
+            this.#resetButton.disabled = true;
+            this.#saveButton.disabled = true;
             this.#saveButton.textContent = this.#saveButton.dataset.contentUpload;
             this.#renderImageUpload();
         });
@@ -255,11 +261,27 @@ customElements.define('image-manager-component', class ImageManagerComponent ext
     async #save(event) {
         event.preventDefault();
         
+        //this.#saveButton.disabled = true;
         const formData = new FormData(event.target);
-
-        // TODO: Differentiate between save and upload based on formdata
-        
         const imageDTO = new ImageDTO(formData);
+
+        if (formData.has('image')) {
+            /** @type {File} */
+            const file = formData.get('image');
+
+            const fileReader = new FileReader();
+            fileReader.addEventListener('load', () => {
+                const data = {
+                    dto: imageDTO,
+                    file: fileReader.result.replace(/^data:\w*\/\w*;base64,/, '')
+                };
+
+                const result = this.#service.createImage(data);
+            });
+            fileReader.readAsDataURL(file);
+
+            return;
+        }
         
         const imagesModifiedOn = await this.#service.updateImage(imageDTO);
 

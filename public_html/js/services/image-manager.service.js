@@ -62,6 +62,16 @@ class ImageManagerService {
     }
 
     /**
+     * @param {Object} data 
+     * @returns {Promise<false>}
+     */
+    async createImage(data) {
+        const result = await imageManagerApiService.createImage(data);
+
+        return false;
+    }
+
+    /**
      * @param {ImageDTO} imageDTO 
      * @returns {Promise<Date>}
      */

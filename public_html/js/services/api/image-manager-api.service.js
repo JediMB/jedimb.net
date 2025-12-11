@@ -56,6 +56,18 @@ class ImageManagerApiService {
     }
 
     /**
+     * @param {Object} data 
+     * @returns {Promise<false>}
+     */
+    async createImage(data) {
+        const response = await this.#httpClient.post('images', data);
+
+        console.log(response);
+
+        return false;
+    }
+
+    /**
      * @param {ImageDTO} imageDTO 
      * @returns {Promise<([Image, Date]|false)>}
      */

@@ -17,6 +17,7 @@ define('PATH_ERROR403', 'errors/403.php');
 define('PATH_ERROR404', 'errors/404.php');
 define('PATH_CSS_DEFAULT', 'css/style.css');
 define('PATH_IMAGE_GALLERY', 'images/gallery');
+define('PATH_TEMP_DIR', 'tmp');
 
 define('SPECIAL_PATHS', [
     'login' => PATH_REALPAGES_DIR . '/account/login.php'
@@ -37,6 +38,12 @@ define('SESSION_STATUS_KEY', 'account_loggedin');
 define('SESSION_TOKEN_KEY', 'account_token');
 define('SESSION_USER_KEY', 'account_user');
 
+define('UPLOAD_IMAGE_SIZE_LIMIT', 2097152);
+define('UPLOAD_IMAGE_MIME_TYPES', [
+    "image/png" => "png",
+    "image/jpeg" => "jpg"
+]);
+
 define('INPUT_LENGTH', [
     'username' => ['min' => 5, 'max' => 50],
     'password' => ['min' => 10, 'max' => 100]
@@ -56,6 +63,10 @@ define('META_DESCRIPTION', "JediMB's indie website");
 define('META_KEYWORDS', 'indie, programming, games, blog, webdev');
 
 define('TEXT_INVALID_REQUEST', 'Invalid request method');
+define('TEXT_MALFORMED_REQUEST', 'Malformed request body');
+define('TEXT_IMAGE_SIZE_LIMIT', 'Uploaded image exceeds size limit');
+define('TEXT_IMAGE_COULD_NOT_BE_CREATED', 'Failed to create file');
+define('TEXT_IMAGE_DISALLOWED_TYPE', 'Disallowed image content type: ');
 define('TEXT_NOT_LOGGED_IN', 'User not logged in');
 define('TEXT_INSUFFICIENT_PERMISSIONS', 'Insufficient user permissions');
 define('TEXT_USERNAME', 'username');
