@@ -30,7 +30,7 @@ Component::addJSModule();
     Edit HTML
 </label>
 <text-box-wrapper>
-    <text-box contenteditable><div>Text block 1</div><h3>Heading</h3><div>Text block 2</div><p>Paragraph</p></text-box>
+    <text-box contenteditable><div>Text block 1</div><h3>Heading</h3><div>Text block 2</div><div><img src="/images/gallery/20251203_112141_91aa.png" data-image-id="3"></div><p>Paragraph</p></text-box>
 </text-box-wrapper>
 <textarea html-editor class="hidden">Test</textarea>
 
