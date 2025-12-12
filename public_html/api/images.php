@@ -19,6 +19,19 @@ if (isset($GLOBALS['api_params'][0]))
 $input = json_decode(file_get_contents('php://input'), true);
 
 switch ( $_SERVER['REQUEST_METHOD'] ) {
+    case 'DELETE':
+        try {
+            if (empty($id))
+                return Response::BadRequest('Images delete request missing id');
+
+            $result = $service->deleteImage($id);
+
+            return Response::Success($result);
+        }
+        catch (Exception $e) {
+            return Response::Error([$e->getMessage()]);
+        }
+
     case 'GET':
         try {
             if (empty($id)) {

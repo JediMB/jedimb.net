@@ -1,13 +1,11 @@
 import Emitter from "/js/utilities/emitter.js";
-import Gallery from "/js/models/image-gallery/gallery.model.js";
-import Image from "/js/models/image-gallery/image.model.js";
 import ImageDTO from "/js/models/image-gallery/image.dto.model.js";
-import imageManagerApiService from "/js/services/api/image-manager-api.service.js";
+import imageGalleryApiService from "/js/services/api/image-gallery-api.service.js";
 import tableModifiedApiService from "/js/services/api/table-modified-api.service.js";
 
-export { imageManagerService as default };
+export { imageGalleryService as default };
 
-class ImageManagerService {
+class ImageGalleryService {
     #galleryModified = new Date(0);
     #imageModified = new Date(0);
     #galleries = new Emitter([]);
@@ -34,12 +32,12 @@ class ImageManagerService {
 
         if (imageModified > this.#imageModified) {
             this.#imageModified = imageModified;
-            images = await imageManagerApiService.getImages();
+            images = await imageGalleryApiService.getImages();
         }
 
         if (galleryModified > this.#galleryModified) {
             this.#galleryModified = galleryModified;
-            galleries = await imageManagerApiService.getImageGalleries();
+            galleries = await imageGalleryApiService.getImageGalleries();
         }
 
         if (images.length && galleries.length) {
@@ -66,7 +64,7 @@ class ImageManagerService {
      * @returns {Promise<boolean>}
      */
     async createImage(data) {
-        const result = await imageManagerApiService.createImage(data);
+        const result = await imageGalleryApiService.postImage(data);
 
         if (!result)
             throw new Error('No result received from createImage');
@@ -81,11 +79,34 @@ class ImageManagerService {
     }
 
     /**
+     * @param {Number} id 
+     * @returns {Promise<boolean>}
+     */
+    async deleteImage(id) {
+        const result = await imageGalleryApiService.deleteImage(id);
+
+        if (!result)
+            throw new Error('No result received from deleteImage');
+
+        const [ deletedId, modifiedOn ] = result;
+
+        this.#imageModified = modifiedOn;
+
+        if (deletedId !== id)
+            throw new Error('Id in deleteImage request and response do not match');
+
+        const images = this.#images.getValue().filter(i => i.id !== deletedId);
+        this.#images.setValue(images);
+
+        return true;
+    }
+
+    /**
      * @param {ImageDTO} imageDTO 
      * @returns {Promise<boolean>}
      */
     async updateImage(imageDTO) {
-        const result = await imageManagerApiService.updateImage(imageDTO);
+        const result = await imageGalleryApiService.patchImage(imageDTO);
 
         if (!result)
             throw new Error('No result received from updateImage');
@@ -100,4 +121,4 @@ class ImageManagerService {
         return true;
     }
 }
-const imageManagerService = new ImageManagerService();
+const imageGalleryService = new ImageGalleryService();

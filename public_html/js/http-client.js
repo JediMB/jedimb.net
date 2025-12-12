@@ -36,10 +36,16 @@ class HttpClient {
     /**
      * Requests data from the API
      * @param {string} api 
+     * @param {number|string} identifier
      * @returns {Promise<any>}
      */
-    async get(api) {
-        const response = await fetch(this.#baseApiUrl + api).catch(
+    async get(api, identifier = undefined) {
+        const queryString =
+            identifier === undefined
+            ? ''
+            : `/${identifier}`;
+
+        const response = await fetch(this.#baseApiUrl + api + queryString).catch(
             error => ({
                 ok: false,
                 errors: [ error.message ]
@@ -109,8 +115,26 @@ class HttpClient {
         return await this.#responseHandling(response, 'PATCH');
     }
 
-    async delete(api) {
-        
+    /**
+     * Requests the deletion of data from the API
+     * @param {string} api 
+     * @param {number|string} identifier
+     * @returns {Promise<any>}
+     */
+    async delete(api, identifier) {
+        if (!identifier)
+            throw new Error('Identifier missing in delete call');
+
+        const response = await fetch(this.#baseApiUrl + `${api}/${identifier}`, {
+            method: 'DELETE'
+        }).catch(
+            error => ({
+                ok: false,
+                errors: [ error.message ]
+            })
+        );
+
+        return await this.#responseHandling(response, 'DELETE');
     }
 }
 const httpClient = new HttpClient();

@@ -3,13 +3,32 @@ import Gallery from "/js/models/image-gallery/gallery.model.js";
 import Image from "/js/models/image-gallery/image.model.js";
 import ImageDTO from "/js/models/image-gallery/image.dto.model.js";
 
-export { imageManagerApiService as default };
+export { imageGalleryApiService as default };
 
-class ImageManagerApiService {
+class ImageGalleryApiService {
     #httpClient;
 
     constructor() {
         this.#httpClient = httpClient;
+    }
+
+    /**
+     * @param {Number} id 
+     * @returns {Promise<([Number, Date]|false)>}
+     */
+    async deleteImage(id) {
+        const response = await this.#httpClient.delete('images', id);
+
+        if (!response.success)
+            return false;
+
+        if (!response.value)
+            throw new Error('Delete failed to return image data');
+
+        return [
+            response.value.id,
+            new Date(response.value.modifiedOn.date + response.value.modifiedOn.timezone)
+        ];
     }
 
     /**
@@ -56,32 +75,10 @@ class ImageManagerApiService {
     }
 
     /**
-     * @param {Object} data 
-     * @returns {Promise<false>}
-     */
-    async createImage(data) {
-        const response = await this.#httpClient.post('images', data);
-
-        if (!response.success)
-            return false; // TODO: Notification
-
-        if (!response.value.image)
-            throw new Error('Create failed to return image data');
-
-        if (!response.value.modifiedOn)
-            throw new Error('Create failed to return table modified date');
-
-        return [
-            new Image(response.value.image),
-            new Date(response.value.modifiedOn.date + response.value.modifiedOn.timezone)
-        ];
-    }
-
-    /**
      * @param {ImageDTO} imageDTO 
      * @returns {Promise<([Image, Date]|false)>}
      */
-    async updateImage(imageDTO) {
+    async patchImage(imageDTO) {
         const response = await this.#httpClient.patch('images', imageDTO);
 
         if (!response.success)
@@ -98,5 +95,27 @@ class ImageManagerApiService {
             new Date(response.value.modifiedOn.date + response.value.modifiedOn.timezone)
         ];
     }
+
+    /**
+     * @param {Object} data 
+     * @returns {Promise<false>}
+     */
+    async postImage(data) {
+        const response = await this.#httpClient.post('images', data);
+
+        if (!response.success)
+            return false; // TODO: Notification
+
+        if (!response.value.image)
+            throw new Error('Create failed to return image data');
+
+        if (!response.value.modifiedOn)
+            throw new Error('Create failed to return table modified date');
+
+        return [
+            new Image(response.value.image),
+            new Date(response.value.modifiedOn.date + response.value.modifiedOn.timezone)
+        ];
+    }
 }
-const imageManagerApiService = new ImageManagerApiService();
+const imageGalleryApiService = new ImageGalleryApiService();

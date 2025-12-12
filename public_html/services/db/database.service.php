@@ -26,6 +26,17 @@ class DatabaseService extends Singleton {
         $this->service = null;
     }
 
+    public function deleteById(string $table, int $id) {
+        $query = $this->service->prepare(
+            "DELETE FROM {$this->schema}.$table WHERE id = :id RETURNING *"
+        );
+        $query->bindParam(':id', $id, PDO::PARAM_INT);
+
+        $query->execute();
+
+        return $query->fetch();
+    }
+
     public function hasRows(string $table) : bool {
         $query = $this->service->prepare(
             "SELECT id FROM {$this->schema}.$table LIMIT 1"

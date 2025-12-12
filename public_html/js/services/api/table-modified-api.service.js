@@ -14,7 +14,7 @@ class TableModifiedApiService {
      * @returns {Promise<(Date|false)>}
      */
     async #getModifiedDate(table) {
-        const response = await this.#httpClient.get(`modified/${table}`);
+        const response = await this.#httpClient.get('modified', table);
 
         if (!response.success)
             return false;

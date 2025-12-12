@@ -1,7 +1,7 @@
 import formatDate from "/js/utilities/format-date.js";
 import Image from "/js/models/image-gallery/image.model.js";
 import ImageDTO from "/js/models/image-gallery/image.dto.model.js";
-import imageManagerService from "/js/services/image-manager.service.js";
+import imageGalleryService from "/js/services/image-gallery.service.js";
 
 customElements.define('image-manager-component', class ImageManagerComponent extends HTMLElement {
     /** @type {ImageManagerComponent} */
@@ -30,7 +30,7 @@ customElements.define('image-manager-component', class ImageManagerComponent ext
     constructor() {
         const component = super();
         this.#self = component;
-        this.#service = imageManagerService;
+        this.#service = imageGalleryService;
     }
 
     connectedCallback() {
@@ -79,6 +79,8 @@ customElements.define('image-manager-component', class ImageManagerComponent ext
             this.#imageProperties.innerHTML = this.#imagePropertiesContent;
         });
 
+        this.#deleteButton.addEventListener('click', event => this.#delete(event));
+
         managerFiles.addEventListener('change', event => {
             if (!event.target.checked)
                 return;
@@ -99,7 +101,7 @@ customElements.define('image-manager-component', class ImageManagerComponent ext
             this.#imageProperties.querySelector('[img-upload]')?.remove();
         })
 
-        imageManagerService.images.subscribe(
+        imageGalleryService.images.subscribe(
             images => this.#renderImageList(images), true,
             (_, image) => this.#updateImageListItem(image)
         );
@@ -107,6 +109,29 @@ customElements.define('image-manager-component', class ImageManagerComponent ext
         this.#filesFieldset.disabled = false;
         this.#uploadImageButton.disabled = false;
         //fileList.querySelector('[type="radio"]')?.click();
+    }
+
+    async #delete(event) {
+        event.stopPropagation();
+        this.#deleteButton.disabled = true;
+        this.#insertButton.disabled = true;
+        this.#filesFieldset.disabled = true;
+
+        const checked = this.#fileList.querySelector(':checked');
+
+        if (!checked)
+            throw new Error('Delete button clicked with no file selected');
+
+        const id = Number(checked.dataset.imageId);
+
+        if (id < 1)
+            throw new Error('Invalid image id');
+
+        if (await this.#service.deleteImage(id)) {
+            this.#deleteButton.disabled = false;
+            this.#insertButton.disabled = false;
+            this.#filesFieldset.disabled = false;
+        }
     }
 
     /** @param {Image[]} images  */

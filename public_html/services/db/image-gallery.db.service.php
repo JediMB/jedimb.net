@@ -20,6 +20,37 @@ class ImageGalleryDBService extends BaseDBService {
         parent::__construct();
     }
 
+    public function createImage(ImageDTO $object) : Image {
+        try {
+            $result = $this->dbService->selectFunction(
+                'create_image', [
+                    1 => [ 'value' => $object->filename, 'type' => PDO::PARAM_STR ],
+                    2 => [ 'value' => $object->title, 'type' => PDO::PARAM_STR ],
+                    3 => [ 'value' => $object->description, 'type' => PDO::PARAM_STR ]
+                ]
+            );
+
+            return new Image($result);
+        }
+        catch (PDOException $e) {
+            throw new Exception('Database error: ' . $e->getMessage());
+        }
+    }
+
+    public function deleteImage(int $id) : Image|false {
+        try {
+            $deletedImage = $this->dbService->deleteById('image', $id);
+
+            if ($deletedImage)
+                return new Image($deletedImage);
+
+            return false;
+        }
+        catch (PDOException $e) {
+            throw new Exception('Database error: ' . $e->getMessage());
+        }
+    }
+
     public function getGalleries() : array {
         try {
             $galleries = $this->dbService->selectView('gallery');
@@ -98,23 +129,6 @@ class ImageGalleryDBService extends BaseDBService {
             }
 
             return $groupedImages;
-        }
-        catch (PDOException $e) {
-            throw new Exception('Database error: ' . $e->getMessage());
-        }
-    }
-
-    public function createImage(ImageDTO $object) : Image {
-        try {
-            $result = $this->dbService->selectFunction(
-                'create_image', [
-                    1 => [ 'value' => $object->filename, 'type' => PDO::PARAM_STR ],
-                    2 => [ 'value' => $object->title, 'type' => PDO::PARAM_STR ],
-                    3 => [ 'value' => $object->description, 'type' => PDO::PARAM_STR ]
-                ]
-            );
-
-            return new Image($result);
         }
         catch (PDOException $e) {
             throw new Exception('Database error: ' . $e->getMessage());

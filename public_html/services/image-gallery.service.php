@@ -23,10 +23,26 @@ class ImageGalleryService extends Singleton {
         $this->tableModifiedService = TableModifiedService::getInstance();
     }
 
-    /** @return array{'object': \Models\DB\Image, 'modifiedOn': \DateTime} */
-    public function createImage(ImageDTO $imageDTO) {
+    /** @return array{'image': \Models\DB\Image, 'modifiedOn': \DateTime} */
+    public function createImage(ImageDTO $imageDTO) : array {
         return [
             'image' => $this->imageGalleryDbService->createImage($imageDTO),
+            'modifiedOn' => $this->tableModifiedService->createOrUpdateTableModifiedDate('image')
+        ];
+    }
+
+    /** @return array{'id': int, 'modifiedOn': \DateTime} */
+    public function deleteImage(int $id) : array|false {
+        $deletedImage = $this->imageGalleryDbService->deleteImage($id);
+
+        if (!$deletedImage)
+            return false;
+
+        if ( ($realpath = realpath(PATH_IMAGE_GALLERY . "/$deletedImage->filename")) )
+            unlink($realpath);
+
+        return [
+            'id' => $deletedImage->id,
             'modifiedOn' => $this->tableModifiedService->createOrUpdateTableModifiedDate('image')
         ];
     }
@@ -47,7 +63,7 @@ class ImageGalleryService extends Singleton {
         return $this->imageGalleryDbService->getImages();
     }
 
-    /** @return array{'object': \Models\DB\Image, 'modifiedOn': \DateTime} */
+    /** @return array{'image': \Models\DB\Image, 'modifiedOn': \DateTime} */
     public function updateImage(ImageDTO $imageDTO) : array {
         $image = $this->imageGalleryDbService->getImage($imageDTO->id);
         ImageDTO::update($image, $imageDTO);
