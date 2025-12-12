@@ -63,17 +63,26 @@ class ImageManagerService {
 
     /**
      * @param {Object} data 
-     * @returns {Promise<false>}
+     * @returns {Promise<boolean>}
      */
     async createImage(data) {
         const result = await imageManagerApiService.createImage(data);
 
-        return false;
+        if (!result)
+            throw new Error('No result received from createImage');
+
+        const [ image, modifiedOn ] = result;
+
+        this.#imageModified = modifiedOn;
+        const images = [...this.#images.getValue(), image];
+        this.#images.setValue(images);
+
+        return true;
     }
 
     /**
      * @param {ImageDTO} imageDTO 
-     * @returns {Promise<Date>}
+     * @returns {Promise<boolean>}
      */
     async updateImage(imageDTO) {
         const result = await imageManagerApiService.updateImage(imageDTO);
@@ -81,14 +90,14 @@ class ImageManagerService {
         if (!result)
             throw new Error('No result received from updateImage');
 
-        const [image, modifiedOn] = result;
+        const [ image, modifiedOn ] = result;
         
         this.#imageModified = modifiedOn;
 
         const index = this.#images.getValue().findIndex(i => i.id === image.id);
         this.#images.setValue(image, index);
 
-        return this.#imageModified;
+        return true;
     }
 }
 const imageManagerService = new ImageManagerService();

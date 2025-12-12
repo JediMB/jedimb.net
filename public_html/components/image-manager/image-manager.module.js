@@ -150,6 +150,8 @@ customElements.define('image-manager-component', class ImageManagerComponent ext
 
             this.#fileList.appendChild(template);
         });
+
+        this.#imageManager.dataset.modifiedOn = formatDate(this.#service.imageModified, true);
     }
 
     /** @param {Image} image  */
@@ -172,6 +174,8 @@ customElements.define('image-manager-component', class ImageManagerComponent ext
         data.imageDescription = image.description;
         data.imageDefaultDescription = image.description;
         data.imageModifiedOn = formatDate(image.modifiedOn);
+
+        this.#imageManager.dataset.modifiedOn = formatDate(this.#service.imageModified, true);
 
         this.#renderImageProperties(data);
     }
@@ -232,6 +236,8 @@ customElements.define('image-manager-component', class ImageManagerComponent ext
             img.src = event.target.result;
             img.alt = 'Image preview';
             img.setAttribute('img-upload', '');
+            const title = fileInput.files.item(0).name.replace(/(\.[a-zA-Z0-9]{1,4})$/, '');
+            titleInput.value = title.charAt(0).toUpperCase() + title.slice(1);
             imagePreview.replaceChildren(img);
         });
         
@@ -248,6 +254,8 @@ customElements.define('image-manager-component', class ImageManagerComponent ext
             this.#setUndoSaveButtonStatus([fileInput, titleInput, descInput]);
         });
 
+        titleInput.defaultValue = '';
+
         [titleInput, descInput].forEach(input => input.addEventListener('input', event => {
             event.stopPropagation();
             this.#setUndoSaveButtonStatus([fileInput, titleInput, descInput]);
@@ -261,7 +269,7 @@ customElements.define('image-manager-component', class ImageManagerComponent ext
     async #save(event) {
         event.preventDefault();
         
-        //this.#saveButton.disabled = true;
+        this.#saveButton.disabled = true;
         const formData = new FormData(event.target);
         const imageDTO = new ImageDTO(formData);
 
@@ -270,22 +278,26 @@ customElements.define('image-manager-component', class ImageManagerComponent ext
             const file = formData.get('image');
 
             const fileReader = new FileReader();
-            fileReader.addEventListener('load', () => {
+            fileReader.addEventListener('load', async event => {
                 const data = {
                     dto: imageDTO,
-                    file: fileReader.result.replace(/^data:\w*\/\w*;base64,/, '')
+                    file: event.target.result.replace(/^data:\w*\/\w*;base64,/, '')
                 };
 
-                const result = this.#service.createImage(data);
+                if (await this.#service.createImage(data)) {
+                    this.#cancelButton.setAttribute('hidden', '');
+                    this.#uploadImageButton.removeAttribute('hidden');
+                    this.#filesFieldset.disabled = false;
+                }
             });
             fileReader.readAsDataURL(file);
 
             return;
         }
         
-        const imagesModifiedOn = await this.#service.updateImage(imageDTO);
+        if (await this.#service.updateImage(imageDTO)) {
 
-        this.#imageManager.dataset.modifiedOn = formatDate(imagesModifiedOn, true);
+        }
     }
 
     /**

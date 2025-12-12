@@ -26,7 +26,7 @@ class ImageGalleryService extends Singleton {
     /** @return array{'object': \Models\DB\Image, 'modifiedOn': \DateTime} */
     public function createImage(ImageDTO $imageDTO) {
         return [
-            'object' => $this->imageGalleryDbService->createImage($imageDTO),
+            'image' => $this->imageGalleryDbService->createImage($imageDTO),
             'modifiedOn' => $this->tableModifiedService->createOrUpdateTableModifiedDate('image')
         ];
     }
@@ -56,7 +56,7 @@ class ImageGalleryService extends Singleton {
         $modifiedOn = $this->tableModifiedService->createOrUpdateTableModifiedDate('image');
 
         return [
-            'object' => $updatedImage,
+            'image' => $updatedImage,
             'modifiedOn' => $modifiedOn
         ];
     }

@@ -62,9 +62,19 @@ class ImageManagerApiService {
     async createImage(data) {
         const response = await this.#httpClient.post('images', data);
 
-        console.log(response);
+        if (!response.success)
+            return false; // TODO: Notification
 
-        return false;
+        if (!response.value.image)
+            throw new Error('Create failed to return image data');
+
+        if (!response.value.modifiedOn)
+            throw new Error('Create failed to return table modified date');
+
+        return [
+            new Image(response.value.image),
+            new Date(response.value.modifiedOn.date + response.value.modifiedOn.timezone)
+        ];
     }
 
     /**
@@ -77,14 +87,14 @@ class ImageManagerApiService {
         if (!response.success)
             return false; // TODO: A notification system should inform the user on failure in these cases
 
-        if (!response.value.object)
+        if (!response.value.image)
             throw new Error('Update failed to return image data');
 
         if (!response.value.modifiedOn)
             throw new Error('Update failed to return table modified date');
 
         return [
-            new Image(response.value.object),
+            new Image(response.value.image),
             new Date(response.value.modifiedOn.date + response.value.modifiedOn.timezone)
         ];
     }
