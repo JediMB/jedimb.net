@@ -43,7 +43,7 @@ $links = !empty($links);
     <meta name="cookie-user-key" content="<?= COOKIE_USER_KEY ?>">
     <meta name="cookie-token-key" content="<?= COOKIE_TOKEN_KEY ?>">
     <meta name="cookie-validator-key" content="<?= COOKIE_VALIDATOR_KEY ?>">
-    <meta>
+    <meta name="image-gallery-path" content="<?= '/' . PATH_IMAGE_GALLERY . '/' ?>">
 </head>
 <body>
     <header>
