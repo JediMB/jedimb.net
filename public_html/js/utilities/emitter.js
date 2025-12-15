@@ -6,7 +6,22 @@ export default class Emitter {
         this.#value = value;
     }
 
-    getValue() { return this.#value; }
+    /**
+     * Gets the entire value/object, or a value within an array
+     * 
+     * @param {(Number|undefined)} arrayIndex 
+     * @returns {any}
+     */
+    getValue(arrayIndex = undefined) {
+        if (typeof arrayIndex === 'number') {
+            if (!Array.isArray(this.#value))
+                throw new Error('Index provided for non-array');
+
+            return this.#value[arrayIndex];
+        }
+
+        return this.#value;
+    }
 
     /**
      * Sets the entire value/object, or a value within an array
