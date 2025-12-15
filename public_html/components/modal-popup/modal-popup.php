@@ -11,7 +11,7 @@ if (empty($include)) {
     return;
 }
 
-//Component::hide();
+Component::hide();
 Component::renderCSS();
 Component::addJSModule();
 

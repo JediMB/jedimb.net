@@ -8,6 +8,7 @@ customElements.define('image-manager-component', class ImageManagerComponent ext
     #self;
     #service;
     #galleryPath;
+    #insertTarget;
 
     #uploadImageButton;
     #cancelButton;
@@ -35,6 +36,9 @@ customElements.define('image-manager-component', class ImageManagerComponent ext
 
     connectedCallback() {
         const self = this.#self;
+
+        if (self.hasAttribute('insert-target'))
+            this.#insertTarget = document.querySelector(`#${self.getAttribute('insert-target')}`);
 
         this.#uploadImageButton = self.querySelector('[btn-image-upload');
         this.#cancelButton = self.querySelector('[btn-cancel]');
@@ -78,6 +82,11 @@ customElements.define('image-manager-component', class ImageManagerComponent ext
             this.#saveButton.textContent = this.#saveButton.dataset.contentEdit;
             this.#imageProperties.innerHTML = this.#imagePropertiesContent;
         });
+
+        if (this.#insertTarget)
+            this.#insertButton.removeAttribute('hidden');
+
+        this.#insertButton.addEventListener('click', event => this.#insert(event));
 
         this.#deleteButton.addEventListener('click', event => this.#delete(event));
 
@@ -132,6 +141,25 @@ customElements.define('image-manager-component', class ImageManagerComponent ext
             this.#insertButton.disabled = false;
             this.#filesFieldset.disabled = false;
         }
+    }
+
+    async #insert(event) {
+        event.stopPropagation();
+
+        const checked = this.#fileList.querySelector(':checked');
+
+        if (!checked)
+            throw new Error('Insert button clicked with no file selected');
+
+        if (!this.#insertTarget)
+            throw new Error('No place to insert image registered');
+
+        const image = imageGalleryService.getImage(Number(checked.dataset.imageId));
+
+        if (!image)
+            throw new Error('Image not found');
+
+        this.#insertTarget.dataset.insert = JSON.stringify(image);
     }
 
     /** @param {Image[]} images  */

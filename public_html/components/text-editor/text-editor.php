@@ -30,7 +30,7 @@ Component::addJSModule();
     Edit HTML
 </label>
 <text-box-wrapper>
-    <text-box id="text-box-<?= $cId ?>" contenteditable><div>Text block 1</div><h3>Heading</h3><div>Text block 2</div><div><img src="/images/gallery/20251203_112141_91aa.png" data-image-id="3"></div><p>Paragraph</p></text-box>
+    <text-box id="text-box-<?= $cId ?>" contenteditable><div>Text block 1</div><h3>Heading</h3><div>Text block 2</div><p>Paragraph</p></text-box>
 </text-box-wrapper>
 <textarea html-editor class="hidden">Test</textarea>
 
@@ -40,5 +40,5 @@ Component::addJSModule();
 <?php Component::include('modal-popup', [
     'attributes' => [ 'id' => "modal-images-$cId" ],
     'include' => 'image-manager',
-    'includeAttributes' => [ 'image-target' => "text-box-$cId" ]
+    'includeAttributes' => [ 'insert-target' => "text-box-$cId" ]
 ]) ?>

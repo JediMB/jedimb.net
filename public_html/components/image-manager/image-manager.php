@@ -83,7 +83,7 @@ Component::addJSModule();
                 </template>
             </manager-files>
             <manager-buttons>
-                <div><button btn-insert disabled>Insert</button></div>
+                <div><button btn-insert disabled hidden>Insert</button></div>
                 <div><button btn-delete disabled>Delete</button></div>
             </manager-buttons>
         </manager-list>
