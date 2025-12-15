@@ -64,6 +64,8 @@ text-editor-component {
     & html-output,
     & key-info {
         display: block;
+        max-width: 960px;
+        overflow: auto;
         padding: 0.5em;
         border: 2px dashed currentColor;
         white-space: pre;
