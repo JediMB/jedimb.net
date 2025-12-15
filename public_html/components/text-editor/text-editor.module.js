@@ -1,3 +1,5 @@
+import { imageGalleryPath } from "/js/constants.js";
+import Image from "/js/models/image-gallery/image.model.js";
 import SelectionData from "/js/models/selection-data.model.js";
 import undoManagementService from "/js/services/undo-management.service.js";
 
@@ -5,6 +7,8 @@ customElements.define('text-editor-component', class TextEditorComponent extends
     /** @type {TextEditorComponent} */
     #self;
     #undo = undoManagementService;
+    /** @type {SelectionData} */
+    #latestSelection;
 
     #blockElementData = [
         ['div', 'Text'],
@@ -112,7 +116,18 @@ customElements.define('text-editor-component', class TextEditorComponent extends
             /* DEBUG FUNCTIONALITY */ keyInfo.textContent = `:: Key: ${event.key} ::\r\n\r\n  Shift:   ${event.shiftKey}\r\n  Control: ${event.ctrlKey}\r\n  Alt:     ${event.altKey}`;
         });
 
-        this.#mutationObserver = new MutationObserver(() => {
+        this.#mutationObserver = new MutationObserver((mutationList, _) => {
+            for (const record of mutationList) {
+                if (record.target !== self.#textBox || record.attributeName !== 'data-insert')
+                    continue;
+
+                if (!self.#textBox.hasAttribute('data-insert'))
+                    continue;
+                
+                this.#insertImage();
+                break;
+            }
+
             const event = new CustomEvent('change', {
                 bubbles: true,
                 cancelable: true,
@@ -120,7 +135,7 @@ customElements.define('text-editor-component', class TextEditorComponent extends
             });
             this.dispatchEvent(event);
         });
-        this.#mutationObserver.observe(this.#textBox, {characterData: true, childList: true, subtree: true});
+        this.#mutationObserver.observe(this.#textBox, {characterData: true, childList: true, subtree: true, attributeFilter: ['data-insert']});
 
         textarea.addEventListener('change', (event) => {
             event.stopPropagation();
@@ -281,7 +296,7 @@ customElements.define('text-editor-component', class TextEditorComponent extends
      * @param {Object} tagInfo
      * @param {SelectionData} selectionData 
      */
-    #applyInlineTag(textNodes, tagInfo, selectionData) {
+    #applyContentTag(textNodes, tagInfo, selectionData) {
         this.logFuncs && console.log('applyInlineTag()');
 
         let collapsedOffset = false;
@@ -358,6 +373,7 @@ customElements.define('text-editor-component', class TextEditorComponent extends
      * @param {String} tagInfo.name
      * @param {String} tagInfo.content
      * @param {Object} tagInfo.attributes
+     * @param {Object} tagInfo.dataset
      */
     #encloseNodes(textNodes, tagInfo) {
         this.logFuncs && console.log('encloseNodes()');
@@ -366,6 +382,10 @@ customElements.define('text-editor-component', class TextEditorComponent extends
         
         for (const attribute in tagInfo.attributes) {
             newElement.setAttribute(attribute, tagInfo.attributes[attribute]);
+        }
+        
+        for (const dataKey in tagInfo.dataset) {
+            newElement.dataset[dataKey] = tagInfo.dataset[dataKey];
         }
 
         if (textNodes.length === 1) {
@@ -657,6 +677,7 @@ customElements.define('text-editor-component', class TextEditorComponent extends
      * @param {String} tagInfo.name 
      * @param {String} tagInfo.content 
      * @param {Object} tagInfo.attributes 
+     * @param {Object} tagInfo.dataset
      * @param {SelectionData} selectionData 
      */
     #insertElement(tagInfo, selectionData) {
@@ -667,6 +688,10 @@ customElements.define('text-editor-component', class TextEditorComponent extends
 
         for (const attribute in tagInfo.attributes) {
             element.setAttribute(attribute, tagInfo.attributes[attribute]);
+        }
+
+        for (const dataKey in tagInfo.dataset) {
+            element.dataset[dataKey] = tagInfo.dataset[dataKey];
         }
 
         element.appendChild(document.createTextNode(tagInfo.content ?? ''));
@@ -680,6 +705,26 @@ customElements.define('text-editor-component', class TextEditorComponent extends
         selectionData.startNode = selectionData.endNode = element;
         selectionData.startOffset = 0;
         selectionData.endOffset = 1;
+    }
+
+    #insertImage() {
+        /** @type {Image} */
+        const image = JSON.parse(this.#textBox.getAttribute('data-insert'));
+        this.#textBox.removeAttribute('data-insert');
+
+        this.#makeSelection(this.#latestSelection);
+        console.log(imageGalleryPath);
+
+        this.#toggleTag({
+            name: 'img',
+            attributes: {
+                src: imageGalleryPath + image.filename,
+                alt: image.description
+            },
+            dataset: {
+                imageId: image.id
+            }
+        });
     }
 
     /**
@@ -723,7 +768,9 @@ customElements.define('text-editor-component', class TextEditorComponent extends
         if (!isCurrentTextbox)
             return;
 
-        const selectedTextNodes = this.#getTextNodesFromSelection(new SelectionData(selection));
+        this.#latestSelection = new SelectionData(selection);
+
+        const selectedTextNodes = this.#getTextNodesFromSelection(this.#latestSelection);
 
         if (selectedTextNodes.length === 0)
                 [this.#blockSelector.value] = this.#blockElementTags;
@@ -991,7 +1038,7 @@ customElements.define('text-editor-component', class TextEditorComponent extends
 
             switch (noMatches) {
                 case true:
-                    this.#applyInlineTag(selectedTextNodes, tagInfo, selectionData);
+                    this.#applyContentTag(selectedTextNodes, tagInfo, selectionData);
                     break;
             
                 case false:
@@ -1002,7 +1049,7 @@ customElements.define('text-editor-component', class TextEditorComponent extends
                         break;
                     }
 
-                    this.#applyInlineTag(selectedTextNodes, tagInfo, selectionData);
+                    this.#applyContentTag(selectedTextNodes, tagInfo, selectionData);
                     break;
             }
 
