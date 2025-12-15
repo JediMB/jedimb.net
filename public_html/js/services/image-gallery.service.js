@@ -1,4 +1,5 @@
 import Emitter from "/js/utilities/emitter.js";
+import Image from "/js/models/image-gallery/image.model.js";
 import ImageDTO from "/js/models/image-gallery/image.dto.model.js";
 import imageGalleryApiService from "/js/services/api/image-gallery-api.service.js";
 import tableModifiedApiService from "/js/services/api/table-modified-api.service.js";
@@ -99,6 +100,14 @@ class ImageGalleryService {
         this.#images.setValue(images);
 
         return true;
+    }
+
+    /**
+     * @param {Number} id 
+     * @returns {Image}
+     */
+    getImage(id) {
+        return this.#images.getValue().find(i => i.id === id);
     }
 
     /**
