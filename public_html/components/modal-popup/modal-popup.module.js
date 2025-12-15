@@ -20,11 +20,9 @@ customElements.define('modal-popup-component', class ModalPopupContainer extends
             root.style.overflow = 'hidden';
             body.style.overflow = 'hidden';
         }
-
-        const name = self.getAttribute('modal-name');
-
-        if (name)
-            document.querySelector(`[modal-target="${name}"]`)?.addEventListener('click', () => {
+        
+        if (self.id)
+            document.querySelector(`[modal-target="${self.id}"]`)?.addEventListener('click', () => {
                 self.style.removeProperty('display');
                 root.style.overflow = 'hidden';
                 body.style.overflow = 'hidden';

@@ -3,11 +3,12 @@
 namespace Models;
 
 class ComponentOptions {
-    public bool $hidden = false;
+    public array $attributes = [];
     public bool $componentTag = true;
-    public bool $renderOnce = false;
+    public bool $hidden = false;
     public bool $includeCSS = false;
     public bool $includeJSModule = false;
+    public bool $renderOnce = false;
 }
 
 ?>

@@ -20,6 +20,6 @@ Component::addJSModule();
 
 <modal-popup>
     <modal-popup-content>
-        <?php Component::include($include) ?>
+        <?php Component::include($include, [ 'attributes' => $includeAttributes ]) ?>
     </modal-popup-content>
 </modal-popup>

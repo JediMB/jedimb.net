@@ -25,6 +25,11 @@ class Component {
 
         extract($variables);
 
+        $cId = static::$components[$component]['count'] ?? 0;
+        
+        if (isset($attributes))
+            static::addAttributes($attributes);
+
         ob_start();
         include $realPath;
         $output = ob_get_clean();
@@ -40,8 +45,8 @@ class Component {
 
             $attr = $options->hidden ? ' style="display: none;"' : null;
 
-            if (!empty($attributes)) {
-                foreach (array_reverse($attributes, true) as $attrName => $attrValue) {
+            if (!empty($options->attributes)) {
+                foreach (array_reverse($options->attributes, true) as $attrName => $attrValue) {
                     $attr = " $attrName=\"$attrValue\"" . $attr;
                 }
             }
@@ -76,6 +81,8 @@ class Component {
                 HTML;
             }
         }
+
+        static::$components[$component]['count'] = $cId + 1;
         
         if ($returnResult)
             return $output;
@@ -100,24 +107,36 @@ class Component {
         return false;
     }
 
-    static function noContainer() {
-        static::$optionsStack[count(static::$optionsStack) - 1]->componentTag = false;
+    private static function getOptions() : ComponentOptions {
+        return static::$optionsStack[count(static::$optionsStack) - 1];
     }
 
-    static function hide() {
-        static::$optionsStack[count(static::$optionsStack) - 1]->hidden = true;
+    private static function relativeComponentPath(string $realPath) {
+        return ltrim(str_replace(realpath('components/'), '', $realPath), '/');
     }
 
-    static function renderOnce() {
-        static::$optionsStack[count(static::$optionsStack) - 1]->renderOnce = true;
-    }
-
-    static function renderCSS() {
-        static::$optionsStack[count(static::$optionsStack) - 1]->includeCSS = true;
+    static function addAttributes(array $attributes) {
+        static::getOptions()->attributes = array_merge(static::getOptions()->attributes, $attributes);
     }
 
     static function addJSModule() {
-        static::$optionsStack[count(static::$optionsStack) - 1]->includeJSModule = true;
+        static::getOptions()->includeJSModule = true;
+    }
+
+    static function hide() {
+        static::getOptions()->hidden = true;
+    }
+
+    static function noContainer() {
+        static::getOptions()->componentTag = false;
+    }
+
+    static function renderCSS() {
+        static::getOptions()->includeCSS = true;
+    }
+
+    static function renderOnce() {
+        static::getOptions()->renderOnce = true;
     }
 
     static function queueJS(string $componentPath, string $type = 'text/javascript') {
@@ -149,10 +168,6 @@ class Component {
                     </script>
                 HTML;
         }
-    }
-
-    private static function relativeComponentPath(string $realPath) {
-        return ltrim(str_replace(realpath('components/'), '', $realPath), '/');
     }
 }
 

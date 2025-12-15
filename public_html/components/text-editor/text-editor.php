@@ -21,7 +21,7 @@ Component::addJSModule();
             data-text-query="Please input display text:"
             data-url-query="Please input link:"
             data-url-invalid="Invalid link. Please try again:">Link</button>
-        <button modal-target="images">Images</button>
+        <button modal-target="modal-images-<?= $cId ?>">Images</button>
         <button btn-cleanup>Clean Up</button>
     </fieldset>
 </div>
@@ -30,7 +30,7 @@ Component::addJSModule();
     Edit HTML
 </label>
 <text-box-wrapper>
-    <text-box contenteditable><div>Text block 1</div><h3>Heading</h3><div>Text block 2</div><div><img src="/images/gallery/20251203_112141_91aa.png" data-image-id="3"></div><p>Paragraph</p></text-box>
+    <text-box id="text-box-<?= $cId ?>" contenteditable><div>Text block 1</div><h3>Heading</h3><div>Text block 2</div><div><img src="/images/gallery/20251203_112141_91aa.png" data-image-id="3"></div><p>Paragraph</p></text-box>
 </text-box-wrapper>
 <textarea html-editor class="hidden">Test</textarea>
 
@@ -38,6 +38,7 @@ Component::addJSModule();
 <key-info></key-info>
 
 <?php Component::include('modal-popup', [
-    'attributes' => [ 'modal-name' => 'images' ],
-    'include' => 'image-manager'
+    'attributes' => [ 'id' => "modal-images-$cId" ],
+    'include' => 'image-manager',
+    'includeAttributes' => [ 'image-target' => "text-box-$cId" ]
 ]) ?>
