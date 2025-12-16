@@ -60,14 +60,4 @@ text-editor-component {
     & text-box:focus {
         outline: 0px solid transparent;
     }
-
-    & html-output,
-    & key-info {
-        display: block;
-        max-width: 960px;
-        overflow: auto;
-        padding: 0.5em;
-        border: 2px dashed currentColor;
-        white-space: pre;
-    }
 }

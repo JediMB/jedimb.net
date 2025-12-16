@@ -52,7 +52,6 @@ customElements.define('text-editor-component', class TextEditorComponent extends
     #textBox;
     /** @type {MutationObserver} */
     #mutationObserver;
-    #htmlOutput;
 
     connectedCallback() {
         const self = this.#self;
@@ -63,13 +62,11 @@ customElements.define('text-editor-component', class TextEditorComponent extends
         this.#tagButtons = Array.from(this.#fieldset.querySelectorAll('[data-tag]'));
         this.#linkButton = this.#fieldset.querySelector('[btn-link]');
         this.#textBox = self.querySelector('text-box');
-        this.#htmlOutput = self.querySelector('html-output');
 
         const htmlCheck = self.querySelector('[checkbox-html]');
         const wrapper = self.querySelector('text-box-wrapper');
         const textarea = self.querySelector('[html-editor]');
 
-        const keyInfo = self.querySelector('key-info');
         const cleanUp = this.#fieldset.querySelector('[btn-cleanup');
 
         this.#allowedElements.push(...this.#tagButtons.map(btn => btn.dataset.tag?.toLowerCase()));
@@ -107,13 +104,10 @@ customElements.define('text-editor-component', class TextEditorComponent extends
 
             if (!this.#textBox.textContent.trim())
                 this.#getBlockElement(this.#textBox.firstChild, this.#blockSelector.value);
-
-            this.#outputHtml();
         });
 
         this.#textBox.addEventListener('keydown', event => {
             this.#textboxKeydown(event);
-            /* DEBUG FUNCTIONALITY */ keyInfo.textContent = `:: Key: ${event.key} ::\r\n\r\n  Shift:   ${event.shiftKey}\r\n  Control: ${event.ctrlKey}\r\n  Alt:     ${event.altKey}`;
         });
 
         this.#mutationObserver = new MutationObserver((mutationList, _) => {
@@ -147,7 +141,6 @@ customElements.define('text-editor-component', class TextEditorComponent extends
 
         cleanUp.addEventListener('click', () => {
             this.#removeEmptyNodes();
-            this.#outputHtml();
         });
 
         htmlCheck.addEventListener('change', (event) => {
@@ -167,8 +160,6 @@ customElements.define('text-editor-component', class TextEditorComponent extends
         window.getSelection().setPosition(
             this.#getBlockElement(this.#textBox.firstChild, this.#blockSelector.value), 0
         );
-
-        this.#outputHtml();
     }
 
     disconnectedCallback() {
@@ -792,27 +783,6 @@ customElements.define('text-editor-component', class TextEditorComponent extends
             ));
     }
 
-    /**
-     * DEBUG FUNCTION: Outputs the innerHTML of the textBox as textContent of the htmlOutput
-     */
-    #outputHtml() {
-        const textBox = this.#textBox;
-        const {anchorNode, anchorOffset, focusNode, focusOffset} = window.getSelection();
-        let nodeText = '';
-
-        if (textBox.contains(anchorNode) && textBox.contains(focusNode))
-            nodeText = `Anchor: ${anchorNode.tagName ?? 'text'} @ ${anchorOffset}\r\n` +
-                        `Focus: ${focusNode.tagName ?? 'text'} @ ${focusOffset}\r\n\r\n`;
-
-        let htmlOutput = textBox.innerHTML;
-
-        for (const tag of this.#blockElementTags) {
-            htmlOutput = htmlOutput.replaceAll(`><${tag}>`, `>\r\n<${tag}>`);
-        }
-
-        this.#htmlOutput.textContent = nodeText + htmlOutput;
-    }
-
     async #paste(contentType = 'text/html') {
         const textBox = this.#textBox;
         this.#undo.add(textBox);
@@ -893,10 +863,8 @@ customElements.define('text-editor-component', class TextEditorComponent extends
                     setPosition(parentElement, parentLength - offset);
                 }
 
-                if (textRows.length === 0) {
-                    this.#outputHtml();
+                if (textRows.length === 0)
                     return;
-                }
 
                 const newBlock = this.#addParagraphBreak(selection.anchorNode, selection.anchorOffset);
                 const blockLength = newBlock.textContent.length;
@@ -916,8 +884,6 @@ customElements.define('text-editor-component', class TextEditorComponent extends
                 }
 
                 setPosition(newBlock, blockLength);
-                this.#outputHtml();
-
                 return;
             }
         }
@@ -1056,6 +1022,5 @@ customElements.define('text-editor-component', class TextEditorComponent extends
         }
 
         this.#makeSelection(selectionData);
-        this.#outputHtml();
     }
 });

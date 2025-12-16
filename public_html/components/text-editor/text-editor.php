@@ -34,9 +34,6 @@ Component::addJSModule();
 </text-box-wrapper>
 <textarea html-editor class="hidden">Test</textarea>
 
-<html-output></html-output>
-<key-info></key-info>
-
 <?php Component::include('modal-popup', [
     'attributes' => [ 'id' => "modal-images-$cId" ],
     'include' => 'image-manager',
