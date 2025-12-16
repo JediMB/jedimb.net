@@ -1,21 +1,46 @@
-/** Key-value pairs of lower-case container element tags and their uses in the text editor
+/** Key-value pairs of uppercase container element tags and their uses in the text editor
  * @type {[string, string][]} */
 export const containerTagsAndLabels = Object.freeze([
-    ['div', 'Text'],
-    ['p', 'Paragraph'],
-    ['h3', 'Subheading 1'],
-    ['h4', 'Subheading 2'],
-    ['h5', 'Subheading 3']
+    ['DIV', 'Text'],
+    ['P', 'Paragraph'],
+    ['H3', 'Subheading 1'],
+    ['H4', 'Subheading 2'],
+    ['H5', 'Subheading 3']
 ]);
 
-/** Array of allowed lower-case container element tags
+/** Array of allowed uppercase container element tags
  * @type {string[]} */
 export const containerTags = Object.freeze(containerTagsAndLabels.map(([k]) => k));
 
-/** Array of allowed lower-case content element tags
+/** Array of allowed uppercase content element tags
  * @type {string[]} */
-export const contentTags = Object.freeze([ 'a', 'b', 'br', 'i', 'img', 'u' ]);
+export const textContentTags = Object.freeze([ 'A', 'B', 'BR', 'I', 'IMG', 'U' ]);
 
-/** Complete array of allowed lower-case element tags
+/** Complete array of allowed uppercase element tags
  * @type {string[]} */
-export const tagWhiteList = Object.freeze([...containerTags, ...contentTags]);
+export const tagWhiteList = Object.freeze([...containerTags, ...textContentTags]);
+
+/** Array of uppercase keys that should have their default behavior even when accompanied by modifier keys
+ * @type {string[]}  */
+export const defaultBehaviorKeys = Object.freeze([
+    'Control', 'Shift', 'Alt', 'Process', 'CapsLock',
+    'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight',
+    'Home', 'End', 'Enter',
+    'A', 'C', 'X'
+].map(k => k.toUpperCase()));
+
+/** Matches against container tags and their content
+ * @type {RegExp} */
+export const regexMatchContainers = new RegExp(
+    '<(?<tag>' +
+    containerTags.join('|') +
+    ')\\b[ \\w=\\"\\-#;]*>(.*?)(<\\/\\k<tag>>)',
+    'i'
+); // /<(?<tag>DIV|H2|P)\b[ \w=\"\-#;]*>(.*?)<\/\k<tag>>/
+
+/** Matches against any attribute text that is not attached to an A tag
+ * @type {RegExp} */
+export const regexMatchDisallowedAttributes = /<(?!(a )|(img ))[a-zA-z][a-zA-z0-9\-]*( [^>]*)>/gi;
+
+/** Matches against any elements now in the whitelist */
+export const regexMatchDisallowedElements = new RegExp('(<\/?(?!(' + tagWhiteList.join('|') + ')\\b)([a-z]*>))', "gi");

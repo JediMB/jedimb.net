@@ -1,41 +1,17 @@
-import { containerTags, containerTagsAndLabels, tagWhiteList } from "/js/constants/editor-constants.js";
+import * as c from "/js/constants/editor-constants.js";
 import { imageGalleryPath } from "/js/constants/meta-constants.js";
 import Image from "/js/models/image-gallery/image.model.js";
 import SelectionData from "/js/models/selection-data.model.js";
 import undoManagementService from "/js/services/undo-management.service.js";
 
 customElements.define('text-editor-component', class TextEditorComponent extends HTMLElement {
+    static #keyMods = Object.freeze({ none: 0b0, shift: 0b1, ctrl: 0b10, alt: 0b100 });
+
     /** @type {TextEditorComponent} */
     #self;
     #undo = undoManagementService;
     /** @type {SelectionData} */
     #latestSelection;
-
-    #defaultKeysUpper = [
-        'Control', 'Shift', 'Alt', 'Process', 'CapsLock',
-        'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight',
-        'Home', 'End',
-        'Enter',
-        'A', 'C', 'X'
-    ].map(v => v.toUpperCase());
-
-    static #keyMods = Object.freeze({ none: 0b0, shift: 0b1, ctrl: 0b10, alt: 0b100 });
-
-    #regexMatchAttributes = /<(?!a )[a-zA-z][a-zA-z0-9\-]*( [^>]*)>/g;
-    #regexMatchBlocks = new RegExp(
-        '<(?<tag>' +
-        containerTags.join('|') +
-        ')\\b[ \\w=\\"\\-#;]*>(.*?)(<\\/\\k<tag>>)'
-    ); // /<(?<tag>div|h2|p)\b[ \w=\"\-#;]*>(.*?)<\/\k<tag>>/
-
-    constructor() {
-        const component = super();
-        this.#self = component;
-
-        this.#onSelectionChange = this.#onSelectionChange.bind(this);
-    }
-
-    #regexMatchDisallowedElements;
 
     #fieldset;
     #blockSelector;
@@ -44,6 +20,13 @@ customElements.define('text-editor-component', class TextEditorComponent extends
     #textBox;
     /** @type {MutationObserver} */
     #mutationObserver;
+
+    constructor() {
+        const component = super();
+        this.#self = component;
+
+        this.#onSelectionChange = this.#onSelectionChange.bind(this);
+    }
 
     connectedCallback() {
         const self = this.#self;
@@ -61,11 +44,9 @@ customElements.define('text-editor-component', class TextEditorComponent extends
 
         const cleanUp = this.#fieldset.querySelector('[btn-cleanup');
 
-        this.#regexMatchDisallowedElements = new RegExp('(<\/?(?!(' + tagWhiteList.join('|') + ')\\b)([a-z]*>))', "gi");
-
         document.addEventListener('selectionchange', this.#onSelectionChange);
 
-        for (const [tag, name] of containerTagsAndLabels) {
+        for (const [tag, name] of c.containerTagsAndLabels) {
             const option = document.createElement('option');
             option.value  = tag;
             option.textContent = name;
@@ -497,7 +478,7 @@ customElements.define('text-editor-component', class TextEditorComponent extends
         const textBox = this.#textBox;
 
         if (!tagName)
-            [tagName] = containerTags;
+            [tagName] = c.containerTags;
 
         if (!childNode) {
             const newElement = document.createElement(tagName);
@@ -533,7 +514,7 @@ customElements.define('text-editor-component', class TextEditorComponent extends
         if (!doFormat)
             return htmlOutput;
 
-        for (const tag of containerTags)
+        for (const tag of c.containerTags)
             htmlOutput = htmlOutput.replaceAll(`><${tag}>`, `>\r\n<${tag}>`);
 
         return htmlOutput.replaceAll('><!--', '>\r\n<!--');
@@ -693,12 +674,12 @@ customElements.define('text-editor-component', class TextEditorComponent extends
         /** @type {Image} */
         const image = JSON.parse(this.#textBox.getAttribute('data-insert'));
         this.#textBox.removeAttribute('data-insert');
+        console.log(image);
 
         this.#makeSelection(this.#latestSelection);
-        console.log(imageGalleryPath);
 
         this.#toggleTag({
-            name: 'img',
+            name: 'IMG',
             attributes: {
                 src: imageGalleryPath + image.filename,
                 alt: image.description
@@ -716,7 +697,7 @@ customElements.define('text-editor-component', class TextEditorComponent extends
      * @returns {boolean}
      */
     #isBlockType(tagName) {
-        return !!containerTags.find(tag => tag == tagName?.toLowerCase());
+        return !!c.containerTags.find(tag => tag === tagName);
     }
 
     /**
@@ -757,7 +738,7 @@ customElements.define('text-editor-component', class TextEditorComponent extends
         const selectedTextNodes = this.#getTextNodesFromSelection(this.#latestSelection);
 
         if (selectedTextNodes.length === 0)
-                [this.#blockSelector.value] = containerTags;
+                [this.#blockSelector.value] = c.containerTags;
             else {
                 const selectedBlocks = selectedTextNodes.map(n => this.#getBlockElement(n));
 
@@ -765,7 +746,7 @@ customElements.define('text-editor-component', class TextEditorComponent extends
                     && selectedBlocks.every((val, _, arr) => val.tagName === arr[0].tagName);
 
                 this.#blockSelector.value = identicalBlocks
-                    ? selectedBlocks[0].tagName.toLowerCase()
+                    ? selectedBlocks[0].tagName
                     : null;
 
                 this.#linkButton.disabled = (new Set(selectedBlocks)).size !== 1;
@@ -825,14 +806,14 @@ customElements.define('text-editor-component', class TextEditorComponent extends
 
                 let text = await (await item.getType('text/html')).text();
 
-                text = text.replace(this.#regexMatchAttributes, '')
+                text = text.replace(c.regexMatchDisallowedAttributes, '')
                     .replace(/\s{2,}/g, '')
-                    .replace(this.#regexMatchDisallowedElements, '');
+                    .replace(c.regexMatchDisallowedElements, '');
 
                 const textRows = [];
 
                 while (text) {
-                    const match = text.match(this.#regexMatchBlocks);
+                    const match = text.match(c.regexMatchContainers);
 
                     if (!match) {
                         textRows.push({tagName: null, content: text});
@@ -870,7 +851,7 @@ customElements.define('text-editor-component', class TextEditorComponent extends
                 }
 
                 for (const row of textRows) {
-                    const betweenBlock = document.createElement(row.tagName ?? containerTags[0]);
+                    const betweenBlock = document.createElement(row.tagName ?? c.containerTags[0]);
                     betweenBlock.innerHTML = row.content;
                     stripUnwantedLinkAttributes(betweenBlock);
                     newBlock.parentNode.insertBefore(betweenBlock, newBlock);
@@ -932,7 +913,7 @@ customElements.define('text-editor-component', class TextEditorComponent extends
 
         const keyUpper = event.key.toUpperCase();
 
-        if (this.#defaultKeysUpper.some(k => k === keyUpper))
+        if (c.defaultBehaviorKeys.some(k => k === keyUpper))
             return;
 
         if (!this.#hasKeyMods(event, TextEditorComponent.#keyMods.ctrl))
@@ -972,46 +953,53 @@ customElements.define('text-editor-component', class TextEditorComponent extends
         this.logFuncs && console.clear();
         const textBox = this.#textBox;
         const selectionData = new SelectionData(window.getSelection());
-        tagInfo.name = tagInfo.name.toUpperCase();
+        tagInfo.name = tagInfo.name;
 
         if (!textBox.contains(selectionData.startNode) || !textBox.contains(selectionData.endNode))
             return;
 
-        const selectedTextNodes = this.#getTextNodesFromSelection(selectionData);
-
-        if (selectedTextNodes.length < 1)
-            return;
-
         this.#undo.add(textBox);
 
-        if (this.#isBlockType(tagInfo.name)) {
-            const blockMatches = new Set(selectedTextNodes.map(textNode => this.#getBlockElement(textNode, tagInfo.name)));
+        const selectedTextNodes = this.#getTextNodesFromSelection(selectionData);
 
-            for (const match of blockMatches) {
-                this.#replaceElement(match, tagInfo.name);
+        if (this.#isBlockType(tagInfo.name)) {
+            if (selectedTextNodes.length < 1) {
+                this.#replaceElement(this.#getBlockElement(selectionData.startNode, tagInfo.name), tagInfo.name);
+            }
+            else {
+                const blockMatches = new Set(selectedTextNodes.map(textNode => this.#getBlockElement(textNode, tagInfo.name)));
+
+                for (const match of blockMatches) {
+                    this.#replaceElement(match, tagInfo.name);
+                }
             }
         }
         else {
-            const ancestorMatches = selectedTextNodes.map(n => this.#getMatchingAncestor(n, tagInfo.name));
-            const noMatches = ancestorMatches.every(match => !match);
-
-            switch (noMatches) {
-                case true:
-                    this.#applyContentTag(selectedTextNodes, tagInfo, selectionData);
-                    break;
-            
-                case false:
-                    const actualMatches = ancestorMatches.filter(match => match !== false);
-
-                    if (actualMatches.length === selectedTextNodes.length) {
-                        this.#extractSelectionFromTags(selectedTextNodes, actualMatches, selectionData);
-                        break;
-                    }
-
-                    this.#applyContentTag(selectedTextNodes, tagInfo, selectionData);
-                    break;
+            if (selectedTextNodes.length < 1) {
+                // TODO: When inserting a text-enclosing tag, like <b>, bad (selection?) data is sent to the undo function on next action
+                this.#insertElement(tagInfo, selectionData);
             }
+            else {
+                const ancestorMatches = selectedTextNodes.map(n => this.#getMatchingAncestor(n, tagInfo.name));
+                const noMatches = ancestorMatches.every(match => !match);
 
+                switch (noMatches) {
+                    case true:
+                        this.#applyContentTag(selectedTextNodes, tagInfo, selectionData);
+                        break;
+                
+                    case false:
+                        const actualMatches = ancestorMatches.filter(match => match !== false);
+
+                        if (actualMatches.length === selectedTextNodes.length) {
+                            this.#extractSelectionFromTags(selectedTextNodes, actualMatches, selectionData);
+                            break;
+                        }
+
+                        this.#applyContentTag(selectedTextNodes, tagInfo, selectionData);
+                        break;
+                }
+            }
         }
 
         this.#makeSelection(selectionData);
