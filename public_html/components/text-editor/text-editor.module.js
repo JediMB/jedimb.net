@@ -1,4 +1,5 @@
-import { imageGalleryPath } from "/js/constants.js";
+import { containerTags, containerTagsAndLabels, tagWhiteList } from "/js/constants/editor-constants.js";
+import { imageGalleryPath } from "/js/constants/meta-constants.js";
 import Image from "/js/models/image-gallery/image.model.js";
 import SelectionData from "/js/models/selection-data.model.js";
 import undoManagementService from "/js/services/undo-management.service.js";
@@ -10,14 +11,6 @@ customElements.define('text-editor-component', class TextEditorComponent extends
     /** @type {SelectionData} */
     #latestSelection;
 
-    #blockElementData = [
-        ['div', 'Text'],
-        ['p', 'Paragraph'],
-        ['h3', 'Subheading 1'],
-        ['h4', 'Subheading 2'],
-        ['h5', 'Subheading 3']
-    ];
-    #blockElementTags = this.#blockElementData.map(pair => pair[0]);
     #defaultKeysUpper = [
         'Control', 'Shift', 'Alt', 'Process', 'CapsLock',
         'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight',
@@ -31,7 +24,7 @@ customElements.define('text-editor-component', class TextEditorComponent extends
     #regexMatchAttributes = /<(?!a )[a-zA-z][a-zA-z0-9\-]*( [^>]*)>/g;
     #regexMatchBlocks = new RegExp(
         '<(?<tag>' +
-        this.#blockElementTags.join('|') +
+        containerTags.join('|') +
         ')\\b[ \\w=\\"\\-#;]*>(.*?)(<\\/\\k<tag>>)'
     ); // /<(?<tag>div|h2|p)\b[ \w=\"\-#;]*>(.*?)<\/\k<tag>>/
 
@@ -42,7 +35,6 @@ customElements.define('text-editor-component', class TextEditorComponent extends
         this.#onSelectionChange = this.#onSelectionChange.bind(this);
     }
 
-    #allowedElements = ['br', ...this.#blockElementTags];
     #regexMatchDisallowedElements;
 
     #fieldset;
@@ -69,12 +61,11 @@ customElements.define('text-editor-component', class TextEditorComponent extends
 
         const cleanUp = this.#fieldset.querySelector('[btn-cleanup');
 
-        this.#allowedElements.push(...this.#tagButtons.map(btn => btn.dataset.tag?.toLowerCase()));
-        this.#regexMatchDisallowedElements = new RegExp('(<\/?(?!(' + this.#allowedElements.join('|') + ')\\b)([a-z]*>))', "gi");
+        this.#regexMatchDisallowedElements = new RegExp('(<\/?(?!(' + tagWhiteList.join('|') + ')\\b)([a-z]*>))', "gi");
 
         document.addEventListener('selectionchange', this.#onSelectionChange);
 
-        for (const [tag, name] of this.#blockElementData) {
+        for (const [tag, name] of containerTagsAndLabels) {
             const option = document.createElement('option');
             option.value  = tag;
             option.textContent = name;
@@ -506,7 +497,7 @@ customElements.define('text-editor-component', class TextEditorComponent extends
         const textBox = this.#textBox;
 
         if (!tagName)
-            [tagName] = this.#blockElementTags;
+            [tagName] = containerTags;
 
         if (!childNode) {
             const newElement = document.createElement(tagName);
@@ -542,7 +533,7 @@ customElements.define('text-editor-component', class TextEditorComponent extends
         if (!doFormat)
             return htmlOutput;
 
-        for (const tag of this.#blockElementTags)
+        for (const tag of containerTags)
             htmlOutput = htmlOutput.replaceAll(`><${tag}>`, `>\r\n<${tag}>`);
 
         return htmlOutput.replaceAll('><!--', '>\r\n<!--');
@@ -725,7 +716,7 @@ customElements.define('text-editor-component', class TextEditorComponent extends
      * @returns {boolean}
      */
     #isBlockType(tagName) {
-        return !!this.#blockElementTags.find(tag => tag == tagName?.toLowerCase());
+        return !!containerTags.find(tag => tag == tagName?.toLowerCase());
     }
 
     /**
@@ -766,7 +757,7 @@ customElements.define('text-editor-component', class TextEditorComponent extends
         const selectedTextNodes = this.#getTextNodesFromSelection(this.#latestSelection);
 
         if (selectedTextNodes.length === 0)
-                [this.#blockSelector.value] = this.#blockElementTags;
+                [this.#blockSelector.value] = containerTags;
             else {
                 const selectedBlocks = selectedTextNodes.map(n => this.#getBlockElement(n));
 
@@ -834,9 +825,9 @@ customElements.define('text-editor-component', class TextEditorComponent extends
 
                 let text = await (await item.getType('text/html')).text();
 
-                 text = text.replace(this.#regexMatchAttributes, '')
-                     .replace(/\s{2,}/g, '')
-                     .replace(this.#regexMatchDisallowedElements, '');
+                text = text.replace(this.#regexMatchAttributes, '')
+                    .replace(/\s{2,}/g, '')
+                    .replace(this.#regexMatchDisallowedElements, '');
 
                 const textRows = [];
 
@@ -879,7 +870,7 @@ customElements.define('text-editor-component', class TextEditorComponent extends
                 }
 
                 for (const row of textRows) {
-                    const betweenBlock = document.createElement(row.tagName ?? this.#blockElementTags[0]);
+                    const betweenBlock = document.createElement(row.tagName ?? containerTags[0]);
                     betweenBlock.innerHTML = row.content;
                     stripUnwantedLinkAttributes(betweenBlock);
                     newBlock.parentNode.insertBefore(betweenBlock, newBlock);

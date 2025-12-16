@@ -1,6 +1,6 @@
 import Emitter from '/js/utilities/emitter.js';
 import sessionApiService from '/js/services/api/session-api.service.js';
-import { cookieUserKey, cookieTokenKey, cookieValidatorKey } from '/js/constants.js';
+import { cookieUserKey, cookieTokenKey, cookieValidatorKey } from '/js/constants/meta-constants.js';
 
 export { sessionService as default };
 
