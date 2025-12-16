@@ -151,8 +151,8 @@ customElements.define('text-editor-component', class TextEditorComponent extends
             if (editHtml)
                 textarea.value = this.#getContent(true);
 
-            wrapper.classList.toggle('hidden', editHtml);
-            textarea.classList.toggle('hidden', !editHtml);
+            wrapper.toggleAttribute('hidden', editHtml);
+            textarea.toggleAttribute('hidden', !editHtml);
         });
 
         self.style.removeProperty('display');
@@ -756,8 +756,10 @@ customElements.define('text-editor-component', class TextEditorComponent extends
 
         this.#fieldset.disabled = !isCurrentTextbox;
 
-        if (!isCurrentTextbox)
+        if (!isCurrentTextbox) {
+            this.#tagButtons.forEach(b => b.classList.remove('active'));
             return;
+        }
 
         this.#latestSelection = new SelectionData(selection);
 

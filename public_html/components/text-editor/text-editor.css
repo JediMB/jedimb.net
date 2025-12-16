@@ -2,62 +2,55 @@ text-editor-component {
     display: flex;
     flex-direction: column;
     gap: 1em;
+}
 
-    & fieldset {
-        & select,
-        & button {
-            border: 1px solid currentColor;
-            border-radius: var(--spacing-internal);
-            padding: var(--spacing-internal) calc(var(--spacing-internal) * 2);
-            background-color: var(--color-background);
-            color: var(--color-text);
-        }
-
-        & select:disabled,
-        & button:disabled {
-            background-color: #444;
-        }
-
-        & .active {
-            --color-bg-active: var(--color-text);
-            --color-text-active: var(--color-background);
-        }
-
-        & button[data-tag] {
-            background-color: var(--color-bg-active, --color-background);
-            color: var(--color-text-active, --color-text);
-        }
+.text-editor-toolbar {
+    & button,
+    & select {
+        border: 1px solid currentColor;
+        border-radius: var(--spacing-internal);
+        padding: var(--spacing-internal) calc(var(--spacing-internal) * 2);
     }
 
-    & text-box-wrapper,
-    & text-box-wrapper + textarea {
-        display: block;
-        width: 100%;
-        height: 15em;
-        overflow: scroll;
-        padding: var(--spacing-internal);
-        background-color: var(--color-text);
-        color: var(--color-background);
+    & button[data-tag]:enabled {
+        background-color: var(--color-bg-active, --color-background);
+        color: var(--color-text-active, --color-text);
     }
 
-    & text-box-wrapper:focus-within {
-        border-radius: 3px;
-        outline: 3px solid var(--color-primary, purple);
+    & .active {
+        --color-bg-active: var(--color-text);
+        --color-text-active: var(--color-background);
     }
+}
 
-    & text-box {
-        display: block;
-        width: 100%;
-        background-color: var(--color-text);
-        color: var(--color-background);
-        user-select: text;
-    }
+text-box-wrapper,
+text-box-wrapper + textarea {
+    display: block;
+    width: 100%;
+    height: 15em;
+    overflow: scroll;
+    padding: var(--spacing-internal);
+    background-color: var(--color-text);
+    color: var(--color-background);
+}
 
-    & text-box a {
-        cursor: pointer;
-    }
+text-box-wrapper:focus-within {
+    border-radius: 3px;
+    outline: 3px solid var(--color-primary, purple);
+}
 
-    & text-box:focus {
-        outline: 0px solid transparent;
-    }
+text-box {
+    display: block;
+    width: 100%;
+    background-color: var(--color-text);
+    color: var(--color-background);
+    user-select: text;
+}
+
+text-box a {
+    cursor: pointer;
+}
+
+text-box:focus {
+    outline: 0px solid transparent;
 }
