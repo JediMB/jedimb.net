@@ -28,6 +28,8 @@ $links = !empty($links);
     <meta name="author" content="<?= $site_author ?>">
     <meta name="description" content="<?= $meta_description ?>">
     <meta name="keywords" content="<?= $meta_keywords ?>">
+    
+    <meta name="constants" content="<?= htmlspecialchars(json_encode(META_CONSTANTS)) ?>">
 
     <title><?= empty($title) ? $site_title : "$title – ". $site_title ?></title>
     
@@ -39,11 +41,6 @@ $links = !empty($links);
     <?php if ($pageType === PageType::BlogPost): ?>
         <script type="text/javascript" defer src="/js/local-time.js"></script>
     <?php endif ?>
-
-    <meta name="cookie-user-key" content="<?= COOKIE_USER_KEY ?>">
-    <meta name="cookie-token-key" content="<?= COOKIE_TOKEN_KEY ?>">
-    <meta name="cookie-validator-key" content="<?= COOKIE_VALIDATOR_KEY ?>">
-    <meta name="image-gallery-path" content="<?= '/' . PATH_IMAGE_GALLERY . '/' ?>">
 </head>
 <body>
     <header>

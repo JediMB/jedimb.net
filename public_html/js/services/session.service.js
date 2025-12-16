@@ -1,6 +1,6 @@
-import Emitter from '../utilities/emitter.js';
-import sessionApiService from './api/session-api.service.js';
-import { cookieUserKey, cookieTokenKey, cookieValidatorKey } from '../constants.js';
+import Emitter from '/js/utilities/emitter.js';
+import sessionApiService from '/js/services/api/session-api.service.js';
+import { cookieUserKey, cookieTokenKey, cookieValidatorKey } from '/js/constants.js';
 
 export { sessionService as default };
 
@@ -9,12 +9,6 @@ class SessionService {
 
     isLoggedIn = new Emitter(undefined);
     user = new Emitter(undefined);
-
-    #cookieKeys = [
-        document.querySelector(`meta[name="${cookieUserKey}"]`).content,
-        document.querySelector(`meta[name="${cookieTokenKey}"]`).content,
-        document.querySelector(`meta[name="${cookieValidatorKey}"]`).content
-    ];
 
     constructor() {
         this.#sessionApiService = sessionApiService;
@@ -59,9 +53,9 @@ class SessionService {
 
     #setCookies({ userId = '', token = '', validator = '', expiresOn = new Date(0) }) {
         const expires = expiresOn.toUTCString();
-        document.cookie = `${this.#cookieKeys[0]}=${userId}; expires=${expires};`;
-        document.cookie = `${this.#cookieKeys[1]}=${token}; expires=${expires};`;
-        document.cookie = `${this.#cookieKeys[2]}=${validator}; expires=${expires};`;
+        document.cookie = `${cookieUserKey}=${userId}; expires=${expires};`;
+        document.cookie = `${cookieTokenKey}=${token}; expires=${expires};`;
+        document.cookie = `${cookieValidatorKey}=${validator}; expires=${expires};`;
     }
 
     async #fetchUser() {

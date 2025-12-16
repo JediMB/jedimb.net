@@ -132,4 +132,11 @@ define('MENU_MAIN', [
     ]
 ]);
 
+define('META_CONSTANTS', [
+    'cookieUserKey' => COOKIE_USER_KEY,
+    'cookieTokenKey' => COOKIE_TOKEN_KEY,
+    'cookieValidatorKey' => COOKIE_VALIDATOR_KEY,
+    'imageGalleryPath' => '/' . PATH_IMAGE_GALLERY . '/'
+]);
+
 ?>
