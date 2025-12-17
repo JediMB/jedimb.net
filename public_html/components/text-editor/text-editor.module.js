@@ -1,4 +1,5 @@
 import * as c from "/js/constants/editor-constants.js";
+import { fillSelect } from "/js/utilities/form.utility.js";
 import { imageGalleryPath } from "/js/constants/meta-constants.js";
 import Image from "/js/models/image-gallery/image.model.js";
 import SelectionData from "/js/models/selection-data.model.js";
@@ -46,12 +47,8 @@ customElements.define('text-editor-component', class TextEditorComponent extends
 
         document.addEventListener('selectionchange', this.#onSelectionChange);
 
-        for (const [tag, name] of c.containerTagsAndLabels) {
-            const option = document.createElement('option');
-            option.value  = tag;
-            option.textContent = name;
-            this.#blockSelector.appendChild(option);
-        }
+        fillSelect(this.#blockSelector, c.containerTagsAndLabels);
+
         this.#blockSelector.addEventListener('change', (event) => {
             event.stopPropagation();
             this.#toggleTag({ name: this.#blockSelector.value });
