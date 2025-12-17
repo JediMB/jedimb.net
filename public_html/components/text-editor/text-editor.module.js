@@ -49,7 +49,7 @@ customElements.define('text-editor-component', class TextEditorComponent extends
 
         fillSelect(this.#blockSelector, c.containerTagsAndLabels);
 
-        this.#blockSelector.addEventListener('change', (event) => {
+        this.#blockSelector.addEventListener('change', event => {
             event.stopPropagation();
             this.#toggleTag({ name: this.#blockSelector.value });
         });
@@ -81,13 +81,13 @@ customElements.define('text-editor-component', class TextEditorComponent extends
 
         this.#mutationObserver = new MutationObserver((mutationList, _) => {
             for (const record of mutationList) {
-                if (record.target !== self.#textBox || record.attributeName !== 'data-insert')
+                if (record.target !== self.#textBox || record.attributeName !== 'data-image-insert')
                     continue;
 
-                if (!self.#textBox.hasAttribute('data-insert'))
+                if (!self.#textBox.hasAttribute('data-image-insert'))
                     continue;
                 
-                this.#insertImage();
+                this.#addImage();
                 break;
             }
 
@@ -98,7 +98,7 @@ customElements.define('text-editor-component', class TextEditorComponent extends
             });
             this.dispatchEvent(event);
         });
-        this.#mutationObserver.observe(this.#textBox, {characterData: true, childList: true, subtree: true, attributeFilter: ['data-insert']});
+        this.#mutationObserver.observe(this.#textBox, {characterData: true, childList: true, subtree: true, attributeFilter: ['data-image-insert']});
 
         textarea.addEventListener('change', (event) => {
             event.stopPropagation();
@@ -136,6 +136,26 @@ customElements.define('text-editor-component', class TextEditorComponent extends
     }
 
     connectedMoveCallback() {}
+
+    /** Add an image using data from the component's data-image-insert attribute */
+    #addImage() {
+        /** @type {Image} */
+        const image = JSON.parse(this.#textBox.getAttribute('data-image-insert'));
+        this.#textBox.removeAttribute('data-image-insert');
+
+        this.#makeSelection(this.#latestSelection);
+
+        this.#toggleTag({
+            name: 'IMG',
+            attributes: {
+                src: imageGalleryPath + image.filename,
+                alt: image.description
+            },
+            dataset: {
+                imageId: image.id
+            }
+        });
+    }
 
     /**
      * Add a hyperlink to the selected text
@@ -678,25 +698,6 @@ customElements.define('text-editor-component', class TextEditorComponent extends
         selectionData.isCollapsed = true;
         selectionData.startNode = selectionData.endNode = element.nextSibling ?? element.parentElement;
         selectionData.startOffset = selectionData.endOffset = element.nextSibling ? 0 : 1;
-    }
-
-    #insertImage() {
-        /** @type {Image} */
-        const image = JSON.parse(this.#textBox.getAttribute('data-insert'));
-        this.#textBox.removeAttribute('data-insert');
-
-        this.#makeSelection(this.#latestSelection);
-
-        this.#toggleTag({
-            name: 'IMG',
-            attributes: {
-                src: imageGalleryPath + image.filename,
-                alt: image.description
-            },
-            dataset: {
-                imageId: image.id
-            }
-        });
     }
 
     /**

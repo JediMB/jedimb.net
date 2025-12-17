@@ -161,7 +161,7 @@ customElements.define('image-manager-component', class ImageManagerComponent ext
 
         const self = this.#self;
         const finishEvent = self.getAttribute('finish-event');
-        this.#insertTarget.dataset.insert = JSON.stringify(image);
+        this.#insertTarget.dataset.imageInsert = JSON.stringify(image);
         if (finishEvent) {
             const event = new CustomEvent(finishEvent, { bubbles: true });
             self.dispatchEvent(event);
