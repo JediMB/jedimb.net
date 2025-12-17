@@ -918,10 +918,22 @@ customElements.define('text-editor-component', class TextEditorComponent extends
      */
     #textboxKeydown(event) {
         const textBox = this.#textBox;
-
-        this.#undo.saveData(textBox, new SelectionData(window.getSelection()));
-
         const keyUpper = event.key.toUpperCase();
+
+        const selectionData = new SelectionData(window.getSelection());
+
+        const selectionNode = selectionData.startNode;
+        if (keyUpper === 'BACKSPACE' && selectionNode.nodeType === Node.ELEMENT_NODE) {
+            selectionData.isCollapsed = true;
+            selectionData.startNode = selectionData.endNode = selectionNode.previousSibling ?? selectionNode.parentNode;
+            selectionData.startOffset = selectionData.endOffset = selectionNode.previousSibling
+                ? ( selectionNode.previousSibling.nodeType === Node.TEXT_NODE
+                    ? selectionNode.textContent.length
+                    : 1
+                )
+                : 0
+        }
+        this.#undo.saveData(textBox, selectionData);
 
         if (c.defaultBehaviorKeys.some(k => k === keyUpper))
             return;
