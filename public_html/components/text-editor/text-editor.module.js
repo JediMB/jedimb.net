@@ -271,7 +271,7 @@ customElements.define('text-editor-component', class TextEditorComponent extends
                 || selectionData.startOffset === selectionData.startNode.textContent.length
                 || !selectionData.startNode.textContent[selectionData.startOffset].trim()
             ) {
-                this.#insertElement(tagInfo, selectionData);
+                this.#insertContentElement(tagInfo, selectionData);
                 return;
             }
             const start = textNodes[0].textContent.lastIndexOf(' ', selectionData.startOffset) + 1;
@@ -643,9 +643,10 @@ customElements.define('text-editor-component', class TextEditorComponent extends
      * @param {Object} tagInfo.dataset
      * @param {SelectionData} selectionData 
      */
-    #insertElement(tagInfo, selectionData) {
+    #insertContentElement(tagInfo, selectionData) {
         this.logFuncs && console.log('insertElement()');
         selectionData ??= new SelectionData(window.getSelection());
+        const isTextElement = c.textContentTags.some(t => t === tagInfo.name);
 
         const element = document.createElement(tagInfo.name);
 
@@ -657,24 +658,35 @@ customElements.define('text-editor-component', class TextEditorComponent extends
             element.dataset[dataKey] = tagInfo.dataset[dataKey];
         }
 
-        element.appendChild(document.createTextNode(tagInfo.content ?? ''));
+        let textNode;
+        if (isTextElement) {
+            textNode = document.createTextNode('');
+            textNode.innerHTML = tagInfo.content ?? '&nbsp;';
+            element.appendChild(textNode);
+        }
         
         const range = document.createRange();
         range.setStart(selectionData.startNode, selectionData.startOffset);
         range.collapse();
         range.insertNode(element);
 
-        selectionData.isCollapsed = false;
-        selectionData.startNode = selectionData.endNode = element;
-        selectionData.startOffset = 0;
-        selectionData.endOffset = 1;
+        if (textNode) {
+            selectionData.isCollapsed = false;
+            selectionData.startNode = selectionData.endNode = textNode;
+            selectionData.startOffset = 0;
+            selectionData.endOffset = textNode.textContent.length;
+            return;
+        }
+        
+        selectionData.isCollapsed = true;
+        selectionData.startNode = selectionData.endNode = element.nextSibling ?? element.parentElement;
+        selectionData.startOffset = selectionData.endOffset = element.nextSibling ? 0 : 1;
     }
 
     #insertImage() {
         /** @type {Image} */
         const image = JSON.parse(this.#textBox.getAttribute('data-insert'));
         this.#textBox.removeAttribute('data-insert');
-        console.log(image);
 
         this.#makeSelection(this.#latestSelection);
 
@@ -976,8 +988,7 @@ customElements.define('text-editor-component', class TextEditorComponent extends
         }
         else {
             if (selectedTextNodes.length < 1) {
-                // TODO: When inserting a text-enclosing tag, like <b>, bad (selection?) data is sent to the undo function on next action
-                this.#insertElement(tagInfo, selectionData);
+                this.#insertContentElement(tagInfo, selectionData);
             }
             else {
                 const ancestorMatches = selectedTextNodes.map(n => this.#getMatchingAncestor(n, tagInfo.name));

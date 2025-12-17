@@ -12,16 +12,20 @@ export const containerTagsAndLabels = Object.freeze([
  * @type {string[]} */
 export const containerTags = Object.freeze(containerTagsAndLabels.map(([k]) => k));
 
-/** Array of allowed uppercase content element tags
+/** Array of allowed uppercase text content element tags
  * @type {string[]} */
-export const textContentTags = Object.freeze([ 'A', 'B', 'BR', 'I', 'IMG', 'U' ]);
+export const textContentTags = Object.freeze([ 'A', 'B', 'BR', 'I', 'U' ]);
+
+/** Array of allowed uppsercase non-text content element tags
+ * @type {string[]} */
+export const nonTextContentTags = Object.freeze([ 'IMG' ]);
 
 /** Complete array of allowed uppercase element tags
  * @type {string[]} */
-export const tagWhiteList = Object.freeze([...containerTags, ...textContentTags]);
+export const tagWhiteList = Object.freeze([...containerTags, ...textContentTags, ...nonTextContentTags]);
 
 /** Array of uppercase keys that should have their default behavior even when accompanied by modifier keys
- * @type {string[]}  */
+ * @type {string[]} */
 export const defaultBehaviorKeys = Object.freeze([
     'Control', 'Shift', 'Alt', 'Process', 'CapsLock',
     'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight',
