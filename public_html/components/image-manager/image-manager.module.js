@@ -159,7 +159,14 @@ customElements.define('image-manager-component', class ImageManagerComponent ext
         if (!image)
             throw new Error('Image not found');
 
+        const self = this.#self;
+        const finishEvent = self.getAttribute('finish-event');
         this.#insertTarget.dataset.insert = JSON.stringify(image);
+        if (finishEvent) {
+            const event = new CustomEvent(finishEvent, { bubbles: true });
+            self.dispatchEvent(event);
+        }
+
     }
 
     /** @param {Image[]} images  */
