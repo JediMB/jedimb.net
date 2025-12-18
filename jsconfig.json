@@ -1,7 +1,7 @@
 {
     "compilerOptions": {
         "module": "CommonJS",
-        "target": "ES6",
+        "target": "ES2022",
         "baseUrl": ".",
         "paths": {
             "/js/*": ["./public_html/js/*"],
