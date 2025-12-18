@@ -1,4 +1,4 @@
-import { containerTags, regexMatchContainers } from "/js/constants/editor-constants.js";
+import { allowedAttributes, containerTags, regexMatchContainers } from "/js/constants/editor-constants.js";
 
 /** A row/block of pasted text
  * @typedef {Object} TextRow
@@ -15,7 +15,7 @@ export function fillFirstContainer(textRows, node, offset) {
     const parentElement = node.parentElement;
     const parentLength = parentElement.textContent.length;
     parentElement.innerHTML = parentElement.innerHTML.substring(0, offset) + textRows.shift().content + parentElement.innerHTML.substring(offset);
-    stripUnwantedLinkAttributes(parentElement);
+    stripUnwantedAttributes(parentElement);
     setCaretPosition(parentElement, parentLength - offset);
 }
 
@@ -26,7 +26,7 @@ export function fillFirstContainer(textRows, node, offset) {
 export function fillLastContainer(textRows, container) {
     const lastRow = textRows.pop().content;
     container.innerHTML = lastRow + container.innerHTML;
-    stripUnwantedLinkAttributes(container);
+    stripUnwantedAttributes(container);
 }
 
 /**
@@ -38,7 +38,7 @@ export function fillRemainingContainers(textRows, lastContainer, originalLength)
     for (const row of textRows) {
         const betweenBlock = document.createElement(row.tagName ?? containerTags[0]);
         betweenBlock.innerHTML = row.content;
-        stripUnwantedLinkAttributes(betweenBlock);
+        stripUnwantedAttributes(betweenBlock);
         lastContainer.parentNode.insertBefore(betweenBlock, lastContainer);
     }
 
@@ -97,13 +97,17 @@ export function splitIntoContainerRows(text) {
 /**
  * @param {HTMLElement} node 
  */
-export function stripUnwantedLinkAttributes(node) {
-    /** @type {HTMLAnchorElement[]} */
-    const links = node.querySelectorAll('a');
-    for (const link of links) {
-        for (const attribute of Array.from(link.attributes)) {
-            if (!['href', 'target', 'title'].find(attrName => attrName === attribute.localName))
-                link.removeAttribute(attribute.localName);
+export function stripUnwantedAttributes(node) {
+    for (const tag in allowedAttributes) {
+        const elements = node.querySelectorAll(tag);
+        /** @type {string[]} */
+        const attributes = allowedAttributes[tag];
+
+        for (const element of elements) {
+            Array.from(element.attributes).forEach(attr => {
+                if (!attributes.find(name => name === attr.localName))
+                    element.removeAttribute(attr.localName);
+            })
         }
     }
 }
