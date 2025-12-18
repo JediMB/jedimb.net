@@ -46,5 +46,10 @@ export const regexMatchContainers = new RegExp(
  * @type {RegExp} */
 export const regexMatchDisallowedAttributes = /<(?!(a )|(img ))[a-zA-z][a-zA-z0-9\-]*( [^>]*)>/gi;
 
-/** Matches against any elements now in the whitelist */
+/** Matches against any elements now in the whitelist
+ * @type {RegExp} */
 export const regexMatchDisallowedElements = new RegExp('(<\/?(?!(' + tagWhiteList.join('|') + ')\\b)([a-z]*>))', "gi");
+
+/** Matches against indentations (2+ whitespaces)
+ * @type {RegExp} */
+export const regexMatchIndentations = /\s{2,}/g;

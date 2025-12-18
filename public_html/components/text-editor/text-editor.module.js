@@ -817,7 +817,7 @@ customElements.define('text-editor-component', class TextEditorComponent extends
                 let text = await (await item.getType('text/html')).text();
 
                 text = text.replace(c.regexMatchDisallowedAttributes, '')
-                    .replace(/\s{2,}/g, '')
+                    .replace(c.regexMatchIndentations, '')
                     .replace(c.regexMatchDisallowedElements, '');
 
                 const textRows = [];
@@ -872,6 +872,7 @@ customElements.define('text-editor-component', class TextEditorComponent extends
             }
         }
     }
+    
     /**
      * Cleans up the DOM by removing empty nodes
      */
