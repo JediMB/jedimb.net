@@ -1,4 +1,5 @@
 import * as c from "/js/constants/editor-constants.js";
+import * as p from "/js/utilities/paste.utility.js";
 import { fillSelect } from "/js/utilities/form.utility.js";
 import { imageGalleryPath } from "/js/constants/meta-constants.js";
 import Image from "/js/models/image-gallery/image.model.js";
@@ -767,110 +768,59 @@ customElements.define('text-editor-component', class TextEditorComponent extends
             ));
     }
 
-    async #paste(contentType = 'text/html') {
+    async #paste(pasteHtml = true) {
         const textBox = this.#textBox;
         this.#undo.add(textBox);
 
         const selection = window.getSelection();
 
-        const setPosition = (parent, originalLength, cumulativeLength = 0) => {
-            const children = Array.from(parent.childNodes).reverse();
+        const clipboardContent = await navigator.clipboard.read();
+    
+        let pasted,
+            contentType;
 
-            for (const child of children) {
-                cumulativeLength += child.textContent.length;
-
-                if (originalLength > cumulativeLength)
-                    continue;
-
-                if (child.nodeType === Node.TEXT_NODE) {
-                    selection.setPosition(child, cumulativeLength - originalLength);
-                    break;
-                }
-
-                setPosition(child, originalLength, cumulativeLength - child.textContent.length);
-                break;
-            }
+        if (pasteHtml) {
+            pasted = clipboardContent.find(i => i.types.includes('text/html'));
+            contentType = 'text/html';
         }
 
-        const stripUnwantedLinkAttributes = (node) => {
-            /** @type {HTMLAnchorElement[]} */
-            const links = node.querySelectorAll?.call(this, 'a');
-            for (const link of links) {
-                for (const attribute of Array.from(link.attributes)) {
-                    if (!['href', 'target', 'title'].find(attrName => attrName === attribute.localName))
-                        link.removeAttribute(attribute.localName);
-                }
-            }
-        }
+        if (!pasted) {
+            clipboardContent.find(i => i.types.includes('text/plain'));
+            contentType = 'text/plain';
 
-        const pasted = await navigator.clipboard.read();
-        for (const item of pasted) {
-            if (item.types.includes(contentType)) {
-
-                selection.deleteFromDocument();
-
-                const isForward = selection.direction !== 'backward';
-
-                let node = isForward ? selection.anchorNode : selection.focusNode,
-                    offset = isForward ? selection.anchorOffset : selection.focusOffset;
-
-                let text = await (await item.getType('text/html')).text();
-
-                text = text.replace(c.regexMatchDisallowedAttributes, '')
-                    .replace(c.regexMatchIndentations, '')
-                    .replace(c.regexMatchDisallowedElements, '');
-
-                const textRows = [];
-
-                while (text) {
-                    const match = text.match(c.regexMatchContainers);
-
-                    if (!match) {
-                        textRows.push({tagName: null, content: text});
-                        break;
-                    }
-
-                    if (match.index > 0)
-                        textRows.push({tagName: null, content: text.substring(0, match.index)});
-
-                    textRows.push({tagName: match[1].toUpperCase(), content: match[2]});
-                    text = text.substring(match.index + match[0].length);
-                }
-
-                const currentBlockTag = this.#getBlockElement(node).tagName;
-
-                if (!textRows[0].tagName || textRows[0].tagName === currentBlockTag) {
-                    const parentElement = node.parentElement;
-                    const parentLength = parentElement.textContent.length;
-                    parentElement.innerHTML = parentElement.innerHTML.substring(0, offset) + textRows.shift().content + parentElement.innerHTML.substring(offset);
-                    stripUnwantedLinkAttributes(parentElement);
-                    setPosition(parentElement, parentLength - offset);
-                }
-
-                if (textRows.length === 0)
-                    return;
-
-                const newBlock = this.#addParagraphBreak(selection.anchorNode, selection.anchorOffset);
-                const blockLength = newBlock.textContent.length;
-
-                const lastTag = textRows[textRows.length - 1].tagName;
-                if (!lastTag || lastTag === currentBlockTag) {
-                    const lastRow = textRows.pop().content;
-                    newBlock.innerHTML = lastRow + newBlock.innerHTML;
-                    stripUnwantedLinkAttributes(newBlock);
-                }
-
-                for (const row of textRows) {
-                    const betweenBlock = document.createElement(row.tagName ?? c.containerTags[0]);
-                    betweenBlock.innerHTML = row.content;
-                    stripUnwantedLinkAttributes(betweenBlock);
-                    newBlock.parentNode.insertBefore(betweenBlock, newBlock);
-                }
-
-                setPosition(newBlock, blockLength);
+            if (!pasted)
                 return;
-            }
         }
+
+        selection.deleteFromDocument();
+
+        const isForward = selection.direction !== 'backward';
+        const node = isForward ? selection.anchorNode : selection.focusNode,
+            offset = isForward ? selection.anchorOffset : selection.focusOffset;
+
+        let text = ( await (await pasted.getType(contentType)).text() )
+            .replace(c.regexMatchDisallowedAttributes, '')
+            .replace(c.regexMatchIndentations, '')
+            .replace(c.regexMatchDisallowedElements, '');
+
+        const textRows = p.splitIntoContainerRows(text);
+
+        const currentBlockTag = this.#getBlockElement(node).tagName;
+
+        if (!textRows[0].tagName || textRows[0].tagName === currentBlockTag)
+            p.fillFirstContainer(textRows, node, offset);
+
+        if (textRows.length === 0)
+            return;
+
+        const lastContainer = this.#addParagraphBreak(selection.anchorNode, selection.anchorOffset);
+        const originalLength = lastContainer.textContent.length;
+
+        const lastTag = textRows[textRows.length - 1].tagName;
+        if (!lastTag || lastTag === currentBlockTag)
+            p.fillLastContainer(textRows, lastContainer);
+
+        p.fillRemainingContainers(textRows, lastContainer, originalLength);
     }
     
     /**
