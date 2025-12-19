@@ -111,7 +111,7 @@ class ConfigCSV {
 
         if (event.shiftKey) {
             let item = event.target;
-            while (item.tagName.toLocaleLowerCase() !== 'li') {
+            while (item.localName !== 'li') {
                 item = item.parentNode;
             }
             const field = this.#findTextField({ at: item });
