@@ -1,26 +1,26 @@
-/** Key-value pairs of uppercase container element tags and their uses in the text editor
+/** Key-value pairs of lowercase container element tags and their uses in the text editor
  * @type {[string, string][]} */
 export const containerTagsAndLabels = Object.freeze([
-    ['DIV', 'Text'],
-    ['P', 'Paragraph'],
-    ['H3', 'Subheading 1'],
-    ['H4', 'Subheading 2'],
-    ['H5', 'Subheading 3']
+    ['div', 'Text'],
+    ['p', 'Paragraph'],
+    ['h3', 'Subheading 1'],
+    ['h4', 'Subheading 2'],
+    ['h5', 'Subheading 3']
 ]);
 
-/** Array of allowed uppercase container element tags
+/** Array of allowed lowecase container element tags
  * @type {string[]} */
 export const containerTags = Object.freeze(containerTagsAndLabels.map(([k]) => k));
 
-/** Array of allowed uppercase text content element tags
+/** Array of allowed lowercase text content element tags
  * @type {string[]} */
-export const textContentTags = Object.freeze([ 'A', 'B', 'I', 'U' ]);
+export const textContentTags = Object.freeze([ 'a', 'b', 'i', 'u' ]);
 
 /** Array of allowed uppsercase non-text content element tags
  * @type {string[]} */
-export const nonTextContentTags = Object.freeze([ 'BR', 'IMG' ]);
+export const nonTextContentTags = Object.freeze([ 'br', 'img' ]);
 
-/** Complete array of allowed uppercase element tags
+/** Complete array of allowed lowercase element tags
  * @type {string[]} */
 export const tagWhiteList = Object.freeze([...containerTags, ...textContentTags, ...nonTextContentTags]);
 
@@ -48,7 +48,7 @@ export const regexMatchContainers = new RegExp(
     containerTags.join('|') +
     ')\\b[ \\w=\\"\\-#;]*>(.*?)(<\\/\\k<tag>>)',
     'i'
-); // /<(?<tag>DIV|H2|P)\b[ \w=\"\-#;]*>(.*?)<\/\k<tag>>/
+); // /<(?<tag>div|h2|p|etc)\b[ \w=\"\-#;]*>(.*?)<\/\k<tag>>/
 
 /** Matches against any attribute text that is not attached to an A tag
  * @type {RegExp} */

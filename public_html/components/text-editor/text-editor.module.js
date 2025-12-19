@@ -60,7 +60,7 @@ customElements.define('text-editor-component', class TextEditorComponent extends
         this.#linkButton.addEventListener('click', () => this.#addLink(this.#linkButton));
 
         this.#textBox.addEventListener('click', (event) => {
-            const link = this.#getMatchingAncestor(event.target, 'A');
+            const link = this.#getMatchingAncestor(event.target, 'a');
 
             if (link && link.href && this.#hasKeyMods(event, TextEditorComponent.#keyMods.ctrl)) {
                 event.preventDefault();
@@ -147,7 +147,7 @@ customElements.define('text-editor-component', class TextEditorComponent extends
         this.#makeSelection(this.#latestSelection);
 
         this.#toggleTag({
-            name: 'IMG',
+            name: 'img',
             attributes: {
                 src: imageGalleryPath + image.filename,
                 alt: image.description
@@ -165,7 +165,7 @@ customElements.define('text-editor-component', class TextEditorComponent extends
      */
     #addLink(button) {
         const selection = window.getSelection();
-        const tagName = button.dataset.tag.toUpperCase();
+        const tagName = button.dataset.tag.toLowerCase();
 
         const anchorMatch = this.#getMatchingAncestor(selection.anchorNode, tagName);
         const focusMatch = this.#getMatchingAncestor(selection.focusNode, tagName);
@@ -234,7 +234,7 @@ customElements.define('text-editor-component', class TextEditorComponent extends
 
     #addParagraphBreak(textNode, offset) {
         const blockNode = this.#getBlockElement(textNode);
-        const newBlock = document.createElement(blockNode.tagName);
+        const newBlock = document.createElement(blockNode.localName);
         blockNode.insertAdjacentElement('afterend', newBlock);
 
         const splitTree = (start, destination) => {
@@ -246,7 +246,7 @@ customElements.define('text-editor-component', class TextEditorComponent extends
 
                     switch (node.nodeType) {
                         case Node.ELEMENT_NODE:
-                            const twin = document.createElement(node.tagName);
+                            const twin = document.createElement(node.localName);
                             destination.appendChild(twin);
                             splitTree(node, twin);
                             break;
@@ -370,7 +370,7 @@ customElements.define('text-editor-component', class TextEditorComponent extends
         }
 
         if (textNodes.length === 1) {
-            if (textNodes[0].tagName === tagInfo.name)
+            if (textNodes[0].localName === tagInfo.name) // TODO: Check if this has any reason to exist
                 return;
 
             textNodes[0].parentNode.insertBefore(newElement, textNodes[0]);
@@ -405,7 +405,7 @@ customElements.define('text-editor-component', class TextEditorComponent extends
         newElement.replaceChildren(...relevantChildren);
 
         for (const child of relevantChildren) {
-            if (child?.tagName === tagInfo.name) {
+            if (child?.localName === tagInfo.name) {
                 Array.from(child.childNodes).forEach(grandchild => {
                     child.parentNode.insertBefore(grandchild, child);
                 });
@@ -430,7 +430,7 @@ customElements.define('text-editor-component', class TextEditorComponent extends
         }
 
         const uniqueElements = new Set(elements);
-        const tagName = elements[0].tagName;
+        const tagName = elements[0].localName;
 
         if (!selectionData.isCollapsed) {
             if (textNodes[0] === selectionData.startNode && selectionData.startOffset > 0) {
@@ -508,7 +508,7 @@ customElements.define('text-editor-component', class TextEditorComponent extends
             childNode = childNode.parentElement;
 
         while (childNode && childNode !== textBox) {
-            if (this.#isBlockType(childNode.tagName))
+            if (this.#isBlockType(childNode.localName))
                 return childNode;
 
             if (childNode.parentElement === textBox) {
@@ -551,7 +551,7 @@ customElements.define('text-editor-component', class TextEditorComponent extends
             node = node.parentElement;
 
         while (node && node !== this.#textBox) {
-            if (node.tagName === tagName)
+            if (node.localName === tagName)
                 return node;
 
             node = node.parentElement;
@@ -754,10 +754,10 @@ customElements.define('text-editor-component', class TextEditorComponent extends
                 const selectedBlocks = selectedTextNodes.map(n => this.#getBlockElement(n));
 
                 const identicalBlocks = selectedBlocks.length > 0
-                    && selectedBlocks.every((val, _, arr) => val.tagName === arr[0].tagName);
+                    && selectedBlocks.every((val, _, arr) => val.localName === arr[0].localName);
 
                 this.#blockSelector.value = identicalBlocks
-                    ? selectedBlocks[0].tagName
+                    ? selectedBlocks[0].localName
                     : null;
 
                 this.#linkButton.disabled = (new Set(selectedBlocks)).size !== 1;
@@ -805,9 +805,9 @@ customElements.define('text-editor-component', class TextEditorComponent extends
 
         const textRows = p.splitIntoContainerRows(text);
 
-        const currentBlockTag = this.#getBlockElement(node).tagName;
+        const currentBlockTag = this.#getBlockElement(node).localName;
 
-        if (!textRows[0].tagName || textRows[0].tagName === currentBlockTag)
+        if (!textRows[0].tag || textRows[0].tag === currentBlockTag)
             p.fillFirstContainer(textRows, node, offset);
 
         if (textRows.length === 0)
@@ -816,7 +816,7 @@ customElements.define('text-editor-component', class TextEditorComponent extends
         const lastContainer = this.#addParagraphBreak(selection.anchorNode, selection.anchorOffset);
         const originalLength = lastContainer.textContent.length;
 
-        const lastTag = textRows[textRows.length - 1].tagName;
+        const lastTag = textRows[textRows.length - 1].tag;
         if (!lastTag || lastTag === currentBlockTag)
             p.fillLastContainer(textRows, lastContainer);
 
@@ -853,7 +853,7 @@ customElements.define('text-editor-component', class TextEditorComponent extends
     #replaceElement(element, newTag) {
         this.logFuncs && console.log('replaceElement()');
 
-        if (element.tagName === newTag)
+        if (element.localName === newTag)
             return element;
 
         const newElement = document.createElement(newTag);
@@ -926,7 +926,7 @@ customElements.define('text-editor-component', class TextEditorComponent extends
         this.logFuncs && console.clear();
         const textBox = this.#textBox;
         const selectionData = new SelectionData(window.getSelection());
-        tagInfo.name = tagInfo.name;
+        tagInfo.name = tagInfo.name.toLowerCase();
 
         if (!textBox.contains(selectionData.startNode) || !textBox.contains(selectionData.endNode))
             return;

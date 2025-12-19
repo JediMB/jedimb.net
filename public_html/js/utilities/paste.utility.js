@@ -2,7 +2,7 @@ import { allowedAttributes, containerTags, regexMatchContainers } from "/js/cons
 
 /** A row/block of pasted text
  * @typedef {Object} TextRow
- * @property {(string|null)} tagName
+ * @property {(string|null)} tag
  * @property {string} content
 */
 
@@ -36,7 +36,7 @@ export function fillLastContainer(textRows, container) {
  */
 export function fillRemainingContainers(textRows, lastContainer, originalLength) {
     for (const row of textRows) {
-        const betweenBlock = document.createElement(row.tagName ?? containerTags[0]);
+        const betweenBlock = document.createElement(row.tag ?? containerTags[0]);
         betweenBlock.innerHTML = row.content;
         stripUnwantedAttributes(betweenBlock);
         lastContainer.parentNode.insertBefore(betweenBlock, lastContainer);
@@ -87,7 +87,7 @@ export function splitIntoContainerRows(text) {
         if (match.index > 0)
             textRows.push({tagName: null, content: text.substring(0, match.index)});
 
-        textRows.push({tagName: match[1].toUpperCase(), content: match[2]});
+        textRows.push({tagName: match[1].toLowerCase(), content: match[2]});
         text = text.substring(match.index + match[0].length);
     }
 
