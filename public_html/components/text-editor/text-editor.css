@@ -44,7 +44,6 @@ text-box {
     width: 100%;
     background-color: var(--color-text);
     color: var(--color-background);
-    user-select: text;
 }
 
 text-box a {
