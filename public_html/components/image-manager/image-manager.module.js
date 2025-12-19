@@ -117,7 +117,6 @@ customElements.define('image-manager-component', class ImageManagerComponent ext
 
         this.#filesFieldset.disabled = false;
         this.#uploadImageButton.disabled = false;
-        //fileList.querySelector('[type="radio"]')?.click();
     }
 
     async #delete(event) {
@@ -187,6 +186,8 @@ customElements.define('image-manager-component', class ImageManagerComponent ext
             const template = this.#imageItemTemplate.content.cloneNode(true);
 
             const imageUrl = this.#galleryPath + image.filename;
+
+            template.querySelector('label').title = image.title;
 
             /** @type {HTMLInputElement} */
             const input = template.querySelector('input');

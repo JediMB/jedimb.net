@@ -54,7 +54,7 @@ Component::addJSModule();
                                 $imageDesc = htmlspecialchars($image->description);
                             ?>
                             <li class="manager-list-item">
-                                <label full-width>
+                                <label class="image-title" title="<?= $imageTitle ?>">
                                     <input hidden type="radio" name="images"
                                         data-image-id="<?= $image->id ?>"
                                         data-image-filename="<?= $image->filename ?>"
@@ -66,7 +66,7 @@ Component::addJSModule();
                                         data-image-created-on="<?= DateTime::ToString($image->createdOn) ?>"
                                         data-image-modified-on="<?= DateTime::ToString($image->modifiedOn) ?>"
                                     >
-                                    <?= $image->title ?>
+                                    <?= $imageTitle ?>
                                 </label>
                                 <img hidden src="<?= $imageUrl ?>">
                             </li>
@@ -75,7 +75,7 @@ Component::addJSModule();
                 </fieldset>
                 <template item-template>
                     <li class="manager-list-item">
-                        <label full-width>
+                        <label class="image-title">
                             <input hidden type="radio" name="images">
                         </label>
                         <img hidden>

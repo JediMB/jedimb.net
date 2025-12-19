@@ -87,6 +87,14 @@ manager-buttons {
     display: none;
 }
 
+.image-title {
+    display: block;
+    width: 24ch;
+    overflow-x: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
 .manager-list-item:has(input:disabled) {
     background-color: var(--color-disabled-background);
     color: var(--color-disabled-text);
