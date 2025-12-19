@@ -14,11 +14,11 @@ export const containerTags = Object.freeze(containerTagsAndLabels.map(([k]) => k
 
 /** Array of allowed uppercase text content element tags
  * @type {string[]} */
-export const textContentTags = Object.freeze([ 'A', 'B', 'BR', 'I', 'U' ]);
+export const textContentTags = Object.freeze([ 'A', 'B', 'I', 'U' ]);
 
 /** Array of allowed uppsercase non-text content element tags
  * @type {string[]} */
-export const nonTextContentTags = Object.freeze([ 'IMG' ]);
+export const nonTextContentTags = Object.freeze([ 'BR', 'IMG' ]);
 
 /** Complete array of allowed uppercase element tags
  * @type {string[]} */
