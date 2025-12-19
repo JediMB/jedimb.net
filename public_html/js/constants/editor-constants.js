@@ -24,6 +24,14 @@ export const nonTextContentTags = Object.freeze([ 'IMG' ]);
  * @type {string[]} */
 export const tagWhiteList = Object.freeze([...containerTags, ...textContentTags, ...nonTextContentTags]);
 
+/** A map-like object containing properties for element tags that can have attributes,
+ * where the values are arrays of those allowed attributes.
+ * */
+export const allowedAttributes = Object.freeze({
+    a: [ 'href', 'target', 'title' ],
+    img: [ 'src', 'alt', 'data-image-id' ]
+});
+
 /** Array of uppercase keys that should have their default behavior even when accompanied by modifier keys
  * @type {string[]} */
 export const defaultBehaviorKeys = Object.freeze([
@@ -32,14 +40,6 @@ export const defaultBehaviorKeys = Object.freeze([
     'Home', 'End', 'Enter',
     'A', 'C', 'X'
 ].map(k => k.toUpperCase()));
-
-/** A map-like object containing properties for element tags that can have attributes,
- * where the values are arrays of those allowed attributes.
- * */
-export const allowedAttributes = Object.freeze({
-    a: [ 'href', 'target', 'title' ],
-    img: [ 'src', 'alt', 'data-image-id' ]
-});
 
 /** Matches against container tags and their content
  * @type {RegExp} */
@@ -52,7 +52,7 @@ export const regexMatchContainers = new RegExp(
 
 /** Matches against any attribute text that is not attached to an A tag
  * @type {RegExp} */
-export const regexMatchDisallowedAttributes = new RegExp(
+export const regexDisallowedAttributes = new RegExp(
     '<(?!(' +
     Object.getOwnPropertyNames(allowedAttributes).join(' )|(') +
     ' ))[a-z][a-z0-9\\-]*( [^>]*)>', 'gi'
@@ -60,8 +60,8 @@ export const regexMatchDisallowedAttributes = new RegExp(
 
 /** Matches against any elements now in the whitelist
  * @type {RegExp} */
-export const regexMatchDisallowedElements = new RegExp('(<\/?(?!(' + tagWhiteList.join('|') + ')\\b)([a-z]*>))', "gi");
+export const regexDisallowedElements = new RegExp('(<\/?(?!(' + tagWhiteList.join('|') + ')\\b)([a-z]*>))', "gi");
 
 /** Matches against indentations (2+ whitespaces)
  * @type {RegExp} */
-export const regexMatchIndentations = /\s{2,}/g;
+export const regexIndentations = /\s{2,}/g;

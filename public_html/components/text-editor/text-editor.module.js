@@ -799,9 +799,9 @@ customElements.define('text-editor-component', class TextEditorComponent extends
             offset = isForward ? selection.anchorOffset : selection.focusOffset;
 
         let text = ( await (await pasted.getType(contentType)).text() )
-            .replace(c.regexMatchDisallowedAttributes, '')
-            .replace(c.regexMatchIndentations, '')
-            .replace(c.regexMatchDisallowedElements, '');
+            .replace(c.regexDisallowedAttributes, '')
+            .replace(c.regexIndentations, '')
+            .replace(c.regexDisallowedElements, '');
 
         const textRows = p.splitIntoContainerRows(text);
 
