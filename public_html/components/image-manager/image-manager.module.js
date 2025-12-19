@@ -83,6 +83,14 @@ customElements.define('image-manager-component', class ImageManagerComponent ext
             this.#imageProperties.innerHTML = this.#imagePropertiesContent;
         });
 
+        const tabContainers = self.querySelectorAll('[data-tab]');
+        self.querySelector('manager-tabs').addEventListener('change', event => {
+            const tab = event.target.dataset.tabTarget;
+
+            for (const element of tabContainers)
+                element.toggleAttribute('hidden', element.dataset.tab !== tab);
+        });
+
         if (this.#insertTarget)
             this.#insertButton.removeAttribute('hidden');
 

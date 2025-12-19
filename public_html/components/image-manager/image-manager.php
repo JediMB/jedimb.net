@@ -38,11 +38,11 @@ Component::addJSModule();
 <image-manager-body>
     <manager-tabs>
         <ul class="tab-list">
-            <li class="tab-item"><label class="tab-label"><input hidden type="radio" name="image-tabs" checked>Images</label></li>
-            <li class="tab-item"><label class="tab-label"><input hidden type="radio" name="image-tabs">Groups</label></li>
+            <li class="tab-item"><label class="tab-label"><input hidden type="radio" name="image-tabs" data-tab-target="images" checked>Images</label></li>
+            <li class="tab-item"><label class="tab-label"><input hidden type="radio" name="image-tabs" data-tab-target="galleries">Galleries</label></li>
         </ul>
     </manager-tabs>
-    <image-manager data-modified-on="<?= DateTime::ToPrecisionString($tableModService->getOrCreateModifiedDate('image')) ?>">
+    <image-manager data-tab="images" data-modified-on="<?= DateTime::ToPrecisionString($tableModService->getOrCreateModifiedDate('image')) ?>">
         <manager-list>
             <manager-files data-gallery-path="<?= ($galleryPath = '/' . PATH_IMAGE_GALLERY . '/') ?>">
                 <fieldset disabled>
@@ -135,7 +135,7 @@ Component::addJSModule();
             </div>
         </template>
     </image-manager>
-    <gallery-manager data-modified-on="<?= DateTime::ToPrecisionString($tableModService->getOrCreateModifiedDate('gallery')) ?>">
+    <gallery-manager hidden data-tab="galleries" data-modified-on="<?= DateTime::ToPrecisionString($tableModService->getOrCreateModifiedDate('gallery')) ?>">
 
     </gallery-manager>
 </image-manager-body>
