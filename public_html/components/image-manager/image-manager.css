@@ -19,22 +19,16 @@ manager-tabs {
 }
 
 .tab-list {
-    display: inline flex;
-    border: 1px solid currentColor;
-    border-radius: var(--spacing-internal) var(--spacing-internal) 0 0;
+    display: block flex;
+    border-bottom: 1px solid var(--color-disabled-background);
+    margin-bottom: var(--spacing-inner);
 }
 
 .tab-item {
-    margin: -1px;
-    border: 1px solid currentColor;
-    border-radius: var(--spacing-internal) var(--spacing-internal) 0 0;
+    margin: -1.5px;
 
     &:has(input:checked) {
-        border-bottom-color: var(--color-background);
-    }
-
-    &:not(:has(input:checked)) {
-        border-color: currentColor transparent;
+        border-bottom: 3px solid var(--color-primary);
     }
 }
 
@@ -45,16 +39,14 @@ manager-tabs {
 image-manager {
     display: block flex;
     max-height: calc(var(--container-max-height, 100%) - 12rem);
-    gap: var(--spacing-edges);
-
-    border: 1px solid currentColor;
+    gap: var(--spacing-inner);
 }
 
 manager-files,
 image-properties {
     min-height: 0;
     overflow-y: scroll;
-    padding: var(--spacing-edges);
+    margin-bottom: var(--spacing-inner);
 }
 
 manager-list {
@@ -80,6 +72,8 @@ image-properties {
     display: block flex;
     flex-direction: column;
     gap: var(--spacing-internal);
+    border-left: 1px solid;
+    padding-inline: var(--spacing-inner) var(--spacing-edges);
     font-size: 1rem;
 }
 
