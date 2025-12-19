@@ -5,6 +5,15 @@
 		}
 	],
 	"settings": {
+		"intelephense.codeLens.references.enable": true,
+		"intelephense.codeLens.usages.enable": true,
+		"intelephense.completion.parameterCase": "camel",
+		"intelephense.completion.propertyCase": "camel",
+		"intelephense.completion.suggestObjectOperatorStaticMethods": false,
+		"intelephense.environment.documentRoot": "./public_html",
+		"intelephense.environment.phpVersion": "8.4.11",
+		"intelephense.format.braces": "k&r",
+		"intelephense.format.enable": true,
 		"liveServer.settings.port": 5500,
 		"liveServer.settings.root": "/public_html",
 		"liveServer.settings.AdvanceCustomBrowserCmdLine": "firefox --new-window",
