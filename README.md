@@ -15,6 +15,7 @@
 - Blog post composition/publishing
   - Mastodon integration: automatic toot composition, and linking the resulting toot to the blog entry as it is saved
   - Option to add other social media links to the entry
+- Implement spl_autoload_register()
 - Blog post editing/deletion
 - Virtual Page composition/publishing
 - Virtual Page editing/deletion
