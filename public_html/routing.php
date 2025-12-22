@@ -160,7 +160,7 @@ function handleVirtualPages(string $requestPath) {
 }
 
 function isPHP(string $path) : bool {
-    return ( strtolower(substr($path, -4)) === '.php' );
+    return !!preg_match('/.+\.php$/', $path);
 }
 
 function isUnsafe(string $realPath) : bool {
