@@ -51,6 +51,7 @@ class ImageGalleryDBService extends BaseDBService {
         }
     }
 
+    /** @return Gallery[] */
     public function getGalleries() : array {
         try {
             $galleries = $this->dbService->selectView('gallery');

@@ -10,8 +10,8 @@ customElements.define('image-manager-component', class ImageManagerComponent ext
     #galleryPath;
     #insertTarget;
 
-    #uploadImageButton;
-    #cancelButton;
+    #imageUploadButton;
+    #cancelUploadButton;
     #imageManager;
     #filesFieldset;
     /** @type {HTMLUListElement} */
@@ -40,8 +40,8 @@ customElements.define('image-manager-component', class ImageManagerComponent ext
         if (self.hasAttribute('insert-target'))
             this.#insertTarget = document.querySelector(`#${self.getAttribute('insert-target')}`);
 
-        this.#uploadImageButton = self.querySelector('[btn-image-upload');
-        this.#cancelButton = self.querySelector('[btn-cancel]');
+        this.#imageUploadButton = self.querySelector('[btn-image-upload');
+        this.#cancelUploadButton = self.querySelector('[btn-cancel-upload]');
         this.#imageManager = self.querySelector('image-manager');
         const managerFiles = this.#imageManager.querySelector('manager-files');
         const listFieldset = managerFiles.querySelector('fieldset');
@@ -59,9 +59,9 @@ customElements.define('image-manager-component', class ImageManagerComponent ext
         this.#resetButton = this.#imageManager.querySelector('[btn-reset]');
         this.#saveButton = this.#imageManager.querySelector('[btn-save]');
 
-        this.#uploadImageButton.addEventListener('click', () => {
-            this.#uploadImageButton.setAttribute('hidden', '');
-            this.#cancelButton.removeAttribute('hidden');
+        this.#imageUploadButton.addEventListener('click', () => {
+            this.#imageUploadButton.setAttribute('hidden', '');
+            this.#cancelUploadButton.removeAttribute('hidden');
             listFieldset.disabled = true;
 
             this.#insertButton.disabled = true;
@@ -75,21 +75,25 @@ customElements.define('image-manager-component', class ImageManagerComponent ext
             this.#renderImageUpload();
         });
 
-        this.#cancelButton.addEventListener('click', () => {
-            this.#uploadImageButton.removeAttribute('hidden');
-            this.#cancelButton.setAttribute('hidden', '');
+        this.#cancelUploadButton.addEventListener('click', () => {
+            this.#imageUploadButton.removeAttribute('hidden');
+            this.#cancelUploadButton.setAttribute('hidden', '');
             listFieldset.disabled = false;
             this.#saveButton.textContent = this.#saveButton.dataset.contentEdit;
             this.#imageProperties.innerHTML = this.#imagePropertiesContent;
         });
 
         const tabContainers = self.querySelectorAll('[data-tab]');
-        self.querySelector('manager-tabs').addEventListener('change', event => {
+        const managerTabs = self.querySelector('manager-tabs');
+        managerTabs.addEventListener('change', event => {
             const tab = event.target.dataset.tabTarget;
 
             for (const element of tabContainers)
                 element.toggleAttribute('hidden', element.dataset.tab !== tab);
         });
+        const tab = managerTabs.querySelector(':checked').dataset.tabTarget;
+        for (const element of tabContainers)
+            element.toggleAttribute('hidden', element.dataset.tab !== tab);
 
         if (this.#insertTarget)
             this.#insertButton.removeAttribute('hidden');
@@ -118,13 +122,13 @@ customElements.define('image-manager-component', class ImageManagerComponent ext
             this.#imageProperties.querySelector('[img-upload]')?.remove();
         })
 
-        imageGalleryService.images.subscribe(
+        this.#service.images.subscribe(
             images => this.#renderImageList(images), true,
             (_, image) => this.#updateImageListItem(image)
         );
 
         this.#filesFieldset.disabled = false;
-        this.#uploadImageButton.disabled = false;
+        this.#imageUploadButton.disabled = false;
     }
 
     async #delete(event) {
@@ -161,7 +165,7 @@ customElements.define('image-manager-component', class ImageManagerComponent ext
         if (!this.#insertTarget)
             throw new Error('No place to insert image registered');
 
-        const image = imageGalleryService.getImage(Number(checked.dataset.imageId));
+        const image = this.#service.getImage(Number(checked.dataset.imageId));
 
         if (!image)
             throw new Error('Image not found');
@@ -354,8 +358,8 @@ customElements.define('image-manager-component', class ImageManagerComponent ext
                 };
 
                 if (await this.#service.createImage(data)) {
-                    this.#cancelButton.setAttribute('hidden', '');
-                    this.#uploadImageButton.removeAttribute('hidden');
+                    this.#cancelUploadButton.setAttribute('hidden', '');
+                    this.#imageUploadButton.removeAttribute('hidden');
                     this.#filesFieldset.disabled = false;
                 }
             });

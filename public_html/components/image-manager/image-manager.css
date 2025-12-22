@@ -49,7 +49,7 @@ image-properties {
     margin-bottom: var(--spacing-inner);
 }
 
-manager-list {
+manager-images {
     flex-basis: 40%;
     display: block flex;
     flex-direction: column;

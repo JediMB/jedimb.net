@@ -8,6 +8,7 @@ require_once 'utilities/component.utility.php';
 require_once 'utilities/datetime.utility.php';
 
 use Enums\UserPermission;
+use Models\DB\Gallery;
 use Models\DB\Image;
 use Services\ImageGalleryService;
 use Services\SessionService;
@@ -23,7 +24,11 @@ $tableModService = TableModifiedService::getInstance(); /** @var TableModifiedSe
 $imgService = ImageGalleryService::getInstance(); /** @var ImageGalleryService $imgService */
 if (empty($GLOBALS['images']))
     $GLOBALS['images'] = $imgService->getImages();
-$images = $GLOBALS['images'];
+$images = $GLOBALS['images']; /** @var Image[] $images */
+
+if (empty($GLOBALS['galleries']))
+    $GLOBALS['galleries'] = $imgService->getGalleries();
+$galleries = $GLOBALS['galleries']; /** @var Gallery[] $galleries */
 
 Component::renderCSS();
 Component::addJSModule();
@@ -32,26 +37,32 @@ Component::addJSModule();
 
 <image-manager-header>
     <h2>Image manager</h2>
-    <button btn-image-upload disabled>Upload image</button>
-    <button btn-cancel hidden>Cancel</button>
+    <div class="image-upload-buttons" data-tab="images">
+        <button btn-image-upload disabled>Upload image</button>
+        <button btn-cancel-upload hidden>Cancel</button>
+    </div>
+    <div hidden class="gallery-create-buttons" data-tab="galleries">
+        <button btn-gallery-create disabled>Create gallery</button>
+        <button btn-cancel-create hidden>Cancel</button>
+    </div>
 </image-manager-header>
 <image-manager-body>
     <manager-tabs>
         <ul class="tab-list">
-            <li class="tab-item"><label class="tab-label"><input hidden type="radio" name="image-tabs" data-tab-target="images" checked>Images</label></li>
-            <li class="tab-item"><label class="tab-label"><input hidden type="radio" name="image-tabs" data-tab-target="galleries">Galleries</label></li>
+            <li class="tab-item"><label class="tab-label"><input hidden type="radio" name="image-tabs" data-tab-target="images">Images</label></li>
+            <li class="tab-item"><label class="tab-label"><input hidden type="radio" name="image-tabs" data-tab-target="galleries" checked>Galleries</label></li>
         </ul>
     </manager-tabs>
     <image-manager data-tab="images" data-modified-on="<?= DateTime::ToPrecisionString($tableModService->getOrCreateModifiedDate('image')) ?>">
-        <manager-list>
+        <manager-images>
             <manager-files data-gallery-path="<?= ($galleryPath = '/' . PATH_IMAGE_GALLERY . '/') ?>">
                 <fieldset disabled>
                     <ul>
                         <?php foreach ($images as $image): ?>
-                            <?php /** @var Image $image */
-                                $imageUrl = $galleryPath . "$image->filename";
-                                $imageTitle = htmlspecialchars($image->title);
-                                $imageDesc = htmlspecialchars($image->description);
+                            <?php
+                            $imageUrl = $galleryPath . "$image->filename";
+                            $imageTitle = htmlspecialchars($image->title);
+                            $imageDesc = htmlspecialchars($image->description);
                             ?>
                             <li class="manager-list-item">
                                 <label class="image-title" title="<?= $imageTitle ?>">
@@ -86,7 +97,7 @@ Component::addJSModule();
                 <div><button btn-insert disabled hidden>Insert</button></div>
                 <div><button btn-delete disabled>Delete</button></div>
             </manager-buttons>
-        </manager-list>
+        </manager-images>
         <manager-properties>
             <form autocomplete="off">
                 <image-properties>
@@ -136,6 +147,35 @@ Component::addJSModule();
         </template>
     </image-manager>
     <gallery-manager hidden data-tab="galleries" data-modified-on="<?= DateTime::ToPrecisionString($tableModService->getOrCreateModifiedDate('gallery')) ?>">
-
+        <manager-galleries>
+            <fieldset>
+                <ul>
+                    <?php foreach ($galleries as $gallery): ?>
+                        <?php
+                        $galleryTitle = htmlspecialchars($gallery->title);
+                        $galleryDesc = htmlspecialchars($gallery->description);
+                        ?>
+                        <li class="manager-list-item">
+                            <label class="gallery-title" title="">
+                                <input hidden type="radio" name="galleries"
+                                    data-gallery-id="<?= $gallery->id ?>"
+                                    data-gallery-title="<?= $galleryTitle ?>"
+                                    data-gallery-default-title="<?= $galleryTitle ?>"
+                                    data-gallery-description="<?= $galleryDesc ?>"
+                                    data-gallery-default-description="<?= $galleryDesc ?>"
+                                    data-gallery-created-on="<?= DateTime::ToString($gallery->createdOn) ?>"
+                                    data-gallery-modified-on="<?= DateTime::ToString($gallery->modifiedOn) ?>"
+                                >
+                                <?= $galleryTitle ?>
+                            </label>
+                        </li>
+                    <?php endforeach ?>
+                </ul>
+            </fieldset>
+        </manager-galleries>
+        <manager-gallery-images>
+            <images-included></images-included>
+            <images-excluded></images-excluded>
+        </manager-gallery-images>
     </gallery-manager>
 </image-manager-body>

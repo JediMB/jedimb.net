@@ -47,6 +47,7 @@ class ImageGalleryService extends Singleton {
         ];
     }
 
+    /** @return Gallery[] */
     public function getGalleries() : array {
         return $this->imageGalleryDbService->getGalleries();
     }
