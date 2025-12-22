@@ -180,8 +180,6 @@ function servePHP(array $variables = [ 'header' => false ]) {
     if (empty($template))
         $template = SITE_VIEW;
 
-    $pageService = PageDBService::getInstance(); /** @var PageDBService $pageService */
-
     if ($pageType === PageType::PHP && isset($pagePath)) {
         ob_start();
         include $pagePath;
