@@ -8,6 +8,7 @@ export default class Image {
         this.description = description;
         this.createdOn = new Date(createdOn.date + createdOn.timezone);
         this.modifiedOn = modifiedOn ? new Date(modifiedOn.date + modifiedOn.timezone) : undefined;
+        /** @type number[] */
         this.galleryIds = galleryIds.map(igid => Number(igid));
         this.galleryList = [];
         this.dbStatus = DBStatus.parse(dbStatus);

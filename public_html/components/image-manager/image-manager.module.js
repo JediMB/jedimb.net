@@ -12,13 +12,14 @@ customElements.define('image-manager-component', class ImageManagerComponent ext
 
     #imageUploadButton;
     #cancelUploadButton;
+
     #imageManager;
     #filesFieldset;
     /** @type {HTMLUListElement} */
     #fileList;
     /** @type {HTMLTemplateElement} */
     #imageItemTemplate;
-    #insertButton;
+    #insertImageButton;
     #deleteButton;
     #imageProperties;
     #imagePropertiesContent;
@@ -27,6 +28,15 @@ customElements.define('image-manager-component', class ImageManagerComponent ext
     #uploadTemplete;
     #resetButton;
     #saveButton;
+
+    #galleryManager;
+    #insertGalleryButton;
+    #editButton;
+    #includedImagesFieldset;
+    #excludedImagesFieldset;
+    #galleryImageTemplate;
+    #removeButton;
+    #addButton;
     
     constructor() {
         const component = super();
@@ -42,6 +52,7 @@ customElements.define('image-manager-component', class ImageManagerComponent ext
 
         this.#imageUploadButton = self.querySelector('[btn-image-upload');
         this.#cancelUploadButton = self.querySelector('[btn-cancel-upload]');
+
         this.#imageManager = self.querySelector('image-manager');
         const managerFiles = this.#imageManager.querySelector('manager-files');
         const listFieldset = managerFiles.querySelector('fieldset');
@@ -49,7 +60,7 @@ customElements.define('image-manager-component', class ImageManagerComponent ext
         this.#filesFieldset = managerFiles.querySelector('fieldset');
         this.#fileList = managerFiles.querySelector('ul');
         this.#imageItemTemplate = managerFiles.querySelector('[item-template]');
-        this.#insertButton = this.#imageManager.querySelector('[btn-insert]');
+        this.#insertImageButton = this.#imageManager.querySelector('[btn-insert]');
         this.#deleteButton = this.#imageManager.querySelector('[btn-delete]');
         const form = this.#imageManager.querySelector('form');
         this.#imageProperties = this.#imageManager.querySelector('image-properties');
@@ -59,12 +70,22 @@ customElements.define('image-manager-component', class ImageManagerComponent ext
         this.#resetButton = this.#imageManager.querySelector('[btn-reset]');
         this.#saveButton = this.#imageManager.querySelector('[btn-save]');
 
+        this.#galleryManager = self.querySelector('gallery-manager');
+        const galleryList = this.#galleryManager.querySelector('gallery-list');
+        this.#insertGalleryButton = this.#galleryManager.querySelector('[btn-insert-gallery]');
+        this.#editButton = this.#galleryManager.querySelector('[btn-edit]');
+        const managerGalleryImages = this.#galleryManager.querySelector('manager-gallery-images');
+        [this.#includedImagesFieldset, this.#excludedImagesFieldset] = managerGalleryImages.querySelectorAll('fieldset');
+        this.#galleryImageTemplate = managerGalleryImages.querySelector('[gallery-image-template]');
+        this.#removeButton = managerGalleryImages.querySelector('[btn-remove]');
+        this.#addButton = managerGalleryImages.querySelector('[btn-add]');
+
         this.#imageUploadButton.addEventListener('click', () => {
             this.#imageUploadButton.setAttribute('hidden', '');
             this.#cancelUploadButton.removeAttribute('hidden');
             listFieldset.disabled = true;
 
-            this.#insertButton.disabled = true;
+            this.#insertImageButton.disabled = true;
             this.#deleteButton.disabled = true;
             const checked = this.#fileList.querySelector(':checked');
             if (checked) checked.checked = false;
@@ -95,12 +116,14 @@ customElements.define('image-manager-component', class ImageManagerComponent ext
         for (const element of tabContainers)
             element.toggleAttribute('hidden', element.dataset.tab !== tab);
 
-        if (this.#insertTarget)
-            this.#insertButton.removeAttribute('hidden');
+        if (this.#insertTarget) {
+            this.#insertImageButton.removeAttribute('hidden');
+            this.#insertGalleryButton.removeAttribute('hidden');
+        }
 
-        this.#insertButton.addEventListener('click', event => this.#insert(event));
+        this.#insertImageButton.addEventListener('click', event => this.#insertImage(event));
 
-        this.#deleteButton.addEventListener('click', event => this.#delete(event));
+        this.#deleteButton.addEventListener('click', event => this.#deleteImage(event));
 
         managerFiles.addEventListener('change', event => {
             if (!event.target.checked)
@@ -108,13 +131,27 @@ customElements.define('image-manager-component', class ImageManagerComponent ext
 
             event.stopPropagation();
 
-            this.#insertButton.disabled = false;
+            this.#insertImageButton.disabled = false;
             this.#deleteButton.disabled = false;
 
             this.#renderImageProperties(event.target.dataset);
         });
 
-        form.addEventListener('submit', event => this.#save(event));
+        galleryList.addEventListener('change', event => {
+            if (!event.target.checked)
+                return;
+
+            event.stopPropagation();
+
+            this.#insertGalleryButton.disabled = false;
+            this.#editButton.disabled = false;
+            
+            const galleryId = Number(event.target.dataset.galleryId);
+
+            this.#renderGalleryImageLists(galleryId);
+        });
+
+        form.addEventListener('submit', event => this.#saveImage(event));
         form.addEventListener('reset', () => {
             this.#resetButton.disabled = true;
             this.#saveButton.disabled = true;
@@ -131,10 +168,10 @@ customElements.define('image-manager-component', class ImageManagerComponent ext
         this.#imageUploadButton.disabled = false;
     }
 
-    async #delete(event) {
+    async #deleteImage(event) {
         event.stopPropagation();
         this.#deleteButton.disabled = true;
-        this.#insertButton.disabled = true;
+        this.#insertImageButton.disabled = true;
         this.#filesFieldset.disabled = true;
 
         const checked = this.#fileList.querySelector(':checked');
@@ -149,12 +186,12 @@ customElements.define('image-manager-component', class ImageManagerComponent ext
 
         if (await this.#service.deleteImage(id)) {
             this.#deleteButton.disabled = false;
-            this.#insertButton.disabled = false;
+            this.#insertImageButton.disabled = false;
             this.#filesFieldset.disabled = false;
         }
     }
 
-    async #insert(event) {
+    async #insertImage(event) {
         event.stopPropagation();
 
         const checked = this.#fileList.querySelector(':checked');
@@ -189,7 +226,7 @@ customElements.define('image-manager-component', class ImageManagerComponent ext
 
         this.#fileList.textContent = ''; // TODO: Loading spinner animation
         this.#imageProperties.innerHTML = this.#imagePropertiesContent;
-        this.#insertButton.disabled = true;
+        this.#insertImageButton.disabled = true;
         this.#deleteButton.disabled = true;
         this.#resetButton.disabled = true;
         this.#saveButton.disabled = true;
@@ -251,6 +288,48 @@ customElements.define('image-manager-component', class ImageManagerComponent ext
         this.#imageManager.dataset.modifiedOn = formatDate(this.#service.imageModified, true);
 
         this.#renderImageProperties(data);
+    }
+
+    /** @param {number} galleryId */
+    #renderGalleryImageLists(galleryId) {
+        this.#includedImagesFieldset.disabled = true;
+        this.#excludedImagesFieldset.disabled = true;
+        this.#addButton.disabled = true;
+        this.#addButton.disabled = true;
+
+        /** @type Image[] */
+        const images = this.#service.images.getValue();
+        const template = this.#galleryImageTemplate.content.cloneNode(true);
+
+        const includedImageList = document.createElement('ul');
+        const excludedImageList = document.createElement('ul');
+        for (const image of images) {
+            const listItem = template.cloneNode(true);
+
+            const label = listItem.querySelector('label');
+            label.title = image.title;
+            
+            const text = document.createTextNode(image.title);
+            label.appendChild(text);
+
+            /** @type HTMLInputElement */
+            const input = label.querySelector('input');
+            input.dataset.imageId = image.id;
+
+            if (image.galleryIds.some(id => id === galleryId)) {
+                input.name = 'included-images';
+                includedImageList.appendChild(listItem);
+                continue;
+            }
+
+            input.name = 'excluded-images';
+            excludedImageList.appendChild(listItem);
+        }
+        
+        this.#includedImagesFieldset.replaceChildren(includedImageList);
+        this.#excludedImagesFieldset.replaceChildren(excludedImageList);
+        this.#includedImagesFieldset.disabled = false;
+        this.#excludedImagesFieldset.disabled = false;
     }
 
     #renderImageProperties(data) {
@@ -339,7 +418,7 @@ customElements.define('image-manager-component', class ImageManagerComponent ext
     }
 
     /** @param {Event} event */
-    async #save(event) {
+    async #saveImage(event) {
         event.preventDefault();
         
         this.#saveButton.disabled = true;

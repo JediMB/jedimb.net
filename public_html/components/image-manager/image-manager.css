@@ -111,7 +111,7 @@ manager-buttons {
 }
 
 manager-gallery-images manager-buttons {
-    justify-content: center;
+    flex-direction: column;
 }
 
 [btn-reset]:disabled {

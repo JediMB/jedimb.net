@@ -192,7 +192,7 @@ Component::addJSModule();
                     </ul>
                 </fieldset>
                 <manager-buttons>
-                    <div><button btn-remove disabled title="Remove from gallery">&minus;</button></div>
+                    <div><button btn-remove full-width disabled title="Remove from gallery">&minus;</button></div>
                 </manager-buttons>
             </images-included>
             <images-excluded>
@@ -214,9 +214,16 @@ Component::addJSModule();
                     </ul>
                 </fieldset>
                 <manager-buttons>
-                    <div><button btn-add disabled title="Add to gallery">&plus;</button></div>
+                    <div><button btn-add full-width disabled title="Add to gallery">&plus;</button></div>
                 </manager-buttons>
             </images-excluded>
+            <template gallery-image-template>
+                <li class="manager-list-item">
+                    <label class="image-title">
+                        <input hidden type="radio">
+                    </label>
+                </li>
+            </template>
         </manager-gallery-images>
     </gallery-manager>
 </image-manager-body>
