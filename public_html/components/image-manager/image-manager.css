@@ -36,45 +36,72 @@ manager-tabs {
     padding: var(--spacing-edges);
 }
 
-image-manager {
+image-manager,
+gallery-manager,
+manager-gallery-images {
     display: block flex;
-    max-height: calc(var(--container-max-height, 100%) - 12rem);
+    height: clamp(2ch, 36ch, calc(var(--container-max-height, 100%) - 12rem));
     gap: var(--spacing-inner);
 }
 
 manager-files,
-image-properties {
-    min-height: 0;
+image-properties,
+gallery-list,
+manager-gallery-images {
+    min-height: 2ch;
     overflow-y: scroll;
     margin-bottom: var(--spacing-inner);
 }
 
-manager-images {
-    flex-basis: 40%;
+images-included,
+images-excluded {
+    min-height: 2ch;
+    overflow-y: scroll;
+}
+
+manager-images,
+manager-properties,
+manager-galleries,
+images-included,
+images-excluded {
     display: block flex;
     flex-direction: column;
     justify-content: space-between;
+}
+
+manager-images {
+    flex-basis: 40%;
     user-select: none;
 }
 
 manager-properties {
     flex-basis: 60%;
-    display: block flex;
-    flex-direction: column;
-    justify-content: space-between;
 
     & form {
         display: contents;
     }
 }
 
+manager-galleries {
+    flex-basis: 33%;
+}
+
+images-included,
+images-excluded {
+    flex-basis: 50%;
+}
+
 image-properties {
     display: block flex;
     flex-direction: column;
     gap: var(--spacing-internal);
+    font-size: 1rem;
+}
+
+image-properties,
+manager-gallery-images {
     border-left: 1px solid;
     padding-inline: var(--spacing-inner) var(--spacing-edges);
-    font-size: 1rem;
 }
 
 manager-buttons {
@@ -83,16 +110,29 @@ manager-buttons {
     padding: var(--spacing-edges);
 }
 
+manager-gallery-images manager-buttons {
+    justify-content: center;
+}
+
 [btn-reset]:disabled {
     display: none;
 }
 
-.image-title {
+.image-title,
+.gallery-title {
     display: block;
-    width: 24ch;
     overflow-x: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+}
+
+manager-images .image-title {
+    width: 24ch;
+}
+
+.gallery-title,
+manager-gallery-images .image-title {
+    width: 18ch;
 }
 
 .manager-list-item:has(input:disabled) {

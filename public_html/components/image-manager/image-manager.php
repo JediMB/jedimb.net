@@ -148,34 +148,75 @@ Component::addJSModule();
     </image-manager>
     <gallery-manager hidden data-tab="galleries" data-modified-on="<?= DateTime::ToPrecisionString($tableModService->getOrCreateModifiedDate('gallery')) ?>">
         <manager-galleries>
-            <fieldset>
-                <ul>
-                    <?php foreach ($galleries as $gallery): ?>
-                        <?php
-                        $galleryTitle = htmlspecialchars($gallery->title);
-                        $galleryDesc = htmlspecialchars($gallery->description);
-                        ?>
-                        <li class="manager-list-item">
-                            <label class="gallery-title" title="">
-                                <input hidden type="radio" name="galleries"
-                                    data-gallery-id="<?= $gallery->id ?>"
-                                    data-gallery-title="<?= $galleryTitle ?>"
-                                    data-gallery-default-title="<?= $galleryTitle ?>"
-                                    data-gallery-description="<?= $galleryDesc ?>"
-                                    data-gallery-default-description="<?= $galleryDesc ?>"
-                                    data-gallery-created-on="<?= DateTime::ToString($gallery->createdOn) ?>"
-                                    data-gallery-modified-on="<?= DateTime::ToString($gallery->modifiedOn) ?>"
-                                >
-                                <?= $galleryTitle ?>
-                            </label>
-                        </li>
-                    <?php endforeach ?>
-                </ul>
-            </fieldset>
+            <gallery-list>
+                <fieldset>
+                    <ul>
+                        <?php foreach ($galleries as $gallery): ?>
+                            <?php
+                            $galleryTitle = htmlspecialchars($gallery->title);
+                            $galleryDesc = htmlspecialchars($gallery->description);
+                            ?>
+                            <li class="manager-list-item">
+                                <label class="gallery-title" title="">
+                                    <input hidden type="radio" name="galleries"
+                                        data-gallery-id="<?= $gallery->id ?>"
+                                        data-gallery-title="<?= $galleryTitle ?>"
+                                        data-gallery-default-title="<?= $galleryTitle ?>"
+                                        data-gallery-description="<?= $galleryDesc ?>"
+                                        data-gallery-default-description="<?= $galleryDesc ?>"
+                                        data-gallery-created-on="<?= DateTime::ToString($gallery->createdOn) ?>"
+                                        data-gallery-modified-on="<?= DateTime::ToString($gallery->modifiedOn) ?>"
+                                    >
+                                    <?= $galleryTitle ?>
+                                </label>
+                            </li>
+                        <?php endforeach ?>
+                    </ul>
+                </fieldset>
+            </gallery-list>
+            <manager-buttons>
+                <div><button btn-insert-gallery title="Insert gallery" disabled hidden>Insert</button></div>
+                <div><button btn-edit title="Edit gallery details" disabled>Edit</button></div>
+            </manager-buttons>
         </manager-galleries>
         <manager-gallery-images>
-            <images-included></images-included>
-            <images-excluded></images-excluded>
+            <images-included>
+                <fieldset disabled>
+                    <ul>
+                        <li class="manager-list-item">
+                            <label class="image-title">
+                                <input hidden type="radio" name="images">
+                                &nbsp;
+                            </label>
+                        </li>
+                    </ul>
+                </fieldset>
+                <manager-buttons>
+                    <div><button btn-remove disabled title="Remove from gallery">&minus;</button></div>
+                </manager-buttons>
+            </images-included>
+            <images-excluded>
+                <fieldset disabled>
+                    <ul>
+                        <?php foreach ($images as $image): ?>
+                            <?php
+                            $imageTitle = htmlspecialchars($image->title);
+                            ?>
+                            <li class="manager-list-item">
+                                <label class="image-title" title="<?= $imageTitle ?>">
+                                    <input hidden type="radio" name="images"
+                                        data-image-id="<?= $image->id ?>"
+                                    >
+                                    <?= $imageTitle ?>
+                                </label>
+                            </li>
+                        <?php endforeach ?>
+                    </ul>
+                </fieldset>
+                <manager-buttons>
+                    <div><button btn-add disabled title="Add to gallery">&plus;</button></div>
+                </manager-buttons>
+            </images-excluded>
         </manager-gallery-images>
     </gallery-manager>
 </image-manager-body>
