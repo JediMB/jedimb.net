@@ -38,9 +38,7 @@ $links = !empty($links);
     <link rel="icon" type="image/x-icon" href="/favicon.svg" />
     
     <script type="text/javascript" src="/js/purify.min.js"></script>
-    <?php if ($pageType === PageType::BlogPost): ?>
-        <script type="text/javascript" defer src="/js/local-time.js"></script>
-    <?php endif ?>
+    <script type="module" src="/js/default.js"></script>
 </head>
 <body>
     <header>

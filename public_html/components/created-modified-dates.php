@@ -2,28 +2,29 @@
 
 namespace Components;
 
+require_once 'utilities/datetime.utility.php';
+
 use Exception;
+use Utilities\DateTime;
 
 if (!isset($createdOn) || !isset($modifiedOn))
     throw new Exception('Created/Modified Dates component requires createdOn and modifiedOn and variables');
 
-// TODO: Should be using 'Y-m-d H:i:s O' formatting for GMT-relative timezone
-// Also make sure that this change doesn't break frontend JS
-$createdString = $createdOn->format('Y-m-d H:i:s');
+$createdString = DateTime::ToString($createdOn);
  
 ?>
 
 <span>
-    <date-time server-time="<?= $createdString ?>" class="capitalize">
-        <?= $createdString ?>
+    <date-time server-time="<?= $createdString ?>" relative-date="true" class="capitalize">
+        <?=  $createdString ?>
     </date-time>
 </span>
 
 <?php if (!empty($modifiedOn)): ?>
-    <?php $modifiedString = $modifiedOn->format('Y-m-d H:i:s') ?>
+    <?php $modifiedString = DateTime::ToString($modifiedOn) ?>
     <span class="weak">
-        – Last modified 
-        <date-time server-time="<?= $modifiedString ?>">
+        &ndash; Last modified 
+        <date-time server-time="<?= $modifiedString ?>" relative-date="true">
             <?= $modifiedString ?>
         </date-time>.
     </span>
