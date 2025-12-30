@@ -1,3 +1,5 @@
+import formatDate from "/js/utilities/format-date.js";
+
 export class DateTimeElement extends HTMLElement {
     #self;
 
@@ -15,27 +17,31 @@ export class DateTimeElement extends HTMLElement {
 
         try {
             const today = new Date();
-            today.setHours(0, 0, 0, 0);
-            const parsedTime = new Date(self.getAttribute('server-time'));
+            const parsedDate = new Date(self.getAttribute('server-time'));
+
+            self.title = formatDate(parsedDate);
 
             const useRelativeDate = self.hasAttribute('relative-date') && self.getAttribute('relative-date') !== 'false';
             
             if(useRelativeDate) {
-                const startOfDate = new Date(parsedTime.getFullYear(), parsedTime.getMonth(), parsedTime.getDate(), 0, 0, 0, 0);
-                const dayDifference = Math.round((today - startOfDate) / (1000 * 60 * 60 * 24));
-                
-                if (dayDifference === 0) {
-                    self.textContent = 'today, ' + parsedTime.toLocaleTimeString();
+                const hourDifference = (today - parsedDate) / (1000 * 60 * 60);
+
+                if (hourDifference < 24) {
+                    self.textContent = Math.floor(hourDifference) + 'h ago';
                     return;
                 }
 
+                today.setHours(0, 0, 0, 0);
+                const startOfDate = new Date(parsedDate.getFullYear(), parsedDate.getMonth(), parsedDate.getDate(), 0, 0, 0, 0);
+                const dayDifference = Math.round((today - startOfDate) / (1000 * 60 * 60 * 24));
+
                 if (dayDifference === 1) {
-                    self.textContent = 'yesterday, ' + parsedTime.toLocaleString();
+                    self.textContent = 'Yesterday, ' + parsedDate.toLocaleTimeString();
                     return;
                 }
             }
 
-            self.textContent = parsedTime.toLocaleString();
+            self.textContent = parsedDate.toLocaleString();
         }
         catch (e) {
             self.textContent = 'Error parsing date';
