@@ -26,6 +26,11 @@ export class DateTimeElement extends HTMLElement {
             if(useRelativeDate) {
                 const hourDifference = (today - parsedDate) / (1000 * 60 * 60);
 
+                if (hourDifference < 1) {
+                    self.textContent = Math.floor(hourDifference * 60) + 'm ago';
+                    return;
+                }
+
                 if (hourDifference < 24) {
                     self.textContent = Math.floor(hourDifference) + 'h ago';
                     return;
