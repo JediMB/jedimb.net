@@ -62,6 +62,7 @@ images-excluded {
 manager-images,
 manager-properties,
 manager-galleries,
+manager-selected-gallery,
 images-included,
 images-excluded {
     display: block flex;
@@ -87,7 +88,8 @@ manager-galleries {
 }
 
 images-included,
-images-excluded {
+images-excluded,
+.buttons-add-remove {
     flex-basis: 50%;
 }
 
@@ -107,7 +109,13 @@ manager-gallery-images {
 manager-buttons {
     display: block flex;
     justify-content: space-between;
+    gap: var(--spacing-inner);
     padding: var(--spacing-edges);
+}
+
+manager-properties manager-buttons,
+manager-selected-gallery manager-buttons {
+    padding-inline: var(--spacing-inner) var(--spacing-edges);
 }
 
 manager-gallery-images manager-buttons {

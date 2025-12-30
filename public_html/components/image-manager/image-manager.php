@@ -179,51 +179,57 @@ Component::addJSModule();
                 <div><button btn-edit title="Edit gallery details" disabled>Edit</button></div>
             </manager-buttons>
         </manager-galleries>
-        <manager-gallery-images>
-            <images-included>
-                <fieldset disabled>
-                    <ul>
-                        <li class="manager-list-item">
-                            <label class="image-title">
-                                <input hidden type="radio" name="images">
-                                &nbsp;
-                            </label>
-                        </li>
-                    </ul>
-                </fieldset>
-                <manager-buttons>
-                    <div><button btn-remove full-width disabled title="Remove from gallery">&minus;</button></div>
-                </manager-buttons>
-            </images-included>
-            <images-excluded>
-                <fieldset disabled>
-                    <ul>
-                        <?php foreach ($images as $image): ?>
-                            <?php
-                            $imageTitle = htmlspecialchars($image->title);
-                            ?>
+        <manager-selected-gallery>
+            <manager-gallery-images>
+                <images-included>
+                    <fieldset disabled>
+                        <ul>
                             <li class="manager-list-item">
-                                <label class="image-title" title="<?= $imageTitle ?>">
-                                    <input hidden type="radio" name="images"
-                                        data-image-id="<?= $image->id ?>"
-                                    >
-                                    <?= $imageTitle ?>
+                                <label class="image-title">
+                                    <input hidden type="radio" name="images">
+                                    &nbsp;
                                 </label>
                             </li>
-                        <?php endforeach ?>
-                    </ul>
-                </fieldset>
+                        </ul>
+                    </fieldset>
+                </images-included>
+                <images-excluded>
+                    <fieldset disabled>
+                        <ul>
+                            <?php foreach ($images as $image): ?>
+                                <?php
+                                $imageTitle = htmlspecialchars($image->title);
+                                ?>
+                                <li class="manager-list-item">
+                                    <label class="image-title" title="<?= $imageTitle ?>">
+                                        <input hidden type="radio" name="images"
+                                            data-image-id="<?= $image->id ?>"
+                                        >
+                                        <?= $imageTitle ?>
+                                    </label>
+                                </li>
+                            <?php endforeach ?>
+                        </ul>
+                    </fieldset>
+                </images-excluded>
+                <template gallery-image-template>
+                    <li class="manager-list-item">
+                        <label class="image-title">
+                            <input hidden type="radio">
+                        </label>
+                    </li>
+                </template>
+            </manager-gallery-images>
+            <div>
                 <manager-buttons>
-                    <div><button btn-add full-width disabled title="Add to gallery">&plus;</button></div>
+                    <div class="buttons-add-remove"><button btn-remove full-width disabled title="Remove from gallery">&minus;</button></div>
+                    <div class="buttons-add-remove"><button btn-add full-width disabled title="Add to gallery">&plus;</button></div>
                 </manager-buttons>
-            </images-excluded>
-            <template gallery-image-template>
-                <li class="manager-list-item">
-                    <label class="image-title">
-                        <input hidden type="radio">
-                    </label>
-                </li>
-            </template>
-        </manager-gallery-images>
+                <manager-buttons>
+                    <div><button btn-reset-gallery disabled hidden title="Undo all changes">Reset</button></div>
+                    <div><button btn-save-gallery disabled title="Save all changes">Save</button></div>
+                </manager-buttons>
+            </div>
+        </manager-selected-gallery>
     </gallery-manager>
 </image-manager-body>

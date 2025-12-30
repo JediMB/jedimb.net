@@ -74,11 +74,11 @@ customElements.define('image-manager-component', class ImageManagerComponent ext
         const galleryList = this.#galleryManager.querySelector('gallery-list');
         this.#insertGalleryButton = this.#galleryManager.querySelector('[btn-insert-gallery]');
         this.#editButton = this.#galleryManager.querySelector('[btn-edit]');
-        const managerGalleryImages = this.#galleryManager.querySelector('manager-gallery-images');
-        [this.#includedImagesFieldset, this.#excludedImagesFieldset] = managerGalleryImages.querySelectorAll('fieldset');
-        this.#galleryImageTemplate = managerGalleryImages.querySelector('[gallery-image-template]');
-        this.#removeButton = managerGalleryImages.querySelector('[btn-remove]');
-        this.#addButton = managerGalleryImages.querySelector('[btn-add]');
+        const managerSelectedGallery = this.#galleryManager.querySelector('manager-selected-gallery');
+        [this.#includedImagesFieldset, this.#excludedImagesFieldset] = managerSelectedGallery.querySelectorAll('fieldset');
+        this.#galleryImageTemplate = managerSelectedGallery.querySelector('[gallery-image-template]');
+        this.#removeButton = managerSelectedGallery.querySelector('[btn-remove]');
+        this.#addButton = managerSelectedGallery.querySelector('[btn-add]');
 
         this.#imageUploadButton.addEventListener('click', () => {
             this.#imageUploadButton.setAttribute('hidden', '');
@@ -145,10 +145,57 @@ customElements.define('image-manager-component', class ImageManagerComponent ext
 
             this.#insertGalleryButton.disabled = false;
             this.#editButton.disabled = false;
+            this.#removeButton.disabled = true;
+            this.#removeButton.disabled = true;
             
             const galleryId = Number(event.target.dataset.galleryId);
 
+            // TODO: Fix empty lists behavior of the service has not yet received its image/gallery data
             this.#renderGalleryImageLists(galleryId);
+        });
+
+        this.#includedImagesFieldset.addEventListener('change', event => {
+            if (!event.target.checked)
+                return;
+
+            this.#removeButton.disabled = false;
+        });
+
+        this.#excludedImagesFieldset.addEventListener('change', event => {
+            if (!event.target.checked)
+                return;
+
+            this.#addButton.disabled = false;
+        });
+
+        this.#removeButton.addEventListener('click', () => {
+            this.#removeButton.disabled = true;
+
+            const listItem = this.#includedImagesFieldset.querySelector('li:has(:checked)');
+
+            if (!listItem) {
+                console.error('Image list item not found');
+                return;
+            }
+
+            listItem.querySelector('input').name = 'excluded-images';
+            this.#excludedImagesFieldset.firstChild.appendChild(listItem);
+            this.#addButton.disabled = false;
+        });
+
+        this.#addButton.addEventListener('click', () => {
+            this.#addButton.disabled = true;
+
+            const listItem = this.#excludedImagesFieldset.querySelector('li:has(:checked)');
+
+            if (!listItem) {
+                console.error('Image list item not found');
+                return;
+            }
+
+            listItem.querySelector('input').name = 'included-images';
+            this.#includedImagesFieldset.firstChild.appendChild(listItem);
+            this.#removeButton.disabled = false;
         });
 
         form.addEventListener('submit', event => this.#saveImage(event));
@@ -157,7 +204,7 @@ customElements.define('image-manager-component', class ImageManagerComponent ext
             this.#saveButton.disabled = true;
 
             this.#imageProperties.querySelector('[img-upload]')?.remove();
-        })
+        });
 
         this.#service.images.subscribe(
             images => this.#renderImageList(images), true,
