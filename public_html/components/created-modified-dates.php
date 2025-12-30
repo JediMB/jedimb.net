@@ -15,7 +15,7 @@ $createdString = DateTime::ToString($createdOn);
 ?>
 
 <span>
-    <date-time server-time="<?= $createdString ?>" relative-date="true" class="capitalize">
+    <date-time server-time="<?= $createdString ?>" relative-date="true">
         <?=  $createdString ?>
     </date-time>
 </span>
