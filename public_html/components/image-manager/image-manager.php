@@ -202,7 +202,7 @@ Component::addJSModule();
                                 ?>
                                 <li class="manager-list-item">
                                     <label class="image-title" title="<?= $imageTitle ?>">
-                                        <input hidden type="radio" name="images"
+                                        <input hidden type="radio" name="gallery-images"
                                             data-image-id="<?= $image->id ?>"
                                         >
                                         <?= $imageTitle ?>

@@ -158,6 +158,7 @@ customElements.define('image-manager-component', class ImageManagerComponent ext
             if (!event.target.checked)
                 return;
 
+            this.#addButton.disabled = true;
             this.#removeButton.disabled = false;
         });
 
@@ -165,6 +166,7 @@ customElements.define('image-manager-component', class ImageManagerComponent ext
             if (!event.target.checked)
                 return;
 
+            this.#removeButton.disabled = true;
             this.#addButton.disabled = false;
         });
 
@@ -178,7 +180,6 @@ customElements.define('image-manager-component', class ImageManagerComponent ext
                 return;
             }
 
-            listItem.querySelector('input').name = 'excluded-images';
             this.#excludedImagesFieldset.firstChild.appendChild(listItem);
             this.#addButton.disabled = false;
         });
@@ -193,7 +194,6 @@ customElements.define('image-manager-component', class ImageManagerComponent ext
                 return;
             }
 
-            listItem.querySelector('input').name = 'included-images';
             this.#includedImagesFieldset.firstChild.appendChild(listItem);
             this.#removeButton.disabled = false;
         });
@@ -362,14 +362,13 @@ customElements.define('image-manager-component', class ImageManagerComponent ext
             /** @type HTMLInputElement */
             const input = label.querySelector('input');
             input.dataset.imageId = image.id;
+            input.name = 'gallery-images';
 
             if (image.galleryIds.some(id => id === galleryId)) {
-                input.name = 'included-images';
                 includedImageList.appendChild(listItem);
                 continue;
             }
 
-            input.name = 'excluded-images';
             excludedImageList.appendChild(listItem);
         }
         
