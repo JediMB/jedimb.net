@@ -19,7 +19,7 @@ $sessionService = SessionService::getInstance(); /** @var SessionService $sessio
 
 <?php
 // <!-- Implement pagination and include the first page as part of the document -->
-// <template>
+// <template blog-post-template>
 //     <article class="flex flex-col">
 //         <h2><a href="/blog/{id}">Title</a></h2>
 //         <article-byline>
@@ -34,7 +34,7 @@ $sessionService = SessionService::getInstance(); /** @var SessionService $sessio
 //     import blogPostApiService from "/js/services/api/blog-post-api.service.js";
 
 //     const output = document.querySelector('main');
-//     const template = output.querySelector('template');
+//     const template = output.querySelector('[blog-post-template]');
 
 //     const response = await blogPostApiService.getBlogPosts();
 
@@ -57,7 +57,7 @@ $sessionService = SessionService::getInstance(); /** @var SessionService $sessio
 //             byline.querySelector('date-created').textContent = post.createdOn.toLocaleString();
             
 //             if (post.modifiedOn)
-//                 byline.querySelector('date-modified').textContent = '– Last modified ' + post.modifiedOn.toLocaleString();
+//                 byline.querySelector('date-modified').innerHTML = '&ndash; Last modified ' + post.modifiedOn.toLocaleString();
 //             else
 //                 byline.querySelector('date-modified').remove();
 
