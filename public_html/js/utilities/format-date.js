@@ -10,7 +10,7 @@ function formatDate(dt, millisecondPrecision = false) {
     if (!dt) return '';
 
     let year = dt.getFullYear().toString().padStart(4, '0');
-    let month = dt.getMonth().toString().padStart(2, '0');
+    let month = (dt.getMonth() + 1).toString().padStart(2, '0');
     let date = dt.getDate().toString().padStart(2, '0');
     let hours = dt.getHours().toString().padStart(2, '0');
     let minutes = dt.getMinutes().toString().padStart(2, '0');
