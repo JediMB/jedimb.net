@@ -261,7 +261,6 @@ customElements.define('image-manager-component', class ImageManagerComponent ext
             const event = new CustomEvent(finishEvent, { bubbles: true });
             self.dispatchEvent(event);
         }
-
     }
 
     /** @param {Image[]} images  */
@@ -344,38 +343,38 @@ customElements.define('image-manager-component', class ImageManagerComponent ext
         this.#addButton.disabled = true;
         this.#addButton.disabled = true;
 
-        /** @type Image[] */
-        const images = this.#service.images.getValue();
-        const template = this.#galleryImageTemplate.content.cloneNode(true);
+        this.#service.getImages(images => {
+            const template = this.#galleryImageTemplate.content.cloneNode(true);
 
-        const includedImageList = document.createElement('ul');
-        const excludedImageList = document.createElement('ul');
-        for (const image of images) {
-            const listItem = template.cloneNode(true);
+            const includedImageList = document.createElement('ul');
+            const excludedImageList = document.createElement('ul');
+            for (const image of images) {
+                const listItem = template.cloneNode(true);
 
-            const label = listItem.querySelector('label');
-            label.title = image.title;
-            
-            const text = document.createTextNode(image.title);
-            label.appendChild(text);
+                const label = listItem.querySelector('label');
+                label.title = image.title;
+                
+                const text = document.createTextNode(image.title);
+                label.appendChild(text);
 
-            /** @type HTMLInputElement */
-            const input = label.querySelector('input');
-            input.dataset.imageId = image.id;
-            input.name = 'gallery-images';
+                /** @type HTMLInputElement */
+                const input = label.querySelector('input');
+                input.dataset.imageId = image.id;
+                input.name = 'gallery-images';
 
-            if (image.galleryIds.some(id => id === galleryId)) {
-                includedImageList.appendChild(listItem);
-                continue;
+                if (image.galleryIds.some(id => id === galleryId)) {
+                    includedImageList.appendChild(listItem);
+                    continue;
+                }
+
+                excludedImageList.appendChild(listItem);
             }
-
-            excludedImageList.appendChild(listItem);
-        }
-        
-        this.#includedImagesFieldset.replaceChildren(includedImageList);
-        this.#excludedImagesFieldset.replaceChildren(excludedImageList);
-        this.#includedImagesFieldset.disabled = false;
-        this.#excludedImagesFieldset.disabled = false;
+            
+            this.#includedImagesFieldset.replaceChildren(includedImageList);
+            this.#excludedImagesFieldset.replaceChildren(excludedImageList);
+            this.#includedImagesFieldset.disabled = false;
+            this.#excludedImagesFieldset.disabled = false;
+        });
     }
 
     #renderImageProperties(data) {
