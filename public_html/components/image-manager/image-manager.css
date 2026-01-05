@@ -55,6 +55,7 @@ manager-gallery-images {
 
 images-included,
 images-excluded {
+    display: block;
     min-height: 2ch;
     overflow-y: scroll;
 }
@@ -62,12 +63,11 @@ images-excluded {
 manager-images,
 manager-properties,
 manager-galleries,
-manager-selected-gallery,
-images-included,
-images-excluded {
+manager-selected-gallery {
     display: block flex;
     flex-direction: column;
     justify-content: space-between;
+    width: 100%;
 }
 
 manager-images {

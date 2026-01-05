@@ -49,8 +49,8 @@ Component::addJSModule();
 <image-manager-body>
     <manager-tabs>
         <ul class="tab-list">
-            <li class="tab-item"><label class="tab-label"><input hidden type="radio" name="image-tabs" data-tab-target="images">Images</label></li>
-            <li class="tab-item"><label class="tab-label"><input hidden type="radio" name="image-tabs" data-tab-target="galleries" checked>Galleries</label></li>
+            <li class="tab-item"><label class="tab-label"><input hidden type="radio" name="image-tabs" data-tab-target="images"><h3>Images</h3></label></li>
+            <li class="tab-item"><label class="tab-label"><input hidden type="radio" name="image-tabs" data-tab-target="galleries" checked><h3>Galleries</h3></label></li>
         </ul>
     </manager-tabs>
     <image-manager data-tab="images" data-modified-on="<?= DateTime::ToPrecisionString($tableModService->getOrCreateModifiedDate('image')) ?>">
@@ -116,7 +116,7 @@ Component::addJSModule();
             </form>
         </manager-properties>
         <template properties-template>
-            <h3 class="image-header"></h3>
+            <h4 class="image-header"></h4>
             <div class="image-preview"></div>
             <input type="hidden" name="id" value="0">
             <div>
@@ -133,7 +133,7 @@ Component::addJSModule();
             </div>
         </template>
         <template upload-template>
-            <h3>Upload image</h3>
+            <h4>Upload image</h4>
             <div class="image-preview"></div>
             <input type="file" name="image" accept="image/png, image/jpeg" size="0" required>
             <div>
@@ -182,6 +182,7 @@ Component::addJSModule();
         <manager-selected-gallery>
             <manager-gallery-images>
                 <images-included>
+                    <h4>In gallery:</h4>
                     <fieldset disabled>
                         <ul>
                             <li class="manager-list-item">
@@ -194,6 +195,7 @@ Component::addJSModule();
                     </fieldset>
                 </images-included>
                 <images-excluded>
+                    <h4>Not in gallery:</h4>
                     <fieldset disabled>
                         <ul>
                             <?php foreach ($images as $image): ?>
