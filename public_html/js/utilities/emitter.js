@@ -7,6 +7,17 @@ export default class Emitter {
     }
 
     /**
+     * Subscribes to the first change of the value/object, then automatically unsubscribes
+     * 
+     * @param {((value: any) => void|undefined)} next
+     * @param {((index: Number, value: any) => void|undefined)} nextIndexed
+     */
+    first(next = undefined, nextIndexed = undefined) {
+        const listener = new Listener(this, next, nextIndexed, true);
+        this.#listeners.push(listener);
+    }
+
+    /**
      * Gets the entire value/object, or a value within an array
      * 
      * @param {(Number|undefined)} arrayIndex 
@@ -81,6 +92,7 @@ export default class Emitter {
 }
 
 export class Listener {
+    #once = false;
     #emitter;
     #onNext;
     #onNextIndexed;
@@ -89,9 +101,13 @@ export class Listener {
      * @param {Emitter} emitter 
      * @param {(Function|undefined)} next 
      * @param {(Function|undefined)} nextIndexed 
+     * @param {boolean} once
      */
-    constructor(emitter, next = undefined, nextIndexed = undefined /*{ next, error, complete }*/) {
+    constructor(emitter, next = undefined, nextIndexed = undefined /*{ next, error, complete }*/, once = false) {
         this.#emitter = emitter;
+
+        if (typeof once === 'boolean')
+            this.#once = once;
 
         if (next && typeof next === 'function')
             this.#onNext = next;
@@ -105,11 +121,17 @@ export class Listener {
     }
 
     /** @param {any} value  */
-    next(value) { this.#onNext?.call(this, value); }
+    next(value) {
+        this.#onNext?.call(this, value);
+        this.#once && this.unsubscribe();
+    }
 
     /**
      * @param {Number} index
      * @param {any} value 
      */
-    nextIndexed(index, value) { this.#onNextIndexed?.call(this, index, value); }
+    nextIndexed(index, value) {
+        this.#onNextIndexed?.call(this, index, value);
+        this.#once && this.unsubscribe();
+    }
 }
