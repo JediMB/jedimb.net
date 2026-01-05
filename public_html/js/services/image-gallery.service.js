@@ -7,13 +7,16 @@ import tableModifiedApiService from "/js/services/api/table-modified-api.service
 export { imageGalleryService as default };
 
 class ImageGalleryService {
+    #initialized = false;
     #galleryModified = new Date(0);
     #imageModified = new Date(0);
     #galleries = new Emitter([]);
     #images = new Emitter([]);
 
     constructor() {
-        this.#fetchImageData();
+        this.#fetchImageData().then(() => {
+            this.#initialized = true;
+        });
     }
 
     /** @returns {Date} */
@@ -108,6 +111,17 @@ class ImageGalleryService {
      */
     getImage(id) {
         return this.#images.getValue().find(i => i.id === id);
+    }
+
+    /**
+     * @param {(value: Image[]) => void} next */
+    getImages(next) {
+        if (this.#initialized) {
+            next.call(this, this.#images.getValue());
+            return;
+        }
+        
+        this.#images.first(value => next.call(this, value));
     }
 
     /**
