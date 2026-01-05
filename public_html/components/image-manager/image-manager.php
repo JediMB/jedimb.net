@@ -149,7 +149,7 @@ Component::addJSModule();
     <gallery-manager hidden data-tab="galleries" data-modified-on="<?= DateTime::ToPrecisionString($tableModService->getOrCreateModifiedDate('gallery')) ?>">
         <manager-galleries>
             <gallery-list>
-                <fieldset>
+                <fieldset disabled>
                     <ul>
                         <?php foreach ($galleries as $gallery): ?>
                             <?php
@@ -184,14 +184,7 @@ Component::addJSModule();
                 <images-included>
                     <h4 class="gallery-images-header">In gallery:</h4>
                     <fieldset disabled>
-                        <ul>
-                            <li class="manager-list-item">
-                                <label class="image-title">
-                                    <input hidden type="radio" name="images">
-                                    &nbsp;
-                                </label>
-                            </li>
-                        </ul>
+                        <ul></ul>
                     </fieldset>
                 </images-included>
                 <images-excluded>
@@ -228,7 +221,7 @@ Component::addJSModule();
                     <div class="buttons-add-remove"><button btn-add full-width disabled title="Add to gallery">&plus;</button></div>
                 </manager-buttons>
                 <manager-buttons>
-                    <div><button btn-reset-gallery disabled hidden title="Undo all changes">Reset</button></div>
+                    <div><button btn-delete-gallery hidden title="Delete empty gallery">Delete</button></div>
                     <div><button btn-save-gallery disabled title="Save all changes">Save</button></div>
                 </manager-buttons>
             </div>

@@ -29,7 +29,11 @@ customElements.define('image-manager-component', class ImageManagerComponent ext
     #resetButton;
     #saveButton;
 
+    #galleryCreateButton;
+    #galleryCancelButton;
+
     #galleryManager;
+    #galleryListFieldset;
     #insertGalleryButton;
     #editButton;
     #includedImagesFieldset;
@@ -37,6 +41,8 @@ customElements.define('image-manager-component', class ImageManagerComponent ext
     #galleryImageTemplate;
     #removeButton;
     #addButton;
+    #deleteGalleryButton;
+    #saveGalleryButton;
     
     constructor() {
         const component = super();
@@ -70,8 +76,12 @@ customElements.define('image-manager-component', class ImageManagerComponent ext
         this.#resetButton = this.#imageManager.querySelector('[btn-reset]');
         this.#saveButton = this.#imageManager.querySelector('[btn-save]');
 
+        this.#galleryCreateButton = self.querySelector('[btn-gallery-create]');
+        this.#galleryCancelButton = self.querySelector('[btn-cancel-create]');
+
         this.#galleryManager = self.querySelector('gallery-manager');
         const galleryList = this.#galleryManager.querySelector('gallery-list');
+        this.#galleryListFieldset = galleryList.querySelector('fieldset');
         this.#insertGalleryButton = this.#galleryManager.querySelector('[btn-insert-gallery]');
         this.#editButton = this.#galleryManager.querySelector('[btn-edit]');
         const managerSelectedGallery = this.#galleryManager.querySelector('manager-selected-gallery');
@@ -79,6 +89,8 @@ customElements.define('image-manager-component', class ImageManagerComponent ext
         this.#galleryImageTemplate = managerSelectedGallery.querySelector('[gallery-image-template]');
         this.#removeButton = managerSelectedGallery.querySelector('[btn-remove]');
         this.#addButton = managerSelectedGallery.querySelector('[btn-add]');
+        this.#deleteGalleryButton = managerSelectedGallery.querySelector('[btn-delete-gallery]');
+        this.#saveGalleryButton = managerSelectedGallery.querySelector('[btn-save-gallery');
 
         this.#imageUploadButton.addEventListener('click', () => {
             this.#imageUploadButton.setAttribute('hidden', '');
@@ -182,6 +194,7 @@ customElements.define('image-manager-component', class ImageManagerComponent ext
 
             this.#excludedImagesFieldset.firstChild.appendChild(listItem);
             this.#addButton.disabled = false;
+            this.#saveGalleryButton.disabled = false;
         });
 
         this.#addButton.addEventListener('click', () => {
@@ -196,6 +209,7 @@ customElements.define('image-manager-component', class ImageManagerComponent ext
 
             this.#includedImagesFieldset.firstChild.appendChild(listItem);
             this.#removeButton.disabled = false;
+            this.#saveGalleryButton.disabled = false;
         });
 
         form.addEventListener('submit', event => this.#saveImage(event));
@@ -212,7 +226,9 @@ customElements.define('image-manager-component', class ImageManagerComponent ext
         );
 
         this.#filesFieldset.disabled = false;
+        this.#galleryListFieldset.disabled = false;
         this.#imageUploadButton.disabled = false;
+        this.#galleryCreateButton.disabled = false;
     }
 
     async #deleteImage(event) {
@@ -341,7 +357,9 @@ customElements.define('image-manager-component', class ImageManagerComponent ext
         this.#includedImagesFieldset.disabled = true;
         this.#excludedImagesFieldset.disabled = true;
         this.#addButton.disabled = true;
-        this.#addButton.disabled = true;
+        this.#removeButton.disabled = true;
+        this.#deleteGalleryButton.setAttribute('hidden', '');
+        this.#saveGalleryButton.disabled = true;
 
         this.#service.getImages(images => {
             const template = this.#galleryImageTemplate.content.cloneNode(true);
