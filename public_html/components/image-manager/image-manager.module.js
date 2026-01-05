@@ -145,7 +145,7 @@ customElements.define('image-manager-component', class ImageManagerComponent ext
 
             this.#insertGalleryButton.disabled = false;
             this.#editButton.disabled = false;
-            this.#removeButton.disabled = true;
+            this.#addButton.disabled = true;
             this.#removeButton.disabled = true;
             
             const galleryId = Number(event.target.dataset.galleryId);
