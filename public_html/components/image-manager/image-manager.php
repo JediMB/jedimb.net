@@ -182,7 +182,7 @@ Component::addJSModule();
         <manager-selected-gallery>
             <manager-gallery-images>
                 <images-included>
-                    <h4>In gallery:</h4>
+                    <h4 class="gallery-images-header">In gallery:</h4>
                     <fieldset disabled>
                         <ul>
                             <li class="manager-list-item">
@@ -195,7 +195,7 @@ Component::addJSModule();
                     </fieldset>
                 </images-included>
                 <images-excluded>
-                    <h4>Not in gallery:</h4>
+                    <h4 class="gallery-images-header">Not in gallery:</h4>
                     <fieldset disabled>
                         <ul>
                             <?php foreach ($images as $image): ?>

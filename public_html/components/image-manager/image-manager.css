@@ -126,6 +126,12 @@ manager-gallery-images manager-buttons {
     display: none;
 }
 
+.gallery-images-header {
+    border-bottom: 1px solid;
+    margin-block-end: var(--spacing-edges);
+    padding-block-end: var(--spacing-internal);
+}
+
 .image-title,
 .gallery-title {
     display: block;
