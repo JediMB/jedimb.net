@@ -3,8 +3,8 @@ import Image from "/js/models/image-gallery/image.model.js";
 import ImageDTO from "/js/models/image-gallery/image.dto.model.js";
 import imageGalleryService from "/js/services/image-gallery.service.js";
 
-customElements.define('image-manager-component', class ImageManagerComponent extends HTMLElement {
-    /** @type {ImageManagerComponent} */
+customElements.define('image-gallery-component', class ImageGalleryComponent extends HTMLElement {
+    /** @type {ImageGalleryComponent} */
     #self;
     #service;
     #galleryPath;

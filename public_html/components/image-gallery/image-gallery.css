@@ -1,11 +1,11 @@
-image-manager-component {
+image-gallery-component {
     display: block flex;
     flex-direction: column;
     gap: var(--spacing-edges);
     height: 100%;
 }
 
-image-manager-header {
+image-gallery-header {
     display: block flex;
     flex-direction: row;
     gap: var(--spacing-inner);

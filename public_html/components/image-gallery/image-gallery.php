@@ -35,8 +35,8 @@ Component::addJSModule();
 
 ?>
 
-<image-manager-header>
-    <h2>Image manager</h2>
+<image-gallery-header>
+    <h2>Image gallery</h2>
     <div class="image-upload-buttons" data-tab="images">
         <button btn-image-upload disabled>Upload image</button>
         <button btn-cancel-upload hidden>Cancel</button>
@@ -45,8 +45,8 @@ Component::addJSModule();
         <button btn-gallery-create disabled>Create gallery</button>
         <button btn-cancel-create hidden>Cancel</button>
     </div>
-</image-manager-header>
-<image-manager-body>
+</image-gallery-header>
+<image-gallery-body>
     <manager-tabs>
         <ul class="tab-list">
             <li class="tab-item"><label class="tab-label"><input hidden type="radio" name="image-tabs" data-tab-target="images"><h3>Images</h3></label></li>
@@ -227,4 +227,4 @@ Component::addJSModule();
             </div>
         </manager-selected-gallery>
     </gallery-manager>
-</image-manager-body>
+</image-gallery-body>
