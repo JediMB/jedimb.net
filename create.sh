@@ -126,7 +126,7 @@ function file_from_template() {
     template=${template//'{namespace}'/"$namespace"}
     
     cat <<< $template > $2
-    echo Created file: $2
+    echo "cat: created file: '$2'"
 }
 
 function create_component() {
