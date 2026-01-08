@@ -1,0 +1,15 @@
+customElements.define('{base_name}-component', class {pascal_name}Component extends HTMLElement {
+    /** @type {{pascal_name}Component} */
+    #self;
+
+    constructor() {
+        const component = super();
+        this.#self = component;
+    }
+
+    connectedCallback() {}
+
+    disconnectedCallback() {}
+
+    connectedMoveCallback() {}
+});
