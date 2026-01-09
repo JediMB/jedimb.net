@@ -16,14 +16,15 @@ customElements.define('modal-popup-component', class ModalPopupContainer extends
         this.#body = document.querySelector('body');
         this.#popup = self.querySelector('modal-popup');
 
-        if (!self.style.display) {
+        
+        if (!self.hasAttribute('hidden')) {
             this.#root.style.overflow = 'hidden';
             this.#body.style.overflow = 'hidden';
         }
         
         if (self.id)
             document.querySelector(`[modal-target="${self.id}"]`)?.addEventListener('click', () => {
-                self.style.removeProperty('display');
+                self.removeAttribute('hidden');
                 this.#root.style.overflow = 'hidden';
                 this.#body.style.overflow = 'hidden';
             });
@@ -43,7 +44,7 @@ customElements.define('modal-popup-component', class ModalPopupContainer extends
 
     #close(event) {
         event.preventDefault();
-        this.#self.style.display = 'none';
+        this.#self.toggleAttribute('hidden', true);
         this.#root.style.removeProperty('overflow');
         this.#body.style.removeProperty('overflow');
     }

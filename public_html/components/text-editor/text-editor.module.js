@@ -32,7 +32,7 @@ customElements.define('text-editor-component', class TextEditorComponent extends
 
     connectedCallback() {
         const self = this.#self;
-        self.style.display = 'none';
+        self.toggleAttribute('hidden', true);
 
         this.#fieldset = self.querySelector('fieldset');
         this.#blockSelector = this.#fieldset.querySelector('[select-blocktype]');
@@ -125,7 +125,7 @@ customElements.define('text-editor-component', class TextEditorComponent extends
             textarea.toggleAttribute('hidden', !editHtml);
         });
 
-        self.style.removeProperty('display');
+        self.removeAttribute('hidden');
 
         window.getSelection().setPosition(
             this.#getBlockElement(this.#textBox.firstChild, this.#blockSelector.value), 0

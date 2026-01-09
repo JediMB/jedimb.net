@@ -28,16 +28,10 @@ class ConfigCSV {
             component.dataset.fields = this.#textFieldCollections[key].length;
 
             toggles[key].addEventListener('change', () => {
-                const isDefault = toggles[key].checked;
+                const isDefault = !!toggles[key].checked;
 
-                if (isDefault) {
-                    defaultValues[key].removeAttribute('style');
-                    defaultValues[key].nextElementSibling.style.display = 'none';
-                }
-                else {
-                    defaultValues[key].style.display = 'none';
-                    defaultValues[key].nextElementSibling.removeAttribute('style');
-                }
+                defaultValues[key].toggleAttribute('hidden', !isDefault);
+                defaultValues[key].nextElementSibling.toggleAttribute('hidden', isDefault);
                 
                 fieldsets[key].disabled = isDefault;
 
@@ -58,7 +52,7 @@ class ConfigCSV {
                 btn.addEventListener('click', event => this.#deleteItem(event, key));
             });
 
-            component.removeAttribute('style');
+            component.removeAttribute('hidden');
         });
     }
 

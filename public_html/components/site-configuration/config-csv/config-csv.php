@@ -40,8 +40,8 @@ $initialValue = $isDefault ? $default : $value;
 
 <input type="hidden" config-id name="<?= $id ?>-id" id="<?= $id ?>-id" value="<?= $dbId ?>">
 <label for="<?= $id ?>"><?= $label ?></label>
-<default-value <?= $isDefault ? null : 'style="display: none;"' ?>><?= $default ?></default-value>
-<input-container <?= $isDefault ? 'style="display: none;"' : null ?>>
+<default-value <?= $isDefault ? null : 'hidden' ?>><?= $default ?></default-value>
+<input-container <?= $isDefault ? 'hidden' : null ?>>
     <fieldset>
         <input type="hidden" input-string name="<?= $id ?>" id="<?= $id ?>"
             value="<?= $initialValue ?>"

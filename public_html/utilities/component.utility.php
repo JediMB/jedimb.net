@@ -43,7 +43,7 @@ class Component {
         if ($options->componentTag) {
             $componentTag = basename($realPath, '.php') . "-component";
 
-            $attr = $options->hidden ? ' style="display: none;"' : null;
+            $attr = $options->hidden ? ' hidden' : null;
 
             if (!empty($options->attributes)) {
                 foreach (array_reverse($options->attributes, true) as $attrName => $attrValue) {

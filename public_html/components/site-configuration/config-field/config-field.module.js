@@ -89,7 +89,7 @@ class ConfigField {
                 );
             });
 
-            component.removeAttribute('style');
+            component.removeAttribute('hidden');
         });
     }
 
