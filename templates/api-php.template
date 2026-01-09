@@ -1,0 +1,65 @@
+<?php declare(strict_types=1);
+
+namespace API{namespace};
+
+require_once 'utilities/response.utility.php';
+
+use Exception;
+use Enums\UserPermission;
+use Services\SessionService;
+use Utilities\Response;
+
+//$service = ServiceName::getInstance(); /** @var ServiceName $service */
+$sessionService = SessionService::getInstance(); /** @var SessionService $sessionService */
+
+if (isset($GLOBALS['api_params'][0]))
+    $id = (int)($GLOBALS['api_params'][0]);
+
+$input = json_decode(file_get_contents('php://input'), true);
+
+switch ( $_SERVER['REQUEST_METHOD'] ) {
+    case 'DELETE':
+        try {
+            return Response::InvalidRequest();
+        }
+        catch (Exception $e) {
+            return Response::Error([$e->getMessage()]);
+        }
+
+    case 'GET':
+        try {
+            return Response::InvalidRequest();
+        }
+        catch (Exception $e) {
+            return Response::Error([$e->getMessage()]);
+        }
+
+    case 'PATCH':
+        try {
+            return Response::InvalidRequest();
+        }
+        catch (Exception $e) {
+            return Response::Error([$e->getMessage()]);
+        }
+
+    case 'POST':
+        try {
+            return Response::InvalidRequest();
+        }
+        catch (Exception $e) {
+            return Response::Error([$e->getMessage()]);
+        }
+
+    case 'PUT':
+        try {
+            return Response::InvalidRequest();
+        }
+        catch (Exception $e) {
+            return Response::Error([$e->getMessage()]);
+        }
+
+    default:
+        return Response::InvalidRequest();
+}
+
+?>

@@ -1,0 +1,13 @@
+<?php declare(strict_types=1);
+
+namespace Models{namespace};
+
+class {pascal_name} {
+    public string $member;
+
+    public function __construct(array $dbRow) {
+        $this->member = $dbRow['member'];
+    }
+}
+
+?>
