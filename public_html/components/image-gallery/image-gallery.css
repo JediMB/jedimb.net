@@ -37,7 +37,7 @@ manager-tabs {
 }
 
 image-manager,
-gallery-manager,
+gallery-manager-component,
 manager-gallery-images {
     display: block flex;
     height: clamp(2ch, 36ch, calc(var(--container-max-height, 100%) - 12rem));
