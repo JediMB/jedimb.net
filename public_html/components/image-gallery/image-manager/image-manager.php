@@ -94,7 +94,9 @@ Component::addJSModule();
 <template upload-template>
     <h4>Upload image</h4>
     <div class="image-preview"></div>
-    <div><input type="file" name="image" accept="image/png, image/jpeg" size="0" required></div>
+    <label class="btn" data-text="Browse&hellip;" tabindex="0" aria-required="true" aria-roledescription="Browse the local file system for an image">
+        <input type="file" name="image" accept="image/png, image/jpeg" size="0" required>
+    </label>
     <div>
         <label for="title">Title:</label>
         <input full-width type="text" name="title" placeholder="A short, descriptive name." value="" required>

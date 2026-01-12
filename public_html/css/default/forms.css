@@ -67,6 +67,15 @@ input[type="checkbox"]:disabled::before {
     background-color: #999;
 }
 
+label input[type="file"] {
+  display: none;
+}
+
+label:has(input[type="file"])::before {
+    display: inline-block;
+    content: attr(data-text, "Browse…");
+}
+
 /* input[type="text"], textarea {
     color: black;
 } */
@@ -79,9 +88,10 @@ label {
     width: fit-content;
 }
 
-label:has(input[type="checkbox"]:not(:disabled)),
-input[type="checkbox"]:not(:disabled),
-label:has(input[type="radio"]:not(:disabled)),
-input[type="radio"]:not(:disabled) {
+label:has(input[type="checkbox"]:enabled),
+input[type="checkbox"]:enabled,
+label:has(input[type="radio"]:enabled),
+input[type="radio"]:enabled,
+label:has(input[type="file"]:enabled) {
     cursor: pointer;
 }
