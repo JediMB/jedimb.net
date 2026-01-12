@@ -35,5 +35,5 @@ Component::addJSModule();
 <?php Component::include('modal-popup', [
     'attributes' => [ 'id' => "modal-images-$cId" ],
     'include' => 'image-gallery',
-    'includeAttributes' => [ 'insert-target' => "text-box-$cId" ]
+    'includeVariables' => [ 'insertTarget' => "text-box-$cId" ]
 ]) ?>

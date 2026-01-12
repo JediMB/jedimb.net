@@ -25,8 +25,13 @@ class Component {
 
         extract($variables);
 
+        if (!empty($include)) {
+            $includeAttributes ??= [];
+            $includeVariables ??= [];
+        }
+
         $cId = static::$components[$component]['count'] ?? 0;
-        
+
         if (isset($attributes))
             static::addAttributes($attributes);
 

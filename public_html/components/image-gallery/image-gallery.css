@@ -36,7 +36,7 @@ manager-tabs {
     padding: var(--spacing-edges);
 }
 
-image-manager,
+image-manager-component,
 gallery-manager-component,
 manager-gallery-images {
     display: block flex;
