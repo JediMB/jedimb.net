@@ -76,7 +76,7 @@ Component::addJSModule();
             </fieldset>
         </images-excluded>
         <template gallery-image-template>
-            <li class="manager-list-item">
+            <li class="manager-list-item" draggable="true">
                 <label class="image-title">
                     <input hidden type="radio">
                 </label>

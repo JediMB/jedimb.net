@@ -149,6 +149,10 @@ manager-gallery-images .image-title {
     width: 18ch;
 }
 
+.manager-list-item {
+    user-select: none;
+}
+
 .manager-list-item:has(input:disabled) {
     background-color: var(--color-disabled-background);
     color: var(--color-disabled-text);

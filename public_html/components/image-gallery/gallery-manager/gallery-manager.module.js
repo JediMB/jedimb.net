@@ -9,6 +9,10 @@ customElements.define('gallery-manager-component', class GalleryManagerComponent
     #galleryListFieldset;
     #insertGalleryButton;
     #editButton;
+    /** @type {HTMLElement} */
+    #includedImagesContainer;
+    /** @type {HTMLElement} */
+    #excludedImagesContainer;
     #includedImagesFieldset;
     #excludedImagesFieldset;
     #galleryImageTemplate;
@@ -16,6 +20,8 @@ customElements.define('gallery-manager-component', class GalleryManagerComponent
     #addButton;
     #deleteGalleryButton;
     #saveGalleryButton;
+
+    #dragItem;
 
     constructor() {
         const component = super();
@@ -34,7 +40,10 @@ customElements.define('gallery-manager-component', class GalleryManagerComponent
         this.#insertGalleryButton = self.querySelector('[btn-insert-gallery]');
         this.#editButton = self.querySelector('[btn-edit]');
         const managerSelectedGallery = self.querySelector('manager-selected-gallery');
-        [this.#includedImagesFieldset, this.#excludedImagesFieldset] = managerSelectedGallery.querySelectorAll('fieldset');
+        this.#includedImagesContainer = managerSelectedGallery.querySelector('images-included');
+        this.#excludedImagesContainer = managerSelectedGallery.querySelector('images-excluded');
+        this.#includedImagesFieldset = this.#includedImagesContainer.querySelector('fieldset');
+        this.#excludedImagesFieldset = this.#excludedImagesContainer.querySelector('fieldset');
         this.#galleryImageTemplate = managerSelectedGallery.querySelector('[gallery-image-template]');
         this.#removeButton = managerSelectedGallery.querySelector('[btn-remove]');
         this.#addButton = managerSelectedGallery.querySelector('[btn-add]');
@@ -56,8 +65,6 @@ customElements.define('gallery-manager-component', class GalleryManagerComponent
             this.#removeButton.disabled = true;
             
             const galleryId = Number(event.target.dataset.galleryId);
-
-            // TODO: Fix empty lists behavior of the service has not yet received its image/gallery data
             this.#renderGalleryImageLists(galleryId);
         });
 
@@ -114,6 +121,11 @@ customElements.define('gallery-manager-component', class GalleryManagerComponent
 
     connectedMoveCallback() {}
 
+    /**  @param {HTMLLIElement} listItem */
+    #addDragFunctionality(listItem) {
+
+    }
+
     /** @param {number} galleryId */
     #renderGalleryImageLists(galleryId) {
         this.#includedImagesFieldset.disabled = true;
@@ -128,7 +140,48 @@ customElements.define('gallery-manager-component', class GalleryManagerComponent
 
             const includedImageList = document.createElement('ul');
             const excludedImageList = document.createElement('ul');
+            
+            for (const list of [ includedImageList, excludedImageList ]) {
+                list.addEventListener('dragstart', event => {
+                    event.stopPropagation();
+                    this.#dragItem = event.target;
+                });
+            }
+
+            for (const container of [ this.#includedImagesContainer, this.#excludedImagesContainer ]) {
+                container.addEventListener('dragenter', event => {
+                    event.preventDefault();
+                    
+                    if (container.contains(this.#dragItem))
+                        return;
+
+                    container.style.border = '1px dashed green';
+                });
+
+                container.addEventListener('dragover', event => event.preventDefault());
+ 
+                container.addEventListener('dragleave', event => {
+                    if (container.contains(event.relatedTarget))
+                        return;
+
+                    container.style.removeProperty('border');
+                });
+
+                container.addEventListener('drop', event => {
+                    container.style.removeProperty('border');
+
+                    if (container === this.#includedImagesContainer)
+                        includedImageList.appendChild(this.#dragItem);
+                    else
+                        excludedImageList.appendChild(this.#dragItem);
+
+                    this.#dragItem = null;
+                    this.#saveGalleryButton.disabled = false;
+                });
+            }
+
             for (const image of images) {
+                /** @type {HTMLLIElement} */
                 const listItem = template.cloneNode(true);
 
                 const label = listItem.querySelector('label');
