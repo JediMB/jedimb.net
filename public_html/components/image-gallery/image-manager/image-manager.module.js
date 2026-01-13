@@ -4,14 +4,13 @@ import ImageDTO from "/js/models/image-gallery/image.dto.model.js";
 import imageGalleryService from "/js/services/image-gallery.service.js";
 
 customElements.define('image-manager-component', class ImageManagerComponent extends HTMLElement {
+    static observedAttributes = [ 'upload-mode' ];
+
     /** @type {ImageManagerComponent} */
     #self;
     #service;
     #galleryPath;
     #insertTarget;
-
-    /** @type {MutationObserver} */
-    #attributeObserver;
 
     #listFieldset;
     #filesFieldset;
@@ -33,47 +32,46 @@ customElements.define('image-manager-component', class ImageManagerComponent ext
         const component = super();
         this.#self = component;
         this.#service = imageGalleryService;
+    }
 
-        this.#attributeObserver = new MutationObserver((mutationList, _) => {
-            for (const record of mutationList) {
-                if (record.target !== component || record.attributeName !== 'upload-mode')
-                    continue;
+    /**
+     * 
+     * @param {string} name 
+     * @param {string} _ 
+     * @param {string} newValue 
+     */
+    attributeChangedCallback(name, _, newValue) {
+        if (name !== 'upload-mode')
+            return;
 
-                if (!component.hasAttribute('upload-mode'))
-                    break;
+        if (!this.#self.hasAttribute(name))
+            return;
 
-                switch (component.getAttribute('upload-mode')) {
-                    case 'active':
-                        this.#listFieldset.disabled = true;
+        switch (newValue) {
+            case 'active':
+                this.#listFieldset.disabled = true;
 
-                        this.#insertImageButton.disabled = true;
-                        this.#deleteButton.disabled = true;
-                        const checked = this.#fileList.querySelector(':checked');
-                        if (checked) checked.checked = false;
+                this.#insertImageButton.disabled = true;
+                this.#deleteButton.disabled = true;
+                const checked = this.#fileList.querySelector(':checked');
+                if (checked) checked.checked = false;
 
-                        this.#resetButton.disabled = true;
-                        this.#saveButton.disabled = true;
-                        this.#saveButton.textContent = this.#saveButton.dataset.contentUpload;
-                        this.#renderImageUpload();
-                        break;
-
-                    case 'done':
-                        const event = new CustomEvent('upload-complete');
-                        this.dispatchEvent(event);
-
-                        this.#listFieldset.disabled = false;
-                        this.#saveButton.textContent = this.#saveButton.dataset.contentEdit;
-                        this.#imageProperties.innerHTML = this.#imagePropertiesContent;
-                        component.removeAttribute('upload-mode');
-                        break;
-                }
-
+                this.#resetButton.disabled = true;
+                this.#saveButton.disabled = true;
+                this.#saveButton.textContent = this.#saveButton.dataset.contentUpload;
+                this.#renderImageUpload();
                 break;
-            }
-        });
-        this.#attributeObserver.observe(component, {attributeFilter: [
-            'upload-mode'
-        ]});
+
+            case 'done':
+                const event = new CustomEvent('upload-complete');
+                this.dispatchEvent(event);
+
+                this.#listFieldset.disabled = false;
+                this.#saveButton.textContent = this.#saveButton.dataset.contentEdit;
+                this.#imageProperties.innerHTML = this.#imagePropertiesContent;
+                this.#self.removeAttribute('upload-mode');
+                break;
+        }
     }
 
     connectedCallback() {
