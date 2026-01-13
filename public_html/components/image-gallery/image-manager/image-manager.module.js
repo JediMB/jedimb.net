@@ -277,7 +277,7 @@ customElements.define('image-manager-component', class ImageManagerComponent ext
         /** @type {HTMLDivElement} */
         const imagePreview = template.querySelector('.image-preview');
         /** @type {HTMLInputElement} */
-        const fileInput = template.querySelector('[type="file"]');
+        const fileInput = template.querySelector('input-file');
         const titleInput = template.querySelector('[name="title"]');
         const descInput = template.querySelector('[name="description"]');
 

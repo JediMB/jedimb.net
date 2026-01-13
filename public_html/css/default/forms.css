@@ -67,15 +67,6 @@ input[type="checkbox"]:disabled::before {
     background-color: #999;
 }
 
-label input[type="file"] {
-  display: none;
-}
-
-label:has(input[type="file"])::before {
-    display: inline-block;
-    content: attr(data-text, "Browse…");
-}
-
 /* input[type="text"], textarea {
     color: black;
 } */
