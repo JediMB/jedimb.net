@@ -231,32 +231,6 @@ customElements.define('image-manager-component', class ImageManagerComponent ext
         this.#self.dataset.modifiedOn = formatDate(this.#service.imageModified, true);
     }
 
-    /** @param {Image} image  */
-    #updateImageListItem(image) {
-        /** @type {HTMLInputElement} */
-        const input = this.#fileList.querySelector(`input[data-image-id="${image.id}"]`);
-
-        if (!input)
-            throw new Error(`Image list item with id ${image.id} can't be found`);
-        
-        if (input.nextSibling)
-            input.nextSibling.textContent = image.title;
-        else
-            input.insertAdjacentText('afterend', image.title);
-
-        /** @type {DOMStringMap} */
-        const data = input.dataset;
-        data.imageTitle = image.title;
-        data.imageDefaultTitle = image.title;
-        data.imageDescription = image.description;
-        data.imageDefaultDescription = image.description;
-        data.imageModifiedOn = formatDate(image.modifiedOn);
-
-        this.#self.dataset.modifiedOn = formatDate(this.#service.imageModified, true);
-
-        this.#renderImageProperties(data);
-    }
-
     #renderImageProperties(data) {
         this.#imageProperties.textContent = ''; // TODO: Loading spinner animation
         this.#resetButton.disabled = true;
@@ -383,5 +357,31 @@ customElements.define('image-manager-component', class ImageManagerComponent ext
         const noChanges = fields.every(field => field.value === field.defaultValue);
         this.#resetButton.disabled = noChanges;
         this.#saveButton.disabled = noChanges || !!fields.find(field => !field.checkValidity());
+    }
+
+    /** @param {Image} image  */
+    #updateImageListItem(image) {
+        /** @type {HTMLInputElement} */
+        const input = this.#fileList.querySelector(`input[data-image-id="${image.id}"]`);
+
+        if (!input)
+            throw new Error(`Image list item with id ${image.id} can't be found`);
+        
+        if (input.nextSibling)
+            input.nextSibling.textContent = image.title;
+        else
+            input.insertAdjacentText('afterend', image.title);
+
+        /** @type {DOMStringMap} */
+        const data = input.dataset;
+        data.imageTitle = image.title;
+        data.imageDefaultTitle = image.title;
+        data.imageDescription = image.description;
+        data.imageDefaultDescription = image.description;
+        data.imageModifiedOn = formatDate(image.modifiedOn);
+
+        this.#self.dataset.modifiedOn = formatDate(this.#service.imageModified, true);
+
+        this.#renderImageProperties(data);
     }
 });
