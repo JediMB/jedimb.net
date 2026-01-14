@@ -38,6 +38,7 @@ manager-tabs {
 
 image-manager-component,
 gallery-manager-component,
+gallery-list,
 manager-gallery-images {
     display: block flex;
     height: clamp(2ch, 36ch, calc(var(--container-max-height, 100%) - 12rem));
@@ -151,6 +152,15 @@ manager-images .image-title {
 .gallery-title,
 manager-gallery-images .image-title {
     width: 18ch;
+}
+
+manager-gallery-images .image-title {
+    cursor: move;
+    cursor: grab;
+
+    &:active {
+        cursor: grabbing;
+    }
 }
 
 .manager-list-item {

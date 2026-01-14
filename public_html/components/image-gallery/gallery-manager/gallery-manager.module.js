@@ -16,8 +16,6 @@ customElements.define('gallery-manager-component', class GalleryManagerComponent
     #includedImagesFieldset;
     #excludedImagesFieldset;
     #galleryImageTemplate;
-    #removeButton;
-    #addButton;
     #deleteGalleryButton;
     #saveGalleryButton;
 
@@ -25,6 +23,7 @@ customElements.define('gallery-manager-component', class GalleryManagerComponent
     #dragItem;
     /** @type {HTMLElement} */
     #dragTarget;
+    #append = false;
 
     constructor() {
         const component = super();
@@ -48,8 +47,6 @@ customElements.define('gallery-manager-component', class GalleryManagerComponent
         this.#includedImagesFieldset = this.#includedImagesContainer.querySelector('fieldset');
         this.#excludedImagesFieldset = this.#excludedImagesContainer.querySelector('fieldset');
         this.#galleryImageTemplate = managerSelectedGallery.querySelector('[gallery-image-template]');
-        this.#removeButton = managerSelectedGallery.querySelector('[btn-remove]');
-        this.#addButton = managerSelectedGallery.querySelector('[btn-add]');
         this.#deleteGalleryButton = managerSelectedGallery.querySelector('[btn-delete-gallery]');
         this.#saveGalleryButton = managerSelectedGallery.querySelector('[btn-save-gallery');
 
@@ -64,57 +61,9 @@ customElements.define('gallery-manager-component', class GalleryManagerComponent
 
             this.#insertGalleryButton.disabled = false;
             this.#editButton.disabled = false;
-            this.#addButton.disabled = true;
-            this.#removeButton.disabled = true;
             
             const galleryId = Number(event.target.dataset.galleryId);
             this.#renderGalleryImageLists(galleryId);
-        });
-
-        this.#includedImagesFieldset.addEventListener('change', event => {
-            if (!event.target.checked)
-                return;
-
-            this.#addButton.disabled = true;
-            this.#removeButton.disabled = false;
-        });
-
-        this.#excludedImagesFieldset.addEventListener('change', event => {
-            if (!event.target.checked)
-                return;
-
-            this.#removeButton.disabled = true;
-            this.#addButton.disabled = false;
-        });
-
-        this.#removeButton.addEventListener('click', () => {
-            this.#removeButton.disabled = true;
-
-            const listItem = this.#includedImagesFieldset.querySelector('li:has(:checked)');
-
-            if (!listItem) {
-                console.error('Image list item not found');
-                return;
-            }
-
-            this.#excludedImagesFieldset.firstChild.appendChild(listItem);
-            this.#addButton.disabled = false;
-            this.#saveGalleryButton.disabled = false;
-        });
-
-        this.#addButton.addEventListener('click', () => {
-            this.#addButton.disabled = true;
-
-            const listItem = this.#excludedImagesFieldset.querySelector('li:has(:checked)');
-
-            if (!listItem) {
-                console.error('Image list item not found');
-                return;
-            }
-
-            this.#includedImagesFieldset.firstChild.appendChild(listItem);
-            this.#removeButton.disabled = false;
-            this.#saveGalleryButton.disabled = false;
         });
         
         this.#galleryListFieldset.disabled = false;
@@ -124,17 +73,30 @@ customElements.define('gallery-manager-component', class GalleryManagerComponent
 
     connectedMoveCallback() {}
 
-    /**  @param {HTMLLIElement} listItem */
-    #addDragFunctionality(listItem) {
+    /** @param {HTMLUListElement} list */
+    #dropItem(list) {
+        this.#dragTarget?.style.removeProperty(this.#append ? 'border-bottom' : 'border-top');
 
+        if (this.#dragItem === this.#dragTarget)
+            return;
+
+        if (!this.#append && this.#dragItem === this.#dragTarget?.previousElementSibling)
+            return;
+
+        if (this.#append || !this.#dragTarget) {
+            list.appendChild(this.#dragItem);
+        }
+        else {
+            list.insertBefore(this.#dragItem, this.#dragTarget);
+        }
+
+        this.#saveGalleryButton.disabled = false;
     }
 
     /** @param {number} galleryId */
     #renderGalleryImageLists(galleryId) {
         this.#includedImagesFieldset.disabled = true;
         this.#excludedImagesFieldset.disabled = true;
-        this.#addButton.disabled = true;
-        this.#removeButton.disabled = true;
         this.#deleteGalleryButton.setAttribute('hidden', '');
         this.#saveGalleryButton.disabled = true;
 
@@ -159,44 +121,37 @@ customElements.define('gallery-manager-component', class GalleryManagerComponent
                         return;
 
                     /** @type {HTMLElement} */
-                    const target = event.originalTarget;
-
-                    if (target === this.#dragTarget)
-                        return;
-
-                    if (this.#dragTarget) {
-                        switch (this.#dragTarget.localName) {
-                            case 'images-included':
-                            case 'images-excluded':
-                                this.#dragTarget.querySelector('ul').lastElementChild.style.removeProperty('border-bottom');
-                                break;
-
-                            case 'label':
-                                this.#dragTarget.style.removeProperty('border-top');
-                                break;
-                            
-                            default:
-                                this.#dragTarget.parentElement.querySelector('label').style.removeProperty('border-top');
-                                break;
-                        }
-                    }
-
-                    this.#dragTarget = target;
+                    let target = event.originalTarget;
+                    let append = false;
 
                     switch (target.localName) {
                         case 'images-included':
                         case 'images-excluded':
-                            container.querySelector('ul').lastElementChild.style.borderBottom = '1px solid';
+                            target = container.querySelector('ul').lastElementChild;
+                            append = true;
                             break;
 
                         case 'label':
-                            target.style.borderTop = '1px solid';
+                            target = target.parentElement;
                             break;
-                        
+
                         default:
-                            container.querySelector('label').style.borderTop = '1px solid';
+                            target = container.querySelector('ul').firstElementChild;
                             break;
                     }
+
+                    this.#dragTarget?.style.removeProperty(this.#append ? 'border-bottom' : 'border-top');
+
+                    this.#dragTarget = target;
+                    this.#append = append;
+
+                    if (target === this.#dragItem)
+                        return;
+
+                    if (!append && target?.previousElementSibling === this.#dragItem)
+                        return;
+
+                    this.#dragTarget?.style.setProperty(this.#append ? 'border-bottom' : 'border-top', '1px solid');
                 });
 
                 container.addEventListener('dragover', event => event.preventDefault());
@@ -205,76 +160,18 @@ customElements.define('gallery-manager-component', class GalleryManagerComponent
                     if (container.contains(event.relatedTarget))
                         return;
 
-                    if (this.#dragTarget) {
-                        switch (this.#dragTarget.localName) {
-                            case 'images-included':
-                            case 'images-excluded':
-                                this.#dragTarget.querySelector('ul').lastElementChild.style.removeProperty('border-bottom');
-                                break;
-
-                            case 'label':
-                                this.#dragTarget.style.removeProperty('border-top');
-                                break;
-                            
-                            default:
-                                this.#dragTarget.parentElement.querySelector('label').style.removeProperty('border-top');
-                                break;
-                        }
-
-                        this.#dragTarget = null;
-                    }
+                    this.#dragTarget?.style.removeProperty(this.#append ? 'border-bottom' : 'border-top');
+                    this.#dragTarget = null;
+                    this.#append = false;
                 });
 
-                container.addEventListener('drop', event => {
-                    if (this.#dragItem.className !== 'manager-list-item') {
-                        this.#dragItem = null;
-                        this.#dragTarget = null;
-                        return;
-                    }
-
-                    let list;
-                    switch (this.#dragTarget.localName) {
-                        case 'images-included':
-                        case 'images-excluded':
-                            list = this.#dragTarget.querySelector('ul');
-                            list.lastElementChild.style.removeProperty('border-bottom');
-                            
-                            if (this.#dragItem !== list.lastElementChild) {
-                                list.appendChild(this.#dragItem);
-                                this.#saveGalleryButton.disabled = false;
-                            }
-                            break;
-
-                        case 'label':
-                            this.#dragTarget.style.removeProperty('border-top');
-                            const item = this.#dragTarget.parentElement;
-
-                            if (this.#dragItem !== item && this.#dragItem !== item.previousElementSibling) {
-                                item.parentElement.insertBefore(this.#dragItem, item);
-                                this.#saveGalleryButton.disabled = false;
-                            }
-                            break;
-                        
-                        default:
-                            list = this.#dragTarget.parentElement.querySelector('ul');
-                            list.querySelector('label').style.removeProperty('border-top');
-
-                            if (this.#dragItem !== list.firstElementChild) {
-                                list.insertBefore(this.#dragItem, list.firstElementChild);
-                                this.#saveGalleryButton.disabled = false;
-                            }
-                            break;
-                    }
-
-                    if (this.#dragItem.querySelector('input').checked) {
-                        const isIncluded = includedImageList.contains(this.#dragItem);
-
-                        this.#addButton.disabled = isIncluded;
-                        this.#removeButton.disabled = !isIncluded;
-                    }
+                container.addEventListener('drop', () => {
+                    if (this.#dragItem?.className === 'manager-list-item')
+                        this.#dropItem(container.querySelector('ul'));
 
                     this.#dragItem = null;
                     this.#dragTarget = null;
+                    this.#append = false;
                 });
             }
 
@@ -291,7 +188,6 @@ customElements.define('gallery-manager-component', class GalleryManagerComponent
                 /** @type HTMLInputElement */
                 const input = label.querySelector('input');
                 input.dataset.imageId = image.id;
-                input.name = 'gallery-images';
 
                 if (image.galleryIds.some(id => id === galleryId)) {
                     includedImageList.appendChild(listItem);

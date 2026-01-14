@@ -16,7 +16,7 @@ Component::addJSModule();
 ?>
 
 <manager-galleries>
-    <gallery-list>
+    <gallery-list tabindex="0" aria-label="List of image galleries.">
         <fieldset disabled>
             <ul>
                 <?php foreach ($galleries as $gallery): ?>
@@ -49,13 +49,13 @@ Component::addJSModule();
 </manager-galleries>
 <manager-selected-gallery>
     <manager-gallery-images>
-        <images-included>
+        <images-included tabindex="0" aria-label="Heading and list of images included in the gallery.">
             <h4 class="gallery-images-header">In gallery:</h4>
             <fieldset disabled>
                 <ul></ul>
             </fieldset>
         </images-included>
-        <images-excluded>
+        <images-excluded tabindex="0" aria-label="Heading and list of images excluded from the gallery.">
             <h4 class="gallery-images-header">Not in gallery:</h4>
             <fieldset disabled>
                 <ul>
@@ -65,8 +65,7 @@ Component::addJSModule();
                         ?>
                         <li class="manager-list-item">
                             <label class="image-title" title="<?= $imageTitle ?>">
-                                <input hidden type="radio" name="gallery-images"
-                                    data-image-id="<?= $image->id ?>"
+                                <input type="hidden" data-image-id="<?= $image->id ?>"
                                 >
                                 <?= $imageTitle ?>
                             </label>
@@ -78,19 +77,13 @@ Component::addJSModule();
         <template gallery-image-template>
             <li class="manager-list-item" draggable="true">
                 <label class="image-title">
-                    <input hidden type="radio">
+                    <input type="hidden">
                 </label>
             </li>
         </template>
     </manager-gallery-images>
-    <div>
-        <manager-buttons>
-            <div class="buttons-add-remove"><button btn-remove full-width disabled title="Remove from gallery">&minus;</button></div>
-            <div class="buttons-add-remove"><button btn-add full-width disabled title="Add to gallery">&plus;</button></div>
-        </manager-buttons>
-        <manager-buttons>
-            <div><button btn-delete-gallery hidden title="Delete empty gallery">Delete</button></div>
-            <div><button btn-save-gallery disabled title="Save all changes">Save</button></div>
-        </manager-buttons>
-    </div>
+    <manager-buttons>
+        <div><button btn-delete-gallery hidden title="Delete empty gallery">Delete</button></div>
+        <div><button btn-save-gallery disabled title="Save all changes">Save</button></div>
+    </manager-buttons>
 </manager-selected-gallery>
