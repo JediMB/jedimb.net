@@ -21,7 +21,10 @@ customElements.define('gallery-manager-component', class GalleryManagerComponent
     #deleteGalleryButton;
     #saveGalleryButton;
 
+    /** @type {HTMLLIElement} */
     #dragItem;
+    /** @type {HTMLElement} */
+    #dragTarget;
 
     constructor() {
         const component = super();
@@ -151,32 +154,127 @@ customElements.define('gallery-manager-component', class GalleryManagerComponent
             for (const container of [ this.#includedImagesContainer, this.#excludedImagesContainer ]) {
                 container.addEventListener('dragenter', event => {
                     event.preventDefault();
-                    
-                    if (container.contains(this.#dragItem))
+
+                    if (this.#dragItem.className !== 'manager-list-item')
                         return;
 
-                    container.style.border = '1px dashed green';
+                    /** @type {HTMLElement} */
+                    const target = event.originalTarget;
+
+                    if (target === this.#dragTarget)
+                        return;
+
+                    if (this.#dragTarget) {
+                        switch (this.#dragTarget.localName) {
+                            case 'images-included':
+                            case 'images-excluded':
+                                this.#dragTarget.querySelector('ul').lastElementChild.style.removeProperty('border-bottom');
+                                break;
+
+                            case 'label':
+                                this.#dragTarget.style.removeProperty('border-top');
+                                break;
+                            
+                            default:
+                                this.#dragTarget.parentElement.querySelector('label').style.removeProperty('border-top');
+                                break;
+                        }
+                    }
+
+                    this.#dragTarget = target;
+
+                    switch (target.localName) {
+                        case 'images-included':
+                        case 'images-excluded':
+                            container.querySelector('ul').lastElementChild.style.borderBottom = '1px solid';
+                            break;
+
+                        case 'label':
+                            target.style.borderTop = '1px solid';
+                            break;
+                        
+                        default:
+                            container.querySelector('label').style.borderTop = '1px solid';
+                            break;
+                    }
                 });
 
                 container.addEventListener('dragover', event => event.preventDefault());
- 
+
                 container.addEventListener('dragleave', event => {
                     if (container.contains(event.relatedTarget))
                         return;
 
-                    container.style.removeProperty('border');
+                    if (this.#dragTarget) {
+                        switch (this.#dragTarget.localName) {
+                            case 'images-included':
+                            case 'images-excluded':
+                                this.#dragTarget.querySelector('ul').lastElementChild.style.removeProperty('border-bottom');
+                                break;
+
+                            case 'label':
+                                this.#dragTarget.style.removeProperty('border-top');
+                                break;
+                            
+                            default:
+                                this.#dragTarget.parentElement.querySelector('label').style.removeProperty('border-top');
+                                break;
+                        }
+
+                        this.#dragTarget = null;
+                    }
                 });
 
                 container.addEventListener('drop', event => {
-                    container.style.removeProperty('border');
+                    if (this.#dragItem.className !== 'manager-list-item') {
+                        this.#dragItem = null;
+                        this.#dragTarget = null;
+                        return;
+                    }
 
-                    if (container === this.#includedImagesContainer)
-                        includedImageList.appendChild(this.#dragItem);
-                    else
-                        excludedImageList.appendChild(this.#dragItem);
+                    let list;
+                    switch (this.#dragTarget.localName) {
+                        case 'images-included':
+                        case 'images-excluded':
+                            list = this.#dragTarget.querySelector('ul');
+                            list.lastElementChild.style.removeProperty('border-bottom');
+                            
+                            if (this.#dragItem !== list.lastElementChild) {
+                                list.appendChild(this.#dragItem);
+                                this.#saveGalleryButton.disabled = false;
+                            }
+                            break;
+
+                        case 'label':
+                            this.#dragTarget.style.removeProperty('border-top');
+                            const item = this.#dragTarget.parentElement;
+
+                            if (this.#dragItem !== item && this.#dragItem !== item.previousElementSibling) {
+                                item.parentElement.insertBefore(this.#dragItem, item);
+                                this.#saveGalleryButton.disabled = false;
+                            }
+                            break;
+                        
+                        default:
+                            list = this.#dragTarget.parentElement.querySelector('ul');
+                            list.querySelector('label').style.removeProperty('border-top');
+
+                            if (this.#dragItem !== list.firstElementChild) {
+                                list.insertBefore(this.#dragItem, list.firstElementChild);
+                                this.#saveGalleryButton.disabled = false;
+                            }
+                            break;
+                    }
+
+                    if (this.#dragItem.querySelector('input').checked) {
+                        const isIncluded = includedImageList.contains(this.#dragItem);
+
+                        this.#addButton.disabled = isIncluded;
+                        this.#removeButton.disabled = !isIncluded;
+                    }
 
                     this.#dragItem = null;
-                    this.#saveGalleryButton.disabled = false;
+                    this.#dragTarget = null;
                 });
             }
 

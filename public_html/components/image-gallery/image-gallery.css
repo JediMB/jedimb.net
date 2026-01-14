@@ -93,6 +93,11 @@ images-excluded,
     flex-basis: 50%;
 }
 
+images-included fieldset,
+images-excluded fieldset {
+    padding-block-start: var(--spacing-edges);
+}
+
 image-properties {
     display: block flex;
     flex-direction: column;
@@ -128,7 +133,6 @@ manager-gallery-images manager-buttons {
 
 .gallery-images-header {
     border-bottom: 1px solid;
-    margin-block-end: var(--spacing-edges);
     padding-block-end: var(--spacing-internal);
 }
 
