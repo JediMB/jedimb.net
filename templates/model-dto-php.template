@@ -1,0 +1,19 @@
+<?php declare(strict_types=1);
+
+namespace Models{namespace};
+
+require_once 'models/base/db-base.model.php';
+
+use Models\Base\DBBase;
+
+class {pascal_name} extends DBBase {
+    public string $member;
+
+    public function __construct(array $input) {
+        parent::__construct($input);
+
+        $this->member = $input['member'];
+    }
+}
+
+?>

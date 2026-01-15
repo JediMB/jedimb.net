@@ -4,13 +4,36 @@ type="${1,,}" # e.g. model
 name="${2,,}" # e.g. user, or db/user
 
 if [[ $1 == '' ]]; then
-    echo 'Argument 1 (type) empty'
+    echo 'create 1.0'
+    echo 'Usage: create.sh [type] [name]'
+    echo
+    echo 'create.sh is a bash shell script intended to speed up'
+    echo 'the creation of new api, component, model and service'
+    echo 'files for the PHP web app for which it was created.'
+    echo
+    echo 'Currently supported [type]s:'
+    echo '  api (a)'
+    echo '  component (c)'
+    echo '  model (m)'
+    echo '  service (c)'
+    echo
+    echo '[Name]s use the lower-case English standard alphabet,'
+    echo 'with hyphens between words and forward-slashes as'
+    echo 'directory separators. No numbers at the start of file'
+    echo 'or directory names. E.g.'
+    echo '  api-9'
+    echo '  fancy-component-name'
+    echo '  dto/cute-model-name'
+    echo '  db/cool-service-name'
     exit
 elif [[ $2 == '' ]]; then
     echo 'Argument 2 (name) empty'
     exit
 elif ! [[ "$name" =~ ^[a-z][a-z0-9\/\-]*[a-z0-9]$ ]]; then
     echo 'Valid characters in argument 2 (name) are a-z and separating slashes and dashes'
+    exit
+elif [[ $name =~ \/\d ]]; then
+    echo 'File and directory names may not begin with a number';
     exit
 elif [[ "$name" =~ [\-\/][\-\/] ]]; then
     echo 'No double separators allowed'
@@ -41,6 +64,7 @@ component_css_template_file="$template_dir/component-css.template"
 component_module_template_file="$template_dir/component-module.template"
 component_php_template_file="$template_dir/component-php.template"
 model_db_php_template_file="$template_dir/model-db-php.template"
+model_dto_php_template_file="$template_dir/model-dto-php.template"
 model_php_template_file="$template_dir/model-php.template"
 service_db_php_template_file="$template_dir/service-db-php.template"
 service_php_template_file="$template_dir/service-php.template"
@@ -53,7 +77,16 @@ function make_namespace() { # args = all name parts
     local old_ifs=$IFS
     IFS='-'
     for (( i=0; i<length-1; i++ )); do
-        local sub_parts=(${path_parts[$i]})
+        path_part=${path_parts[$i]}
+
+        if [[ $i == 0 ]]; then
+            if [[ $path_part == 'db' || $path_part == 'dto' ]]; then
+                namespace+="\\${path_part^^}"
+                continue
+            fi
+        fi
+
+        local sub_parts=($path_part)
         
         local namespace_part='\'
         for element in ${sub_parts[@]}; do
@@ -184,6 +217,8 @@ case $type in
         prepare 'model' $models_dir
         if [[ ${split_name[0]} == 'db' ]]; then
             file_from_template $model_db_php_template_file "$dir_path/$base_name.db.model.php"
+        elif [[ ${split_name[0]} == 'dto' ]]; then
+            file_from_template $model_dto_php_template_file "$dir_path/$base_name.dto.model.php"
         else
             file_from_template $model_php_template_file "$dir_path/$base_name.model.php"
         fi
