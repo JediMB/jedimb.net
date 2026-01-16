@@ -15,7 +15,6 @@ Component::hide();
 Component::renderCSS();
 Component::addJSModule();
 
-
 ?>
 
 <modal-popup>
