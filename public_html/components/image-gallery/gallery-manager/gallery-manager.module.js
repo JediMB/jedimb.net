@@ -65,6 +65,9 @@ customElements.define('gallery-manager-component', class GalleryManagerComponent
             const galleryId = Number(event.target.dataset.galleryId);
             this.#renderGalleryImageLists(galleryId);
         });
+
+        this.#deleteGalleryButton.addEventListener('click', () => this.#deleteGallery());
+        this.#saveGalleryButton.addEventListener('click', () => this.#updateGallery());
         
         this.#galleryListFieldset.disabled = false;
     }
@@ -72,6 +75,18 @@ customElements.define('gallery-manager-component', class GalleryManagerComponent
     disconnectedCallback() {}
 
     connectedMoveCallback() {}
+
+    #createGallery() {
+
+    }
+
+    #updateGallery() {
+
+    }
+
+    #deleteGallery() {
+
+    }
 
     /** @param {HTMLUListElement} list */
     #dropItem(list) {
@@ -172,6 +187,7 @@ customElements.define('gallery-manager-component', class GalleryManagerComponent
                     this.#dragItem = null;
                     this.#dragTarget = null;
                     this.#append = false;
+                    this.#deleteGalleryButton.toggleAttribute('hidden', !!includedImageList.firstElementChild);
                 });
             }
 
@@ -201,6 +217,7 @@ customElements.define('gallery-manager-component', class GalleryManagerComponent
             this.#excludedImagesFieldset.replaceChildren(excludedImageList);
             this.#includedImagesFieldset.disabled = false;
             this.#excludedImagesFieldset.disabled = false;
+            this.#deleteGalleryButton.toggleAttribute('hidden', !!includedImageList.firstElementChild);
         });
     }
 });
