@@ -2,20 +2,17 @@
 
 namespace Services\DB;
 
-require_once 'models/db/gallery.db.model.php';
 require_once 'models/db/image.db.model.php';
 require_once 'services/base/base.db.service.php';
 
 use Exception;
 use PDO;
-use Models\DB\Gallery;
-use Models\DB\GalleryImage;
 use Models\DB\Image;
 use Models\DTO\Image as ImageDTO;
 use PDOException;
 use Services\Base\BaseDBService;
 
-class ImageGalleryDBService extends BaseDBService {
+class ImageDBService extends BaseDBService {
     protected function __construct() {
         parent::__construct();
     }
@@ -51,48 +48,6 @@ class ImageGalleryDBService extends BaseDBService {
         }
     }
 
-    /** @return Gallery[] */
-    public function getGalleries() : array {
-        try {
-            $galleries = $this->dbService->selectView('gallery');
-
-            return array_map(function($gallery) {
-                return new Gallery($gallery);
-            }, $galleries);
-        }
-        catch (PDOException $e) {
-            throw new Exception('Database error: ' . $e->getMessage());
-        }
-    }
-
-    public function getGallery(int $id) : Gallery {
-        try {
-            $gallery = $this->dbService->selectById('gallery', $id);
-
-            if (!$gallery)
-                throw new Exception('Invalid gallery ID');
-
-            return new Gallery($gallery);
-
-        }
-        catch (PDOException $e) {
-            throw new Exception('Database error: ' . $e->getMessage());
-        }
-    }
-
-    public function getGalleryImageData() : array {
-        try {
-            $galleryImageData = $this->dbService->selectView('gallery_image');
-
-            return array_map(function($galleryImage) {
-                return new GalleryImage($galleryImage);
-            }, $galleryImageData);
-        }
-        catch (PDOException $e) {
-            throw new Exception('Database error: ' . $e->getMessage());
-        }
-    }
-
     public function getImage(int $id) : Image {
         try {
             $image = $this->dbService->selectById('image', $id);
@@ -108,6 +63,7 @@ class ImageGalleryDBService extends BaseDBService {
         }
     }
 
+    /** @return Image[] */
     public function getImages() : array {
         try {
             $images = $this->dbService->selectView('images_plus_gallery_ids');
