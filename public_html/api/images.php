@@ -20,7 +20,8 @@ $input = json_decode(file_get_contents('php://input'), true);
 
 switch ( $_SERVER['REQUEST_METHOD'] ) {
     case 'DELETE':
-        conditionChecks([ UserPermission::Deleting ]);
+        if ( ( $response = conditionChecks([ UserPermission::Deleting ]) ) )
+            return $response;
         
         try {
             if (empty($id))
@@ -51,7 +52,8 @@ switch ( $_SERVER['REQUEST_METHOD'] ) {
         }
 
     case 'PATCH':
-        conditionChecks([ UserPermission::Editing ]);
+        if ( ( $response = conditionChecks([ UserPermission::Editing ]) ) )
+            return $response;
         
         try {
             $imageDTO = new Image($input);
@@ -65,7 +67,8 @@ switch ( $_SERVER['REQUEST_METHOD'] ) {
         }
 
     case 'POST':
-        conditionChecks([ UserPermission::Publishing ]);
+        if ( ( $response = conditionChecks([ UserPermission::Publishing ]) ) )
+            return $response;
 
         try {
             if (empty($input['dto']) || empty($input['file']))
@@ -73,6 +76,8 @@ switch ( $_SERVER['REQUEST_METHOD'] ) {
 
             if (strlen($input['file']) > UPLOAD_IMAGE_SIZE_LIMIT)
                 return Response::BadRequest(TEXT_IMAGE_SIZE_LIMIT);
+
+            // TODO: Logic not related to the API input should be moved to service
 
             $basename = date('Ymd_His_') . str_pad(dechex(rand(0x0000, 0xFFFF)), 4, '0', STR_PAD_LEFT);
             $filepath = PATH_TEMP_DIR . '/' . $basename;
