@@ -11,7 +11,7 @@ class HttpClient {
      * @param {string} httpMethod 
      * @returns {Promise<any>}
      */
-    async #responseHandling(response, httpMethod) {
+    async #responseHandling(response, api, httpMethod) {
         if (!response.ok) {
             console.error(`Error ${response.status}: %c ${httpMethod} %c '${this.#baseApiUrl + api}' failed.`, this.#requestTypeCss);
 
@@ -52,7 +52,7 @@ class HttpClient {
             })
         );
 
-        return await this.#responseHandling(response, 'GET');
+        return await this.#responseHandling(response, api, 'GET');
     }
 
     /**
@@ -72,7 +72,7 @@ class HttpClient {
             })
         );
 
-        return await this.#responseHandling(response, 'POST');
+        return await this.#responseHandling(response, api, 'POST');
     }
 
     /**
@@ -92,7 +92,7 @@ class HttpClient {
             })
         );
 
-        return await this.#responseHandling(response, 'PUT');
+        return await this.#responseHandling(response, api, 'PUT');
     }
 
     /**
@@ -112,7 +112,7 @@ class HttpClient {
             })
         );
 
-        return await this.#responseHandling(response, 'PATCH');
+        return await this.#responseHandling(response, api, 'PATCH');
     }
 
     /**
@@ -134,7 +134,7 @@ class HttpClient {
             })
         );
 
-        return await this.#responseHandling(response, 'DELETE');
+        return await this.#responseHandling(response, api, 'DELETE');
     }
 }
 const httpClient = new HttpClient();
