@@ -20,7 +20,7 @@ $input = json_decode(file_get_contents('php://input'), true);
 
 switch ( $_SERVER['REQUEST_METHOD'] ) {
     case 'DELETE':
-        if ( ( $response = conditionChecks([ UserPermission::Deleting ]) ) )
+        if ( ( $response = conditionChecks($input, [ UserPermission::Deleting ]) ) )
             return $response;
         
         try {
@@ -52,7 +52,7 @@ switch ( $_SERVER['REQUEST_METHOD'] ) {
         }
 
     case 'PATCH':
-        if ( ( $response = conditionChecks([ UserPermission::Editing ]) ) )
+        if ( ( $response = conditionChecks($input, [ UserPermission::Editing ]) ) )
             return $response;
         
         try {
@@ -67,7 +67,7 @@ switch ( $_SERVER['REQUEST_METHOD'] ) {
         }
 
     case 'POST':
-        if ( ( $response = conditionChecks([ UserPermission::Publishing ]) ) )
+        if ( ( $response = conditionChecks($input, [ UserPermission::Publishing ]) ) )
             return $response;
 
         try {
@@ -122,8 +122,8 @@ switch ( $_SERVER['REQUEST_METHOD'] ) {
         return Response::InvalidRequest();
 }
 
-function conditionChecks(array $permissions) {
-    global $sessionService, $input; /** @var SessionService $sessionService */
+function conditionChecks(mixed $requestBody, array $permissions) {
+    global $sessionService; /** @var SessionService $sessionService */
     
     if (!$sessionService->isLoggedIn())
         return Response::Forbidden(TEXT_NOT_LOGGED_IN);
@@ -131,7 +131,7 @@ function conditionChecks(array $permissions) {
     if (!$sessionService->hasPermissions($permissions))
         return Response::Forbidden(TEXT_INSUFFICIENT_PERMISSIONS);
 
-    if (empty($input))
+    if (empty($requestBody))
         return Response::BadRequest('Request body is empty');
 }
 
