@@ -53,9 +53,9 @@ class SessionService {
 
     #setCookies({ userId = '', token = '', validator = '', expiresOn = new Date(0) }) {
         const expires = expiresOn.toUTCString();
-        document.cookie = `${cookieUserKey}=${userId}; expires=${expires};`;
-        document.cookie = `${cookieTokenKey}=${token}; expires=${expires};`;
-        document.cookie = `${cookieValidatorKey}=${validator}; expires=${expires};`;
+        document.cookie = `${cookieUserKey}=${userId}; expires=${expires}; sameSite=strict; secure;`;
+        document.cookie = `${cookieTokenKey}=${token}; expires=${expires}; sameSite=strict; secure;`;
+        document.cookie = `${cookieValidatorKey}=${validator}; expires=${expires}; sameSite=strict; secure;`;
     }
 
     async #fetchUser() {
