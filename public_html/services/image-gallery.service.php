@@ -47,12 +47,54 @@ class ImageGalleryService extends Singleton {
         ];
     }
 
-    /** @return array{'image': \Models\DB\Image, 'modifiedOn': \DateTime} */
-    public function createImage(ImageDTO $imageDTO) : array {
-        return [
-            'image' => $this->imageDbService->createImage($imageDTO),
-            'modifiedOn' => $this->tableModifiedService->createOrUpdateTableModifiedDate('image')
-        ];
+    /** @return (array{'image': \Models\DB\Image, 'modifiedOn': \DateTime}|array{'badrequest': true, 'message': string}) */
+    public function createImage(ImageDTO $imageDTO, string $fileData) : array {
+        try {
+            $basename = date('Ymd_His_') . str_pad(dechex(rand(0x0000, 0xFFFF)), 4, '0', STR_PAD_LEFT);
+            $filepath = PATH_TEMP_DIR . '/' . $basename;
+
+            if (!realpath(PATH_TEMP_DIR))
+                mkdir(PATH_TEMP_DIR, 0777, true);
+
+            if ( !($file = fopen($filepath, 'wb')) )
+                throw new Error(TEXT_IMAGE_COULD_NOT_BE_CREATED);
+
+            stream_filter_append($file, 'convert.base64-decode');
+            fwrite($file, $fileData);
+            fclose($file);
+
+            $mime = mime_content_type($filepath);
+
+            if (empty(UPLOAD_IMAGE_MIME_TYPES[$mime])) {
+                unlink($filepath);
+                return [
+                    'badrequest' => true,
+                    'message' => TEXT_IMAGE_DISALLOWED_TYPE . $mime
+                ];
+            }
+
+            $finalName = "$basename." . UPLOAD_IMAGE_MIME_TYPES[$mime];
+            $imageDTO->filename = $finalName;
+
+            $createdImage = $this->imageDbService->createImage($imageDTO);
+            $modifiedOn = $this->tableModifiedService->createOrUpdateTableModifiedDate('image');
+
+            if (!realpath(PATH_IMAGE_GALLERY))
+                mkdir(PATH_IMAGE_GALLERY, 0777, true);
+
+            rename($filepath, PATH_IMAGE_GALLERY . "/$finalName");
+        
+            return [
+                'image' => $createdImage,
+                'modifiedOn' => $modifiedOn
+            ];
+        }
+        catch (Exception $e) {
+            if ( isset($filepath) && ($realpath = realpath($filepath)) )
+                unlink($realpath);
+
+            throw $e;
+        }
     }
 
     /** @return array{'id': int, 'modifiedOn': \DateTime} */

@@ -70,51 +70,21 @@ switch ( $_SERVER['REQUEST_METHOD'] ) {
         if ( ( $response = conditionChecks($input, [ UserPermission::Publishing ]) ) )
             return $response;
 
+        if (empty($input['dto']) || empty($input['file']))
+            return Response::BadRequest(TEXT_MALFORMED_REQUEST);
+
+        if (strlen($input['file']) > UPLOAD_IMAGE_SIZE_LIMIT)
+            return Response::BadRequest(TEXT_IMAGE_SIZE_LIMIT);
+
         try {
-            if (empty($input['dto']) || empty($input['file']))
-                return Response::BadRequest(TEXT_MALFORMED_REQUEST);
-
-            if (strlen($input['file']) > UPLOAD_IMAGE_SIZE_LIMIT)
-                return Response::BadRequest(TEXT_IMAGE_SIZE_LIMIT);
-
-            // TODO: Logic not related to the API input should be moved to service
-
-            $basename = date('Ymd_His_') . str_pad(dechex(rand(0x0000, 0xFFFF)), 4, '0', STR_PAD_LEFT);
-            $filepath = PATH_TEMP_DIR . '/' . $basename;
-
-            if (!realpath(PATH_TEMP_DIR))
-                mkdir(PATH_TEMP_DIR, 0777, true);
-
-            if ( !($file = fopen($filepath, 'wb')) )
-                return Response::Error([TEXT_IMAGE_COULD_NOT_BE_CREATED]);
-
-            stream_filter_append($file, 'convert.base64-decode');
-            fwrite($file, $input['file']);
-            fclose($file);
-
-            $mime = mime_content_type($filepath);
-
-            if (empty(UPLOAD_IMAGE_MIME_TYPES[$mime])) {
-                unlink($filepath);
-                return Response::BadRequest(TEXT_IMAGE_DISALLOWED_TYPE . $mime);
-            }
-
-            $finalName = "$basename." . UPLOAD_IMAGE_MIME_TYPES[$mime];
-            $input['dto']['filename'] = $finalName;
+            $result = $service->createImage(new Image($input['dto']), $input['file']);
             
-            $result = $service->createImage(new Image($input['dto']));
-
-            if (!realpath(PATH_IMAGE_GALLERY))
-                mkdir(PATH_IMAGE_GALLERY, 0777, true);
-
-            rename($filepath, PATH_IMAGE_GALLERY . "/$finalName");
+            if (isset($result['badrequest']))
+                return Response::BadRequest($result['message']);
 
             return Response::Success($result);
         }
         catch (Exception $e) {
-            if ( isset($filepath) && ($realpath = realpath($filepath)) )
-                unlink($realpath);
-
             return Response::Error([$e->getMessage()]);
         }
 
