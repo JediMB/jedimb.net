@@ -21,7 +21,7 @@ $input = json_decode(file_get_contents('php://input'), true);
 
 switch ( $_SERVER['REQUEST_METHOD'] ) {
     case 'DELETE':
-        if ( ( $response = conditionChecks($input, [ UserPermission::Deleting ]) ) )
+        if ( ( $response = conditionChecks($id, [ UserPermission::Deleting ]) ) )
             return $response;
 
         try {
