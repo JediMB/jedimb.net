@@ -12,6 +12,7 @@ require_once 'services/db/gallery-image.db.service.php';
 require_once 'services/db/gallery.db.service.php';
 require_once 'services/db/image.db.service.php';
 
+use Error;
 use Exception;
 use Models\DB\Gallery;
 use Models\DB\GalleryImage;
@@ -96,16 +97,16 @@ class ImageGalleryService extends Singleton {
         return $this->imageDbService->getImage($id);
     }
 
+    /** @return Image[] */
     public function getImages() : array {
-        /*
-            TODO:
-            Use $this->galleryImageDbService->getGalleryImages();
-            and merge that data into  the Image objects here instead of
-            in ImageDBService
+        $images = $this->imageDbService->getImages();
+        $mappedImages = array_combine(array_map(fn($image) => $image->id, $images), $images); /** @var Image[] $mappedImages */
 
-            Then remove the view that is used now.
-        */
-        return $this->imageDbService->getImages();
+        $galleryImages = $this->galleryImageDbService->getGalleryImages();
+        foreach ($galleryImages as $galleryImage)
+            $mappedImages[$galleryImage->imageId]->galleryIds[] = $galleryImage->galleryId;
+
+        return $mappedImages;
     }
 
     /** @return array{'gallery': \Models\DB\Gallery, 'modifiedOn': \DateTime} */

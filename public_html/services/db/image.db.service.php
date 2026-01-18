@@ -66,26 +66,12 @@ class ImageDBService extends BaseDBService {
     /** @return Image[] */
     public function getImages() : array {
         try {
-            $images = $this->dbService->selectView('images_plus_gallery_ids');
+            $images = $this->dbService->selectView('image');
 
-            $galleryIds = [];
-            $groupedImages = [];
-            foreach ($images as $image) {
-                $groupedImages[$image['id']] = $image;
+            if (!$images)
+                return [];
 
-                if ($image['gallery_id'])
-                    $galleryIds[$image['id']][] = $image['gallery_id'];
-            }
-
-            $groupedImages = array_map(function($image) {
-                return new Image($image);
-            }, $groupedImages);
-
-            foreach ($galleryIds as $key => $ids) {
-                $groupedImages[$key]->galleryIds = $ids;
-            }
-
-            return $groupedImages;
+            return array_map(fn($image) => new Image($image), $images);
         }
         catch (PDOException $e) {
             throw new Exception('Database error: ' . $e->getMessage());
