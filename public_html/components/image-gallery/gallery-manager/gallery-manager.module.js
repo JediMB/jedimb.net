@@ -67,7 +67,7 @@ customElements.define('gallery-manager-component', class GalleryManagerComponent
         });
 
         this.#deleteGalleryButton.addEventListener('click', () => this.#deleteGallery());
-        this.#saveGalleryButton.addEventListener('click', () => this.#updateGallery());
+        this.#saveGalleryButton.addEventListener('click', () => this.#saveGalleryImages());
         
         this.#galleryListFieldset.disabled = false;
     }
@@ -76,15 +76,24 @@ customElements.define('gallery-manager-component', class GalleryManagerComponent
 
     connectedMoveCallback() {}
 
-    #createGallery() {
+    async #createGallery() {
 
     }
 
-    #updateGallery() {
+    async #deleteGallery() {
 
     }
 
-    #deleteGallery() {
+    async #saveGalleryImages() {
+        const galleryId = Number(this.#galleryListFieldset.querySelector(':checked').dataset.galleryId);
+
+        const imageIds = Array.from(this.#includedImagesFieldset.querySelectorAll('input'))
+            .map(input => Number(input.dataset.imageId));
+
+        const result = await this.#service.updateGalleryImages(galleryId, imageIds);
+    }
+
+    async #updateGallery() {
 
     }
 

@@ -1,4 +1,5 @@
 import Emitter from "/js/utilities/emitter.js";
+import GalleryImagesDTO from "/js/models/image-gallery/gallery-images.dto.model.js";
 import Image from "/js/models/image-gallery/image.model.js";
 import ImageDTO from "/js/models/image-gallery/image.dto.model.js";
 import imageGalleryApiService from "/js/services/api/image-gallery-api.service.js";
@@ -8,6 +9,7 @@ export { imageGalleryService as default };
 
 class ImageGalleryService {
     #initialized = false;
+    #galleryImageModified = new Date(0);
     #galleryModified = new Date(0);
     #imageModified = new Date(0);
     #galleries = new Emitter([]);
@@ -20,6 +22,8 @@ class ImageGalleryService {
     }
 
     /** @returns {Date} */
+    get galleryImageModified() { return new Date(this.#galleryImageModified); }
+    /** @returns {Date} */
     get galleryModified() { return new Date(this.#galleryModified); }
     /** @returns {Date} */
     get imageModified() { return new Date(this.#imageModified); }
@@ -29,31 +33,21 @@ class ImageGalleryService {
     get images() { return this.#images; }
 
     async #fetchImageData() {
-        const imageModified = await tableModifiedApiService.getImageDate();
+        const galleryImageModified = await tableModifiedApiService.getGalleryImageDate();
         const galleryModified = await tableModifiedApiService.getGalleryDate();
+        const imageModified = await tableModifiedApiService.getImageDate();
+
         let images;
         let galleries;
 
-        if (imageModified > this.#imageModified) {
+        if (imageModified > this.#imageModified || galleryImageModified > this.#galleryImageModified) {
             this.#imageModified = imageModified;
             images = await imageGalleryApiService.getImages();
         }
 
-        if (galleryModified > this.#galleryModified) {
+        if (galleryModified > this.#galleryModified || galleryImageModified > this.#galleryImageModified) {
             this.#galleryModified = galleryModified;
             galleries = await imageGalleryApiService.getGalleries();
-        }
-
-        if (images.length && galleries.length) {
-            images.forEach(image => 
-                image.galleryList = image.galleryIds.map(galleryId =>
-                    galleries.find(gallery => galleryId === gallery.id))
-            );
-
-            galleries.forEach(gallery => 
-                gallery.imageList = gallery.imageIds.map(imageId =>
-                    images.find(image => imageId === image.id))
-            );
         }
 
         if (images)
@@ -122,6 +116,36 @@ class ImageGalleryService {
         }
         
         this.#images.first(value => next.call(this, value));
+    }
+
+    /**
+     * @param {number} galleryId 
+     * @param {number[]} imageIds 
+     */
+    async updateGalleryImages(galleryId, imageIds) {
+        if (Number.isInteger(galleryId) === false || galleryId < 1)
+            throw new Error('Gallery ID is not a valid integer');
+
+        imageIds.forEach((imageId, index) => {
+            if (Number.isInteger(imageId) === false || imageId < 1)
+                throw new Error(`Image ID at index ${index} is not a valid integer`);
+        });
+
+        const galleryImagesDTO = new GalleryImagesDTO(galleryId, imageIds);
+
+        const result = await imageGalleryApiService.patchGallery(galleryImagesDTO);
+
+        if (!result)
+            throw new Error('No result received from patchGallery');
+
+        const [ gallery, modifiedOn ] = result;
+
+        this.#galleryImageModified = modifiedOn;
+
+        const index = this.#galleries.getValue().findIndex(i => i.id === gallery.id);
+        this.#galleries.setValue(gallery, index);
+
+        return true;
     }
 
     /**
