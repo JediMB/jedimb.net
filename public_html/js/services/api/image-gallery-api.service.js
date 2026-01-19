@@ -1,5 +1,6 @@
 import httpClient from "/js/http-client.js";
 import Gallery from "/js/models/image-gallery/gallery.model.js";
+import GalleryImagesDTO from "/js/models/image-gallery/gallery-images.dto.model.js";
 import Image from "/js/models/image-gallery/image.model.js";
 import ImageDTO from "/js/models/image-gallery/image.dto.model.js";
 
@@ -32,6 +33,27 @@ class ImageGalleryApiService {
     }
 
     /**
+     * @returns {Promise<(Gallery[]|false)}
+     */
+    async getGalleries() {
+        const response = await this.#httpClient.get('galleries');
+
+        if (!response.success)
+            return false;
+
+        if (!response.value)
+            return [];
+
+        const galleries = [];
+        for (const key in response.value) {
+            const gallery = response.value[key];
+            galleries.push(new Gallery(gallery));
+        }
+
+        return galleries;
+    }
+
+    /**
      * @returns {Promise<(Image[]|false)>}
      */
     async getImages() {
@@ -54,24 +76,25 @@ class ImageGalleryApiService {
     }
 
     /**
-     * @returns {Promise<(Gallery[]|false)}
+     * @param {GalleryImagesDTO} galleryImagesDTO 
+     * @returns {Promise<([Gallery, Date]|false)>}
      */
-    async getImageGalleries() {
-        const response = await this.#httpClient.get('galleries');
+    async patchGallery(galleryImagesDTO ) {
+        const response = await this.#httpClient.patch('galleries', galleryImagesDTO);
 
         if (!response.success)
             return false;
 
-        if (!response.value)
-            return [];
+        if (!response.value.galleryImages)
+            throw new Error('Update failed to return gallery images data');
 
-        const galleries = [];
-        for (const key in response.value) {
-            const gallery = response.value[key];
-            galleries.push(new Gallery(gallery));
-        }
+        if (!response.modifiedOn)
+            throw new Error('Update failed to return table modified data');
 
-        return galleries;
+        return [
+            response.value.gallery,
+            new Date(response.value.modifiedOn.date + response.value.modifiedOn.timezone)
+        ];
     }
 
     /**

@@ -41,7 +41,7 @@ class ImageGalleryService {
 
         if (galleryModified > this.#galleryModified) {
             this.#galleryModified = galleryModified;
-            galleries = await imageGalleryApiService.getImageGalleries();
+            galleries = await imageGalleryApiService.getGalleries();
         }
 
         if (images.length && galleries.length) {
