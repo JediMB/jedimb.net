@@ -61,11 +61,10 @@ switch ( $_SERVER['REQUEST_METHOD'] ) {
 
             $result = $service->updateGalleryImages($galleryImagesDTO);
 
-            // TODO: Return a GalleryImages object to easily update frontend gallery with correct information
-            if ($result === true)
-                return Response::Success(true);
+            if ($result['errors'] === true)
+                return Response::Error($result['messages']);
             
-            return Response::Error($result);
+            return Response::Success($result);
         }
         catch (Exception $e) {
             return Response::Error([$e->getMessage()]);

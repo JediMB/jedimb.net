@@ -165,8 +165,8 @@ class ImageGalleryService extends Singleton {
         ];
     }
 
-    /** @return string[]|true */
-    public function updateGalleryImages(GalleryImages $galleryImagesDTO) : array|true {
+    /** @return (array{'gallery': \Models\DB\Gallery, 'modifiedOn': \DateTime}|array{'errors': true, 'messages': string[]}) */
+    public function updateGalleryImages(GalleryImages $galleryImagesDTO) : array {
         if ( ( $galleryId = $galleryImagesDTO->galleryId ) < 1 )
             throw new Exception('A gallery id cannot be less than 1.');
 
@@ -210,7 +210,6 @@ class ImageGalleryService extends Singleton {
 
             if (!$result->match($addedGalleryImage))
                 $createErrors[] = $result->id;
-                //throw new Exception('Created GalleryImage did not match source data');
         }
         if ($createErrors)
             $errors[] = "Created GalleryImages did not match source data for rows " . implode(', ', $createErrors);
@@ -242,9 +241,15 @@ class ImageGalleryService extends Singleton {
             $errors[] = "Incorrectly deleted GalleryImages on rows " . implode(', ', $deleteErrors);
 
         if ($errors)
-            return $errors;
+            return [
+                'errors' => true,
+                'messages' => $errors
+            ];
 
-        return true;
+        return [
+            'gallery' => $this->galleryDbService->getGallery($galleryId),
+            'modifiedOn' => $this->tableModifiedService->createOrUpdateTableModifiedDate('gallery_image')
+        ];
     }
 
     /** @return array{'image': \Models\DB\Image, 'modifiedOn': \DateTime} */
