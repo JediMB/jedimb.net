@@ -128,15 +128,32 @@ class ImageGalleryService extends Singleton {
 
     /** @return Gallery[] */
     public function getGalleries() : array {
-        return $this->galleryDbService->getGalleries();
+        $galleries = $this->galleryDbService->getGalleries();
+        $mappedGalleries = array_combine(array_map(fn($gallery) => $gallery->id, $galleries), $galleries); /** @var Gallery[] $mappedGalleries */
+
+        $galleryImages = $this->galleryImageDbService->getGalleryImages();
+        foreach ($galleryImages as $galleryImage)
+            $mappedGalleries[$galleryImage->galleryId]->imageIds[] = $galleryImage->imageId;
+
+        return $mappedGalleries;
     }
 
     public function getGallery(int $id) : Gallery {
-        return $this->galleryDbService->getGallery($id);
+        $gallery = $this->galleryDbService->getGallery($id);
+        $galleryImages = $this->galleryImageDbService->getGalleryImages($gallery->id);
+
+        $gallery->imageIds = array_map(fn($galleryImage) => $galleryImage->imageId, $galleryImages);
+
+        return $gallery;
     }
 
     public function getImage(int $id) : Image {
-        return $this->imageDbService->getImage($id);
+        $image = $this->imageDbService->getImage($id);
+        $galleryImages = $this->galleryImageDbService->getGalleryImages($id, true);
+
+        $image->galleryIds = array_map(fn($galleryImage) => $galleryImage->galleryId, $galleryImages);
+
+        return $image;
     }
 
     /** @return Image[] */
