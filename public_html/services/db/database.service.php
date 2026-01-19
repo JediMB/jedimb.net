@@ -50,9 +50,10 @@ class DatabaseService extends Singleton {
         return false;
     }
 
-    public function selectByColumnValue(string $table, string $column, mixed $value, int $pdoType = PDO::PARAM_STR) {
+    public function selectByColumnValue(string $table, string $column, mixed $value, int $pdoType = PDO::PARAM_STR, ?string $orderBy = null, bool $descending = false) {
         $query = $this->service->prepare(
-            "SELECT * FROM {$this->schema}.$table WHERE $column = :val"
+            "SELECT * FROM {$this->schema}.$table WHERE $column = :val" .
+            $this->buildOrderString($orderBy, $descending)
         );
         $query->bindParam(':val', $value, $pdoType);
 
@@ -61,9 +62,10 @@ class DatabaseService extends Singleton {
         return $query->fetch();
     }
 
-    public function selectById(string $table, int $id) {
+    public function selectById(string $table, int $id, ?string $orderBy = null, bool $descending = false) {
         $query = $this->service->prepare(
-            "SELECT * FROM {$this->schema}.$table WHERE id = :id"
+            "SELECT * FROM {$this->schema}.$table WHERE id = :id" .
+            $this->buildOrderString($orderBy, $descending)
         );
         $query->bindParam(':id', $id, PDO::PARAM_INT);
 
@@ -100,13 +102,21 @@ class DatabaseService extends Singleton {
         return $query->fetch();
     }
 
-    public function selectView(string $view) {
+    public function selectView(string $view, ?string $orderBy = null, bool $descending = false) {
         $query = $this->service->prepare(
-            "SELECT * FROM {$this->schema}.$view"
+            "SELECT * FROM {$this->schema}.$view" .
+            $this->buildOrderString($orderBy, $descending)
         );
         $query->execute();
 
         return $query->fetchAll() ?: [];
+    }
+
+    private function buildOrderString(?string $orderBy, bool $descending) : string {
+        if (empty($orderBy))
+            return '';
+
+        return " ORDER BY \"$orderBy\" " . ($descending ? 'DESC' : 'ASC');
     }
 }
 

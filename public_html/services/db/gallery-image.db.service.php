@@ -50,11 +50,11 @@ class GalleryImageDBService extends BaseDBService {
     public function getGalleryImages(?int $id = null, bool $isImageId = false) : array {
         try {
             if ($id === null)
-                $galleryImageData = $this->dbService->selectView('gallery_image');
+                $galleryImageData = $this->dbService->selectView('gallery_image', 'order');
             else if (!$isImageId)
-                $galleryImageData = $this->dbService->selectById('gallery_image', $id);
+                $galleryImageData = $this->dbService->selectById('gallery_image', $id, 'order');
             else
-                $galleryImageData = $this->dbService->selectByColumnValue('gallery_image', 'image_id', $id, PDO::PARAM_INT);
+                $galleryImageData = $this->dbService->selectByColumnValue('gallery_image', 'image_id', $id, PDO::PARAM_INT, 'order');
 
             return array_map(function($galleryImage) {
                 return new GalleryImage($galleryImage);
