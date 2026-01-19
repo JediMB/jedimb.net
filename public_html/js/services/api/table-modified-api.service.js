@@ -25,12 +25,16 @@ class TableModifiedApiService {
         return response.value;
     }
 
-    async getImageDate() {
-        return await this.#getModifiedDate('image');
-    }
-
     async getGalleryDate() {
         return await this.#getModifiedDate('gallery');
+    }
+
+    async getGalleryImageDate() {
+        return await this.#getModifiedDate('gallery_image');
+    }
+
+    async getImageDate() {
+        return await this.#getModifiedDate('image');
     }
 }
 const tableModifiedApiService = new TableModifiedApiService();
