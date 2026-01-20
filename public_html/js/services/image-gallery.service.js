@@ -121,6 +121,7 @@ class ImageGalleryService {
     /**
      * @param {number} galleryId 
      * @param {number[]} imageIds 
+     * @returns {boolean}
      */
     async updateGalleryImages(galleryId, imageIds) {
         if (Number.isInteger(galleryId) === false || galleryId < 1)
@@ -142,8 +143,17 @@ class ImageGalleryService {
 
         this.#galleryImageModified = modifiedOn;
 
-        const index = this.#galleries.getValue().findIndex(i => i.id === gallery.id);
-        this.#galleries.setValue(gallery, index);
+        this.#galleries.getValue().find(g => g.id === gallery.id).imageIds = [...gallery.imageIds];
+
+        /** @type Image[] */
+        const images = this.#images.getValue();
+        for (const image of images) {
+            if (removed.imageIds.find(iId => iId === image.id))
+                image.galleryIds = image.galleryIds.filter(gId => gId !== gallery.id);
+
+            if (gallery.imageIds.find(iId => iId === image.id) && image.galleryIds.every(gId => gId !== gallery.id))
+                image.galleryIds.push(gallery.id);
+        }
 
         return true;
     }

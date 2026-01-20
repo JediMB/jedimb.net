@@ -85,12 +85,14 @@ customElements.define('gallery-manager-component', class GalleryManagerComponent
     }
 
     async #saveGalleryImages() {
+        this.#saveGalleryButton.disabled = true;
+
         const galleryId = Number(this.#galleryListFieldset.querySelector(':checked').dataset.galleryId);
 
         const imageIds = Array.from(this.#includedImagesFieldset.querySelectorAll('input'))
             .map(input => Number(input.dataset.imageId));
 
-        const result = await this.#service.updateGalleryImages(galleryId, imageIds);
+        await this.#service.updateGalleryImages(galleryId, imageIds);
     }
 
     async #updateGallery() {
