@@ -121,7 +121,7 @@ class ImageGalleryService {
     /**
      * @param {number} galleryId 
      * @param {number[]} imageIds 
-     * @returns {boolean}
+     * @returns {Promise<boolean>}
      */
     async updateGalleryImages(galleryId, imageIds) {
         if (Number.isInteger(galleryId) === false || galleryId < 1)
