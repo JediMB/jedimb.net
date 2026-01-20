@@ -86,13 +86,18 @@ customElements.define('gallery-manager-component', class GalleryManagerComponent
 
     async #saveGalleryImages() {
         this.#saveGalleryButton.disabled = true;
+        this.#deleteGalleryButton.disabled = true;
+        this.#galleryListFieldset.disabled = true;
 
         const galleryId = Number(this.#galleryListFieldset.querySelector(':checked').dataset.galleryId);
 
         const imageIds = Array.from(this.#includedImagesFieldset.querySelectorAll('input'))
             .map(input => Number(input.dataset.imageId));
 
-        await this.#service.updateGalleryImages(galleryId, imageIds);
+        if (await this.#service.updateGalleryImages(galleryId, imageIds)) {
+            this.#deleteGalleryButton.disabled = false;
+            this.#galleryListFieldset.disabled = false;
+        }
     }
 
     async #updateGallery() {
