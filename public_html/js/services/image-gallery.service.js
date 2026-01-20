@@ -131,14 +131,14 @@ class ImageGalleryService {
                 throw new Error(`Image ID at index ${index} is not a valid integer`);
         });
 
-        const galleryImagesDTO = new GalleryImagesDTO(galleryId, imageIds);
+        const galleryImagesDTO = new GalleryImagesDTO({galleryId, imageIds});
 
         const result = await imageGalleryApiService.patchGallery(galleryImagesDTO);
 
         if (!result)
             throw new Error('No result received from patchGallery');
 
-        const [ gallery, modifiedOn ] = result;
+        const [ gallery, removed, modifiedOn ] = result;
 
         this.#galleryImageModified = modifiedOn;
 

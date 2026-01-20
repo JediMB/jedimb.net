@@ -1,9 +1,8 @@
 export default class GalleryImagesDTO {
     /**
-     * @param {number} galleryId 
-     * @param {number[]} imageIds 
+     * @param {{galleryId: number, imageIds: number[]}} param0 
      */
-    constructor(galleryId, imageIds) {
+    constructor({galleryId, imageIds}) {
         this.galleryId = galleryId;
         this.imageIds = [...imageIds];
     }

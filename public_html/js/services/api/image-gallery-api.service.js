@@ -27,7 +27,7 @@ class ImageGalleryApiService {
             throw new Error('Delete failed to return image data');
 
         return [
-            response.value.id,
+            Number(response.value.id),
             new Date(response.value.modifiedOn.date + response.value.modifiedOn.timezone)
         ];
     }
@@ -72,12 +72,11 @@ class ImageGalleryApiService {
         }
 
         return images;
-
     }
 
     /**
      * @param {GalleryImagesDTO} galleryImagesDTO 
-     * @returns {Promise<([Gallery, Date]|false)>}
+     * @returns {Promise<([Gallery, GalleryImagesDTO, Date]|false)>}
      */
     async patchGallery(galleryImagesDTO ) {
         const response = await this.#httpClient.patch('galleries', galleryImagesDTO);
@@ -85,14 +84,15 @@ class ImageGalleryApiService {
         if (!response.success)
             return false;
 
-        if (!response.value.galleryImages)
-            throw new Error('Update failed to return gallery images data');
+        if (!response.value.gallery)
+            throw new Error('Update failed to return gallery data');
 
-        if (!response.modifiedOn)
+        if (!response.value.modifiedOn)
             throw new Error('Update failed to return table modified data');
 
         return [
-            response.value.gallery,
+            new Gallery(response.value.gallery),
+            new GalleryImagesDTO(response.value.removed),
             new Date(response.value.modifiedOn.date + response.value.modifiedOn.timezone)
         ];
     }
@@ -121,7 +121,7 @@ class ImageGalleryApiService {
 
     /**
      * @param {Object} data 
-     * @returns {Promise<false>}
+     * @returns {Promise<([Image, Date]|false)>}
      */
     async postImage(data) {
         const response = await this.#httpClient.post('images', data);
