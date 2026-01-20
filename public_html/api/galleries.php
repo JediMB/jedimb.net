@@ -61,7 +61,7 @@ switch ( $_SERVER['REQUEST_METHOD'] ) {
 
             $result = $service->updateGalleryImages($galleryImagesDTO);
 
-            if ($result['errors'] === true)
+            if (!empty($result['errors']))
                 return Response::Error($result['messages']);
             
             return Response::Success($result);

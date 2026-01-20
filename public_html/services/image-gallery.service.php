@@ -39,7 +39,7 @@ class ImageGalleryService extends Singleton {
         $this->tableModifiedService = TableModifiedService::getInstance();
     }
 
-    /** @return array{'gallery': \Models\DB\Gallery, 'modifiedOn': \DateTime} */
+    /** @return (array{'gallery': Gallery, 'modifiedOn': \DateTime}) */
     public function createGallery(GalleryDTO $galleryDTO) : array {
         return [
             'gallery' => $this->galleryDbService->createGallery($galleryDTO),
@@ -47,7 +47,7 @@ class ImageGalleryService extends Singleton {
         ];
     }
 
-    /** @return (array{'image': \Models\DB\Image, 'modifiedOn': \DateTime}|array{'badrequest': true, 'message': string}) */
+    /** @return (array{'image': Image, 'modifiedOn': \DateTime}|array{'badrequest': true, 'message': string}) */
     public function createImage(ImageDTO $imageDTO, string $fileData) : array {
         try {
             $basename = date('Ymd_His_') . str_pad(dechex(rand(0x0000, 0xFFFF)), 4, '0', STR_PAD_LEFT);
@@ -97,7 +97,7 @@ class ImageGalleryService extends Singleton {
         }
     }
 
-    /** @return array{'id': int, 'modifiedOn': \DateTime} */
+    /** @return (array{'id': int, 'modifiedOn': \DateTime}) */
     public function deleteGallery(int $id) : array|false {
         $deletedGallery = $this->galleryDbService->deleteGallery($id);
 
@@ -110,7 +110,7 @@ class ImageGalleryService extends Singleton {
         ];
     }
 
-    /** @return array{'id': int, 'modifiedOn': \DateTime} */
+    /** @return (array{'id': int, 'modifiedOn': \DateTime}) */
     public function deleteImage(int $id) : array|false {
         $deletedImage = $this->imageDbService->deleteImage($id);
 
@@ -168,7 +168,7 @@ class ImageGalleryService extends Singleton {
         return $mappedImages;
     }
 
-    /** @return array{'gallery': \Models\DB\Gallery, 'modifiedOn': \DateTime} */
+    /** @return (array{'gallery': Gallery, 'modifiedOn': \DateTime}) */
     public function updateGallery(GalleryDTO $galleryDTO) : array {
         $gallery = $this->galleryDbService->getGallery($galleryDTO->id);
         GalleryDTO::update($gallery, $galleryDTO);
@@ -182,7 +182,7 @@ class ImageGalleryService extends Singleton {
         ];
     }
 
-    /** @return (array{'gallery': \Models\DB\Gallery, 'modifiedOn': \DateTime}|array{'errors': true, 'messages': string[]}) */
+    /** @return (array{'gallery': Gallery, 'removed': GalleryImages, 'modifiedOn': \DateTime}|array{'errors': true, 'messages': string[]}) */
     public function updateGalleryImages(GalleryImages $galleryImagesDTO) : array {
         if ( ( $galleryId = $galleryImagesDTO->galleryId ) < 1 )
             throw new Exception('A gallery id cannot be less than 1.');
@@ -242,15 +242,23 @@ class ImageGalleryService extends Singleton {
         if ($updateErrors)
             $errors[] = "Updated GalleryImages did not match source data for rows " . implode(', ', $updateErrors);
 
+        $deletedGalleryImageRows = new GalleryImages(['galleryId' => $galleryId, 'imageIds' => []]);
         $deleteMissing = [];
         $deleteErrors = [];
         foreach ($removedGalleryImages as $removedGalleryImage) {
             $result = $this->galleryImageDbService->deleteGalleryImage($removedGalleryImage->id);
 
-            if (!$result)
+            if (!$result) {
                 $deleteMissing[] = true;
-            else if ($result->id !== $removedGalleryImage->id)
+                continue;
+            }
+            
+            if ($result->id !== $removedGalleryImage->id) {
                 $deleteErrors[] = $result->id;
+                continue;
+            }
+
+            $deletedGalleryImageRows->imageIds[] = $result->imageId;
         }
         if ($deleteMissing)
             $errors[] = "Attempted to delete nonexistent GalleryImages on rows " . implode(', ', $deleteMissing);
@@ -264,12 +272,13 @@ class ImageGalleryService extends Singleton {
             ];
 
         return [
-            'gallery' => $this->galleryDbService->getGallery($galleryId),
+            'gallery' => $this->getGallery($galleryId),
+            'removed' => $deletedGalleryImageRows,
             'modifiedOn' => $this->tableModifiedService->createOrUpdateTableModifiedDate('gallery_image')
         ];
     }
 
-    /** @return array{'image': \Models\DB\Image, 'modifiedOn': \DateTime} */
+    /** @return (array{'image': Image, 'modifiedOn': \DateTime}) */
     public function updateImage(ImageDTO $imageDTO) : array {
         $image = $this->imageDbService->getImage($imageDTO->id);
         ImageDTO::update($image, $imageDTO);
