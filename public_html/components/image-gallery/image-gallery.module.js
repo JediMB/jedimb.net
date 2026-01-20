@@ -32,19 +32,33 @@ customElements.define('image-gallery-component', class ImageGalleryComponent ext
         this.#galleryCancelButton = self.querySelector('[btn-cancel-create]');
 
         this.#imageUploadButton.addEventListener('click', () => {
-            this.#imageUploadButton.setAttribute('hidden', '');
+            this.#imageUploadButton.toggleAttribute('hidden', true);
             this.#cancelUploadButton.removeAttribute('hidden');
             this.#imageManager.setAttribute('upload-mode', 'active');
         });
-
         this.#imageManager.addEventListener('upload-complete', () => {
             this.#imageUploadButton.removeAttribute('hidden');
-            this.#cancelUploadButton.setAttribute('hidden', '');
+            this.#cancelUploadButton.toggleAttribute('hidden', true);
         });
         this.#cancelUploadButton.addEventListener('click', () => {
             this.#imageUploadButton.removeAttribute('hidden');
-            this.#cancelUploadButton.setAttribute('hidden', '');
+            this.#cancelUploadButton.toggleAttribute('hidden', true);
             this.#imageManager.setAttribute('upload-mode', 'done');
+        });
+
+        this.#galleryCreateButton.addEventListener('click', () => {
+            this.#galleryCreateButton.toggleAttribute('hidden', true);
+            this.#galleryCancelButton.removeAttribute('hidden');
+            this.#galleryManager.setAttribute('create-mode', 'active');
+        });
+        this.#galleryManager.addEventListener('create-complete', () => {
+            this.#galleryCreateButton.removeAttribute('hidden');
+            this.#galleryCancelButton.toggleAttribute('hidden', true);
+        });
+        this.#galleryCancelButton.addEventListener('click', () => {
+            this.#galleryCreateButton.removeAttribute('hidden');
+            this.#galleryCancelButton.toggleAttribute('hidden', true);
+            this.#galleryManager.setAttribute('create-mode', 'done');
         });
 
         const tabContainers = self.querySelectorAll('[data-tab]');
