@@ -5,6 +5,7 @@ namespace Services\DB;
 require_once 'enums/db-fetch.enum.php';
 require_once 'services/base/singleton.php';
 
+use Exception;
 use PDO;
 use Enums\DBFetch;
 use Services\Base\Singleton;
@@ -50,12 +51,23 @@ class DatabaseService extends Singleton {
         return false;
     }
 
-    public function selectByColumnValue(string $table, string $column, mixed $value, int $pdoType = PDO::PARAM_STR, ?string $orderBy = null, bool $descending = false) {
+    public function selectAllByColumnValue(string $table, string $column, mixed $value, ?string $orderBy = null, bool $descending = false) {
         $query = $this->service->prepare(
             "SELECT * FROM {$this->schema}.$table WHERE $column = :val" .
             $this->buildOrderString($orderBy, $descending)
         );
-        $query->bindParam(':val', $value, $pdoType);
+        $query->bindParam(':val', $value, $this->getPDOParamType($value));
+
+        $query->execute();
+
+        return $query->fetchAll();
+    }
+
+    public function selectOneByColumnValue(string $table, string $column, mixed $value) {
+        $query = $this->service->prepare(
+            "SELECT * FROM {$this->schema}.$table WHERE $column = :val LIMIT 1"
+        );
+        $query->bindParam(':val', $value, $this->getPDOParamType($value));
 
         $query->execute();
 
@@ -117,6 +129,22 @@ class DatabaseService extends Singleton {
             return '';
 
         return " ORDER BY \"$orderBy\" " . ($descending ? 'DESC' : 'ASC');
+    }
+
+    private function getPDOParamType($value) : int {
+        switch (gettype($value)) {
+            case 'integer':
+                return PDO::PARAM_INT;
+            
+            case 'string':
+                return PDO::PARAM_STR;
+
+            case 'boolean':
+                return PDO::PARAM_BOOL;
+
+            default:
+                throw new Exception('Unrecognized parameter type');
+        }
     }
 }
 

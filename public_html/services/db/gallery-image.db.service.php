@@ -52,13 +52,11 @@ class GalleryImageDBService extends BaseDBService {
             if ($id === null)
                 $galleryImageData = $this->dbService->selectView('gallery_image', 'order');
             else if (!$isImageId)
-                $galleryImageData = $this->dbService->selectById('gallery_image', $id, 'order');
+                $galleryImageData = $this->dbService->selectAllByColumnValue('gallery_image', 'gallery_id', $id, 'order');
             else
-                $galleryImageData = $this->dbService->selectByColumnValue('gallery_image', 'image_id', $id, PDO::PARAM_INT, 'order');
-
-            return array_map(function($galleryImage) {
-                return new GalleryImage($galleryImage);
-            }, $galleryImageData);
+                $galleryImageData = $this->dbService->selectAllByColumnValue('gallery_image', 'image_id', $id, 'order');
+            
+            return array_map(fn($galleryImage) => new GalleryImage($galleryImage), $galleryImageData);
         }
         catch (PDOException $e) {
             throw new Exception('Database error: ' . $e->getMessage());
