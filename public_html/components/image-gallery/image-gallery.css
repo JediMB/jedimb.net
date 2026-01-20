@@ -64,7 +64,8 @@ images-excluded {
 manager-images,
 manager-properties,
 manager-galleries,
-manager-selected-gallery {
+manager-selected-gallery,
+manager-create-gallery {
     display: block flex;
     flex-direction: column;
     justify-content: space-between;
