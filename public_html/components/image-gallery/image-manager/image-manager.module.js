@@ -346,7 +346,7 @@ customElements.define('image-manager-component', class ImageManagerComponent ext
         }
         
         if (await this.#service.updateImage(imageDTO)) {
-
+            // TODO: Notification
         }
     }
 

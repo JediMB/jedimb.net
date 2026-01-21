@@ -1,22 +1,23 @@
+import GalleryDTO from "/js/models/image-gallery/gallery.dto.model.js";
+import Gallery from "/js/models/image-gallery/gallery.model.js";
 import imageGalleryService from "/js/services/image-gallery.service.js";
+import formatDate from "/js/utilities/format-date.js";
 
 customElements.define('gallery-manager-component', class GalleryManagerComponent extends HTMLElement {
     static observedAttributes = [ 'create-mode' ];
 
-    /** @type {GalleryManagerComponent} */
-    #self;
+    /** @type {GalleryManagerComponent} */ #self;
     #service;
     #insertTarget;
 
     #galleryListFieldset;
+    #galleryList;
     #insertGalleryButton;
     #editButton;
 
     #managerSelectedGallery;
-    /** @type {HTMLElement} */
-    #includedImagesContainer;
-    /** @type {HTMLElement} */
-    #excludedImagesContainer;
+    /** @type {HTMLElement} */ #includedImagesContainer;
+    /** @type {HTMLElement} */ #excludedImagesContainer;
     #includedImagesFieldset;
     #excludedImagesFieldset;
     #galleryImageTemplate;
@@ -24,11 +25,16 @@ customElements.define('gallery-manager-component', class GalleryManagerComponent
     #saveGalleryButton;
 
     #managerCreateGallery;
+    /** @type {HTMLFormElement} */ #galleryPropertiesForm;
+    /** @type {HTMLInputElement} */ #inputId;
+    /** @type {HTMLInputElement} */ #inputTitle;
+    /** @type {HTMLTextAreaElement} */ #inputDescription;
+    /** @type {HTMLButtonElement} */ #btnResetGalleryProperties;
+    /** @type {HTMLButtonElement} */ #btnSaveGalleryProperties;
+    /** @type {HTMLInputElement} */ #currentGallery;
 
-    /** @type {HTMLLIElement} */
-    #dragItem;
-    /** @type {HTMLElement} */
-    #dragTarget;
+    /** @type {HTMLLIElement} */ #dragItem;
+    /** @type {HTMLElement} */ #dragTarget;
     #append = false;
 
     constructor() {
@@ -60,6 +66,8 @@ customElements.define('gallery-manager-component', class GalleryManagerComponent
                 const checked = this.#galleryListFieldset.querySelector(':checked');
                 if (checked) checked.checked = false;
 
+                this.#currentGallery = null;
+                this.#galleryPropertiesForm.reset();
                 this.#managerSelectedGallery.toggleAttribute('hidden', true);
                 this.#managerCreateGallery.removeAttribute('hidden');
                 break;
@@ -68,8 +76,13 @@ customElements.define('gallery-manager-component', class GalleryManagerComponent
                 const event = new CustomEvent('create-complete');
                 this.dispatchEvent(event);
 
+                this.#currentGallery = null;
                 this.#managerSelectedGallery.removeAttribute('hidden');
                 this.#managerCreateGallery.toggleAttribute('hidden', true);
+
+                // TODO: Empty the included images list and fill the excluded
+
+                this.#galleryListFieldset.disabled = false;
                 
                 this.#self.removeAttribute('create-mode');
                 break;
@@ -82,8 +95,9 @@ customElements.define('gallery-manager-component', class GalleryManagerComponent
         if (self.hasAttribute('insert-target'))
             this.#insertTarget = document.querySelector(`#${self.getAttribute('insert-target')}`);
 
-        const galleryList = self.querySelector('gallery-list');
-        this.#galleryListFieldset = galleryList.querySelector('fieldset');
+        const galleryListElement = self.querySelector('gallery-list');
+        this.#galleryListFieldset = galleryListElement.querySelector('fieldset');
+        this.#galleryList = this.#galleryListFieldset.querySelector('ul');
         this.#insertGalleryButton = self.querySelector('[btn-insert-gallery]');
         this.#editButton = self.querySelector('[btn-edit]');
         this.#managerSelectedGallery = self.querySelector('manager-selected-gallery');
@@ -96,11 +110,17 @@ customElements.define('gallery-manager-component', class GalleryManagerComponent
         this.#saveGalleryButton = this.#managerSelectedGallery.querySelector('[btn-save-gallery');
 
         this.#managerCreateGallery = self.querySelector('manager-create-gallery');
+        this.#galleryPropertiesForm = this.#managerCreateGallery.querySelector('form');
+        this.#inputId = this.#galleryPropertiesForm.querySelector('[name="id"]');
+        this.#inputTitle = this.#galleryPropertiesForm.querySelector(['[name="title"]']);
+        this.#inputDescription = this.#galleryPropertiesForm.querySelector('[name="description"]');
+        this.#btnResetGalleryProperties = this.#galleryPropertiesForm.querySelector('[type="reset"]');
+        this.#btnSaveGalleryProperties = this.#galleryPropertiesForm.querySelector('[type="submit"]');
 
         if (this.#insertTarget)
             this.#insertGalleryButton.removeAttribute('hidden');
 
-        galleryList.addEventListener('change', event => {
+        galleryListElement.addEventListener('change', event => {
             if (!event.target.checked)
                 return;
 
@@ -116,7 +136,79 @@ customElements.define('gallery-manager-component', class GalleryManagerComponent
         this.#deleteGalleryButton.addEventListener('click', () => this.#deleteGallery());
         this.#saveGalleryButton.addEventListener('click', () => this.#saveGalleryImages());
         
+        this.#galleryPropertiesForm.addEventListener('submit', event => {
+            event.preventDefault();
+
+            if (Number(this.#inputId.value) === 0)
+                return this.#createGallery();
+
+            this.#updateGallery();
+        });
+
+        const inputs = [this.#inputTitle, this.#inputDescription];
+        this.#galleryPropertiesForm.addEventListener('reset', () => {
+            this.#btnResetGalleryProperties.disabled = true;
+            this.#btnResetGalleryProperties.toggleAttribute('hidden', true);
+            this.#btnSaveGalleryProperties.disabled = true;
+        });
+        this.#inputTitle.addEventListener('input', () => {
+            this.#setGalleryPropertiesButtonsStatus(inputs);
+
+            if (this.#currentGallery)
+                this.#currentGallery.dataset.galleryTitle = this.#inputTitle.value;
+        });
+        this.#inputDescription.addEventListener('input', () => {
+            this.#setGalleryPropertiesButtonsStatus(inputs);
+
+            if (this.#currentGallery)
+                this.dataset.galleryDescription = this.#inputDescription.value;
+        });
+
+        this.#service.galleries.subscribe(galleries => this.#renderGalleryList(galleries), true);
+
         this.#galleryListFieldset.disabled = false;
+    }
+
+    /** @param {Gallery[]} galleries */
+    #renderGalleryList(galleries) {
+        const localDate = new Date(this.#self.dataset.modifiedOn);
+
+        if (this.#service.galleryModified <= localDate)
+            return;
+
+        const selectedId = this.#galleryList.querySelector(':checked')?.dataset.galleryId;
+
+        this.#galleryList.textContent = ''; // TODO: Loading spinner animation
+        
+        const listItems = [];
+        galleries.forEach(gallery => {
+            const listItem = document.createElement('li');
+            listItem.classList.add('manager-list-item');
+            listItems.push(listItem);
+
+            const label = document.createElement('label');
+            label.classList.add('gallery-title');
+            label.title = gallery.title;
+            listItem.appendChild(label);
+
+            const input = document.createElement('input');
+            input.toggleAttribute('hidden', true);
+            input.type = 'radio';
+            input.name = 'galleries';
+            const data = input.dataset;
+            data.galleryId = gallery.id;
+            data.galleryTitle = gallery.title;
+            data.galleryDefaultTitle = gallery.title;
+            data.galleryDescription = gallery.description;
+            data.galleryDefaultDescription = gallery.description;
+            data.galleryCreatedOn = formatDate(gallery.createdOn);
+            data.galleryModifiedOn = formatDate(gallery.modifiedOn);
+            label.appendChild(input);
+
+            label.appendChild(document.createTextNode(gallery.title));
+        });
+
+        this.#galleryList.replaceChildren(...listItems);
     }
 
     disconnectedCallback() {}
@@ -124,7 +216,17 @@ customElements.define('gallery-manager-component', class GalleryManagerComponent
     connectedMoveCallback() {}
 
     async #createGallery() {
+        this.#btnResetGalleryProperties.disabled = true;
+        this.#btnResetGalleryProperties.toggleAttribute('hidden', true);
+        this.#btnSaveGalleryProperties.disabled = true;
 
+        
+        const newGallery = new GalleryDTO(new FormData(this.#galleryPropertiesForm));
+
+        if (await this.#service.createGallery(newGallery)) {
+            this.#self.setAttribute('create-mode', 'done');
+            this.#galleryPropertiesForm.reset();
+        }
     }
 
     async #deleteGallery() {
@@ -282,5 +384,15 @@ customElements.define('gallery-manager-component', class GalleryManagerComponent
             this.#excludedImagesFieldset.disabled = false;
             this.#deleteGalleryButton.toggleAttribute('hidden', !!includedImageList.firstElementChild);
         });
+    }
+
+    /**
+     * @param {HTMLInputElement[]} fields 
+     */
+    #setGalleryPropertiesButtonsStatus(fields) {
+        const noChanges = fields.every(field => field.value === field.defaultValue);
+        this.#btnResetGalleryProperties.disabled = noChanges;
+        this.#btnResetGalleryProperties.toggleAttribute('hidden', noChanges);
+        this.#btnSaveGalleryProperties.disabled = noChanges || !!fields.find(field => !field.checkValidity());
     }
 });
