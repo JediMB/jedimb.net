@@ -25,7 +25,7 @@ Component::addJSModule();
                     $galleryDesc = htmlspecialchars($gallery->description);
                     ?>
                     <li class="manager-list-item">
-                        <label class="gallery-title" title="">
+                        <label class="gallery-title" title="<?= $galleryTitle ?>">
                             <input hidden type="radio" name="galleries"
                                 data-gallery-id="<?= $gallery->id ?>"
                                 data-gallery-title="<?= $galleryTitle ?>"
@@ -89,6 +89,7 @@ Component::addJSModule();
 </manager-selected-gallery>
 <manager-create-gallery hidden>
     <form autocomplete="off" class="gallery-properties-form">
+        <input type="hidden" name="id" value="0">
         <manager-gallery-properties>
             <gallery-properties>
                 <h4>Create gallery</h4>
@@ -101,7 +102,7 @@ Component::addJSModule();
                         value=""
                         minlength="<?= INPUT_LENGTH['gallery_title']['min'] ?>"
                         maxlength="<?= INPUT_LENGTH['gallery_title']['max'] ?>"
-                        pattern="<?= REGEX_INPUT['config-text'] ?>"
+                        pattern="<?= trim(REGEX_INPUT['config-text'], '/') ?>"
                         required>
                 </div>
                 <div>
@@ -116,8 +117,8 @@ Component::addJSModule();
                 </div>
             </gallery-properties>
             <manager-buttons>
-                <div><button btn-reset-gallery type="reset" hidden title="Delete empty gallery">Delete</button></div>
-                <div><button btn-update-gallery type="submit" form="gallery-properties-<?= $cId ?>" disabled title="Save all changes">Save</button></div>
+                <div><button btn-reset-gallery type="reset" hidden title="Reset to default values">Reset</button></div>
+                <div><button btn-update-gallery type="submit" disabled title="Save all changes">Save</button></div>
             </manager-buttons>
         </manager-gallery-properties>
     </form>

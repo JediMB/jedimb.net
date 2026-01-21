@@ -87,7 +87,7 @@ Component::addJSModule();
             value=""
             minlength="<?= INPUT_LENGTH['image_title']['min'] ?>"
             maxlength="<?= INPUT_LENGTH['image_title']['max'] ?>"
-            pattern="<?= REGEX_INPUT['config-text'] ?>"
+            pattern="<?= trim(REGEX_INPUT['config-text'], '/') ?>"
             required>
     </div>
     <div>
@@ -118,7 +118,7 @@ Component::addJSModule();
             value=""
             minlength="<?= INPUT_LENGTH['image_title']['min'] ?>"
             maxlength="<?= INPUT_LENGTH['image_title']['max'] ?>"
-            pattern="<?= REGEX_INPUT['config-text'] ?>"
+            pattern="<?= trim(REGEX_INPUT['config-text'], '/') ?>"
             required>
     </div>
     <div>
