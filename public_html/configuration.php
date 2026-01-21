@@ -45,8 +45,12 @@ define('UPLOAD_IMAGE_MIME_TYPES', [
 ]);
 
 define('INPUT_LENGTH', [
-    'username' => ['min' => 5, 'max' => 50],
-    'password' => ['min' => 10, 'max' => 100]
+    'username' => [ 'min' => 5, 'max' => 50 ],
+    'password' => [ 'min' => 10, 'max' => 100 ],
+    'gallery_title' => [ 'min' => 1, 'max' => 50 ],
+    'gallery_description' => [ 'min' => 10, 'max' => 250 ],
+    'image_title' => [ 'min' => 1, 'max' => 50 ],
+    'image_description' => [ 'min' => 10, 'max' => 500 ]
 ]);
 
 define('REGEX_BLOG_PATH', '/^blog(\/[0-9]{4}\/[0-9]{2}\/[0-9]{2}\/[-a-z0-9]*)$/');
