@@ -1,6 +1,8 @@
 import imageGalleryService from "/js/services/image-gallery.service.js";
 
 customElements.define('gallery-manager-component', class GalleryManagerComponent extends HTMLElement {
+    static observedAttributes = [ 'create-mode' ];
+
     /** @type {GalleryManagerComponent} */
     #self;
     #service;
@@ -9,6 +11,8 @@ customElements.define('gallery-manager-component', class GalleryManagerComponent
     #galleryListFieldset;
     #insertGalleryButton;
     #editButton;
+
+    #managerSelectedGallery;
     /** @type {HTMLElement} */
     #includedImagesContainer;
     /** @type {HTMLElement} */
@@ -18,6 +22,8 @@ customElements.define('gallery-manager-component', class GalleryManagerComponent
     #galleryImageTemplate;
     #deleteGalleryButton;
     #saveGalleryButton;
+
+    #managerCreateGallery;
 
     /** @type {HTMLLIElement} */
     #dragItem;
@@ -31,6 +37,45 @@ customElements.define('gallery-manager-component', class GalleryManagerComponent
         this.#service = imageGalleryService;
     }
 
+    /**
+     * 
+     * @param {string} name 
+     * @param {string} _ 
+     * @param {string} newValue 
+     * @returns 
+     */
+    attributeChangedCallback(name, _, newValue) {
+        if (name !== 'create-mode')
+            return;
+
+        if (!this.#self.hasAttribute(name))
+            return;
+
+        switch (newValue) {
+            case 'active':
+                this.#galleryListFieldset.disabled = true;
+
+                this.#insertGalleryButton.disabled = true;
+                this.#editButton.disabled = true;
+                const checked = this.#galleryListFieldset.querySelector(':checked');
+                if (checked) checked.checked = false;
+
+                this.#managerSelectedGallery.toggleAttribute('hidden', true);
+                this.#managerCreateGallery.removeAttribute('hidden');
+                break;
+            
+            case 'done':
+                const event = new CustomEvent('create-complete');
+                this.dispatchEvent(event);
+
+                this.#managerSelectedGallery.removeAttribute('hidden');
+                this.#managerCreateGallery.toggleAttribute('hidden', true);
+                
+                this.#self.removeAttribute('create-mode');
+                break;
+        }
+    }
+
     connectedCallback() {
         const self = this.#self;
 
@@ -41,14 +86,16 @@ customElements.define('gallery-manager-component', class GalleryManagerComponent
         this.#galleryListFieldset = galleryList.querySelector('fieldset');
         this.#insertGalleryButton = self.querySelector('[btn-insert-gallery]');
         this.#editButton = self.querySelector('[btn-edit]');
-        const managerSelectedGallery = self.querySelector('manager-selected-gallery');
-        this.#includedImagesContainer = managerSelectedGallery.querySelector('images-included');
-        this.#excludedImagesContainer = managerSelectedGallery.querySelector('images-excluded');
+        this.#managerSelectedGallery = self.querySelector('manager-selected-gallery');
+        this.#includedImagesContainer = this.#managerSelectedGallery.querySelector('images-included');
+        this.#excludedImagesContainer = this.#managerSelectedGallery.querySelector('images-excluded');
         this.#includedImagesFieldset = this.#includedImagesContainer.querySelector('fieldset');
         this.#excludedImagesFieldset = this.#excludedImagesContainer.querySelector('fieldset');
-        this.#galleryImageTemplate = managerSelectedGallery.querySelector('[gallery-image-template]');
-        this.#deleteGalleryButton = managerSelectedGallery.querySelector('[btn-delete-gallery]');
-        this.#saveGalleryButton = managerSelectedGallery.querySelector('[btn-save-gallery');
+        this.#galleryImageTemplate = this.#managerSelectedGallery.querySelector('[gallery-image-template]');
+        this.#deleteGalleryButton = this.#managerSelectedGallery.querySelector('[btn-delete-gallery]');
+        this.#saveGalleryButton = this.#managerSelectedGallery.querySelector('[btn-save-gallery');
+
+        this.#managerCreateGallery = self.querySelector('manager-create-gallery');
 
         if (this.#insertTarget)
             this.#insertGalleryButton.removeAttribute('hidden');
