@@ -88,15 +88,37 @@ Component::addJSModule();
     </manager-buttons>
 </manager-selected-gallery>
 <manager-create-gallery hidden>
-    <h4>Create gallery</h4>
-    <form>
-        <div>
-            <label for="title">Title:</label>
-            <input full-width type="text" name="title" placeholder="A short, descriptive name." value="" required>
-        </div>
-        <div>
-            <label for="description">Description:</label>
-            <textarea full-width name="description" rows="3" placeholder="A useful description of the content of the image. Used by screen readers." required></textarea>
-        </div>
+    <form autocomplete="off" class="gallery-properties-form">
+        <manager-gallery-properties>
+            <gallery-properties>
+                <h4>Create gallery</h4>
+                <div>
+                    <label for="title">Title:</label>
+                    <input full-width
+                        type="text"
+                        name="title"
+                        placeholder="A short, descriptive name."
+                        value=""
+                        minlength="<?= INPUT_LENGTH['gallery_title']['min'] ?>"
+                        maxlength="<?= INPUT_LENGTH['gallery_title']['max'] ?>"
+                        pattern="<?= REGEX_INPUT['config-text'] ?>"
+                        required>
+                </div>
+                <div>
+                    <label for="description">Description:</label>
+                    <textarea full-width
+                        name="description"
+                        rows="3"
+                        placeholder="A useful description of the content of the image. Used by screen readers."
+                        minlength="<?= INPUT_LENGTH['gallery_description']['min'] ?>"
+                        maxlength="<?= INPUT_LENGTH['gallery_description']['max'] ?>"
+                        required></textarea>
+                </div>
+            </gallery-properties>
+            <manager-buttons>
+                <div><button btn-reset-gallery type="reset" hidden title="Delete empty gallery">Delete</button></div>
+                <div><button btn-update-gallery type="submit" form="gallery-properties-<?= $cId ?>" disabled title="Save all changes">Save</button></div>
+            </manager-buttons>
+        </manager-gallery-properties>
     </form>
 </manager-create-gallery>
