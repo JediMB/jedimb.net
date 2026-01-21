@@ -80,11 +80,25 @@ Component::addJSModule();
     <input type="hidden" name="id" value="0">
     <div>
         <label for="title">Title:</label>
-        <input full-width type="text" name="title" placeholder="A short, descriptive name." value="" required>
+        <input full-width
+            type="text"
+            name="title"
+            placeholder="A short, descriptive name."
+            value=""
+            minlength="<?= INPUT_LENGTH['image_title']['min'] ?>"
+            maxlength="<?= INPUT_LENGTH['image_title']['max'] ?>"
+            pattern="<?= REGEX_INPUT['config-text'] ?>"
+            required>
     </div>
     <div>
         <label for="description">Description:</label>
-        <textarea full-width name="description" rows="3" placeholder="A useful description of the content of the image. Used by screen readers." required></textarea>
+        <textarea full-width
+            name="description"
+            rows="3"
+            placeholder="A useful description of the content of the image. Used by screen readers."
+            minlength="<?= INPUT_LENGTH['image_description']['min'] ?>"
+            maxlength="<?= INPUT_LENGTH['image_description']['max'] ?>"
+            required></textarea>
     </div>
     <div class="image-dates">
         <div>Created on: <span class="created-on"></span></div>
@@ -97,10 +111,24 @@ Component::addJSModule();
     <input-file name="image" title="Select an image file to upload" accept="image/png, image/jpeg" required>Browse&hellip;</input-file>
     <div>
         <label for="title">Title:</label>
-        <input full-width type="text" name="title" placeholder="A short, descriptive name." value="" required>
+        <input full-width
+            type="text"
+            name="title"
+            placeholder="A short, descriptive name."
+            value=""
+            minlength="<?= INPUT_LENGTH['image_title']['min'] ?>"
+            maxlength="<?= INPUT_LENGTH['image_title']['max'] ?>"
+            pattern="<?= REGEX_INPUT['config-text'] ?>"
+            required>
     </div>
     <div>
         <label for="description">Description:</label>
-        <textarea full-width name="description" rows="3" placeholder="A useful description of the content of the image. Used by screen readers." required></textarea>
+        <textarea full-width
+            name="description"
+            rows="3"
+            placeholder="A useful description of the content of the image. Used by screen readers."
+            minlength="<?= INPUT_LENGTH['image_description']['min'] ?>"
+            maxlength="<?= INPUT_LENGTH['image_description']['max'] ?>"
+            required></textarea>
     </div>
 </template>
