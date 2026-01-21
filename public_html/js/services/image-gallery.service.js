@@ -4,6 +4,7 @@ import Image from "/js/models/image-gallery/image.model.js";
 import ImageDTO from "/js/models/image-gallery/image.dto.model.js";
 import imageGalleryApiService from "/js/services/api/image-gallery-api.service.js";
 import tableModifiedApiService from "/js/services/api/table-modified-api.service.js";
+import GalleryDTO from "/js/models/image-gallery/gallery.dto.model.js";
 
 export { imageGalleryService as default };
 
@@ -55,6 +56,25 @@ class ImageGalleryService {
 
         if (galleries)
             this.#galleries.setValue(galleries);
+    }
+    
+    /** 
+     * @param {GalleryDTO} galleryDTO
+     * @returns {Promise<boolean>}
+     */
+    async createGallery(galleryDTO) {
+        const result = await imageGalleryApiService.postGallery(galleryDTO);
+
+        if (!result)
+            throw new Error('No result received from createGallery');
+
+        const [ gallery, modifiedOn ] = result;
+
+        this.#galleryModified = modifiedOn;
+        const galleries = [...this.#galleries.getValue(), gallery];
+        this.#galleries.setValue(galleries);
+
+        return true;
     }
 
     /**

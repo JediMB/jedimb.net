@@ -3,6 +3,7 @@ import Gallery from "/js/models/image-gallery/gallery.model.js";
 import GalleryImagesDTO from "/js/models/image-gallery/gallery-images.dto.model.js";
 import Image from "/js/models/image-gallery/image.model.js";
 import ImageDTO from "/js/models/image-gallery/image.dto.model.js";
+import GalleryDTO from "/js/models/image-gallery/gallery.dto.model.js";
 
 export { imageGalleryApiService as default };
 
@@ -115,6 +116,28 @@ class ImageGalleryApiService {
 
         return [
             new Image(response.value.image),
+            new Date(response.value.modifiedOn.date + response.value.modifiedOn.timezone)
+        ];
+    }
+
+    /**
+     * @param {GalleryDTO} galleryDTO
+     * @returns {Promise<([Gallery, Date]|false)>}
+     */
+    async postGallery(galleryDTO) {
+        const response = await this.#httpClient.post('galleries', galleryDTO);
+
+        if (!response.success)
+            return false;
+
+        if (!response.value.gallery)
+            throw new Error('Create failed to return gallery data');
+
+        if (!response.value.modifiedOn)
+            throw new Error('Create failed to return table modified date');
+
+        return [
+            new Gallery(response.value.gallery),
             new Date(response.value.modifiedOn.date + response.value.modifiedOn.timezone)
         ];
     }
