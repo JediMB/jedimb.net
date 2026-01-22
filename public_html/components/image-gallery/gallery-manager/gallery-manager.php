@@ -5,7 +5,6 @@ namespace Components\ImageGallery;
 require_once 'utilities/component.utility.php';
 require_once 'utilities/datetime.utility.php';
 
-use Models\DB\Gallery;
 use Utilities\Component;
 use Utilities\DateTime;
 
@@ -21,6 +20,7 @@ Component::addJSModule();
             <ul>
                 <?php foreach ($galleries as $gallery): ?>
                     <?php
+                    /** @var \Models\DB\Gallery $gallery */
                     $galleryTitle = htmlspecialchars($gallery->title);
                     $galleryDesc = htmlspecialchars($gallery->description);
                     ?>
@@ -74,13 +74,6 @@ Component::addJSModule();
                 </ul>
             </fieldset>
         </images-excluded>
-        <template gallery-image-template>
-            <li class="manager-list-item" draggable="true">
-                <label class="image-title">
-                    <input type="hidden">
-                </label>
-            </li>
-        </template>
     </manager-gallery-images>
     <manager-buttons>
         <div><button btn-delete-gallery hidden title="Delete empty gallery">Delete</button></div>

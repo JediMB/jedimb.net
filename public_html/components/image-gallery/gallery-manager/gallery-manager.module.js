@@ -18,9 +18,10 @@ customElements.define('gallery-manager-component', class GalleryManagerComponent
     #managerSelectedGallery;
     /** @type {HTMLElement} */ #includedImagesContainer;
     /** @type {HTMLElement} */ #excludedImagesContainer;
-    #includedImagesFieldset;
-    #excludedImagesFieldset;
-    #galleryImageTemplate;
+    /** @type {HTMLFieldSetElement} */ #includedImagesFieldset;
+    /** @type {HTMLFieldSetElement} */ #excludedImagesFieldset;
+    /** @type {HTMLUListElement} */ #includedImagesUL;
+    /** @type {HTMLUListElement} */ #excludedImagesUL;
     #deleteGalleryButton;
     #saveGalleryButton;
 
@@ -63,8 +64,6 @@ customElements.define('gallery-manager-component', class GalleryManagerComponent
 
                 this.#insertGalleryButton.disabled = true;
                 this.#editButton.disabled = true;
-                const checked = this.#galleryListFieldset.querySelector(':checked');
-                if (checked) checked.checked = false;
 
                 this.#currentGallery = null;
                 this.#galleryPropertiesForm.reset();
@@ -79,8 +78,6 @@ customElements.define('gallery-manager-component', class GalleryManagerComponent
                 this.#currentGallery = null;
                 this.#managerSelectedGallery.removeAttribute('hidden');
                 this.#managerCreateGallery.toggleAttribute('hidden', true);
-
-                // TODO: Empty the included images list and fill the excluded
 
                 this.#galleryListFieldset.disabled = false;
                 
@@ -105,7 +102,8 @@ customElements.define('gallery-manager-component', class GalleryManagerComponent
         this.#excludedImagesContainer = this.#managerSelectedGallery.querySelector('images-excluded');
         this.#includedImagesFieldset = this.#includedImagesContainer.querySelector('fieldset');
         this.#excludedImagesFieldset = this.#excludedImagesContainer.querySelector('fieldset');
-        this.#galleryImageTemplate = this.#managerSelectedGallery.querySelector('[gallery-image-template]');
+        this.#includedImagesUL = this.#includedImagesFieldset.querySelector('ul');
+        this.#excludedImagesUL = this.#excludedImagesFieldset.querySelector('ul');
         this.#deleteGalleryButton = this.#managerSelectedGallery.querySelector('[btn-delete-gallery]');
         this.#saveGalleryButton = this.#managerSelectedGallery.querySelector('[btn-save-gallery');
 
@@ -130,8 +128,10 @@ customElements.define('gallery-manager-component', class GalleryManagerComponent
             this.#editButton.disabled = false;
             
             const galleryId = Number(event.target.dataset.galleryId);
-            this.#renderGalleryImageLists(galleryId);
+            this.#renderImageLists(galleryId);
         });
+
+        this.#setupDragTargets();
 
         this.#deleteGalleryButton.addEventListener('click', () => this.#deleteGallery());
         this.#saveGalleryButton.addEventListener('click', () => this.#saveGalleryImages());
@@ -164,51 +164,19 @@ customElements.define('gallery-manager-component', class GalleryManagerComponent
                 this.dataset.galleryDescription = this.#inputDescription.value;
         });
 
-        this.#service.galleries.subscribe(galleries => this.#renderGalleryList(galleries), true);
+        this.#service.galleries.subscribe(galleries => {
+            const localDate = new Date(this.#self.dataset.modifiedOn);
+
+            if (this.#service.galleryModified <= localDate)
+                return;
+            
+            this.#renderGalleryList(galleries)
+            this.#renderImageLists();
+            // TODO: Functionality also needed for updating included/exluded lists when content in service's images list changes 
+
+        }, true);
 
         this.#galleryListFieldset.disabled = false;
-    }
-
-    /** @param {Gallery[]} galleries */
-    #renderGalleryList(galleries) {
-        const localDate = new Date(this.#self.dataset.modifiedOn);
-
-        if (this.#service.galleryModified <= localDate)
-            return;
-
-        const selectedId = this.#galleryList.querySelector(':checked')?.dataset.galleryId;
-
-        this.#galleryList.textContent = ''; // TODO: Loading spinner animation
-        
-        const listItems = [];
-        galleries.forEach(gallery => {
-            const listItem = document.createElement('li');
-            listItem.classList.add('manager-list-item');
-            listItems.push(listItem);
-
-            const label = document.createElement('label');
-            label.classList.add('gallery-title');
-            label.title = gallery.title;
-            listItem.appendChild(label);
-
-            const input = document.createElement('input');
-            input.toggleAttribute('hidden', true);
-            input.type = 'radio';
-            input.name = 'galleries';
-            const data = input.dataset;
-            data.galleryId = gallery.id;
-            data.galleryTitle = gallery.title;
-            data.galleryDefaultTitle = gallery.title;
-            data.galleryDescription = gallery.description;
-            data.galleryDefaultDescription = gallery.description;
-            data.galleryCreatedOn = formatDate(gallery.createdOn);
-            data.galleryModifiedOn = formatDate(gallery.modifiedOn);
-            label.appendChild(input);
-
-            label.appendChild(document.createTextNode(gallery.title));
-        });
-
-        this.#galleryList.replaceChildren(...listItems);
     }
 
     disconnectedCallback() {}
@@ -235,7 +203,7 @@ customElements.define('gallery-manager-component', class GalleryManagerComponent
 
     async #saveGalleryImages() {
         this.#saveGalleryButton.disabled = true;
-        this.#deleteGalleryButton.disabled = true;
+        this.#deleteGalleryButton.toggleAttribute('hidden', true);
         this.#galleryListFieldset.disabled = true;
 
         const galleryId = Number(this.#galleryListFieldset.querySelector(':checked').dataset.galleryId);
@@ -244,7 +212,7 @@ customElements.define('gallery-manager-component', class GalleryManagerComponent
             .map(input => Number(input.dataset.imageId));
 
         if (await this.#service.updateGalleryImages(galleryId, imageIds)) {
-            this.#deleteGalleryButton.disabled = false;
+            this.#deleteGalleryButton.removeAttribute('hidden');
             this.#galleryListFieldset.disabled = false;
         }
     }
@@ -273,116 +241,161 @@ customElements.define('gallery-manager-component', class GalleryManagerComponent
         this.#saveGalleryButton.disabled = false;
     }
 
-    /** @param {number} galleryId */
-    #renderGalleryImageLists(galleryId) {
+    #setupDragTargets() {
+        for (const list of [ this.#includedImagesUL, this.#excludedImagesUL ]) {
+            list.addEventListener('dragstart', event => {
+                event.stopPropagation();
+                this.#dragItem = event.target;
+            });
+        }
+
+        for (const container of [ this.#includedImagesContainer, this.#excludedImagesContainer ]) {
+            container.addEventListener('dragenter', event => {
+                event.preventDefault();
+
+                if (this.#dragItem.className !== 'manager-list-item')
+                    return;
+
+                /** @type {HTMLElement} */
+                let target = event.originalTarget;
+                let append = false;
+
+                switch (target.localName) {
+                    case 'images-included':
+                    case 'images-excluded':
+                        target = container.querySelector('ul').lastElementChild;
+                        append = true;
+                        break;
+
+                    case 'label':
+                        target = target.parentElement;
+                        break;
+
+                    default:
+                        target = container.querySelector('ul').firstElementChild;
+                        break;
+                }
+
+                this.#dragTarget?.style.removeProperty(this.#append ? 'border-bottom' : 'border-top');
+
+                this.#dragTarget = target;
+                this.#append = append;
+
+                if (target === this.#dragItem)
+                    return;
+
+                if (!append && target?.previousElementSibling === this.#dragItem)
+                    return;
+
+                this.#dragTarget?.style.setProperty(this.#append ? 'border-bottom' : 'border-top', '1px solid');
+            });
+
+            container.addEventListener('dragover', event => event.preventDefault());
+
+            container.addEventListener('dragleave', event => {
+                if (container.contains(event.relatedTarget))
+                    return;
+
+                this.#dragTarget?.style.removeProperty(this.#append ? 'border-bottom' : 'border-top');
+                this.#dragTarget = null;
+                this.#append = false;
+            });
+
+            container.addEventListener('drop', () => {
+                if (this.#dragItem?.className === 'manager-list-item')
+                    this.#dropItem(container.querySelector('ul'));
+
+                this.#dragItem = null;
+                this.#dragTarget = null;
+                this.#append = false;
+                this.#deleteGalleryButton.toggleAttribute('hidden', !!this.#includedImagesUL.firstElementChild);
+            });
+        }
+
+    }
+
+    /** @param {Gallery[]} galleries */
+    #renderGalleryList(galleries) {
+        const selectedId = this.#galleryList.querySelector(':checked')?.dataset.galleryId;
+
+        this.#galleryList.textContent = ''; // TODO: Loading spinner animation
+        
+        const listItems = [];
+        for (const gallery of galleries) {
+            const listItem = document.createElement('li');
+            listItem.classList.add('manager-list-item');
+            listItems.push(listItem);
+
+            const label = document.createElement('label');
+            label.classList.add('gallery-title');
+            label.title = gallery.title;
+            listItem.appendChild(label);
+
+            const input = document.createElement('input');
+            input.toggleAttribute('hidden', true);
+            input.type = 'radio';
+            input.name = 'galleries';
+            const data = input.dataset;
+            data.galleryId = gallery.id;
+            data.galleryTitle = gallery.title;
+            data.galleryDefaultTitle = gallery.title;
+            data.galleryDescription = gallery.description;
+            data.galleryDefaultDescription = gallery.description;
+            data.galleryCreatedOn = formatDate(gallery.createdOn);
+            data.galleryModifiedOn = formatDate(gallery.modifiedOn);
+            label.appendChild(input);
+
+            label.appendChild(document.createTextNode(gallery.title));
+        }
+
+        this.#galleryList.replaceChildren(...listItems);
+    }
+
+    /** @param {number|null} galleryId */
+    #renderImageLists(galleryId = null) {
         this.#includedImagesFieldset.disabled = true;
         this.#excludedImagesFieldset.disabled = true;
         this.#deleteGalleryButton.setAttribute('hidden', '');
         this.#saveGalleryButton.disabled = true;
 
         this.#service.getImages(images => {
-            const template = this.#galleryImageTemplate.content.cloneNode(true);
-
-            const includedImageList = document.createElement('ul');
-            const excludedImageList = document.createElement('ul');
-            
-            for (const list of [ includedImageList, excludedImageList ]) {
-                list.addEventListener('dragstart', event => {
-                    event.stopPropagation();
-                    this.#dragItem = event.target;
-                });
-            }
-
-            for (const container of [ this.#includedImagesContainer, this.#excludedImagesContainer ]) {
-                container.addEventListener('dragenter', event => {
-                    event.preventDefault();
-
-                    if (this.#dragItem.className !== 'manager-list-item')
-                        return;
-
-                    /** @type {HTMLElement} */
-                    let target = event.originalTarget;
-                    let append = false;
-
-                    switch (target.localName) {
-                        case 'images-included':
-                        case 'images-excluded':
-                            target = container.querySelector('ul').lastElementChild;
-                            append = true;
-                            break;
-
-                        case 'label':
-                            target = target.parentElement;
-                            break;
-
-                        default:
-                            target = container.querySelector('ul').firstElementChild;
-                            break;
-                    }
-
-                    this.#dragTarget?.style.removeProperty(this.#append ? 'border-bottom' : 'border-top');
-
-                    this.#dragTarget = target;
-                    this.#append = append;
-
-                    if (target === this.#dragItem)
-                        return;
-
-                    if (!append && target?.previousElementSibling === this.#dragItem)
-                        return;
-
-                    this.#dragTarget?.style.setProperty(this.#append ? 'border-bottom' : 'border-top', '1px solid');
-                });
-
-                container.addEventListener('dragover', event => event.preventDefault());
-
-                container.addEventListener('dragleave', event => {
-                    if (container.contains(event.relatedTarget))
-                        return;
-
-                    this.#dragTarget?.style.removeProperty(this.#append ? 'border-bottom' : 'border-top');
-                    this.#dragTarget = null;
-                    this.#append = false;
-                });
-
-                container.addEventListener('drop', () => {
-                    if (this.#dragItem?.className === 'manager-list-item')
-                        this.#dropItem(container.querySelector('ul'));
-
-                    this.#dragItem = null;
-                    this.#dragTarget = null;
-                    this.#append = false;
-                    this.#deleteGalleryButton.toggleAttribute('hidden', !!includedImageList.firstElementChild);
-                });
-            }
+            const includedImages = [];
+            const excludedImages = [];
 
             for (const image of images) {
-                /** @type {HTMLLIElement} */
-                const listItem = template.cloneNode(true);
+                const listItem = document.createElement('li');
+                listItem.classList = 'manager-list-item';
+                listItem.draggable = !!galleryId;
 
-                const label = listItem.querySelector('label');
+                const label = document.createElement('label');
+                label.classList = 'image-title';
                 label.title = image.title;
-                
-                const text = document.createTextNode(image.title);
-                label.appendChild(text);
+                listItem.appendChild(label);
 
-                /** @type HTMLInputElement */
-                const input = label.querySelector('input');
+                const input = document.createElement('input');
+                input.type = 'hidden';
                 input.dataset.imageId = image.id;
+                label.appendChild(input);
+                
+                label.appendChild(document.createTextNode(image.title));
 
-                if (image.galleryIds.some(id => id === galleryId)) {
-                    includedImageList.appendChild(listItem);
+                if (galleryId && image.galleryIds.some(id => id === galleryId)) {
+                    includedImages.push(listItem);
                     continue;
                 }
 
-                excludedImageList.appendChild(listItem);
+                excludedImages.push(listItem);
             }
             
-            this.#includedImagesFieldset.replaceChildren(includedImageList);
-            this.#excludedImagesFieldset.replaceChildren(excludedImageList);
+            this.#includedImagesUL.replaceChildren(...includedImages);
+            this.#excludedImagesUL.replaceChildren(...excludedImages);
+
+            if (!galleryId)
+                return;
+
             this.#includedImagesFieldset.disabled = false;
             this.#excludedImagesFieldset.disabled = false;
-            this.#deleteGalleryButton.toggleAttribute('hidden', !!includedImageList.firstElementChild);
+            this.#deleteGalleryButton.toggleAttribute('hidden', !!this.#includedImagesUL.firstElementChild);
         });
     }
 
