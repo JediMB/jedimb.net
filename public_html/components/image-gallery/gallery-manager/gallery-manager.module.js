@@ -66,7 +66,17 @@ customElements.define('gallery-manager-component', class GalleryManagerComponent
                 this.#btnInsertGallery.disabled = true;
                 this.#btnEditGalleryProperties.disabled = true;
 
-                this.#galleryPropertiesForm.reset();
+                if (this.#currentGallery) {
+                    const data = this.#currentGallery.dataset;
+                    this.#inputId.defaultValue = data.galleryId;
+                    this.#inputTitle.defaultValue = data.galleryDefaultTitle;
+                    this.#inputTitle.value = data.galleryTitle;
+                    this.#inputDescription.defaultValue = data.galleryDefaultDescription;
+                    this.#inputDescription.value = data.galleryDescription;
+                }
+                else
+                    this.#galleryPropertiesForm.reset();
+
                 this.#managerSelectedGallery.toggleAttribute('hidden', true);
                 this.#managerCreateGallery.removeAttribute('hidden');
                 break;
@@ -127,6 +137,11 @@ customElements.define('gallery-manager-component', class GalleryManagerComponent
             
             const galleryId = Number(event.target.dataset.galleryId);
             this.#renderImageLists(galleryId);
+        });
+
+        this.#btnEditGalleryProperties.addEventListener('click', () => {
+            this.#currentGallery = this.#galleryList.querySelector(':checked');
+            this.#self.setAttribute('properties-mode', 'active');
         });
 
         this.#setupDragTargets();
