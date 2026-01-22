@@ -124,9 +124,9 @@ class DatabaseService extends Singleton {
         return $query->fetchAll() ?: [];
     }
 
-    private function buildOrderString(?string $orderBy, bool $descending) : string {
+    private function buildOrderString(?string $orderBy = null, bool $descending = false) : string {
         if (empty($orderBy))
-            return '';
+            return ' ORDER BY id ASC';
 
         return " ORDER BY \"$orderBy\" " . ($descending ? 'DESC' : 'ASC');
     }
