@@ -393,7 +393,7 @@ customElements.define('gallery-manager-component', class GalleryManagerComponent
 
             if (!galleryId) {
                 this.#includedImagesUL.replaceChildren(...includedImages);
-                this.#excludedImagesUL.replaceChildren(...excludedImages);
+                this.#excludedImagesUL.replaceChildren(...excludedImages.values());
                 return;
             }
 
