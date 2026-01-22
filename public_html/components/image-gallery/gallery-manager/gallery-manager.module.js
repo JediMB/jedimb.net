@@ -4,7 +4,7 @@ import imageGalleryService from "/js/services/image-gallery.service.js";
 import formatDate from "/js/utilities/format-date.js";
 
 customElements.define('gallery-manager-component', class GalleryManagerComponent extends HTMLElement {
-    static observedAttributes = [ 'create-mode' ];
+    static observedAttributes = [ 'properties-mode' ];
 
     /** @type {GalleryManagerComponent} */ #self;
     #service;
@@ -53,7 +53,7 @@ customElements.define('gallery-manager-component', class GalleryManagerComponent
      * @returns 
      */
     attributeChangedCallback(name, _, newValue) {
-        if (name !== 'create-mode')
+        if (name !== 'properties-mode')
             return;
 
         if (!this.#self.hasAttribute(name))
@@ -72,16 +72,13 @@ customElements.define('gallery-manager-component', class GalleryManagerComponent
                 break;
             
             case 'done':
-                const event = new CustomEvent('create-complete');
-                this.dispatchEvent(event);
-
                 this.#currentGallery = null;
                 this.#managerSelectedGallery.removeAttribute('hidden');
                 this.#managerCreateGallery.toggleAttribute('hidden', true);
 
                 this.#galleryListFieldset.disabled = false;
                 
-                this.#self.removeAttribute('create-mode');
+                this.#self.removeAttribute('properties-mode');
                 break;
         }
     }
@@ -193,7 +190,7 @@ customElements.define('gallery-manager-component', class GalleryManagerComponent
         const newGallery = new GalleryDTO(new FormData(this.#galleryPropertiesForm));
 
         if (await this.#service.createGallery(newGallery)) {
-            this.#self.setAttribute('create-mode', 'done');
+            this.#self.setAttribute('properties-mode', 'done');
             this.#galleryPropertiesForm.reset();
         }
     }

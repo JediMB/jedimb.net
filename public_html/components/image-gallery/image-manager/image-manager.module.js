@@ -63,9 +63,6 @@ customElements.define('image-manager-component', class ImageManagerComponent ext
                 break;
 
             case 'done':
-                const event = new CustomEvent('upload-complete');
-                this.dispatchEvent(event);
-
                 this.#listFieldset.disabled = false;
                 this.#saveButton.textContent = this.#saveButton.dataset.contentEdit;
                 this.#imageProperties.innerHTML = this.#imagePropertiesContent;

@@ -32,33 +32,17 @@ customElements.define('image-gallery-component', class ImageGalleryComponent ext
         this.#galleryCancelButton = self.querySelector('[btn-cancel-create]');
 
         this.#imageUploadButton.addEventListener('click', () => {
-            this.#imageUploadButton.toggleAttribute('hidden', true);
-            this.#cancelUploadButton.removeAttribute('hidden');
             this.#imageManager.setAttribute('upload-mode', 'active');
         });
-        this.#imageManager.addEventListener('upload-complete', () => {
-            this.#imageUploadButton.removeAttribute('hidden');
-            this.#cancelUploadButton.toggleAttribute('hidden', true);
-        });
         this.#cancelUploadButton.addEventListener('click', () => {
-            this.#imageUploadButton.removeAttribute('hidden');
-            this.#cancelUploadButton.toggleAttribute('hidden', true);
             this.#imageManager.setAttribute('upload-mode', 'done');
         });
 
         this.#galleryCreateButton.addEventListener('click', () => {
-            this.#galleryCreateButton.toggleAttribute('hidden', true);
-            this.#galleryCancelButton.removeAttribute('hidden');
-            this.#galleryManager.setAttribute('create-mode', 'active');
-        });
-        this.#galleryManager.addEventListener('create-complete', () => {
-            this.#galleryCreateButton.removeAttribute('hidden');
-            this.#galleryCancelButton.toggleAttribute('hidden', true);
+            this.#galleryManager.setAttribute('properties-mode', 'active');
         });
         this.#galleryCancelButton.addEventListener('click', () => {
-            this.#galleryCreateButton.removeAttribute('hidden');
-            this.#galleryCancelButton.toggleAttribute('hidden', true);
-            this.#galleryManager.setAttribute('create-mode', 'done');
+            this.#galleryManager.setAttribute('properties-mode', 'done');
         });
 
         const tabContainers = self.querySelectorAll('[data-tab]');
@@ -74,7 +58,43 @@ customElements.define('image-gallery-component', class ImageGalleryComponent ext
         for (const element of tabContainers)
             element.toggleAttribute('hidden', element.dataset.tab !== tab);
 
+        new MutationObserver((mutationList, _) =>
+            this.#attributeObservation(mutationList, 'upload-mode', this.#imageUploadButton, this.#cancelUploadButton)
+        ).observe(this.#imageManager, { attributeFilter: [ 'upload-mode' ] });
+
+        new MutationObserver((mutationList, _) =>
+            this.#attributeObservation(mutationList, 'properties-mode', this.#galleryCreateButton, this.#galleryCancelButton)
+        ).observe(this.#galleryManager, { attributeFilter: [ 'properties-mode' ] });
+
         this.#imageUploadButton.disabled = false;
         this.#galleryCreateButton.disabled = false;
+    }
+
+    /**
+     * @param {MutationRecord[]} mutationList
+     * @param {string} attributeName 
+     * @param {HTMLButtonElement} btnActivate
+     * @param {HTMLButtonElement} btnDeactivate 
+     * */
+    #attributeObservation(mutationList, attributeName, btnActivate, btnDeactivate) {
+        for (const mutation of mutationList) {
+            if (mutation.type !== 'attributes')
+                continue;
+
+            if (mutation.attributeName !== attributeName)
+                continue;
+
+            switch (mutation.target.getAttribute(attributeName)) {
+                case 'active':
+                    btnActivate.toggleAttribute('hidden', true);
+                    btnDeactivate.removeAttribute('hidden');
+                    break;
+
+                default:
+                    btnActivate.removeAttribute('hidden');
+                    btnDeactivate.toggleAttribute('hidden', true);
+                    break;
+            }
+        }
     }
 });
