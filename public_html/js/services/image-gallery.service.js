@@ -1,10 +1,11 @@
 import Emitter from "/js/utilities/emitter.js";
+import Gallery from "/js/models/image-gallery/gallery.model.js";
+import GalleryDTO from "/js/models/image-gallery/gallery.dto.model.js";
 import GalleryImagesDTO from "/js/models/image-gallery/gallery-images.dto.model.js";
 import Image from "/js/models/image-gallery/image.model.js";
 import ImageDTO from "/js/models/image-gallery/image.dto.model.js";
 import imageGalleryApiService from "/js/services/api/image-gallery-api.service.js";
 import tableModifiedApiService from "/js/services/api/table-modified-api.service.js";
-import GalleryDTO from "/js/models/image-gallery/gallery.dto.model.js";
 
 export { imageGalleryService as default };
 
@@ -120,7 +121,20 @@ class ImageGalleryService {
     }
 
     /**
-     * @param {Number} id 
+     * @param {number} id 
+     * @param {(value: Gallery) => void} next 
+     */
+    getGallery(id, next) {
+        if (this.#initialized) {
+            next.call(this, this.#galleries.getValue().find(g => g.id === id));
+            return;
+        }
+
+        this.#galleries.first(value => next.call(this, value.find(g => g.id === id)));
+    }
+
+    /**
+     * @param {number} id 
      * @returns {Image}
      */
     getImage(id) {
