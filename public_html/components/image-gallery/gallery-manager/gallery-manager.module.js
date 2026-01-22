@@ -32,6 +32,7 @@ customElements.define('gallery-manager-component', class GalleryManagerComponent
     /** @type {HTMLTextAreaElement} */ #inputDescription;
     /** @type {HTMLButtonElement} */ #btnResetGalleryProperties;
     /** @type {HTMLButtonElement} */ #btnSaveGalleryProperties;
+
     /** @type {HTMLInputElement} */ #currentGallery;
 
     /** @type {HTMLLIElement} */ #dragItem;
@@ -170,8 +171,8 @@ customElements.define('gallery-manager-component', class GalleryManagerComponent
             if (this.#service.galleryModified <= localDate)
                 return;
             
-            this.#renderGalleryList(galleries)
-            this.#renderImageLists();
+            const galleryId = this.#renderGalleryList(galleries)
+            this.#renderImageLists(galleryId);
             // TODO: Functionality also needed for updating included/exluded lists when content in service's images list changes 
 
         }, true);
@@ -314,7 +315,10 @@ customElements.define('gallery-manager-component', class GalleryManagerComponent
 
     }
 
-    /** @param {Gallery[]} galleries */
+    /** 
+     * @param {Gallery[]} galleries
+     * @returns {number|null}
+     */
     #renderGalleryList(galleries) {
         const selectedId = this.#galleryList.querySelector(':checked')?.dataset.galleryId;
 
@@ -346,9 +350,14 @@ customElements.define('gallery-manager-component', class GalleryManagerComponent
             label.appendChild(input);
 
             label.appendChild(document.createTextNode(gallery.title));
+
+            if (selectedId && selectedId === gallery.id)
+                input.checked = true;
         }
 
         this.#galleryList.replaceChildren(...listItems);
+
+        return selectedId;
     }
 
     /** @param {number|null} galleryId */
