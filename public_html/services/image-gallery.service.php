@@ -187,32 +187,30 @@ class ImageGalleryService extends Singleton {
         if ( ( $galleryId = $galleryImagesDTO->galleryId ) < 1 )
             throw new Exception('A gallery id cannot be less than 1.');
 
-        $imageIds = [];
-        foreach ($galleryImagesDTO->imageIds as $imageId) {
-            if (isset($imageIds[$imageId]))
+        $imageOrder = [];
+        foreach ($galleryImagesDTO->imageIds as $order => $imageId) {
+            if (isset($imageOrder[$imageId]))
                 throw new Exception("Duplicate image ids ($imageId) found when updating image list for gallery ($galleryId).");
 
-            $imageIds[$imageId] = true;
+            $imageOrder[$imageId] = (int) $order + 1; // No 0 for ordered images
         }
 
         $dbGalleryImages = $this->galleryImageDbService->getGalleryImages($galleryId);
 
-        $addedImageIds = array_filter($galleryImagesDTO->imageIds, fn($imageId) =>
-            !array_any($dbGalleryImages, fn($row) => $row->imageId === $imageId)
-        );
-        $addedGalleryImages = array_map(
-            fn($imageId, $order) => GalleryImage::create($galleryId, $imageId, $order),
-            $addedImageIds, array_keys(($addedImageIds))
+        $addedGalleryImages = array_map(fn($imageId) => GalleryImage::create($galleryId, $imageId, $imageOrder[$imageId]),
+            array_diff($galleryImagesDTO->imageIds, array_map(fn($gi) => $gi->imageId, $dbGalleryImages))
         );
         
-        $updatedGalleryImages = array_filter($dbGalleryImages, function($row) use ($galleryImagesDTO) {
-            $orderKey = array_find_key($galleryImagesDTO->imageIds, fn($imageId) =>  $imageId === $row->imageId);
+        $updatedGalleryImages = array_filter($dbGalleryImages, function($row) use ($imageOrder) {
+            if (!isset($imageOrder[$row->imageId]))
+                return false;
 
-            if ($orderKey && $orderKey !== $row->order) {
-                $row->order = $orderKey;
-                return true;
-            }
-            return false;
+            $order = $imageOrder[$row->imageId];
+            if ($row->order === $order)
+                return false;
+
+            $row->order = $order;
+            return true;
         });
 
         $removedGalleryImages = array_filter($dbGalleryImages, fn($row) =>
@@ -235,7 +233,7 @@ class ImageGalleryService extends Singleton {
         foreach ($updatedGalleryImages as $updatedGalleryImage) {
             $result = $this->galleryImageDbService->updateGalleryImage($updatedGalleryImage);
 
-            if (!$result->match($addedGalleryImage, true))
+            if (!$result->match($updatedGalleryImage, true))
                 $updateErrors[] = $result->id;
                 
         }
