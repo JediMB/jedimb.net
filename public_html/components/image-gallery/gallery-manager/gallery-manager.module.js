@@ -12,8 +12,8 @@ customElements.define('gallery-manager-component', class GalleryManagerComponent
 
     #galleryListFieldset;
     #galleryList;
-    #insertGalleryButton;
-    #editButton;
+    #btnInsertGallery;
+    #btnEditGalleryProperties;
 
     #managerSelectedGallery;
     /** @type {HTMLElement} */ #includedImagesContainer;
@@ -33,7 +33,7 @@ customElements.define('gallery-manager-component', class GalleryManagerComponent
     /** @type {HTMLButtonElement} */ #btnResetGalleryProperties;
     /** @type {HTMLButtonElement} */ #btnSaveGalleryProperties;
 
-    /** @type {HTMLInputElement} */ #currentGallery;
+    /** @type {HTMLInputElement} */ #currentGallery = null;
 
     /** @type {HTMLLIElement} */ #dragItem;
     /** @type {HTMLElement} */ #dragTarget;
@@ -63,10 +63,9 @@ customElements.define('gallery-manager-component', class GalleryManagerComponent
             case 'active':
                 this.#galleryListFieldset.disabled = true;
 
-                this.#insertGalleryButton.disabled = true;
-                this.#editButton.disabled = true;
+                this.#btnInsertGallery.disabled = true;
+                this.#btnEditGalleryProperties.disabled = true;
 
-                this.#currentGallery = null;
                 this.#galleryPropertiesForm.reset();
                 this.#managerSelectedGallery.toggleAttribute('hidden', true);
                 this.#managerCreateGallery.removeAttribute('hidden');
@@ -96,8 +95,9 @@ customElements.define('gallery-manager-component', class GalleryManagerComponent
         const galleryListElement = self.querySelector('gallery-list');
         this.#galleryListFieldset = galleryListElement.querySelector('fieldset');
         this.#galleryList = this.#galleryListFieldset.querySelector('ul');
-        this.#insertGalleryButton = self.querySelector('[btn-insert-gallery]');
-        this.#editButton = self.querySelector('[btn-edit]');
+        this.#btnInsertGallery = self.querySelector('[btn-insert-gallery]');
+        this.#btnEditGalleryProperties = self.querySelector('[btn-edit]');
+
         this.#managerSelectedGallery = self.querySelector('manager-selected-gallery');
         this.#includedImagesContainer = this.#managerSelectedGallery.querySelector('images-included');
         this.#excludedImagesContainer = this.#managerSelectedGallery.querySelector('images-excluded');
@@ -117,7 +117,7 @@ customElements.define('gallery-manager-component', class GalleryManagerComponent
         this.#btnSaveGalleryProperties = this.#galleryPropertiesForm.querySelector('[type="submit"]');
 
         if (this.#insertTarget)
-            this.#insertGalleryButton.removeAttribute('hidden');
+            this.#btnInsertGallery.removeAttribute('hidden');
 
         galleryListElement.addEventListener('change', event => {
             if (!event.target.checked)
@@ -125,8 +125,8 @@ customElements.define('gallery-manager-component', class GalleryManagerComponent
 
             event.stopPropagation();
 
-            this.#insertGalleryButton.disabled = false;
-            this.#editButton.disabled = false;
+            this.#btnInsertGallery.disabled = false;
+            this.#btnEditGalleryProperties.disabled = false;
             
             const galleryId = Number(event.target.dataset.galleryId);
             this.#renderImageLists(galleryId);
