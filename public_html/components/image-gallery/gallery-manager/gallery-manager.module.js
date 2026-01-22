@@ -369,7 +369,7 @@ customElements.define('gallery-manager-component', class GalleryManagerComponent
 
         this.#service.getImages(images => {
             const includedImages = [];
-            const excludedImages = [];
+            const excludedImages = new Map();
 
             for (const image of images) {
                 const listItem = document.createElement('li');
@@ -388,23 +388,30 @@ customElements.define('gallery-manager-component', class GalleryManagerComponent
                 
                 label.appendChild(document.createTextNode(image.title));
 
-                if (galleryId && image.galleryIds.some(id => id === galleryId)) {
-                    includedImages.push(listItem);
-                    continue;
+                excludedImages.set(image.id, listItem);
+            }
+
+            if (!galleryId) {
+                this.#includedImagesUL.replaceChildren(...includedImages);
+                this.#excludedImagesUL.replaceChildren(...excludedImages);
+                return;
+            }
+
+            this.#service.getGallery(galleryId, gallery => {
+                for (const id of gallery.imageIds) {
+                    includedImages.push(excludedImages.get(id));
+                    excludedImages.delete(id);
                 }
 
-                excludedImages.push(listItem);
-            }
+                this.#includedImagesUL.replaceChildren(...includedImages);
+                this.#excludedImagesUL.replaceChildren(...excludedImages.values());
+
+                this.#includedImagesFieldset.disabled = false;
+                this.#excludedImagesFieldset.disabled = false;
+                this.#deleteGalleryButton.toggleAttribute('hidden', !!this.#includedImagesUL.firstElementChild);
+            });
+
             
-            this.#includedImagesUL.replaceChildren(...includedImages);
-            this.#excludedImagesUL.replaceChildren(...excludedImages);
-
-            if (!galleryId)
-                return;
-
-            this.#includedImagesFieldset.disabled = false;
-            this.#excludedImagesFieldset.disabled = false;
-            this.#deleteGalleryButton.toggleAttribute('hidden', !!this.#includedImagesUL.firstElementChild);
         });
     }
 
