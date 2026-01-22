@@ -17,7 +17,7 @@ textarea {
 
 button:disabled,
 select:disabled,
-input:disabled
+input:disabled,
 textarea:disabled {
     background-color: var(--color-disabled-background);
     color: var(--color-disabled-text);

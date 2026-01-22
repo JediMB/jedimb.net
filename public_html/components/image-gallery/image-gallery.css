@@ -200,7 +200,7 @@ manager-gallery-images .image-title {
     background-color: var(--color-primary-dark);
 }
 
-.manager-list-item:has(input:checked) {
+.manager-list-item:has(input:enabled:checked) {
     background-color: var(--color-text);
     color: var(--color-background);
 }
