@@ -182,38 +182,48 @@ customElements.define('gallery-manager-component', class GalleryManagerComponent
                 this.dataset.galleryDescription = this.#inputDescription.value;
         });
 
-        this.#service.galleries.subscribe(galleries => {
-            const localDate = new Date(this.#self.dataset.modifiedOn);
-
-            if (this.#service.galleryModified <= localDate)
-                return;
-            
-            const galleryId = this.#renderGalleryList(galleries)
-            this.#renderImageLists(galleryId);
-            // TODO: Functionality also needed for updating included/exluded lists when content in service's images list changes 
-
-            this.dataset.modifiedOn = formatDate(this.#service.galleryModified, true);
-
-        }, true, (_, /** @type {Gallery} */ gallery) => {
-            /** @type {HTMLInputElement} */
-            const galleryInput = this.#galleryListFieldset.querySelector(`[data-gallery-id="${gallery.id}"]`);
-
-            if (!galleryInput)
-                throw new Error('Updated gallery not found in list');
-
-            const data = galleryInput.dataset;
-            data.galleryTitle = gallery.title;
-            data.galleryDescription = gallery.description;
-            data.galleryCreatedOn = formatDate(gallery.createdOn);
-            data.galleryModifiedOn = formatDate(gallery.modifiedOn);
-
-            galleryInput.nextSibling.textContent = gallery.title;
-            galleryInput.parentElement.title = gallery.title;
-
-            this.dataset.modifiedOn = formatDate(this.#service.galleryModified, true);
-        });
+        this.#service.galleries.subscribe(galleries => this.#updateGalleriesMarkup(galleries), true, (_, gallery) => this.#updateGalleryMarkup(gallery));
 
         this.#galleryListFieldset.disabled = false;
+    }
+
+    /** @param {Gallery[]} galleries */
+    #updateGalleriesMarkup(galleries) {
+        const localDate = new Date(this.#self.dataset.modifiedOn);
+
+        if (this.#service.galleryModified <= localDate)
+            return;
+        
+        const galleryId = this.#renderGalleryList(galleries)
+        this.#renderImageLists(galleryId);
+
+        this.dataset.modifiedOn = formatDate(this.#service.galleryModified, true);
+    }
+
+    /** @param {Gallery} gallery */
+    #updateGalleryMarkup(gallery) {
+        /** @type {HTMLInputElement} */
+        const galleryInput = this.#galleryListFieldset.querySelector(`[data-gallery-id="${gallery.id}"]`);
+
+        if (!galleryInput)
+            throw new Error('Updated gallery not found in list');
+
+        const data = galleryInput.dataset;
+        data.galleryTitle = gallery.title;
+        data.galleryDescription = gallery.description;
+        data.galleryCreatedOn = formatDate(gallery.createdOn);
+        data.galleryModifiedOn = formatDate(gallery.modifiedOn);
+
+        galleryInput.nextSibling.textContent = gallery.title;
+        galleryInput.parentElement.title = gallery.title;
+
+        this.dataset.modifiedOn = formatDate(this.#service.galleryModified, true);
+
+        const checked = this.#galleryListFieldset.querySelector(':checked');
+        if (galleryInput !== checked)
+            return;
+
+        this.#renderImageLists(gallery.id);
     }
 
     disconnectedCallback() {}
