@@ -8,12 +8,12 @@ customElements.define('gallery-manager-component', class GalleryManagerComponent
 
     /** @type {GalleryManagerComponent} */ #self;
     #service;
-    #insertTarget;
+    /** @type {HTMLElement} */ #insertTarget;
 
-    #galleryListFieldset;
-    #galleryList;
-    #btnInsertGallery;
-    #btnEditGalleryProperties;
+    /** @type {HTMLFieldSetElement} */ #galleryListFieldset;
+    /** @type {HTMLElement} */ #galleryList;
+    /** @type {HTMLButtonElement} */ #btnInsertGallery;
+    /** @type {HTMLButtonElement} */ #btnEditGalleryProperties;
 
     #managerSelectedGallery;
     /** @type {HTMLElement} */ #includedImagesContainer;
@@ -22,8 +22,8 @@ customElements.define('gallery-manager-component', class GalleryManagerComponent
     /** @type {HTMLFieldSetElement} */ #excludedImagesFieldset;
     /** @type {HTMLUListElement} */ #includedImagesUL;
     /** @type {HTMLUListElement} */ #excludedImagesUL;
-    #deleteGalleryButton;
-    #saveGalleryButton;
+    /** @type {HTMLButtonElement} */ #btnDeleteGallery;
+    /** @type {HTMLButtonElement} */ #btnSaveGalleryImages;
 
     #managerCreateGallery;
     /** @type {HTMLFormElement} */ #galleryPropertiesForm;
@@ -115,8 +115,8 @@ customElements.define('gallery-manager-component', class GalleryManagerComponent
         this.#excludedImagesFieldset = this.#excludedImagesContainer.querySelector('fieldset');
         this.#includedImagesUL = this.#includedImagesFieldset.querySelector('ul');
         this.#excludedImagesUL = this.#excludedImagesFieldset.querySelector('ul');
-        this.#deleteGalleryButton = this.#managerSelectedGallery.querySelector('[btn-delete-gallery]');
-        this.#saveGalleryButton = this.#managerSelectedGallery.querySelector('[btn-save-gallery');
+        this.#btnDeleteGallery = this.#managerSelectedGallery.querySelector('[btn-delete-gallery]');
+        this.#btnSaveGalleryImages = this.#managerSelectedGallery.querySelector('[btn-save-gallery');
 
         this.#managerCreateGallery = self.querySelector('manager-create-gallery');
         this.#galleryPropertiesForm = this.#managerCreateGallery.querySelector('form');
@@ -154,8 +154,8 @@ customElements.define('gallery-manager-component', class GalleryManagerComponent
 
         this.#setupDragTargets();
 
-        this.#deleteGalleryButton.addEventListener('click', () => this.#deleteGallery());
-        this.#saveGalleryButton.addEventListener('click', () => this.#saveGalleryImages());
+        this.#btnDeleteGallery.addEventListener('click', () => this.#deleteGallery());
+        this.#btnSaveGalleryImages.addEventListener('click', () => this.#saveGalleryImages());
         
         this.#galleryPropertiesForm.addEventListener('submit', event => {
             event.preventDefault();
@@ -253,12 +253,12 @@ customElements.define('gallery-manager-component', class GalleryManagerComponent
     }
 
     async #deleteGallery() {
-
+        
     }
 
     async #saveGalleryImages() {
-        this.#saveGalleryButton.disabled = true;
-        this.#deleteGalleryButton.disabled = true;
+        this.#btnSaveGalleryImages.disabled = true;
+        this.#btnDeleteGallery.disabled = true;
         this.#galleryListFieldset.disabled = true;
 
         const galleryId = Number(this.#galleryListFieldset.querySelector(':checked').dataset.galleryId);
@@ -267,7 +267,7 @@ customElements.define('gallery-manager-component', class GalleryManagerComponent
             .map(input => Number(input.dataset.imageId));
 
         if (await this.#service.updateGalleryImages(galleryId, imageIds)) {
-            this.#deleteGalleryButton.disabled = false;
+            this.#btnDeleteGallery.disabled = false;
             this.#galleryListFieldset.disabled = false;
         }
     }
@@ -289,7 +289,7 @@ customElements.define('gallery-manager-component', class GalleryManagerComponent
             list.insertBefore(this.#dragItem, this.#dragTarget);
         }
 
-        this.#saveGalleryButton.disabled = false;
+        this.#btnSaveGalleryImages.disabled = false;
     }
 
     #setupDragTargets() {
@@ -359,7 +359,7 @@ customElements.define('gallery-manager-component', class GalleryManagerComponent
                 this.#dragItem = null;
                 this.#dragTarget = null;
                 this.#append = false;
-                this.#deleteGalleryButton.toggleAttribute('hidden', !!this.#includedImagesUL.firstElementChild);
+                this.#btnDeleteGallery.toggleAttribute('hidden', !!this.#includedImagesUL.firstElementChild);
             });
         }
 
@@ -412,8 +412,8 @@ customElements.define('gallery-manager-component', class GalleryManagerComponent
     #renderImageLists(galleryId = null) {
         this.#includedImagesFieldset.disabled = true;
         this.#excludedImagesFieldset.disabled = true;
-        this.#deleteGalleryButton.disabled = true;
-        this.#saveGalleryButton.disabled = true;
+        this.#btnDeleteGallery.disabled = true;
+        this.#btnSaveGalleryImages.disabled = true;
 
         this.#service.getImages(images => {
             const includedImages = [];
@@ -442,7 +442,7 @@ customElements.define('gallery-manager-component', class GalleryManagerComponent
             if (!galleryId) {
                 this.#includedImagesUL.replaceChildren(...includedImages);
                 this.#excludedImagesUL.replaceChildren(...excludedImages.values());
-                this.#deleteGalleryButton.disabled = false;
+                this.#btnDeleteGallery.disabled = false;
                 return;
             }
 
@@ -457,8 +457,8 @@ customElements.define('gallery-manager-component', class GalleryManagerComponent
 
                 this.#includedImagesFieldset.disabled = false;
                 this.#excludedImagesFieldset.disabled = false;
-                this.#deleteGalleryButton.disabled = false;
-                this.#deleteGalleryButton.toggleAttribute('hidden', !!this.#includedImagesUL.firstElementChild);
+                this.#btnDeleteGallery.disabled = false;
+                this.#btnDeleteGallery.toggleAttribute('hidden', !!this.#includedImagesUL.firstElementChild);
             });
 
             
