@@ -248,7 +248,7 @@ customElements.define('gallery-manager-component', class GalleryManagerComponent
 
     async #saveGalleryImages() {
         this.#saveGalleryButton.disabled = true;
-        this.#deleteGalleryButton.toggleAttribute('hidden', true);
+        this.#deleteGalleryButton.disabled = true;
         this.#galleryListFieldset.disabled = true;
 
         const galleryId = Number(this.#galleryListFieldset.querySelector(':checked').dataset.galleryId);
@@ -257,7 +257,7 @@ customElements.define('gallery-manager-component', class GalleryManagerComponent
             .map(input => Number(input.dataset.imageId));
 
         if (await this.#service.updateGalleryImages(galleryId, imageIds)) {
-            this.#deleteGalleryButton.removeAttribute('hidden');
+            this.#deleteGalleryButton.disabled = false;
             this.#galleryListFieldset.disabled = false;
         }
     }
@@ -402,7 +402,7 @@ customElements.define('gallery-manager-component', class GalleryManagerComponent
     #renderImageLists(galleryId = null) {
         this.#includedImagesFieldset.disabled = true;
         this.#excludedImagesFieldset.disabled = true;
-        this.#deleteGalleryButton.setAttribute('hidden', '');
+        this.#deleteGalleryButton.disabled = true;
         this.#saveGalleryButton.disabled = true;
 
         this.#service.getImages(images => {
@@ -432,6 +432,7 @@ customElements.define('gallery-manager-component', class GalleryManagerComponent
             if (!galleryId) {
                 this.#includedImagesUL.replaceChildren(...includedImages);
                 this.#excludedImagesUL.replaceChildren(...excludedImages.values());
+                this.#deleteGalleryButton.disabled = false;
                 return;
             }
 
@@ -446,6 +447,7 @@ customElements.define('gallery-manager-component', class GalleryManagerComponent
 
                 this.#includedImagesFieldset.disabled = false;
                 this.#excludedImagesFieldset.disabled = false;
+                this.#deleteGalleryButton.disabled = false;
                 this.#deleteGalleryButton.toggleAttribute('hidden', !!this.#includedImagesUL.firstElementChild);
             });
 
