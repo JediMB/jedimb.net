@@ -197,10 +197,11 @@ class ImageGalleryService {
 
         this.#galleryImageModified = modifiedOn;
 
-        this.#galleries.getValue().find(g => g.id === gallery.id).imageIds = [...gallery.imageIds];
+        const index = this.#galleries.getValue().findIndex(g => g.id === gallery.id);
+        this.#galleries.setValue(gallery, index);
 
         /** @type Image[] */
-        const images = this.#images.getValue();
+        const images = [...this.#images.getValue()];
         for (const image of images) {
             if (removed.imageIds.find(iId => iId === image.id))
                 image.galleryIds = image.galleryIds.filter(gId => gId !== gallery.id);
@@ -208,6 +209,7 @@ class ImageGalleryService {
             if (gallery.imageIds.find(iId => iId === image.id) && image.galleryIds.every(gId => gId !== gallery.id))
                 image.galleryIds.push(gallery.id);
         }
+        this.#images.setValue(images);
 
         return true;
     }
