@@ -69,13 +69,11 @@ customElements.define('gallery-manager-component', class GalleryManagerComponent
                 if (this.#currentGallery) {
                     const data = this.#currentGallery.dataset;
                     this.#inputId.defaultValue = data.galleryId;
-                    this.#inputTitle.defaultValue = data.galleryDefaultTitle;
-                    this.#inputTitle.value = data.galleryTitle;
-                    this.#inputDescription.defaultValue = data.galleryDefaultDescription;
-                    this.#inputDescription.value = data.galleryDescription;
+                    this.#inputTitle.defaultValue = data.galleryTitle;
+                    this.#inputDescription.defaultValue = data.galleryDescription;
                 }
-                else
-                    this.#galleryPropertiesForm.reset();
+
+                this.#galleryPropertiesForm.reset();
 
                 this.#managerSelectedGallery.toggleAttribute('hidden', true);
                 this.#managerCreateGallery.removeAttribute('hidden');
@@ -83,6 +81,10 @@ customElements.define('gallery-manager-component', class GalleryManagerComponent
             
             case 'done':
                 this.#currentGallery = null;
+                this.#inputId.defaultValue = 0;
+                this.#inputTitle.defaultValue = '';
+                this.#inputDescription.defaultValue = '';
+                
                 this.#managerSelectedGallery.removeAttribute('hidden');
                 this.#managerCreateGallery.toggleAttribute('hidden', true);
 
@@ -354,9 +356,7 @@ customElements.define('gallery-manager-component', class GalleryManagerComponent
             const data = input.dataset;
             data.galleryId = gallery.id;
             data.galleryTitle = gallery.title;
-            data.galleryDefaultTitle = gallery.title;
             data.galleryDescription = gallery.description;
-            data.galleryDefaultDescription = gallery.description;
             data.galleryCreatedOn = formatDate(gallery.createdOn);
             data.galleryModifiedOn = formatDate(gallery.modifiedOn);
             label.appendChild(input);

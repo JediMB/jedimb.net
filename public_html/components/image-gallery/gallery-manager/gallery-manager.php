@@ -29,9 +29,7 @@ Component::addJSModule();
                             <input hidden type="radio" name="galleries"
                                 data-gallery-id="<?= $gallery->id ?>"
                                 data-gallery-title="<?= $galleryTitle ?>"
-                                data-gallery-default-title="<?= $galleryTitle ?>"
                                 data-gallery-description="<?= $galleryDesc ?>"
-                                data-gallery-default-description="<?= $galleryDesc ?>"
                                 data-gallery-created-on="<?= DateTime::ToString($gallery->createdOn) ?>"
                                 data-gallery-modified-on="<?= DateTime::ToString($gallery->modifiedOn) ?>"
                             >
