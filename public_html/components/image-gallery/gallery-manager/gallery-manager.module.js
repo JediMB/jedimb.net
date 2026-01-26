@@ -31,6 +31,7 @@ customElements.define('gallery-manager-component', class GalleryManagerComponent
     /** @type {HTMLInputElement} */ #inputTitle;
     /** @type {HTMLTextAreaElement} */ #inputDescription;
     /** @type {HTMLButtonElement} */ #btnResetGalleryProperties;
+    /** @type {HTMLButtonElement} */ #btnCancelGalleryProperties;
     /** @type {HTMLButtonElement} */ #btnSaveGalleryProperties;
 
     /** @type {HTMLInputElement} */ #currentGallery = null;
@@ -84,7 +85,7 @@ customElements.define('gallery-manager-component', class GalleryManagerComponent
                 this.#inputId.defaultValue = 0;
                 this.#inputTitle.defaultValue = '';
                 this.#inputDescription.defaultValue = '';
-                
+
                 this.#managerSelectedGallery.removeAttribute('hidden');
                 this.#managerCreateGallery.toggleAttribute('hidden', true);
 
@@ -123,6 +124,7 @@ customElements.define('gallery-manager-component', class GalleryManagerComponent
         this.#inputTitle = this.#galleryPropertiesForm.querySelector(['[name="title"]']);
         this.#inputDescription = this.#galleryPropertiesForm.querySelector('[name="description"]');
         this.#btnResetGalleryProperties = this.#galleryPropertiesForm.querySelector('[type="reset"]');
+        this.#btnCancelGalleryProperties = this.#galleryPropertiesForm.querySelector('[btn-cancel-gallery]');
         this.#btnSaveGalleryProperties = this.#galleryPropertiesForm.querySelector('[type="submit"]');
 
         if (this.#insertTarget)
@@ -144,6 +146,10 @@ customElements.define('gallery-manager-component', class GalleryManagerComponent
         this.#btnEditGalleryProperties.addEventListener('click', () => {
             this.#currentGallery = this.#galleryList.querySelector(':checked');
             this.#self.setAttribute('properties-mode', 'active');
+        });
+
+        this.#btnCancelGalleryProperties.addEventListener('click', () => {
+            this.#self.setAttribute('properties-mode', 'done');
         });
 
         this.#setupDragTargets();

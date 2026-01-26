@@ -108,8 +108,11 @@ Component::addJSModule();
                 </div>
             </gallery-properties>
             <manager-buttons>
-                <div><button btn-reset-gallery type="reset" hidden title="Reset to default values">Reset</button></div>
-                <div><button btn-update-gallery type="submit" disabled title="Save all changes">Save</button></div>
+                <div><button btn-reset-gallery type="reset" hidden title="Reset gallery properties to default values">Reset</button></div>
+                <div>
+                    <button btn-cancel-gallery title="Cancel editing gallery properties">Cancel</button>
+                    <button btn-update-gallery type="submit" disabled title="Save all changes to gallery properties">Save</button>
+                </div>
             </manager-buttons>
         </manager-gallery-properties>
     </form>
