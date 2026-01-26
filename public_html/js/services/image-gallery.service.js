@@ -151,6 +151,26 @@ class ImageGalleryService {
         
         this.#images.first(value => next.call(this, value));
     }
+    
+    /** 
+     * @param {GalleryDTO} galleryDTO
+     * @returns {Promise<boolean>}
+     */
+    async updateGallery(galleryDTO) {
+        const result = await imageGalleryApiService.putGallery(galleryDTO);
+
+        if (!result)
+            throw new Error('No result received in updateGallery');
+
+        const [ gallery, modifiedOn ] = result;
+
+        this.#galleryModified = modifiedOn;
+
+        const index = this.#galleries.getValue().findIndex(g => g.id === gallery.id);
+        this.#galleries.setValue(gallery, index);
+
+        return true;
+    }
 
     /**
      * @param {number} galleryId 
@@ -171,7 +191,7 @@ class ImageGalleryService {
         const result = await imageGalleryApiService.patchGallery(galleryImagesDTO);
 
         if (!result)
-            throw new Error('No result received from patchGallery');
+            throw new Error('No result received in updateGalleryImages');
 
         const [ gallery, removed, modifiedOn ] = result;
 
@@ -200,7 +220,7 @@ class ImageGalleryService {
         const result = await imageGalleryApiService.patchImage(imageDTO);
 
         if (!result)
-            throw new Error('No result received from updateImage');
+            throw new Error('No result received in updateImage');
 
         const [ image, modifiedOn ] = result;
         

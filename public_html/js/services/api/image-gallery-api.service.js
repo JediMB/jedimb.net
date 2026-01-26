@@ -163,5 +163,27 @@ class ImageGalleryApiService {
             new Date(response.value.modifiedOn.date + response.value.modifiedOn.timezone)
         ];
     }
+
+    /**
+     * @param {GalleryDTO} galleryDTO
+     * @returns {Promise<([Gallery, Date]|false)>}
+     */
+    async putGallery(galleryDTO) {
+        const response = await this.#httpClient.put('galleries', galleryDTO);
+
+        if (!response.success)
+            return false;
+
+        if (!response.value.gallery)
+            throw new Error('Create failed to return gallery data');
+
+        if (!response.value.modifiedOn)
+            throw new Error('Create failed to return table modified date');
+
+        return [
+            new Gallery(response.value.gallery),
+            new Date(response.value.modifiedOn.date + response.value.modifiedOn.timezone)
+        ];
+    }
 }
 const imageGalleryApiService = new ImageGalleryApiService();
