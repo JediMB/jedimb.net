@@ -18,6 +18,25 @@ class ImageGalleryApiService {
      * @param {Number} id 
      * @returns {Promise<([Number, Date]|false)>}
      */
+    async deleteGallery(id) {
+        const response = await this.#httpClient.delete('galleries', id);
+
+        if (!response.success)
+            return false;
+
+        if (!response.value)
+            throw new Error('Delete failed to return gallery data');
+
+        return [
+            Number(response.value.id),
+            new Date(response.value.modifiedOn.date + response.value.modifiedOn.timezone)
+        ];
+    }
+
+    /**
+     * @param {Number} id 
+     * @returns {Promise<([Number, Date]|false)>}
+     */
     async deleteImage(id) {
         const response = await this.#httpClient.delete('images', id);
 

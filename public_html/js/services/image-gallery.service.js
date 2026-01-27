@@ -101,11 +101,34 @@ class ImageGalleryService {
      * @param {Number} id 
      * @returns {Promise<boolean>}
      */
+    async deleteGallery(id) {
+        const result = await imageGalleryApiService.deleteGallery(id);
+
+        if (!result)
+            throw new Error('No result received in deleteGallery');
+
+        const [ deletedId, modifiedOn ] = result;
+
+        this.#galleryModified = modifiedOn;
+
+        if (deletedId !== id)
+            throw new Error('Id in deleteGallery request and response do not match');
+
+        const galleries = this.#galleries.getValue().filter(g => g.id !== deletedId);
+        this.#galleries.setValue(galleries);
+
+        return true;
+    }
+
+    /**
+     * @param {Number} id 
+     * @returns {Promise<boolean>}
+     */
     async deleteImage(id) {
         const result = await imageGalleryApiService.deleteImage(id);
 
         if (!result)
-            throw new Error('No result received from deleteImage');
+            throw new Error('No result received in deleteImage');
 
         const [ deletedId, modifiedOn ] = result;
 

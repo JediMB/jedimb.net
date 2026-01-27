@@ -253,7 +253,19 @@ customElements.define('gallery-manager-component', class GalleryManagerComponent
     }
 
     async #deleteGallery() {
-        
+        this.#btnDeleteGallery.disabled = true;
+        this.#btnSaveGalleryImages.disabled = true;
+        this.#galleryListFieldset.disabled = true;
+        this.#btnInsertGallery.disabled = true;
+        this.#btnEditGalleryProperties.disabled = true;
+
+        const galleryId = Number(this.#galleryListFieldset.querySelector(':checked').dataset.galleryId);
+
+        if (!galleryId) throw new Error("Can't find gallery id to delete");
+
+        if (await this.#service.deleteGallery(galleryId)) {
+            this.#galleryListFieldset.disabled = false;
+        }
     }
 
     async #saveGalleryImages() {
