@@ -260,6 +260,8 @@ customElements.define('gallery-manager-component', class GalleryManagerComponent
         this.#btnSaveGalleryImages.disabled = true;
         this.#btnDeleteGallery.disabled = true;
         this.#galleryListFieldset.disabled = true;
+        this.#includedImagesFieldset.disabled = true;
+        this.#excludedImagesFieldset.disabled = true;
 
         const galleryId = Number(this.#galleryListFieldset.querySelector(':checked').dataset.galleryId);
 
@@ -269,6 +271,8 @@ customElements.define('gallery-manager-component', class GalleryManagerComponent
         if (await this.#service.updateGalleryImages(galleryId, imageIds)) {
             this.#btnDeleteGallery.disabled = false;
             this.#galleryListFieldset.disabled = false;
+            this.#includedImagesFieldset.disabled = false;
+            this.#excludedImagesFieldset.disabled = false;
         }
     }
 
