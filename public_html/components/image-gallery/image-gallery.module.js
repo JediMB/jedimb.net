@@ -25,6 +25,12 @@ customElements.define('image-gallery-component', class ImageGalleryComponent ext
         if (!this.#imageManager || !this.#galleryManager)
             throw new Error(`Image Manager (${!!this.#imageManager}) or Gallery Manager (${!!this.#galleryManager}) not found in Image Gallery`);
 
+        const finishEvent = self.getAttribute('finish-event');
+        if (finishEvent) {
+            this.#imageManager.setAttribute('finish-event', finishEvent);
+            this.#galleryManager.setAttribute('finish-event', finishEvent);
+        }
+
         this.#imageUploadButton = self.querySelector('[btn-image-upload');
         this.#cancelUploadButton = self.querySelector('[btn-cancel-upload]');
 
