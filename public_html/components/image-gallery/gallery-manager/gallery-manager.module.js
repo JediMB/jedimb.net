@@ -143,6 +143,8 @@ customElements.define('gallery-manager-component', class GalleryManagerComponent
             this.#renderImageLists(galleryId);
         });
 
+        this.#btnInsertGallery.addEventListener('click', () => this.#insertGallery());
+
         this.#btnEditGalleryProperties.addEventListener('click', () => {
             this.#currentGallery = this.#galleryList.querySelector(':checked');
             this.#self.setAttribute('properties-mode', 'active');
@@ -185,6 +187,30 @@ customElements.define('gallery-manager-component', class GalleryManagerComponent
         this.#service.galleries.subscribe(galleries => this.#updateGalleriesMarkup(galleries), true, (_, gallery) => this.#updateGalleryMarkup(gallery));
 
         this.#galleryListFieldset.disabled = false;
+    }
+
+    async #insertGallery() {
+        const checked = this.#galleryList.querySelector(':checked');
+
+        if (!checked)
+            throw new Error('Insert button clicked with no gallery selected');
+
+        if (!this.#insertTarget)
+            throw new Error('No place to insert gallery registered');
+
+        this.#service.getGallery(Number(checked.dataset.galleryId), gallery => {
+            if (!gallery)
+                throw new Error('Gallery not found');
+
+            const self = this.#self;
+            const finishEvent = self.getAttribute('finish-event');
+            console.log(this.#insertTarget);
+            this.#insertTarget.dataset.galleryInsert = JSON.stringify(gallery);
+            if (finishEvent) {
+                const event = new CustomEvent(finishEvent, { bubbles: true });
+                self.dispatchEvent(event);
+            }
+        });
     }
 
     /** @param {Gallery[]} galleries */
