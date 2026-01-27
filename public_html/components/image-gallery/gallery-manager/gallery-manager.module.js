@@ -363,7 +363,7 @@ customElements.define('gallery-manager-component', class GalleryManagerComponent
                 this.#dragItem = null;
                 this.#dragTarget = null;
                 this.#append = false;
-                this.#btnDeleteGallery.toggleAttribute('hidden', !!this.#includedImagesUL.firstElementChild);
+                this.#btnDeleteGallery.disabled = !!this.#includedImagesUL.firstElementChild;
             });
         }
 
@@ -461,8 +461,7 @@ customElements.define('gallery-manager-component', class GalleryManagerComponent
 
                 this.#includedImagesFieldset.disabled = false;
                 this.#excludedImagesFieldset.disabled = false;
-                this.#btnDeleteGallery.disabled = false;
-                this.#btnDeleteGallery.toggleAttribute('hidden', !!this.#includedImagesUL.firstElementChild);
+                this.#btnDeleteGallery.disabled = !!this.#includedImagesUL.firstElementChild;
             });
 
             

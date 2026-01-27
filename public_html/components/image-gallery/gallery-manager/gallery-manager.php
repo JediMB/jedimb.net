@@ -74,7 +74,7 @@ Component::addJSModule();
         </images-excluded>
     </manager-gallery-images>
     <manager-buttons>
-        <div><button btn-delete-gallery hidden title="Delete empty gallery">Delete</button></div>
+        <div><button btn-delete-gallery disabled title="Delete empty gallery">Delete</button></div>
         <div><button btn-save-gallery disabled title="Save all changes">Save</button></div>
     </manager-buttons>
 </manager-selected-gallery>
