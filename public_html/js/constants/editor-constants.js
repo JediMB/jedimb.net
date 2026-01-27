@@ -18,7 +18,7 @@ export const textContentTags = Object.freeze([ 'a', 'b', 'i', 'u' ]);
 
 /** Array of allowed uppsercase non-text content element tags
  * @type {string[]} */
-export const nonTextContentTags = Object.freeze([ 'br', 'img' ]);
+export const nonTextContentTags = Object.freeze([ 'br', 'img', 'img-gallery' ]);
 
 /** Complete array of allowed lowercase element tags
  * @type {string[]} */
@@ -29,7 +29,8 @@ export const tagWhiteList = Object.freeze([...containerTags, ...textContentTags,
  * */
 export const allowedAttributes = Object.freeze({
     a: [ 'href', 'target', 'title' ],
-    img: [ 'src', 'alt', 'data-image-id' ]
+    img: [ 'src', 'alt', 'data-image-id' ],
+    'img-gallery': [ 'data-gallery-id' ]
 });
 
 /** Array of uppercase keys that should have their default behavior even when accompanied by modifier keys
