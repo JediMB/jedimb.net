@@ -1,4 +1,3 @@
-
 export class InputFileElement extends HTMLElement {
     /** @type {InputFileElement} */
     #self;
