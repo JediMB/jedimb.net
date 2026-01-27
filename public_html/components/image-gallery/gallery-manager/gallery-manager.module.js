@@ -376,9 +376,12 @@ customElements.define('gallery-manager-component', class GalleryManagerComponent
     #renderGalleryList(galleries) {
         const selectedId = this.#galleryList.querySelector(':checked')?.dataset.galleryId;
 
+        this.#btnInsertGallery.disabled = true;
+        this.#btnEditGalleryProperties.disabled = true;
         this.#galleryList.textContent = ''; // TODO: Loading spinner animation
         
         const listItems = [];
+        let selectedIdExists = false;
         for (const gallery of galleries) {
             const listItem = document.createElement('li');
             listItem.classList.add('manager-list-item');
@@ -403,13 +406,20 @@ customElements.define('gallery-manager-component', class GalleryManagerComponent
 
             label.appendChild(document.createTextNode(gallery.title));
 
-            if (selectedId && selectedId === gallery.id)
+            if (selectedId && selectedId === gallery.id) {
                 input.checked = true;
+                selectedIdExists = true;
+                this.#btnInsertGallery.disabled = false;
+                this.#btnEditGalleryProperties.disabled = false;
+            }
         }
 
         this.#galleryList.replaceChildren(...listItems);
 
-        return selectedId;
+        if (selectedIdExists)
+            return selectedId;
+
+        return null;
     }
 
     /** @param {number|null} galleryId */
@@ -446,7 +456,7 @@ customElements.define('gallery-manager-component', class GalleryManagerComponent
             if (!galleryId) {
                 this.#includedImagesUL.replaceChildren(...includedImages);
                 this.#excludedImagesUL.replaceChildren(...excludedImages.values());
-                this.#btnDeleteGallery.disabled = false;
+                this.#btnDeleteGallery.disabled = true;
                 return;
             }
 
