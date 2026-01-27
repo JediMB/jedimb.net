@@ -2,6 +2,7 @@ import * as c from "/js/constants/editor-constants.js";
 import * as p from "/js/utilities/paste.utility.js";
 import { fillSelect } from "/js/utilities/form.utility.js";
 import { imageGalleryPath } from "/js/constants/meta-constants.js";
+import Gallery from "/js/models/image-gallery/gallery.model.js";
 import Image from "/js/models/image-gallery/image.model.js";
 import SelectionData from "/js/models/selection-data.model.js";
 import undoManagementService from "/js/services/undo-management.service.js";
@@ -82,13 +83,27 @@ customElements.define('text-editor-component', class TextEditorComponent extends
 
         this.#mutationObserver = new MutationObserver((mutationList, _) => {
             for (const record of mutationList) {
-                if (record.target !== self.#textBox || record.attributeName !== 'data-image-insert')
+                if (record.target !== self.#textBox)
                     continue;
 
-                if (!self.#textBox.hasAttribute('data-image-insert'))
-                    continue;
+                switch (record.attributeName) {
+                    case 'data-gallery-insert':
+                        if (!self.#textBox.hasAttribute('data-gallery-insert'))
+                            continue;
+                        
+                        this.#addGallery();
+                        break;
+
+                    case 'data-image-insert':
+                        if (!self.#textBox.hasAttribute('data-image-insert'))
+                            continue;
                 
-                this.#addImage();
+                        this.#addImage();
+                        break;
+
+                    default:
+                        continue;
+                }
                 break;
             }
 
@@ -99,7 +114,14 @@ customElements.define('text-editor-component', class TextEditorComponent extends
             });
             this.dispatchEvent(event);
         });
-        this.#mutationObserver.observe(this.#textBox, {characterData: true, childList: true, subtree: true, attributeFilter: ['data-image-insert']});
+        this.#mutationObserver.observe(
+            this.#textBox, {
+                characterData: true,
+                childList: true,
+                subtree: true,
+                attributeFilter: ['data-image-insert', 'data-gallery-insert']
+            }
+        );
 
         textarea.addEventListener('change', (event) => {
             event.stopPropagation();
@@ -137,6 +159,23 @@ customElements.define('text-editor-component', class TextEditorComponent extends
     }
 
     connectedMoveCallback() {}
+
+    #addGallery() {
+        /** @type {Gallery} */
+        const gallery = JSON.parse(this.#textBox.getAttribute('data-gallery-insert'));
+        this.#textBox.removeAttribute('data-gallery-insert');
+
+        this.#makeSelection(this.#latestSelection);
+
+        console.log('inserting');
+
+        this.#toggleTag({
+            name: 'img-gallery',
+            dataset: {
+                galleryId: gallery.id
+            }
+        });
+    }
 
     /** Add an image using data from the component's data-image-insert attribute */
     #addImage() {
@@ -917,10 +956,7 @@ customElements.define('text-editor-component', class TextEditorComponent extends
     /**
      * Add or remove one or more tags of the specified type
      * 
-     * @param {Object} tagInfo
-     * @param {string} tagInfo.name
-     * @param {string} tagInfo.content 
-     * @param {Object} tagInfo.attributes 
+     * @param {{name: string, content: string, attributes: {}, dataset: {}}} tagInfo
      */
     #toggleTag(tagInfo) {
         this.logFuncs && console.clear();
