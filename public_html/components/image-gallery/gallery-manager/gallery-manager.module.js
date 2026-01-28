@@ -307,7 +307,6 @@ customElements.define('gallery-manager-component', class GalleryManagerComponent
             .map(input => Number(input.dataset.imageId));
 
         if (await this.#service.updateGalleryImages(galleryId, imageIds)) {
-            this.#btnDeleteGallery.disabled = false;
             this.#galleryListFieldset.disabled = false;
             this.#includedImagesFieldset.disabled = false;
             this.#excludedImagesFieldset.disabled = false;
