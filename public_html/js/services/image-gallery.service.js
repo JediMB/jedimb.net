@@ -164,8 +164,7 @@ class ImageGalleryService {
         return this.#images.getValue().find(i => i.id === id);
     }
 
-    /**
-     * @param {(value: Image[]) => void} next */
+    /** @param {(value: Image[]) => void} next */
     getImages(next) {
         if (this.#initialized) {
             next.call(this, this.#images.getValue());
