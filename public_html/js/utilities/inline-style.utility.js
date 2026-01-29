@@ -9,23 +9,41 @@ class InlineStyleUtility {
     }
 
     /**
-     * 
      * @param {string} element 
      * @param  {...[string: property, string: value]} propertyValues 
      */
     addCSS(element, ...propertyValues) {
+        const text = document.createTextNode(this.#createCSS(element, propertyValues));
+        this.#style.appendChild(text);
+
+        return text;
+    }
+
+    /**
+     * @param {Text} cssTextNode
+     * @param {string} element 
+     * @param  {...[string: property, string: value]} propertyValues 
+     */
+    replaceCSS(cssTextNode, element, ...propertyValues) {
+        if (!cssTextNode || cssTextNode.nodeType !== Node.TEXT_NODE)
+            throw new Error('First parameter in replaceCSS is not a text node');
+
+        cssTextNode.textContent = this.#createCSS(element, propertyValues);
+    }
+
+    /**
+     * @param {string} element 
+     * @param  {[string: property, string: value][]} propertyValues 
+     * @returns {string}
+     */
+    #createCSS(element, propertyValues) {
         let css = `${element} { `;
 
         for (const [property, value] of propertyValues) {
             css += `${property}: ${value}; `
         }
 
-        css += '}';
-
-        const text = document.createTextNode(css);
-        this.#style.appendChild(text);
-
-        return text;
+        return css + '}';
     }
 }
 const inlineStyle = new InlineStyleUtility();
