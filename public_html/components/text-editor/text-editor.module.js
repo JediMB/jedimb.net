@@ -171,8 +171,8 @@ customElements.define('text-editor-component', class TextEditorComponent extends
 
         this.#toggleTag({
             name: 'img-gallery',
-            dataset: {
-                galleryId: gallery.id
+            attributes: {
+                'gallery-id': gallery.id
             }
         });
     }
