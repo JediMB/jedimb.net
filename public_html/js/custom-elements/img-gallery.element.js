@@ -8,17 +8,7 @@ export class ImgGalleryElement extends HTMLElement {
         'aspect-ratio',
         'width'
     ];
-    static #css = [
-        ['display', 'block flex'],
-        ['height', '10rem'],
-        ['width', 'fit-content'],
-        ['max-width', '75%'],
-        ['margin-inline', 'auto'],
-        ['overflow-x', 'auto']
-    ];
-    // Static CSS should be limited to what will unconditionally be applied to all elements of its type
-    // Maybe it can be set to 'display: content' and the container within can handle most everything else?
-    static #cssTextNode = inlineStyle.addCSS('img-gallery', ...this.#css);
+    static #cssTextNode = inlineStyle.addCSS('img-gallery', { display: 'contents' });
 
     /** @type {ImgGalleryElement} */ #self;
     #service;

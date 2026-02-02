@@ -10,9 +10,9 @@ class InlineStyleUtility {
 
     /**
      * @param {string} element 
-     * @param  {...[string: property, string: value]} propertyValues 
+     * @param  {{}} propertyValues 
      */
-    addCSS(element, ...propertyValues) {
+    addCSS(element, propertyValues = {}) {
         const text = document.createTextNode(this.#createCSS(element, propertyValues));
         this.#style.appendChild(text);
 
@@ -22,9 +22,9 @@ class InlineStyleUtility {
     /**
      * @param {Text} cssTextNode
      * @param {string} element 
-     * @param  {...[string: property, string: value]} propertyValues 
+     * @param  {{}} propertyValues 
      */
-    replaceCSS(cssTextNode, element, ...propertyValues) {
+    replaceCSS(cssTextNode, element, propertyValues) {
         if (!cssTextNode || cssTextNode.nodeType !== Node.TEXT_NODE)
             throw new Error('First parameter in replaceCSS is not a text node');
 
@@ -33,14 +33,14 @@ class InlineStyleUtility {
 
     /**
      * @param {string} element 
-     * @param  {[string: property, string: value][]} propertyValues 
+     * @param  {{}} propertyValues 
      * @returns {string}
      */
     #createCSS(element, propertyValues) {
         let css = `${element} { `;
 
-        for (const [property, value] of propertyValues) {
-            css += `${property}: ${value}; `
+        for (const property in propertyValues) {
+            css += `${property}: ${propertyValues[property]}; `
         }
 
         return css + '}';
