@@ -6,18 +6,25 @@ export class ImgGalleryElement extends HTMLElement {
     static observedAttributes = [
         'gallery-id',
         'aspect-ratio',
-        'width'
+        'width',
+        'transition-time',
+        'wait-time'
     ];
     static #cssTextNode = inlineStyle.addCSS('img-gallery', { display: 'contents' });
 
     /** @type {ImgGalleryElement} */ #self;
     #service;
+    #listener;
 
     /** @type {number} */ #galleryId = 0;
     /** @type {string} */ #aspectRatio = '1';
     /** @type {string} */ #width = '75%';
+    /** @type {number} */ #transitionTime = 2000;
+    /** @type {number} */ #waitTime = 2000;
+
     /** @type {number[]} */ #imageIds = [];
-    /** @type {HTMLElement} */ #selection;
+    /** @type {boolean} */ #isHovered;
+    /** @type {number} */ #timeoutId;
 
     constructor() {
         const component = super();
@@ -37,85 +44,112 @@ export class ImgGalleryElement extends HTMLElement {
     connectedCallback() {
         const self = this.#self;
 
-        // self.addEventListener('mousedown', event => {
-        //     if (event.button === 1)
-        //         event.preventDefault();
-        //     });
-        // self.addEventListener('wheel', event => this.#scrollGallery(event));
-
         this.#setAttributeMembers();
 
-        if (!this.#galleryId)
-            throw new Error('No gallery id passed to img-gallery element');
-
         const shadow = self.attachShadow({ mode: 'open' });
-        const group = document.createElement('contents');
-        group.contentEditable = 'false';
-        shadow.appendChild(group);
+        
+        const container = document.createElement('gallery-container');
+        container.contentEditable = 'false';
+        shadow.appendChild(container);
 
         this.#service.getGallery(this.#galleryId, gallery => {
-            for (const imageId of gallery.imageIds) {
-                this.#imageIds.push(imageId);
-
-                const image = this.#service.getImage(imageId);
-                const img = document.createElement('img');
-                img.src = imageGalleryPath + image.filename;
-                group.appendChild(img);
-            }
-            this.#selection = group.firstElementChild;
+            this.#fillImages(gallery.imageIds, container);
+            setTimeout(() => {
+                const animationCSS = new CSSStyleSheet();
+                animationCSS.replaceSync(`
+                    img:nth-child(2) {
+                        animation: slide-in ${this.#transitionTime}ms forwards;
+                    }
+                        
+                    @keyframes slide-in {
+                        from { transform: translate(0); }
+                        to { transform: translate(-100%); }
+                    }
+                `);
+                shadow.adoptedStyleSheets.push(animationCSS);
+            }, this.#waitTime);
         });
 
-        const sheet = new CSSStyleSheet();
-        sheet.replaceSync(`contents {
-            display: block flex;
-            aspect-ratio: ${this.#aspectRatio};
-            width: ${this.#width};
-            max-width: 90%;
-            margin-inline: auto;
-            align-items: center;
-            gap: 1em;
-            overflow-x: auto;
-            scroll-snap-style: inline mandatory;
-            scroll-padding-inline: 1em;
-            -ms-overflow-style: none;
-            scrollbar-width: none;
-        }
+        this.#listener = this.#service.galleries.subscribe(null, false,
+            (_, gallery) => {
+                if (gallery.id === this.#galleryId)
+                    this.#fillImages(gallery.imageIds, container);
+        });
 
-        contents::-webkit-scrollbar {
-            display: none;
-        }
+        container.addEventListener('mouseenter', () => {
+            this.#isHovered = true;
+            clearTimeout(this.#timeoutId);
+        });
+        container.addEventListener('mouseleave', () => {
+            this.#isHovered = false;
+            this.#scheduleTransition(container);
+        });
+        container.addEventListener('animationend', () => {
+            if (!this.#isHovered)
+                this.#scheduleTransition(container)
+        });
 
-        img {
-            border-radius: var(--spacing-internal);
-            height: 100%;
-            aspect-ratio: ${this.#aspectRatio};
-            object-fit: cover;
-        }`);
-        shadow.adoptedStyleSheets = [ sheet ];
+        const baseCSS = new CSSStyleSheet();
+        baseCSS.replaceSync(`
+            gallery-container {
+                display: block flex;
+                border-radius: var(--spacing-internal);
+                aspect-ratio: ${this.#aspectRatio};
+                width: ${this.#width};
+                max-width: 90%;
+                margin-inline: auto;
+                align-items: center;
+                overflow-x: auto;
+                scroll-snap-style: inline mandatory;
+                scroll-padding-inline: 1em;
+                -ms-overflow-style: none;
+                scrollbar-width: none;
+            }
+
+            gallery-container::-webkit-scrollbar {
+                display: none;
+            }
+
+            img {
+                height: 100%;
+                aspect-ratio: ${this.#aspectRatio};
+                object-fit: cover;
+                cursor: pointer;
+            }
+        `);
+        shadow.adoptedStyleSheets.push(baseCSS);
     }
 
-    disconnectedCallback() {}
+    disconnectedCallback() {
+        this.#listener.unsubscribe();
+    }
 
     connectedMoveCallback() {}
 
-    /** @param {WheelEvent} event  */
-    #scrollGallery(event) {
-        if (event.ctrlKey || event.altKey || event.shiftKey || event.metaKey)
-            return;
+    /** 
+     * @param {number[]} imageIds  
+     * @param {HTMLElement} container
+     */
+    #fillImages(imageIds, container) {
+        this.#imageIds = [];
+        container.textContent = '';
 
-        if (!event.deltaY)
-            return;
+        for (const imageId of imageIds) {
+            this.#imageIds.push(imageId);
 
-        event.preventDefault();
+            const image = this.#service.getImage(imageId);
+            const img = document.createElement('img');
+            img.src = imageGalleryPath + image.filename;
+            img.alt = image.description;
+            container.appendChild(img);
+        }
+    }
 
-        const forward = event.deltaY > 0;
-
-        if (forward)
-            this.#selection = this.#selection.nextElementSibling ?? this.#selection.parentElement.firstElementChild;
-        else
-            this.#selection = this.#selection.previousElementSibling ?? this.#selection.parentElement.lastElementChild;
-
-        console.log(this.#selection);
+    /** @param {HTMLElement} container  */
+    #scheduleTransition(container) {
+        this.#timeoutId = setTimeout(
+            () => container.appendChild(container.firstElementChild),
+        this.#waitTime);
     }
 
     #setAttributeMembers() {
@@ -129,10 +163,34 @@ export class ImgGalleryElement extends HTMLElement {
             ?? this.#aspectRatio;
 
         this.#width = self.getAttribute('width')
-            ?.toLowerCase()
-            ?.match(/^\d+[a-z%]*$/)
+            ?.toLowerCase().match(/^\d+[a-z%]*$/)
             ?.at(0)
             ?? this.#width;
+
+        this.#transitionTime = this.#timeStringToMilliseconds(self.getAttribute('transition-time'), this.#transitionTime);
+        this.#waitTime = this.#timeStringToMilliseconds(self.getAttribute('wait-time'), this.#waitTime);
+    }
+
+    /**
+     * @param {string|null} timeString 
+     * @param {number} defaultValue 
+     * @returns {number}
+     */
+    #timeStringToMilliseconds(timeString, defaultValue) {
+        if (typeof defaultValue !== 'number' || defaultValue < 0)
+            throw new Error('Default value is not a valid number');
+
+        if (!timeString)
+            return defaultValue;
+
+        const match = timeString.toLowerCase().match(/^(\d+)(?:(?:(?:\.\d+)?s)|(ms))$/);
+
+        if (!match)
+            return defaultValue;
+
+        if (match[2]) return match[1];
+
+        return 1000 * Number(match[0].substring(0, match[0].length - 1));
     }
 }
 
