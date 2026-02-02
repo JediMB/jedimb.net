@@ -13,7 +13,9 @@ export class ImgGalleryElement extends HTMLElement {
     /** @type {ImgGalleryElement} */ #self;
     #service;
 
-    /** @type {number} */ #galleryId;
+    /** @type {number} */ #galleryId = 0;
+    /** @type {string} */ #aspectRatio = '1';
+    /** @type {string} */ #width = '75%';
     /** @type {number[]} */ #imageIds = [];
     /** @type {HTMLElement} */ #selection;
 
@@ -41,13 +43,13 @@ export class ImgGalleryElement extends HTMLElement {
         //     });
         // self.addEventListener('wheel', event => this.#scrollGallery(event));
 
-        this.#galleryId = Number(self.getAttribute('gallery-id'));
+        this.#setAttributeMembers();
 
         if (!this.#galleryId)
             throw new Error('No gallery id passed to img-gallery element');
 
         const shadow = self.attachShadow({ mode: 'open' });
-        const group = document.createElement('gallery-group');
+        const group = document.createElement('contents');
         group.contentEditable = 'false';
         shadow.appendChild(group);
 
@@ -64,27 +66,30 @@ export class ImgGalleryElement extends HTMLElement {
         });
 
         const sheet = new CSSStyleSheet();
-        sheet.replaceSync(`gallery-group {
+        sheet.replaceSync(`contents {
             display: block flex;
+            aspect-ratio: ${this.#aspectRatio};
+            width: ${this.#width};
+            max-width: 90%;
+            margin-inline: auto;
             align-items: center;
-            justify-content: center;
             gap: 1em;
+            overflow-x: auto;
             scroll-snap-style: inline mandatory;
             scroll-padding-inline: 1em;
             -ms-overflow-style: none;
             scrollbar-width: none;
         }
 
-        gallery-group::-webkit-scrollbar {
+        contents::-webkit-scrollbar {
             display: none;
         }
 
         img {
             border-radius: var(--spacing-internal);
             height: 100%;
-            aspect-ratio: 3/2;
+            aspect-ratio: ${this.#aspectRatio};
             object-fit: cover;
-            scroll-snap-align: start;
         }`);
         shadow.adoptedStyleSheets = [ sheet ];
     }
@@ -111,6 +116,23 @@ export class ImgGalleryElement extends HTMLElement {
             this.#selection = this.#selection.previousElementSibling ?? this.#selection.parentElement.lastElementChild;
 
         console.log(this.#selection);
+    }
+
+    #setAttributeMembers() {
+        const self = this.#self;
+
+        this.#galleryId = Number(self.getAttribute('gallery-id') ?? this.#galleryId);
+
+        this.#aspectRatio = self.getAttribute('aspect-ratio')
+            ?.match(/^\d+(?:\/\d+)?$/)
+            ?.at(0)
+            ?? this.#aspectRatio;
+
+        this.#width = self.getAttribute('width')
+            ?.toLowerCase()
+            ?.match(/^\d+[a-z%]*$/)
+            ?.at(0)
+            ?? this.#width;
     }
 }
 
