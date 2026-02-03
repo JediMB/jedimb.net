@@ -50,10 +50,16 @@ export class ImgGalleryElement extends HTMLElement {
         
         const container = document.createElement('gallery-container');
         container.contentEditable = 'false';
+        container.tabIndex = 0;
+        container.role = 'img';
         shadow.appendChild(container);
 
         this.#service.getGallery(this.#galleryId, gallery => {
+            container.ariaLabel = gallery.title;
+            container.ariaDescription = gallery.description;
+
             this.#fillImages(gallery.imageIds, container);
+            
             setTimeout(() => {
                 const animationCSS = new CSSStyleSheet();
                 animationCSS.replaceSync(`
@@ -80,13 +86,14 @@ export class ImgGalleryElement extends HTMLElement {
             this.#isHovered = true;
             clearTimeout(this.#timeoutId);
         });
+
         container.addEventListener('mouseleave', () => {
             this.#isHovered = false;
             this.#scheduleTransition(container);
         });
+
         container.addEventListener('animationend', () => {
-            if (!this.#isHovered)
-                this.#scheduleTransition(container)
+            this.#scheduleTransition(container)
         });
 
         const baseCSS = new CSSStyleSheet();
@@ -99,15 +106,7 @@ export class ImgGalleryElement extends HTMLElement {
                 max-width: 90%;
                 margin-inline: auto;
                 align-items: center;
-                overflow-x: auto;
-                scroll-snap-style: inline mandatory;
-                scroll-padding-inline: 1em;
-                -ms-overflow-style: none;
-                scrollbar-width: none;
-            }
-
-            gallery-container::-webkit-scrollbar {
-                display: none;
+                overflow: hidden;
             }
 
             img {
@@ -140,15 +139,25 @@ export class ImgGalleryElement extends HTMLElement {
             const image = this.#service.getImage(imageId);
             const img = document.createElement('img');
             img.src = imageGalleryPath + image.filename;
+            img.ariaLabel = image.title;
             img.alt = image.description;
+            img.ariaDescription = image.description;
             container.appendChild(img);
         }
     }
 
     /** @param {HTMLElement} container  */
     #scheduleTransition(container) {
+        if (this.#isHovered)
+            return;
+
         this.#timeoutId = setTimeout(
-            () => container.appendChild(container.firstElementChild),
+            () => {
+                if (!container.firstElementChild)
+                    return;
+
+                container.appendChild(container.firstElementChild);
+            },
         this.#waitTime);
     }
 
