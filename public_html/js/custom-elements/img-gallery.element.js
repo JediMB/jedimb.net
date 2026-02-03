@@ -1,4 +1,5 @@
 import { imageGalleryPath } from "/js/constants/meta-constants.js";
+import fullscreenImage from "/js/custom-elements/fullscreen-image.element.js";
 import imageGalleryService from "/js/services/image-gallery.service.js";
 import inlineStyle from "/js/utilities/inline-style.utility.js";
 
@@ -24,6 +25,7 @@ export class ImgGalleryElement extends HTMLElement {
 
     /** @type {number[]} */ #imageIds = [];
     /** @type {boolean} */ #isHovered;
+    /** @type {bolean} */ #isFullscreen;
     /** @type {number} */ #timeoutId;
 
     constructor() {
@@ -143,12 +145,22 @@ export class ImgGalleryElement extends HTMLElement {
             img.alt = image.description;
             img.ariaDescription = image.description;
             container.appendChild(img);
+
+            img.addEventListener('click', () => {
+                clearTimeout(this.#timeoutId);
+                this.#isFullscreen = true;
+                
+                fullscreenImage.show(img, () => {
+                    this.#isFullscreen = false;
+                    this.#scheduleTransition(container);
+                });
+            })
         }
     }
 
     /** @param {HTMLElement} container  */
     #scheduleTransition(container) {
-        if (this.#isHovered)
+        if (this.#isHovered || this.#isFullscreen)
             return;
 
         this.#timeoutId = setTimeout(
