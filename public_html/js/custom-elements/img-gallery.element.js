@@ -17,13 +17,16 @@ export class ImgGalleryElement extends HTMLElement {
     #service;
     #listener;
 
+    /** @type {ShadowRoot} */ #shadow;
+    /** @type {HTMLElement} */ #galleryContainer;
+    /** @type {HTMLElement} */ #slideContainer;
+
     /** @type {number} */ #galleryId = 0;
     /** @type {string} */ #aspectRatio = '1';
     /** @type {string} */ #width = '75%';
     /** @type {number} */ #transitionTime = 2000;
     /** @type {number} */ #waitTime = 2000;
 
-    /** @type {number[]} */ #imageIds = [];
     /** @type {boolean} */ #isHovered;
     /** @type {boolean} */ #isFocused;
     /** @type {boolean} */ #isFullscreen;
@@ -42,105 +45,83 @@ export class ImgGalleryElement extends HTMLElement {
      * @param {string} newValue 
      */
     attributeChangedCallback(name, _, newValue) {
-        
+        // TODO: Shadow CSS sheets needs to be properly updated after processing attribute
+        switch (name) {
+            case 'gallery-id':
+                break;
+
+            case 'aspect-ratio':
+                break;
+
+            case 'width':
+                break;
+
+            case 'transition-time':
+                break;
+
+            case 'wait-time':
+                break;
+        }
     }
 
     connectedCallback() {
         const self = this.#self;
 
-        this.#setAttributeMembers();
-
-        const shadow = self.attachShadow({ mode: 'open' });
+        this.#shadow = self.attachShadow({ mode: 'open' });
         
-        const galleryContainer = document.createElement('gallery-container');
-        galleryContainer.contentEditable = 'false';
-        galleryContainer.tabIndex = 0;
+        this.#galleryContainer = document.createElement('gallery-container');
+        this.#galleryContainer.contentEditable = 'false';
+        this.#galleryContainer.tabIndex = 0;
 
-        const imageContainer = document.createElement('image-container');
+        this.#slideContainer = document.createElement('image-container');
 
         const btnPrev = document.createElement('button');
         btnPrev.textContent = '<';
         btnPrev.classList.add('prev');
         btnPrev.title = 'Previous';
         btnPrev.ariaLabel = 'Previous image';
-        btnPrev.addEventListener('click', () => this.#prev(imageContainer));
+        btnPrev.addEventListener('click', () => this.#prev());
 
         const btnNext = document.createElement('button');
         btnNext.textContent = '>';
         btnNext.classList.add('next');
         btnNext.title = 'Next';
         btnNext.ariaLabel = 'Next image';
-        btnNext.addEventListener('click', () => this.#next(imageContainer));
+        btnNext.addEventListener('click', () => this.#next());
 
-        galleryContainer.replaceChildren(btnPrev, imageContainer, btnNext);
+        this.#galleryContainer.replaceChildren(btnPrev, this.#slideContainer, btnNext);
 
-        shadow.appendChild(galleryContainer);
+        this.#shadow.appendChild(this.#galleryContainer);
 
-        this.#service.getGallery(this.#galleryId, gallery => {
-            galleryContainer.ariaLabel = gallery.title;
-            galleryContainer.ariaDescription = gallery.description;
-
-            this.#fillImages(gallery.imageIds, imageContainer);
-            
-            setTimeout(() => {
-                const animationCSS = new CSSStyleSheet();
-                animationCSS.replaceSync(`
-                    .cover {
-                        transform: translateX(-100%);
-                        z-index: 2;
-                    }
-
-                    .slide-in {
-                        animation: slide-in ${this.#transitionTime}ms forwards;
-                        z-index: 2;
-                    }
-
-                    .slide-out {
-                        animation: slide-out ${this.#transitionTime}ms forwards;
-                        z-index: 2;
-                    }
-                        
-                    @keyframes slide-in {
-                        from { transform: translateX(0); }
-                        to { transform: translateX(-100%); }
-                    }
-
-                    @keyframes slide-out {
-                        from { transform: translateX(-100%); }
-                        to { transform: translateX(0); }
-                    }
-                `);
-                shadow.adoptedStyleSheets.push(animationCSS);
-            }, this.#waitTime);
-        });
+        this.setupFromAttributes();
 
         this.#listener = this.#service.galleries.subscribe(null, false,
             (_, gallery) => {
                 if (gallery.id === this.#galleryId)
-                    this.#fillImages(gallery.imageIds, imageContainer);
+                    this.#fillImages(gallery.imageIds);
         });
 
-        galleryContainer.addEventListener('mouseenter', () => {
+        this.#galleryContainer.addEventListener('mouseenter', () => {
             this.#isHovered = true;
             clearTimeout(this.#timeoutId);
         });
-        galleryContainer.addEventListener('focusin', () => {
+        this.#galleryContainer.addEventListener('focusin', () => {
             this.#isFocused = true;
             clearTimeout(this.#timeoutId);
         });
 
-        galleryContainer.addEventListener('mouseleave', () => {
+        this.#galleryContainer.addEventListener('mouseleave', () => {
             this.#isHovered = false;
-            this.#scheduleTransition(imageContainer);
+            this.#scheduleTransition();
         });
-        galleryContainer.addEventListener('focusout', () => {
+        this.#galleryContainer.addEventListener('focusout', () => {
             this.#isFocused = false;
-            this.#scheduleTransition(imageContainer);
+            this.#scheduleTransition();
         });
 
-        galleryContainer.addEventListener('animationend', () => {
+        this.#galleryContainer.addEventListener('animationend', () => {
             this.#isSliding = false;
-            this.#scheduleTransition(imageContainer)
+            this.#scheduleTransition()
         });
 
         const baseCSS = new CSSStyleSheet();
@@ -198,7 +179,7 @@ export class ImgGalleryElement extends HTMLElement {
                 cursor: pointer;
             }
         `);
-        shadow.adoptedStyleSheets.push(baseCSS);
+        this.#shadow.adoptedStyleSheets.push(baseCSS);
     }
 
     disconnectedCallback() {
@@ -211,13 +192,12 @@ export class ImgGalleryElement extends HTMLElement {
      * @param {number[]} imageIds  
      * @param {HTMLElement} container
      */
-    #fillImages(imageIds, container) {
-        this.#imageIds = [];
+    #fillImages(imageIds) {
+        const container = this.#slideContainer;
         container.textContent = '';
 
         for (let i = 0; i < imageIds.length; i++) {
             const imageId = imageIds[i];
-            this.#imageIds.push(imageId);
 
             const image = this.#service.getImage(imageId);
             const img = document.createElement('img');
@@ -237,14 +217,15 @@ export class ImgGalleryElement extends HTMLElement {
                 
                 fullscreenImage.show(img, () => {
                     this.#isFullscreen = false;
-                    this.#scheduleTransition(container);
+                    this.#scheduleTransition();
                 });
             });
         }
     }
 
-    /** @param {HTMLElement} container  */
-    #next(container) {
+    #next() {
+        const container = this.#slideContainer;
+
         if (container.childElementCount < 2)
             return;
 
@@ -258,8 +239,9 @@ export class ImgGalleryElement extends HTMLElement {
         container.firstElementChild.nextElementSibling.classList.value = 'slide-in';
     }
 
-    /** @param {HTMLElement} container  */
-    #prev(container) {
+    #prev() {
+        const container = this.#slideContainer;
+
         if (container.childElementCount < 2)
             return;
 
@@ -281,49 +263,110 @@ export class ImgGalleryElement extends HTMLElement {
         }, { once: true });
     }
 
-    /** @param {HTMLElement} container  */
-    #scheduleTransition(container) {
+    /** @param {string} value  */
+    #processAspectRatio(value) {
+        this.#aspectRatio = value?.match(/^\d+(?:\/\d+)?$/)
+            ?.at(0)
+            ?? this.#aspectRatio;
+    }
+
+    /** @param {string} value  */
+    #processGalleryId(value) {
+        this.#galleryId = Number(value ?? this.#galleryId);
+
+        this.#service.getGallery(this.#galleryId, gallery => {
+            this.#galleryContainer.ariaLabel = gallery.title;
+            this.#galleryContainer.ariaDescription = gallery.description;
+
+            this.#fillImages(gallery.imageIds);
+            
+            setTimeout(() => {
+                const animationCSS = new CSSStyleSheet();
+                animationCSS.replaceSync(`
+                    .cover {
+                        transform: translateX(-100%);
+                        z-index: 2;
+                    }
+
+                    .slide-in {
+                        animation: slide-in ${this.#transitionTime}ms forwards;
+                        z-index: 2;
+                    }
+
+                    .slide-out {
+                        animation: slide-out ${this.#transitionTime}ms forwards;
+                        z-index: 2;
+                    }
+                        
+                    @keyframes slide-in {
+                        from { transform: translateX(0); }
+                        to { transform: translateX(-100%); }
+                    }
+
+                    @keyframes slide-out {
+                        from { transform: translateX(-100%); }
+                        to { transform: translateX(0); }
+                    }
+                `);
+                this.#shadow.adoptedStyleSheets.push(animationCSS);
+            }, this.#waitTime);
+        });
+    }
+
+    /** @param {string} value  */
+    #processTransitionTime(value) {
+        const milliseconds = this.#durationStringToMilliseconds(value);
+
+        if (milliseconds >= 0)
+            this.#transitionTime = milliseconds;
+    }
+
+    /** @param {string} value  */
+    #processWaitTime(value) {
+        const milliseconds = this.#durationStringToMilliseconds(value)
+        
+        if (milliseconds >= 0)
+            this.#waitTime = milliseconds;
+    }
+
+    /** @param {string} value  */
+    #processWidth(value) {
+        this.#width = value?.toLowerCase()
+            .match(/^\d+[a-z%]*$/)
+            ?.at(0)
+            ?? this.#width;
+    }
+
+    #scheduleTransition() {
         if (this.#isHovered || this.#isFocused || this.#isFullscreen)
             return;
 
-        this.#timeoutId = setTimeout(() => this.#next(container), this.#waitTime);
+        this.#timeoutId = setTimeout(() => this.#next(), this.#waitTime);
     }
 
-    #setAttributeMembers() {
+    setupFromAttributes() {
         const self = this.#self;
+        
+        this.#processAspectRatio(self.getAttribute('aspect-ratio'));
+        this.#processTransitionTime(self.getAttribute('transition-time'));
+        this.#processWaitTime(self.getAttribute('wait-time'));
+        this.#processWidth(self.getAttribute('width'));
 
-        this.#galleryId = Number(self.getAttribute('gallery-id') ?? this.#galleryId);
-
-        this.#aspectRatio = self.getAttribute('aspect-ratio')
-            ?.match(/^\d+(?:\/\d+)?$/)
-            ?.at(0)
-            ?? this.#aspectRatio;
-
-        this.#width = self.getAttribute('width')
-            ?.toLowerCase().match(/^\d+[a-z%]*$/)
-            ?.at(0)
-            ?? this.#width;
-
-        this.#transitionTime = this.#timeStringToMilliseconds(self.getAttribute('transition-time'), this.#transitionTime);
-        this.#waitTime = this.#timeStringToMilliseconds(self.getAttribute('wait-time'), this.#waitTime);
+        this.#processGalleryId(self.getAttribute('gallery-id'));
     }
 
     /**
      * @param {string|null} timeString 
-     * @param {number} defaultValue 
      * @returns {number}
      */
-    #timeStringToMilliseconds(timeString, defaultValue) {
-        if (typeof defaultValue !== 'number' || defaultValue < 0)
-            throw new Error('Default value is not a valid number');
-
+    #durationStringToMilliseconds(timeString) {
         if (!timeString)
-            return defaultValue;
+            return -1;
 
         const match = timeString.toLowerCase().match(/^(\d+)(?:(?:(?:\.\d+)?s)|(ms))$/);
 
         if (!match)
-            return defaultValue;
+            return -1;
 
         if (match[2]) return match[1];
 
