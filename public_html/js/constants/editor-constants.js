@@ -30,7 +30,7 @@ export const tagWhiteList = Object.freeze([...containerTags, ...textContentTags,
 export const allowedAttributes = Object.freeze({
     a: [ 'href', 'target', 'title' ],
     img: [ 'src', 'alt', 'data-image-id' ],
-    'img-gallery': [ 'gallery-id', 'aspect-ratio', 'width' ]
+    'img-gallery': [ 'gallery-id', 'aspect-ratio', 'width', 'transition-time', 'wait-time' ]
 });
 
 /** Array of uppercase keys that should have their default behavior even when accompanied by modifier keys
