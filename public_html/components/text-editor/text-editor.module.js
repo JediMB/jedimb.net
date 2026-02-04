@@ -409,9 +409,6 @@ customElements.define('text-editor-component', class TextEditorComponent extends
         }
 
         if (textNodes.length === 1) {
-            if (textNodes[0].localName === tagInfo.name) // TODO: Check if this has any reason to exist
-                return;
-
             textNodes[0].parentNode.insertBefore(newElement, textNodes[0]);
             newElement.appendChild(textNodes[0]);
             
