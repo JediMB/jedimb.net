@@ -27,6 +27,7 @@ export class ImgGalleryElement extends HTMLElement {
     /** @type {boolean} */ #isHovered;
     /** @type {boolean} */ #isFocused;
     /** @type {boolean} */ #isFullscreen;
+    /** @type {boolean} */ #isSliding;
     /** @type {number} */ #timeoutId;
 
     constructor() {
@@ -62,14 +63,14 @@ export class ImgGalleryElement extends HTMLElement {
         btnPrev.classList.add('prev');
         btnPrev.title = 'Previous';
         btnPrev.ariaLabel = 'Previous image';
-        btnPrev.addEventListener('click', () => {});
+        btnPrev.addEventListener('click', () => this.#prev(imageContainer));
 
         const btnNext = document.createElement('button');
         btnNext.textContent = '>';
         btnNext.classList.add('next');
         btnNext.title = 'Next';
         btnNext.ariaLabel = 'Next image';
-        btnNext.addEventListener('click', () => {});
+        btnNext.addEventListener('click', () => this.#next(imageContainer));
 
         galleryContainer.replaceChildren(btnPrev, imageContainer, btnNext);
 
@@ -84,13 +85,29 @@ export class ImgGalleryElement extends HTMLElement {
             setTimeout(() => {
                 const animationCSS = new CSSStyleSheet();
                 animationCSS.replaceSync(`
-                    img:nth-child(2) {
+                    .cover {
+                        transform: translateX(-100%);
+                        z-index: 2;
+                    }
+
+                    .slide-in {
                         animation: slide-in ${this.#transitionTime}ms forwards;
+                        z-index: 2;
+                    }
+
+                    .slide-out {
+                        animation: slide-out ${this.#transitionTime}ms forwards;
+                        z-index: 2;
                     }
                         
                     @keyframes slide-in {
-                        from { transform: translate(0); }
-                        to { transform: translate(-100%); }
+                        from { transform: translateX(0); }
+                        to { transform: translateX(-100%); }
+                    }
+
+                    @keyframes slide-out {
+                        from { transform: translateX(-100%); }
+                        to { transform: translateX(0); }
                     }
                 `);
                 shadow.adoptedStyleSheets.push(animationCSS);
@@ -122,6 +139,7 @@ export class ImgGalleryElement extends HTMLElement {
         });
 
         galleryContainer.addEventListener('animationend', () => {
+            this.#isSliding = false;
             this.#scheduleTransition(imageContainer)
         });
 
@@ -157,7 +175,7 @@ export class ImgGalleryElement extends HTMLElement {
                 top: 0;
                 bottom: 0;
                 width: 2rem;
-                z-index: 2;
+                z-index: 3;
             }
             
             .prev {
@@ -166,6 +184,11 @@ export class ImgGalleryElement extends HTMLElement {
 
             .next {
                 right: 0;
+            }
+
+            .image-container > * {
+                position: relative;
+                z-index: 1;
             }
 
             img {
@@ -192,7 +215,8 @@ export class ImgGalleryElement extends HTMLElement {
         this.#imageIds = [];
         container.textContent = '';
 
-        for (const imageId of imageIds) {
+        for (let i = 0; i < imageIds.length; i++) {
+            const imageId = imageIds[i];
             this.#imageIds.push(imageId);
 
             const image = this.#service.getImage(imageId);
@@ -204,6 +228,9 @@ export class ImgGalleryElement extends HTMLElement {
             img.ariaDescription = image.description;
             container.appendChild(img);
 
+            if (i === 1)
+                img.classList.add('slide-in');
+
             img.addEventListener('click', () => {
                 clearTimeout(this.#timeoutId);
                 this.#isFullscreen = true;
@@ -212,8 +239,46 @@ export class ImgGalleryElement extends HTMLElement {
                     this.#isFullscreen = false;
                     this.#scheduleTransition(container);
                 });
-            })
+            });
         }
+    }
+
+    /** @param {HTMLElement} container  */
+    #next(container) {
+        if (container.childElementCount < 2)
+            return;
+
+        if (this.#isSliding)
+            return;
+
+        this.#isSliding = true;
+        
+        container.appendChild(container.firstElementChild);
+        container.firstElementChild.classList.value = '';
+        container.firstElementChild.nextElementSibling.classList.value = 'slide-in';
+    }
+
+    /** @param {HTMLElement} container  */
+    #prev(container) {
+        if (container.childElementCount < 2)
+            return;
+
+        if (this.#isSliding)
+            return;
+
+        this.#isSliding = true;
+
+        const nextSibling = container.firstElementChild.nextElementSibling;
+        nextSibling.classList.value = 'slide-out';
+
+        nextSibling.addEventListener('animationend', event => {
+            event.stopPropagation();
+            this.#isSliding = false;
+            
+            nextSibling.classList.value = '';
+            container.prepend(container.lastElementChild);
+            container.firstElementChild.nextSibling.classList.value = 'cover';
+        }, { once: true });
     }
 
     /** @param {HTMLElement} container  */
@@ -221,14 +286,7 @@ export class ImgGalleryElement extends HTMLElement {
         if (this.#isHovered || this.#isFocused || this.#isFullscreen)
             return;
 
-        this.#timeoutId = setTimeout(
-            () => {
-                if (!container.firstElementChild)
-                    return;
-
-                container.appendChild(container.firstElementChild);
-            },
-        this.#waitTime);
+        this.#timeoutId = setTimeout(() => this.#next(container), this.#waitTime);
     }
 
     #setAttributeMembers() {
