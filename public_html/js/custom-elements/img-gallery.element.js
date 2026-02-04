@@ -25,7 +25,8 @@ export class ImgGalleryElement extends HTMLElement {
 
     /** @type {number[]} */ #imageIds = [];
     /** @type {boolean} */ #isHovered;
-    /** @type {bolean} */ #isFullscreen;
+    /** @type {boolean} */ #isFocused;
+    /** @type {boolean} */ #isFullscreen;
     /** @type {number} */ #timeoutId;
 
     constructor() {
@@ -50,17 +51,35 @@ export class ImgGalleryElement extends HTMLElement {
 
         const shadow = self.attachShadow({ mode: 'open' });
         
-        const container = document.createElement('gallery-container');
-        container.contentEditable = 'false';
-        container.tabIndex = 0;
-        container.role = 'img';
-        shadow.appendChild(container);
+        const galleryContainer = document.createElement('gallery-container');
+        galleryContainer.contentEditable = 'false';
+        galleryContainer.tabIndex = 0;
+
+        const imageContainer = document.createElement('image-container');
+
+        const btnPrev = document.createElement('button');
+        btnPrev.textContent = '<';
+        btnPrev.classList.add('prev');
+        btnPrev.title = 'Previous';
+        btnPrev.ariaLabel = 'Previous image';
+        btnPrev.addEventListener('click', () => {});
+
+        const btnNext = document.createElement('button');
+        btnNext.textContent = '>';
+        btnNext.classList.add('next');
+        btnNext.title = 'Next';
+        btnNext.ariaLabel = 'Next image';
+        btnNext.addEventListener('click', () => {});
+
+        galleryContainer.replaceChildren(btnPrev, imageContainer, btnNext);
+
+        shadow.appendChild(galleryContainer);
 
         this.#service.getGallery(this.#galleryId, gallery => {
-            container.ariaLabel = gallery.title;
-            container.ariaDescription = gallery.description;
+            galleryContainer.ariaLabel = gallery.title;
+            galleryContainer.ariaDescription = gallery.description;
 
-            this.#fillImages(gallery.imageIds, container);
+            this.#fillImages(gallery.imageIds, imageContainer);
             
             setTimeout(() => {
                 const animationCSS = new CSSStyleSheet();
@@ -81,34 +100,72 @@ export class ImgGalleryElement extends HTMLElement {
         this.#listener = this.#service.galleries.subscribe(null, false,
             (_, gallery) => {
                 if (gallery.id === this.#galleryId)
-                    this.#fillImages(gallery.imageIds, container);
+                    this.#fillImages(gallery.imageIds, imageContainer);
         });
 
-        container.addEventListener('mouseenter', () => {
+        galleryContainer.addEventListener('mouseenter', () => {
             this.#isHovered = true;
             clearTimeout(this.#timeoutId);
         });
-
-        container.addEventListener('mouseleave', () => {
-            this.#isHovered = false;
-            this.#scheduleTransition(container);
+        galleryContainer.addEventListener('focusin', () => {
+            this.#isFocused = true;
+            clearTimeout(this.#timeoutId);
         });
 
-        container.addEventListener('animationend', () => {
-            this.#scheduleTransition(container)
+        galleryContainer.addEventListener('mouseleave', () => {
+            this.#isHovered = false;
+            this.#scheduleTransition(imageContainer);
+        });
+        galleryContainer.addEventListener('focusout', () => {
+            this.#isFocused = false;
+            this.#scheduleTransition(imageContainer);
+        });
+
+        galleryContainer.addEventListener('animationend', () => {
+            this.#scheduleTransition(imageContainer)
         });
 
         const baseCSS = new CSSStyleSheet();
         baseCSS.replaceSync(`
             gallery-container {
-                display: block flex;
+                display: block;
+                position: relative;
                 border-radius: var(--spacing-internal);
                 aspect-ratio: ${this.#aspectRatio};
                 width: ${this.#width};
                 max-width: 90%;
                 margin-inline: auto;
+                overflow: hidden;
+            }
+
+            image-container {
+                display: block flex;
+                width: 100%;
+                height: 100%;
+                position: relative;
                 align-items: center;
                 overflow: hidden;
+                z-index: 1;
+            }
+
+            gallery-container:not(:hover, :focus) button {
+                display: none;
+            }
+
+            button {
+                position: absolute;
+                top: 0;
+                bottom: 0;
+                width: 2rem;
+                z-index: 2;
+            }
+            
+            .prev {
+                left: 0;
+            }
+
+            .next {
+                right: 0;
             }
 
             img {
@@ -142,6 +199,7 @@ export class ImgGalleryElement extends HTMLElement {
             const img = document.createElement('img');
             img.src = imageGalleryPath + image.filename;
             img.ariaLabel = image.title;
+            img.title = image.title;
             img.alt = image.description;
             img.ariaDescription = image.description;
             container.appendChild(img);
@@ -160,7 +218,7 @@ export class ImgGalleryElement extends HTMLElement {
 
     /** @param {HTMLElement} container  */
     #scheduleTransition(container) {
-        if (this.#isHovered || this.#isFullscreen)
+        if (this.#isHovered || this.#isFocused || this.#isFullscreen)
             return;
 
         this.#timeoutId = setTimeout(
