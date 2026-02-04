@@ -37,6 +37,7 @@ class FullscreenImage extends HTMLElement {
                 position: absolute;
                 inset: 0;
                 background-color: #000;
+                z-index: 9999;
             }
 
             button {
