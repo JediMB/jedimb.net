@@ -172,7 +172,11 @@ customElements.define('text-editor-component', class TextEditorComponent extends
         this.#toggleTag({
             name: 'img-gallery',
             attributes: {
-                'gallery-id': gallery.id
+                'gallery-id': gallery.id,
+                'aspect-ratio': '16/9',
+                'width': '90%',
+                'transition-time': '2000',
+                'wait-time': '2000'
             }
         });
     }
