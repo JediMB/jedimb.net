@@ -2,12 +2,10 @@
 
 namespace Services\DB;
 
-require_once 'enums/db-fetch.enum.php';
 require_once 'models/db/social-link.db.model.php';
 require_once 'services/base/base.db.service.php';
 
 use PDOException;
-use Enums\DBFetch;
 use Exception;
 use Models\DB\SocialLink;
 use Services\Base\BaseDBService;
@@ -19,7 +17,7 @@ class SocialLinkDBService extends BaseDBService {
 
     public function getSocialLinks() : array {
         try {
-            $links = $this->dbService->selectView('social_link', DBFetch::All);
+            $links = $this->dbService->selectView('social_link');
 
             return array_map(function($link) {
                 return new SocialLink($link);
