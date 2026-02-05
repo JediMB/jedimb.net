@@ -21,17 +21,25 @@ export class ImgGalleryElement extends HTMLElement {
     /** @type {HTMLElement} */ #galleryContainer;
     /** @type {HTMLElement} */ #slideContainer;
 
-    /** @type {number} */ #galleryId = 0;
-    /** @type {string} */ #aspectRatio = '1';
-    /** @type {string} */ #width = '75%';
-    /** @type {number} */ #transitionTime = 2000;
-    /** @type {number} */ #waitTime = 2000;
+    /** @type {number} */ #galleryId;
+    /** @type {number} */ #waitTime;
+
+    /** @type {string} */ static #defaultAspectRatio = '1';
+    /** @type {number} */ static #defaultTransitionTime = 2000;
+    /** @type {number} */ static #defaultWaitTime = 2000;
+    /** @type {string} */ static #defaultWidth = '75%';
 
     /** @type {boolean} */ #isHovered;
     /** @type {boolean} */ #isFocused;
     /** @type {boolean} */ #isFullscreen;
     /** @type {boolean} */ #isSliding;
     /** @type {number} */ #timeoutId;
+
+    #cssBase = new CSSStyleSheet();
+    #cssAspectRatio = new CSSStyleSheet();
+    #cssTransitionTime = new CSSStyleSheet();
+    #cssWaitTime = new CSSStyleSheet();
+    #cssWidth = new CSSStyleSheet();
 
     constructor() {
         const component = super();
@@ -45,21 +53,25 @@ export class ImgGalleryElement extends HTMLElement {
      * @param {string} newValue 
      */
     attributeChangedCallback(name, _, newValue) {
-        // TODO: Shadow CSS sheets needs to be properly updated after processing attribute
         switch (name) {
             case 'gallery-id':
+                this.#processGalleryId(newValue);
                 break;
 
             case 'aspect-ratio':
+                this.#processAspectRatio(newValue);
                 break;
 
             case 'width':
+                this.#processWidth(newValue);
                 break;
 
             case 'transition-time':
+                this.#processTransitionTime(newValue);
                 break;
 
             case 'wait-time':
+                this.#processWaitTime(newValue);
                 break;
         }
     }
@@ -68,6 +80,13 @@ export class ImgGalleryElement extends HTMLElement {
         const self = this.#self;
 
         this.#shadow = self.attachShadow({ mode: 'open' });
+        this.#shadow.adoptedStyleSheets = [
+            this.#cssBase,
+            this.#cssAspectRatio,
+            this.#cssTransitionTime,
+            this.#cssWaitTime,
+            this.#cssWidth
+        ];
         
         this.#galleryContainer = document.createElement('gallery-container');
         this.#galleryContainer.contentEditable = 'false';
@@ -124,14 +143,30 @@ export class ImgGalleryElement extends HTMLElement {
             this.#scheduleTransition()
         });
 
-        const baseCSS = new CSSStyleSheet();
-        baseCSS.replaceSync(`
+        this.#galleryContainer.addEventListener('keydown', event => {
+            if (event.ctrlKey || event.altKey || event.shiftKey || event.metaKey)
+                return;
+
+            switch(event.key) {
+                case 'ArrowLeft':
+                    event.preventDefault();
+                    event.stopPropagation();
+                    btnPrev.click();
+                    return;
+
+                case 'ArrowRight':
+                    event.preventDefault();
+                    event.stopPropagation();
+                    btnNext.click();
+                    return;
+            }
+        });
+
+        this.#cssBase.replaceSync(`
             gallery-container {
                 display: block;
                 position: relative;
                 border-radius: var(--spacing-internal);
-                aspect-ratio: ${this.#aspectRatio};
-                width: ${this.#width};
                 max-width: 90%;
                 margin-inline: auto;
                 overflow: hidden;
@@ -174,12 +209,30 @@ export class ImgGalleryElement extends HTMLElement {
 
             img {
                 height: 100%;
-                aspect-ratio: ${this.#aspectRatio};
                 object-fit: cover;
                 cursor: pointer;
             }
+
+            .cover {
+                transform: translateX(-100%);
+            }
+
+            .cover,
+            .slide-in,
+            .slide-out {
+                z-index: 2;
+            }
+                
+            @keyframes slide-in {
+                from { transform: translateX(0); }
+                to { transform: translateX(-100%); }
+            }
+
+            @keyframes slide-out {
+                from { transform: translateX(-100%); }
+                to { transform: translateX(0); }
+            }
         `);
-        this.#shadow.adoptedStyleSheets.push(baseCSS);
     }
 
     disconnectedCallback() {
@@ -265,76 +318,77 @@ export class ImgGalleryElement extends HTMLElement {
 
     /** @param {string} value  */
     #processAspectRatio(value) {
-        this.#aspectRatio = value?.match(/^\d+(?:\/\d+)?$/)
+        const aspectRatio = value?.match(/^\d+(?:\/\d+)?$/)
             ?.at(0)
-            ?? this.#aspectRatio;
+            ?? ImgGalleryElement.#defaultAspectRatio;
+
+        this.#cssAspectRatio.replaceSync(`
+            gallery-container {
+                aspect-ratio: ${aspectRatio};
+            }
+
+            img {
+                aspect-ratio: ${aspectRatio};
+            }
+        `);
     }
 
     /** @param {string} value  */
     #processGalleryId(value) {
-        this.#galleryId = Number(value ?? this.#galleryId);
+        this.#galleryId = Number(value ?? 0);
 
         this.#service.getGallery(this.#galleryId, gallery => {
             this.#galleryContainer.ariaLabel = gallery.title;
             this.#galleryContainer.ariaDescription = gallery.description;
 
             this.#fillImages(gallery.imageIds);
-            
-            setTimeout(() => {
-                const animationCSS = new CSSStyleSheet();
-                animationCSS.replaceSync(`
-                    .cover {
-                        transform: translateX(-100%);
-                        z-index: 2;
-                    }
-
-                    .slide-in {
-                        animation: slide-in ${this.#transitionTime}ms forwards;
-                        z-index: 2;
-                    }
-
-                    .slide-out {
-                        animation: slide-out ${this.#transitionTime}ms forwards;
-                        z-index: 2;
-                    }
-                        
-                    @keyframes slide-in {
-                        from { transform: translateX(0); }
-                        to { transform: translateX(-100%); }
-                    }
-
-                    @keyframes slide-out {
-                        from { transform: translateX(-100%); }
-                        to { transform: translateX(0); }
-                    }
-                `);
-                this.#shadow.adoptedStyleSheets.push(animationCSS);
-            }, this.#waitTime);
         });
     }
 
     /** @param {string} value  */
     #processTransitionTime(value) {
-        const milliseconds = this.#durationStringToMilliseconds(value);
+        let transitionTime = this.#durationStringToMilliseconds(value);
 
-        if (milliseconds >= 0)
-            this.#transitionTime = milliseconds;
+        if (transitionTime < 0)
+            transitionTime = ImgGalleryElement.#defaultTransitionTime;
+
+        setTimeout(() => {
+            this.#cssTransitionTime.replaceSync(`
+                .slide-in {
+                    animation: slide-in ${transitionTime}ms forwards;
+                }
+
+                .slide-out {
+                    animation: slide-out ${transitionTime}ms forwards;
+                }
+            `);
+        }, this.#waitTime);
     }
 
     /** @param {string} value  */
     #processWaitTime(value) {
         const milliseconds = this.#durationStringToMilliseconds(value)
         
-        if (milliseconds >= 0)
-            this.#waitTime = milliseconds;
+        if (milliseconds < 0) {
+            this.#waitTime = ImgGalleryElement.#defaultWaitTime;
+            return;
+        }
+
+        this.#waitTime = milliseconds;
     }
 
     /** @param {string} value  */
     #processWidth(value) {
-        this.#width = value?.toLowerCase()
+        const width = value?.toLowerCase()
             .match(/^\d+[a-z%]*$/)
             ?.at(0)
-            ?? this.#width;
+            ?? ImgGalleryElement.#defaultWidth;
+
+        this.#cssWidth.replaceSync(`
+            gallery-container {
+                width: ${width};
+            }
+        `);
     }
 
     #scheduleTransition() {
@@ -347,12 +401,11 @@ export class ImgGalleryElement extends HTMLElement {
     setupFromAttributes() {
         const self = this.#self;
         
-        this.#processAspectRatio(self.getAttribute('aspect-ratio'));
-        this.#processTransitionTime(self.getAttribute('transition-time'));
-        this.#processWaitTime(self.getAttribute('wait-time'));
-        this.#processWidth(self.getAttribute('width'));
-
         this.#processGalleryId(self.getAttribute('gallery-id'));
+        this.#processAspectRatio(self.getAttribute('aspect-ratio'));
+        this.#processWidth(self.getAttribute('width'));
+        this.#processWaitTime(self.getAttribute('wait-time'));
+        this.#processTransitionTime(self.getAttribute('transition-time'));
     }
 
     /**
