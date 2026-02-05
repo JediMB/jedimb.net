@@ -31,7 +31,7 @@ $links = !empty($links);
 
     <meta name="constants" content="<?= htmlspecialchars(json_encode(META_CONSTANTS)) ?>">
 
-    <title><?= empty($title) ? $site_title : "$title – ". $site_title ?></title>
+    <title><?= empty($title) ? $site_title : "$title &ndash; ". $site_title ?></title>
     
     <?php Component::include('css-revision-link', [ 'cssPath' => PATH_CSS_DEFAULT ]) ?>
 
