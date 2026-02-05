@@ -58,24 +58,27 @@ export class ImgGalleryElement extends HTMLElement {
     attributeChangedCallback(name, _, newValue) {
         switch (name) {
             case 'gallery-id':
+                if (this.#galleryId === undefined)
+                    return;
+
                 this.#processGalleryId(newValue);
-                break;
+                return;
 
             case 'aspect-ratio':
                 this.#processAspectRatio(newValue);
-                break;
+                return;
 
             case 'width':
                 this.#processWidth(newValue);
-                break;
+                return;
 
             case 'transition-time':
                 this.#processTransitionTime(newValue);
-                break;
+                return;
 
             case 'wait-time':
                 this.#processWaitTime(newValue);
-                break;
+                return;
         }
     }
 
@@ -115,12 +118,17 @@ export class ImgGalleryElement extends HTMLElement {
 
         this.#shadow.appendChild(this.#galleryContainer);
 
+        this.#processGalleryId(self.getAttribute('gallery-id'));
         this.setupDefaults();
 
         this.#listener = this.#service.galleries.subscribe(null, false,
             (_, gallery) => {
-                if (gallery.id === this.#galleryId)
-                    this.#fillImages(gallery.imageIds);
+                if (gallery.id !== this.#galleryId)
+                    return;
+
+                this.#galleryContainer.ariaLabel = gallery.title;
+                this.#galleryContainer.ariaDescription = gallery.description;
+                this.#fillImages(gallery.imageIds);
         });
 
         this.#galleryContainer.addEventListener('mouseenter', () => {
@@ -403,9 +411,7 @@ export class ImgGalleryElement extends HTMLElement {
 
     setupDefaults() {
         const self = this.#self;
-        
-        if (!self.hasAttribute('gallery-id'))
-            this.#processGalleryId(null);
+
         if (!self.hasAttribute('aspect-ratio'))
             this.#processAspectRatio(null);
         if (!self.hasAttribute('width'))
