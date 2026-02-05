@@ -115,7 +115,7 @@ export class ImgGalleryElement extends HTMLElement {
 
         this.#shadow.appendChild(this.#galleryContainer);
 
-        this.setupFromAttributes();
+        this.setupDefaults();
 
         this.#listener = this.#service.galleries.subscribe(null, false,
             (_, gallery) => {
@@ -401,14 +401,19 @@ export class ImgGalleryElement extends HTMLElement {
         this.#timeoutId = setTimeout(() => this.#next(), this.#waitTime);
     }
 
-    setupFromAttributes() {
+    setupDefaults() {
         const self = this.#self;
         
-        this.#processGalleryId(self.getAttribute('gallery-id'));
-        this.#processAspectRatio(self.getAttribute('aspect-ratio'));
-        this.#processWidth(self.getAttribute('width'));
-        this.#processWaitTime(self.getAttribute('wait-time'));
-        this.#processTransitionTime(self.getAttribute('transition-time'));
+        if (!self.hasAttribute('gallery-id'))
+            this.#processGalleryId(null);
+        if (!self.hasAttribute('aspect-ratio'))
+            this.#processAspectRatio(null);
+        if (!self.hasAttribute('width'))
+            this.#processWidth(null);
+        if (!self.hasAttribute('wait-time'))
+            this.#processWaitTime(null);
+        if (!self.hasAttribute('transition-time'))
+            this.#processTransitionTime(null);
     }
 
     /**
