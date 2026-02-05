@@ -45,12 +45,12 @@ export class ImgGalleryElement extends HTMLElement {
     #cssWidth = new CSSStyleSheet();
 
     constructor() {
-        const component = super();
-        this.#self = component;
+        const element = super();
+        this.#self = element;
         this.#service = imageGalleryService;
     }
+
     /**
-     * 
      * @param {string} name 
      * @param {string} _ Old value
      * @param {string} newValue 
@@ -150,7 +150,7 @@ export class ImgGalleryElement extends HTMLElement {
             if (event.ctrlKey || event.altKey || event.shiftKey || event.metaKey)
                 return;
 
-            switch(event.key) {
+            switch (event.key) {
                 case 'ArrowLeft':
                     event.preventDefault();
                     event.stopPropagation();
@@ -238,11 +238,11 @@ export class ImgGalleryElement extends HTMLElement {
         `);
     }
 
+    connectedMoveCallback() {}
+
     disconnectedCallback() {
         this.#listener.unsubscribe();
     }
-
-    connectedMoveCallback() {}
 
     /** 
      * @param {number[]} imageIds  
