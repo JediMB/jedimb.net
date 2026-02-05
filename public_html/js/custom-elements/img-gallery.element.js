@@ -11,7 +11,10 @@ export class ImgGalleryElement extends HTMLElement {
         'transition-time',
         'wait-time'
     ];
-    static #cssTextNode = inlineStyle.addCSS('img-gallery', { display: 'contents' });
+    static #cssTextNode = inlineStyle.addCSS('img-gallery', {
+        display: 'inline-block',
+        'max-width': '100%'
+    });
 
     /** @type {ImgGalleryElement} */ #self;
     #service;
@@ -380,7 +383,7 @@ export class ImgGalleryElement extends HTMLElement {
     /** @param {string} value  */
     #processWidth(value) {
         const width = value?.toLowerCase()
-            .match(/^\d+[a-z%]*$/)
+            .match(/^\d+(?:[a-z]*|%)$/)
             ?.at(0)
             ?? ImgGalleryElement.#defaultWidth;
 
