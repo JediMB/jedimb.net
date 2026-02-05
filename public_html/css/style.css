@@ -786,6 +786,11 @@ about-me-content section {
         grid-template-columns: 1fr var(--sidebar-width, 120px);
         -moz-column-gap: 2rem;
         column-gap: 2rem;
+
+        & > main,
+        & > aside {
+            min-width: 0%;
+        }
     }
 
     .md\:flex-col {
