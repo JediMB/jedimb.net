@@ -174,7 +174,7 @@ customElements.define('text-editor-component', class TextEditorComponent extends
             attributes: {
                 'gallery-id': gallery.id,
                 'aspect-ratio': '16/9',
-                'width': '90%',
+                'width': '50%',
                 'transition-time': '2000',
                 'wait-time': '2000'
             }
