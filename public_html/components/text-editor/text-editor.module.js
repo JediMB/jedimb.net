@@ -190,13 +190,9 @@ customElements.define('text-editor-component', class TextEditorComponent extends
         this.#makeSelection(this.#latestSelection);
 
         this.#toggleTag({
-            name: 'img',
+            name: 'img-wrapper',
             attributes: {
-                src: imageGalleryPath + image.filename,
-                alt: image.description
-            },
-            dataset: {
-                imageId: image.id
+                'image-id': image.id
             }
         });
     }

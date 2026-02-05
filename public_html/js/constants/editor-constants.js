@@ -29,7 +29,7 @@ export const tagWhiteList = Object.freeze([...containerTags, ...textContentTags,
  * */
 export const allowedAttributes = Object.freeze({
     a: [ 'href', 'target', 'title' ],
-    img: [ 'src', 'alt', 'data-image-id' ],
+    'img-wrapper': [ 'image-id', 'aspect-ratio', 'width', 'height', 'fullscreen-click' ],
     'img-gallery': [ 'gallery-id', 'aspect-ratio', 'width', 'transition-time', 'wait-time' ]
 });
 

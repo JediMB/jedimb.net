@@ -28,7 +28,7 @@ Component::addJSModule();
     Edit HTML
 </label>
 <text-box-wrapper>
-    <text-box id="text-box-<?= $cId ?>" contenteditable><div>Text block 1</div><h3>Heading</h3><div>Text block 2<img-gallery gallery-id="1" aspect-ratio="16/9" width="50%" transition-time="1s" wait-time="3000ms"></img-gallery></div><p>Paragraph</p></text-box>
+    <text-box id="text-box-<?= $cId ?>" contenteditable><div>Text block 1</div><h3>Heading</h3><div>Text block 2<img-wrapper image-id="1"></img-wrapper></div><p>Paragraph</p></text-box>
 </text-box-wrapper>
 <textarea html-editor hidden>Test</textarea>
 
