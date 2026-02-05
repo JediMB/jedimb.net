@@ -204,7 +204,7 @@ customElements.define('gallery-manager-component', class GalleryManagerComponent
 
             const self = this.#self;
             const finishEvent = self.getAttribute('finish-event');
-            console.log(this.#insertTarget);
+            
             this.#insertTarget.dataset.galleryInsert = JSON.stringify(gallery);
             if (finishEvent) {
                 const event = new CustomEvent(finishEvent, { bubbles: true });
