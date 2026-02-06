@@ -15,14 +15,18 @@ export class ImgWrapperElement extends HTMLElement {
     #service;
     #listener;
 
-    /** @type {ShadowRoot} */ #shadow;
-
     /** @type {number} */ #imageId;
+
+    /** @type {ShadowRoot} */ #shadow;
+    #image;
 
     constructor() {
         const element = super();
-        this.#self = element;
         this.#service = imageGalleryService;
+
+        this.#self = element;
+        this.#shadow = element.attachShadow({ mode: 'open'});
+        this.#image = document.createElement('img');
     }
 
     /**
@@ -33,39 +37,31 @@ export class ImgWrapperElement extends HTMLElement {
     attributeChangedCallback(name, _, newValue) {
         switch (name) {
             case 'image-id':
-                if (this.#imageId === undefined)
-                    return;
-            return;
+                this.#processImageId(newValue);
+                return;
 
             case 'aspect-ratio':
+                this.#processAspectRatio(newValue);
                 return;
 
             case 'width':
+                this.#processSize(newValue, 'width');
                 return;
 
             case 'height':
+                this.#processSize(newValue, 'height');
                 return;
 
             case 'fullscreen-click':
                 return;
         }
+
+        if (this.#image.getAttribute('style') === '')
+            this.#image.removeAttribute('style');
     }
 
     connectedCallback() {
         const self = this.#self;
-        this.#shadow = self.attachShadow({ mode: 'open'});
-
-        this.#imageId = Number(self.getAttribute('image-id') ?? 0);
-
-        const img = document.createElement('img');
-
-        this.#service.getImageCallback(this.#imageId, image => {
-            if (!image) return;
-
-            img.src = imageGalleryPath + image.filename;
-        });
-
-        this.#shadow.replaceChildren(img);
         
         this.#listener = this.#service.images.subscribe(null, false,
             (_, image) => {
@@ -78,6 +74,45 @@ export class ImgWrapperElement extends HTMLElement {
 
     disconnectedCallback() {
         this.#listener.unsubscribe();
+    }
+
+    /** @param {string} value  */
+    #processImageId(value) {
+        this.#imageId = Number(value ?? 0);
+
+        this.#service.getImageCallback(this.#imageId, image => {
+            if (!image) return;
+
+            const img = this.#image;
+            img.src = imageGalleryPath + image.filename;
+            img.ariaLabel = image.title;
+            img.title = image.title;
+            img.alt = image.description;
+            img.ariaDescription = image.description;
+
+            this.#shadow.replaceChildren(this.#image);
+        });
+    }
+
+    /** @param {string} value  */
+    #processAspectRatio(value) {
+        const aspectRatio = value?.match(/^\d+(?:\/\d+)?$/)
+            ?.at(0);
+
+        this.#image.style.aspectRatio = aspectRatio ?? null;
+        this.#image.style.objectFit = aspectRatio ? 'cover' : null;
+    }
+
+    /**
+     * @param {string} value
+     * @param {('width'|'height')} property
+    */
+    #processSize(value, property) {
+        const size = value?.toLowerCase()
+            .match(/^\d+(?:[a-z]*|%)$/)
+            ?.at(0);
+
+        this.#image.style.setProperty(property, size ?? null);
     }
 }
 
