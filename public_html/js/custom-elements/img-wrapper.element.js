@@ -64,12 +64,10 @@ export class ImgWrapperElement extends HTMLElement {
     }
 
     connectedCallback() {
-        const self = this.#self;
-        
         this.#listener = this.#service.images.subscribe(null, false,
             (_, image) => {
                 if (image.id === this.#imageId)
-                    console.log('Update the image');
+                    this.#fillImageData(image);
         });
     }
 
@@ -79,22 +77,32 @@ export class ImgWrapperElement extends HTMLElement {
         this.#listener.unsubscribe();
     }
 
+    /**
+     * @param {{filename: string, title: string, description: string}} source 
+     */
+    #fillImageData(source) {
+        if (!source) {
+            // TODO: Make a "missing image" style icon for both this and the gallery instead of text
+            this.#shadow.appendChild(document.createTextNode(`Invalid Image ID: ${this.#imageId}`));
+            return;
+        }
+
+        const img = this.#image;
+
+        img.src = imageGalleryPath + source.filename;
+        img.ariaLabel = source.title;
+        img.title = source.title;
+        img.alt = source.description;
+        img.ariaDescription = source.description;
+
+        this.#shadow.replaceChildren(this.#image);
+    }
+
     /** @param {string} value  */
     #processImageId(value) {
         this.#imageId = Number(value ?? 0);
 
-        this.#service.getImageCallback(this.#imageId, image => {
-            if (!image) return;
-
-            const img = this.#image;
-            img.src = imageGalleryPath + image.filename;
-            img.ariaLabel = image.title;
-            img.title = image.title;
-            img.alt = image.description;
-            img.ariaDescription = image.description;
-
-            this.#shadow.replaceChildren(this.#image);
-        });
+        this.#service.getImageCallback(this.#imageId, image => this.#fillImageData(image));
     }
 
     /** @param {string} value  */
