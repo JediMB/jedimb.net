@@ -8,7 +8,6 @@ require_once 'services/base/base.db.service.php';
 
 use PDO;
 use PDOException;
-use Enums\DBFetch;
 use Enums\PublishedStatus;
 use Exception;
 use Models\DB\BlogPost;
@@ -22,7 +21,7 @@ class BlogPostDBService extends BaseDBService {
     // TODO: expand functionality to cover 'unpublished' and 'any'
     public function getBlogPosts(PublishedStatus $publishedStatus = PublishedStatus::Published) : array {
         try {
-            $posts = $this->dbService->selectView('blog_posts_published', DBFetch::All);
+            $posts = $this->dbService->selectView('blog_posts_published');
 
             return array_map(function($post) {
                 return new BlogPost($post);
