@@ -24,3 +24,8 @@ Component::addJSModule();
 <input type="text" placeholder="Title">
 <input type="url" placeholder="Facebook link">
 <?php Component::include('text-editor')  ?>
+
+<label><input type="checkbox">Schedule?</label>
+<input type="date">
+<button>Publish/Schedule</button>
+<button>Save draft</button>
