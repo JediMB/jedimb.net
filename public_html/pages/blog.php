@@ -17,67 +17,65 @@ $sessionService = SessionService::getInstance(); /** @var SessionService $sessio
     <?php Component::include('blog-head') ?>
 <?php endif ?>
 
-<?php
-// <!-- Implement pagination and include the first page as part of the document -->
-// <template blog-post-template>
-//     <article class="flex flex-col">
-//         <h2><a href="/blog/{id}">Title</a></h2>
-//         <article-byline>
-//             <date-created>6h ago</date-created>
-//             <date-modified class="weak">last modified 4h ago</date-modified>
-//         </article-byline>
-//         <article-content>Content</article-content>
-//     </article>
-// </template>
+<!-- TODO: Implement pagination and include the first page as part of the document -->
+<template blog-post-template>
+    <article class="flex flex-col">
+        <h2><a href="/blog/{id}">Title</a></h2>
+        <article-byline>
+            <date-created>6h ago</date-created>
+            <date-modified class="weak">last modified 4h ago</date-modified>
+        </article-byline>
+        <article-content>Content</article-content>
+    </article>
+</template>
 
-// <script type="module">
-//     import blogPostApiService from "/js/services/api/blog-post-api.service.js";
+<script type="module">
+    import blogPostApiService from "/js/services/api/blog-post-api.service.js";
 
-//     const output = document.querySelector('main');
-//     const template = output.querySelector('[blog-post-template]');
+    const output = document.querySelector('main');
+    const template = output.querySelector('[blog-post-template]');
 
-//     const response = await blogPostApiService.getBlogPosts();
+    const response = await blogPostApiService.getBlogPosts();
 
-//     if (response.success)
-//         renderBlogPosts(response.value);
-//     else
-//         renderErrors(response.errors);
+    if (response.success)
+        renderBlogPosts(response.value);
+    else
+        renderErrors(response.errors);
 
     
-//     function renderBlogPosts(data) {
-//         if (!data || data.length < 1) {
-//             renderErrors(['No blog posts found']);
-//             return;
-//         }
+    function renderBlogPosts(data) {
+        if (!data || data.length < 1) {
+            renderErrors(['No blog posts found']);
+            return;
+        }
 
-//         data.forEach(post => {
-//             const cloneNode = template.content.cloneNode(true);
-//             cloneNode.querySelector('article > h2').innerHTML = `<a href="/blog${post.permalink}">` + post.title + '</a>';
-//             const byline = cloneNode.querySelector('article-byline');
-//             byline.querySelector('date-created').textContent = post.createdOn.toLocaleString();
+        data.forEach(post => {
+            const cloneNode = template.content.cloneNode(true);
+            cloneNode.querySelector('article > h2').innerHTML = `<a href="/blog${post.permalink}">` + post.title + '</a>';
+            const byline = cloneNode.querySelector('article-byline');
+            byline.querySelector('date-created').textContent = post.createdOn.toLocaleString();
             
-//             if (post.modifiedOn)
-//                 byline.querySelector('date-modified').innerHTML = '&ndash; Last modified ' + post.modifiedOn.toLocaleString();
-//             else
-//                 byline.querySelector('date-modified').remove();
+            if (post.modifiedOn)
+                byline.querySelector('date-modified').innerHTML = '&ndash; Last modified ' + post.modifiedOn.toLocaleString();
+            else
+                byline.querySelector('date-modified').remove();
 
-//             cloneNode.querySelector('article-content').innerHTML = post.content +
-//                 (post.content.match('(.*(?<=<!--[ ]*SPLIT[ ]*-->))')
-//                     ? `<a href="/blog${post.permalink}">Read more...</a>`
-//                     : '');
+            cloneNode.querySelector('article-content').innerHTML = post.content +
+                (post.content.match('(.*(?<=<!--[ ]*SPLIT[ ]*-->))')
+                    ? `<a href="/blog${post.permalink}">Read more...</a>`
+                    : '');
 
-//             output.appendChild(cloneNode);
-//         });
-//     }
+            output.appendChild(cloneNode);
+        });
+    }
 
-//     function renderErrors(errors) {
-//         errors?.forEach(error => {
-//             const errorNode = document.createElement('div');
-//             errorNode.classList.add('error');
-//             errorNode.textContent = error;
+    function renderErrors(errors) {
+        errors?.forEach(error => {
+            const errorNode = document.createElement('div');
+            errorNode.classList.add('error');
+            errorNode.textContent = error;
 
-//             output.appendChild(errorNode);
-//         });
-//     }
-// </script>
-?>
+            output.appendChild(errorNode);
+        });
+    }
+</script>
