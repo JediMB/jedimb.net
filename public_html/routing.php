@@ -1,12 +1,12 @@
 <?php
 
 require_once 'enums/page-type.enum.php';
-require_once 'services/db/blog-post.db.service.php';
+require_once 'services/blog-post.service.php';
 require_once 'services/db/page.db.service.php';
 
 use Enums\PageType;
 use Services\NavigationService;
-use Services\DB\BlogPostDBService;
+use Services\BlogPostService;
 use Services\DB\PageDBService;
 
 function getRealPath(string $path, bool &$isForbidden) : string|false {
@@ -96,9 +96,9 @@ function handleApiRequests(string $path) {
 function handleBlogRequests(string $path) {
     $matches = [];
     if (preg_match(REGEX_BLOG_PATH, $path, $matches)) {
-        $service = BlogPostDBService::getInstance(); /** @var BlogPostDBService $service */
-
-        $blogPost = $service->getBlogPost($matches[1]);
+        $service = BlogPostService::getInstance(); /** @var BlogPostService $service */
+        
+        $blogPost = $service->getPublishedBlogPost($matches[1]);
 
         servePHP([
             'pageType' => PageType::BlogPost,

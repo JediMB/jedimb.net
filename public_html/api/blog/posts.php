@@ -1,26 +1,36 @@
 <?php declare(strict_types=1);
 
-require_once 'services/db/blog-post.db.service.php';
+require_once 'services/blog-post.service.php';
+require_once 'utilities/response.utility.php';
 
-use Services\DB\BlogPostDBService;
+use Services\BlogPostService;
+use Services\SessionService;
+use Utilities\Response;
 
-// $params = $GLOBALS['api_params'];
+$service = BlogPostService::getInstance(); /** @var BlogPostService $service */
+$sessionService = SessionService::getInstance(); /** @var SessionService $sessionService */
+
+if (isset($GLOBALS['api_params'][0]))
+    $id = (int)($GLOBALS['api_params'][0]);
+
+$input = json_decode(file_get_contents('php://input'), true);
 
 switch ( $_SERVER['REQUEST_METHOD'] ) {
     case 'GET':
         try {
-            $service = BlogPostDBService::getInstance(); /** @var BlogPostDBService $service */
+            if (empty($id)) {
+                $posts = $service->getPublishedBlogPosts();
+                return Response::Success($posts);
+            }
 
-            $posts = $service->getBlogPosts();
-            
-            return [ 'success' => true, 'value' => $posts ];
+            return Response::InvalidRequest();
         }
-        catch (PDOException $e) {
-            return [ 'success' => false, 'errors' => [ $e->getMessage()] ];
+        catch (Exception $e) {
+            return Response::Error([$e->getMessage()]);
         }
 
     default:
-        return [ 'success' => false, 'errors' => [ TEXT_INVALID_REQUEST ] ];
+        return Response::InvalidRequest();
 }
 
 ?>
