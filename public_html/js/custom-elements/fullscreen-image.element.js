@@ -74,7 +74,9 @@ class FullscreenImage extends HTMLElement {
      */
     show(img, onClose = null) {
         this.#onClose = onClose;
+        /** @type {HTMLImageElement} */
         const clone = img.cloneNode();
+        clone.removeAttribute('style');
         this.#imageWrapper.replaceChildren(clone);
         this.#self.toggleAttribute('hidden', false);
     }
