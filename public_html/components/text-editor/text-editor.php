@@ -21,7 +21,6 @@ Component::addJSModule();
         data-url-query="Please input link:"
         data-url-invalid="Invalid link. Please try again:">Link</button>
     <button modal-target="modal-images-<?= $cId ?>">Images</button>
-    <button btn-cleanup>Clean Up</button>
 </fieldset>
 <label>
     <input type="checkbox" checkbox-html>

@@ -1,7 +1,6 @@
 import * as c from "/js/constants/editor-constants.js";
 import * as p from "/js/utilities/paste.utility.js";
 import { fillSelect } from "/js/utilities/form.utility.js";
-import { imageGalleryPath } from "/js/constants/meta-constants.js";
 import Gallery from "/js/models/image-gallery/gallery.model.js";
 import Image from "/js/models/image-gallery/image.model.js";
 import SelectionData from "/js/models/selection-data.model.js";
@@ -44,8 +43,6 @@ customElements.define('text-editor-component', class TextEditorComponent extends
         const htmlCheck = self.querySelector('[checkbox-html]');
         const wrapper = self.querySelector('text-box-wrapper');
         const textarea = self.querySelector('[html-editor]');
-
-        const cleanUp = this.#fieldset.querySelector('[btn-cleanup');
 
         document.addEventListener('selectionchange', this.#onSelectionChange);
 
@@ -129,10 +126,6 @@ customElements.define('text-editor-component', class TextEditorComponent extends
             this.#undo.clear(this.#textBox);
             const lines = textarea.value.split(/\r?\n|\r|\n/g);
             this.#textBox.innerHTML = lines.map(line => line.trim()).join('');
-        });
-
-        cleanUp.addEventListener('click', () => {
-            this.#removeEmptyNodes();
         });
 
         htmlCheck.addEventListener('change', (event) => {
@@ -857,26 +850,6 @@ customElements.define('text-editor-component', class TextEditorComponent extends
             p.fillLastContainer(textRows, lastContainer);
 
         p.fillRemainingContainers(textRows, lastContainer, originalLength);
-    }
-    
-    /**
-     * Cleans up the DOM by removing empty nodes
-     */
-    #removeEmptyNodes() {
-        const treeWalker = document.createTreeWalker(this.#textBox, NodeFilter.SHOW_ELEMENT);
-        const emptyNodes = [];
-        const isEmpty = node => !node.textContent.trim();
-
-        let currentNode = treeWalker.currentNode;
-
-        while (currentNode) {
-            if (isEmpty(currentNode))
-                emptyNodes.push(currentNode);
-
-            currentNode = treeWalker.nextNode();
-        }
-
-        emptyNodes.forEach(node => node.parentNode.removeChild(node));
     }
 
     /**
