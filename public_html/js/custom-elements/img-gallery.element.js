@@ -390,14 +390,16 @@ export class ImgGalleryElement extends HTMLElement {
 
     /** @param {string} value  */
     #processWidth(value) {
-        const width = value?.toLowerCase()
-            .match(/^\d+(?:[a-z]*|%)$/)
-            ?.at(0)
-            ?? ImgGalleryElement.#defaultWidth;
+        const match = value?.toLowerCase()
+            .match(/^(\d+)([a-z]*|%)$/);
+
+        const width = match[0]
+            ? (match[1] + ( match[2] ? match[2] : 'px' ) )
+            : null;
 
         this.#cssWidth.replaceSync(`
             gallery-container {
-                width: ${width};
+                width: ${width ?? ImgGalleryElement.#defaultWidth};
             }
         `);
     }
