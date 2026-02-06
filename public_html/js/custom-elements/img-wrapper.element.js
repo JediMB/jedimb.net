@@ -27,6 +27,8 @@ export class ImgWrapperElement extends HTMLElement {
         this.#self = element;
         this.#shadow = element.attachShadow({ mode: 'open'});
         this.#image = document.createElement('img');
+
+        this.#showInFullscreen = this.#showInFullscreen.bind(this);
     }
 
     /**
@@ -53,6 +55,7 @@ export class ImgWrapperElement extends HTMLElement {
                 return;
 
             case 'fullscreen-click':
+                this.#processFullscreenClick(newValue);
                 return;
         }
 
@@ -103,16 +106,38 @@ export class ImgWrapperElement extends HTMLElement {
         this.#image.style.objectFit = aspectRatio ? 'cover' : null;
     }
 
+    /** @param {string} value */
+    #processFullscreenClick(value) {
+        const active = ['', 'true', 'yes', '1'].includes(value.toLowerCase());
+
+        this.#image.style.cursor = active ? 'pointer' : null;
+
+        if (active)
+            this.#image.addEventListener('click', this.#showInFullscreen);
+        else
+            this.#image.addEventListener('click', this.#showInFullscreen);
+    }
+
     /**
      * @param {string} value
      * @param {('width'|'height')} property
     */
     #processSize(value, property) {
-        const size = value?.toLowerCase()
-            .match(/^\d+(?:[a-z]*|%)$/)
-            ?.at(0);
+        const match = value?.toLowerCase()
+            .match(/^(\d+)([a-z]*|%)$/);
 
-        this.#image.style.setProperty(property, size ?? null);
+        if (match?.at(0) == undefined) {
+            this.#image.style.removeProperty(property);
+            return;
+        }
+
+        const size = match[1] + ( match[2] ? match[2] : 'px' );
+
+        this.#image.style.setProperty(property, size);
+    }
+
+    #showInFullscreen = () => {
+        fullscreenImage.show(this.#image);
     }
 }
 
