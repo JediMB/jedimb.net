@@ -9,8 +9,7 @@ import undoManagementService from "/js/services/undo-management.service.js";
 customElements.define('text-editor-component', class TextEditorComponent extends HTMLElement {
     static #keyMods = Object.freeze({ none: 0b0, shift: 0b1, ctrl: 0b10, alt: 0b100 });
 
-    /** @type {TextEditorComponent} */
-    #self;
+    /** @type {TextEditorComponent} */ #self;
     #undo = undoManagementService;
     /** @type {SelectionData} */
     #latestSelection;
@@ -104,8 +103,7 @@ customElements.define('text-editor-component', class TextEditorComponent extends
                 break;
             }
 
-            const event = new CustomEvent('change', {
-                bubbles: true,
+            const event = new CustomEvent('text-change', {
                 cancelable: true,
                 detail: this.#getContent()
             });
@@ -120,15 +118,14 @@ customElements.define('text-editor-component', class TextEditorComponent extends
             }
         );
 
-        textarea.addEventListener('change', (event) => {
-            event.stopPropagation();
-
+        textarea.addEventListener('input', () => {
             this.#undo.clear(this.#textBox);
             const lines = textarea.value.split(/\r?\n|\r|\n/g);
             this.#textBox.innerHTML = lines.map(line => line.trim()).join('');
         });
+        textarea.addEventListener('change', event => event.stopPropagation());
 
-        htmlCheck.addEventListener('change', (event) => {
+        htmlCheck.addEventListener('change', event => {
             event.stopPropagation();
 
             const editHtml = htmlCheck.checked;
