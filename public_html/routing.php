@@ -103,7 +103,7 @@ function handleBlogRequests(string $path) {
         servePHP([
             'pageType' => PageType::BlogPost,
             'title' => $blogPost->title,
-            'content' => $blogPost->content,
+            'content' => $blogPost->contentShort . $blogPost->contentRest,
             'createdOn' => $blogPost->createdOn,
             'modifiedOn' => $blogPost->modifiedOn,
             'mastolink' => $blogPost->mastolink
@@ -151,7 +151,7 @@ function handleVirtualPages(string $requestPath) {
             servePHP([
                 'pageType' => PageType::Virtual,
                 'title' => $page->title,
-                'content' => $page->content,
+                'content' => $page->contentShort . $page->contentRest,
                 'createdOn' => $page->createdOn,
                 'modifiedOn' => $page->modifiedOn
             ]);

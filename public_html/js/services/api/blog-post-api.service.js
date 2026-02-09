@@ -10,6 +10,7 @@ class BlogPostApiService {
         this.#httpClient = httpClient;
     }
 
+    /** @returns {BlogPost[]}  */
     async getBlogPosts() {
         const response = await this.#httpClient.get('blog/posts');
 

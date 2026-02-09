@@ -60,10 +60,7 @@ $sessionService = SessionService::getInstance(); /** @var SessionService $sessio
             else
                 byline.querySelector('date-modified').remove();
 
-            cloneNode.querySelector('article-content').innerHTML = post.content +
-                (post.content.match('(.*(?<=<!--[ ]*SPLIT[ ]*-->))')
-                    ? `<a href="/blog${post.permalink}">Read more...</a>`
-                    : '');
+            cloneNode.querySelector('article-content').innerHTML = post.contentShort;
 
             output.appendChild(cloneNode);
         });
