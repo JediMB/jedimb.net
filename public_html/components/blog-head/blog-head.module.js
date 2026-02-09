@@ -1,22 +1,38 @@
-customElements.define('blog-head-component', class BlogHead extends HTMLElement {
-    #self;
+import BlogPostDTO from "/js/models/blog-post.dto.js";
 
-    constructor() {
-        const component = super();
-        this.#self = component;
-    }
+customElements.define('blog-head-component', class BlogHeadComponent extends HTMLElement {
+    /** @type {HTMLInputElement} */ #title;
+    /** @type {HTMLInputElement} */ #permalink;
+    /** @type {HTMLInputElement} */ #description;
+    /** @type {HTMLInputElement} */ #sociallink;
+    /** @type {HTMLInputElement} */ #isPinned;
+    /** @type {HTMLInputElement} */ #isScheduled;
+    /** @type {HTMLInputElement} */ #scheduledOn;
+
+    /** @type {string} */ #content;
+
+    constructor() { super(); }
 
     connectedCallback() {
-        const self = this.#self;
+        if (!this.hasAttribute('c-id'))
+            throw new Error('Blog Head c-id attribute missing');
 
-        const addButton = self.querySelector('[btn-add]');
+        const cId = this.getAttribute('c-id');
+
+        this.#title = this.querySelector(`#blog-head-title-${cId}`);
+        this.#permalink = this.querySelector(`#blog-head-permalink-${cId}`);
+        this.#description = this.querySelector(`#blog-head-description-${cId}`);
+        this.#sociallink = this.querySelector(`#blog-head-sociallink-${cId}`);
+        this.#isPinned = this.querySelector(`#blog-head-toggle-pinned-${cId}`);
+        this.#isScheduled = this.querySelector(`#blog-head-toggle-schedule-${cId}`);
+        this.#scheduledOn = this.querySelector(`#blog-head-scheduled-on-${cId}`);
+
+        const btnAddPost = this.querySelector(`#blog-head-btn-add-${cId}`);
+        const btnCancelPost = this.querySelector(`#blog-head-btn-cancel-${cId}`);
+        const btnPublishPost = this.querySelector(`#blog-head-btn-publish-${cId}`);
+        const btnDraftPost = this.querySelector(`#blog-head-btn-draft-${cId}`);
 
         const textEditor = this.querySelector('text-editor-component');
-        textEditor.addEventListener('text-change', event => {
-            event.stopPropagation();
-
-            this.#content = event.detail;
-            console.log(event.detail);
-        });
+        textEditor.addEventListener('text-change', event => this.#content = event.detail);
     }
 });
