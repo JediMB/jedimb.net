@@ -1,18 +1,46 @@
 blog-head-component {
-    display: flex;
+    display: block flex;
     flex-direction: column;
-    gap: 1em;
+    gap: var(--spacing-outer);
+    margin-bottom: var(--spacing-outer);
 }
 
-blog-head-component .btn-add {
+#blog-head__btn-add {
     display: flex;
     flex-direction: row;
     justify-content: center;
     border-radius: 9999px;
     color: var(--color-text);
+
+    &:hover {
+        background-color: var(--color-primary);
+        color: var(--color-background);
+    }
 }
 
-blog-head-component > .btn-add:hover {
-    background-color: var(--color-primary);
-    color: var(--color-background);
+blog-head-content,
+blog-head-body,
+blog-head-footer {
+    display: block flex;
+    flex-direction: column;
+    gap: var(--spacing-inner)
+}
+
+blog-head-permalink {
+    display: block flex;
+    flex-direction: row;
+    gap: var(--spacing-edges);
+}
+
+#blog-head__permalink {
+    flex-grow: 1;
+}
+
+blog-head-options,
+blog-head-buttons,
+blog-head-scheduling {
+    display: block flex;
+    flex-direction: row;
+    gap: var(--spacing-inner);
+    justify-content: space-between;
 }
