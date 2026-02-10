@@ -42,8 +42,18 @@ text-box-wrapper:focus-within {
 text-box {
     display: block;
     width: 100%;
+    min-height: 100%;
     background-color: var(--color-text);
     color: var(--color-background);
+
+    &[placeholder]:empty::before {
+        content: attr(placeholder);
+        opacity: 0.5;
+    }
+
+    &[placeholder]:empty:focus::before {
+        content: "";
+    }
 }
 
 text-box a {
