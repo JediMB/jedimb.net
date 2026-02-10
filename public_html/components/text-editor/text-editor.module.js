@@ -67,10 +67,14 @@ customElements.define('text-editor-component', class TextEditorComponent extends
         });
 
         this.#textBox.addEventListener('input', () => {
-            this.#undo.add(this.#textBox, true);
+            const selection = document.getSelection();
+            const node = selection.anchorNode;
+            if (node.nodeType === Node.TEXT_NODE && node.parentElement === this.#textBox) {
+                this.#encloseNodes([node], { name: this.#blockSelector.value});
+                selection.setPosition(node, node.textContent.length);
+            }
 
-            if (!this.#textBox.textContent.trim())
-                this.#getBlockElement(this.#textBox.firstChild, this.#blockSelector.value);
+            this.#undo.add(this.#textBox, true);
         });
 
         this.#textBox.addEventListener('keydown', event => {
@@ -138,10 +142,6 @@ customElements.define('text-editor-component', class TextEditorComponent extends
         });
 
         self.removeAttribute('hidden');
-
-        window.getSelection().setPosition(
-            this.#getBlockElement(this.#textBox.firstChild, this.#blockSelector.value), 0
-        );
     }
 
     disconnectedCallback() {
@@ -780,7 +780,7 @@ customElements.define('text-editor-component', class TextEditorComponent extends
                 const selectedBlocks = selectedTextNodes.map(n => this.#getBlockElement(n));
 
                 const identicalBlocks = selectedBlocks.length > 0
-                    && selectedBlocks.every((val, _, arr) => val.localName === arr[0].localName);
+                    && selectedBlocks.every((block, _, arr) => block && block.localName === arr[0].localName);
 
                 this.#blockSelector.value = identicalBlocks
                     ? selectedBlocks[0].localName
