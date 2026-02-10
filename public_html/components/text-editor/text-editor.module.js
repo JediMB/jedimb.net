@@ -18,7 +18,7 @@ customElements.define('text-editor-component', class TextEditorComponent extends
     #blockSelector;
     #tagButtons;
     #linkButton;
-    #textBox;
+    /** @type {HTMLElement} */ #textBox;
     /** @type {MutationObserver} */
     #mutationObserver;
 
@@ -49,7 +49,11 @@ customElements.define('text-editor-component', class TextEditorComponent extends
 
         this.#blockSelector.addEventListener('change', event => {
             event.stopPropagation();
-            this.#toggleTag({ name: this.#blockSelector.value });
+
+            if (document.getSelection().anchorNode !== this.#textBox)
+                this.#toggleTag({ name: this.#blockSelector.value });
+
+            this.#textBox.focus();
         });
 
         this.#tagButtons.forEach(button => button.dataset.shortcut && button.addEventListener('click', () => this.#toggleTag({ name: button.dataset.tag })));
@@ -747,6 +751,8 @@ customElements.define('text-editor-component', class TextEditorComponent extends
      * @param {Number} selectionData.endOffset 
      */
     #makeSelection({startNode, startOffset, endNode = null, endOffset = null}) {
+        this.#textBox.focus();
+
         if (!endNode || !endOffset) {
             window.getSelection().setPosition(startNode, startOffset);
             return;
