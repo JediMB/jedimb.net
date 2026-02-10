@@ -132,7 +132,8 @@ class UndoManagementService {
             num++;
         }
 
-        throw new Error('Could not find target node');
+        route.push(0);
+        return route;
     }
 
     /**
