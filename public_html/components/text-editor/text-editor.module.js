@@ -113,7 +113,7 @@ customElements.define('text-editor-component', class TextEditorComponent extends
 
             const event = new CustomEvent('text-change', {
                 cancelable: true,
-                detail: this.#getContent()
+                detail: this.#textBox
             });
             this.dispatchEvent(event);
         });
@@ -160,8 +160,6 @@ customElements.define('text-editor-component', class TextEditorComponent extends
         this.#textBox.removeAttribute('data-gallery-insert');
 
         this.#makeSelection(this.#latestSelection);
-
-        console.log('inserting');
 
         this.#toggleTag({
             name: 'img-gallery',
@@ -311,8 +309,6 @@ customElements.define('text-editor-component', class TextEditorComponent extends
      * @param {SelectionData} selectionData 
      */
     #applyContentTag(textNodes, tagInfo, selectionData) {
-        this.logFuncs && console.log('applyInlineTag()');
-
         let collapsedOffset = false;
 
         if (selectionData.isCollapsed) {
@@ -390,8 +386,6 @@ customElements.define('text-editor-component', class TextEditorComponent extends
      * @param {Object} tagInfo.dataset
      */
     #encloseNodes(textNodes, tagInfo) {
-        this.logFuncs && console.log('encloseNodes()');
-
         const newElement = document.createElement(tagInfo.name);
         
         for (const attribute in tagInfo.attributes) {
@@ -452,8 +446,6 @@ customElements.define('text-editor-component', class TextEditorComponent extends
      * @param {SelectionData} selectionData
      */
     #extractSelectionFromTags(textNodes, elements, selectionData) {
-        this.logFuncs && console.log('removeInlineTag()');
-
         if (textNodes.length !== elements.length) {
             console.error('removeInlineTag called without matching in-data');
             return;
@@ -522,7 +514,6 @@ customElements.define('text-editor-component', class TextEditorComponent extends
      * @returns {HTMLElement}
      */
     #getBlockElement(childNode, tagName = null) {
-        this.logFuncs && console.log('getBlockElement()');
         const textBox = this.#textBox;
 
         if (!tagName)
@@ -575,8 +566,6 @@ customElements.define('text-editor-component', class TextEditorComponent extends
      * @returns {(HTMLElement|false)}
      */
     #getMatchingAncestor(node, tagName) {
-        this.logFuncs && console.log('getAncestor()');
-
         if (node.nodeType === Node.TEXT_NODE)
             node = node.parentElement;
 
@@ -597,8 +586,6 @@ customElements.define('text-editor-component', class TextEditorComponent extends
      * @returns {Text[]}
      */
     #getTextNodesFromSelection(selectionData = null) {
-        this.logFuncs && console.log('getTextNodesFromSelection');
-
         selectionData ??= new SelectionData(window.getSelection());
 
         if (!selectionData.startNode)
@@ -692,7 +679,6 @@ customElements.define('text-editor-component', class TextEditorComponent extends
      * @param {SelectionData} selectionData 
      */
     #insertContentElement(tagInfo, selectionData) {
-        this.logFuncs && console.log('insertElement()');
         selectionData ??= new SelectionData(window.getSelection());
         const isTextElement = c.textContentTags.some(t => t === tagInfo.name);
 
@@ -863,8 +849,6 @@ customElements.define('text-editor-component', class TextEditorComponent extends
      * @returns {HTMLElement}
      */
     #replaceElement(element, newTag) {
-        this.logFuncs && console.log('replaceElement()');
-
         if (element.localName === newTag)
             return element;
 
@@ -932,7 +916,6 @@ customElements.define('text-editor-component', class TextEditorComponent extends
      * @param {{name: string, content: string, attributes: {}, dataset: {}}} tagInfo
      */
     #toggleTag(tagInfo) {
-        this.logFuncs && console.clear();
         const textBox = this.#textBox;
         const selectionData = new SelectionData(window.getSelection());
         tagInfo.name = tagInfo.name.toLowerCase();

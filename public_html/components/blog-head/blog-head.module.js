@@ -9,7 +9,7 @@ customElements.define('blog-head-component', class BlogHeadComponent extends HTM
     /** @type {HTMLInputElement} */ #isScheduled;
     /** @type {HTMLInputElement} */ #scheduledOn;
 
-    /** @type {string} */ #content;
+    /** @type {HTMLElement} */ #textBox;
 
     constructor() { super(); }
 
@@ -33,6 +33,12 @@ customElements.define('blog-head-component', class BlogHeadComponent extends HTM
         const btnDraftPost = this.querySelector(`#blog-head-btn-draft-${cId}`);
 
         const textEditor = this.querySelector('text-editor-component');
-        textEditor.addEventListener('text-change', event => this.#content = event.detail);
+        textEditor.addEventListener('text-change', event => {
+            this.#textBox = event.detail;
+            
+            const isEmpty = !this.#textBox.textContent.length;
+            btnPublishPost.disabled = isEmpty;
+            btnDraftPost.disabled = isEmpty;
+        });
     }
 });
