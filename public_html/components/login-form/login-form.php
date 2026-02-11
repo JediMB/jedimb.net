@@ -41,8 +41,10 @@ Component::queueJS(__FILE__, 'module');
             <div input-errors></div>
         </div>
         <div>
-            <input type="checkbox" name="rememberme" id="rememberme">
-            <label for="rememberme">Remember me</label>
+            <label>
+                <input type="checkbox" name="rememberme" id="rememberme">
+                Remember me
+            </label>
         </div>
         <button type="submit" class="btn btn-login" disabled="">Login</button>
     </form>
