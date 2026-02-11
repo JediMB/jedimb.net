@@ -23,7 +23,7 @@ class UserLoginRequest {
                 $errors[] = ucfirst(TEXT_USERNAME) . TEXT_INPUT_TOOSHORT;
             else if (strlen($username) > INPUT_LENGTH['username']['max'])
                 $errors[] = ucfirst(TEXT_USERNAME) . TEXT_INPUT_TOOSHORT;
-            else if (!preg_match(REGEX_INPUT['username'], $username))
+            else if (!preg_match(REGEX_PHP['username'], $username))
                 $errors[] = ucfirst(TEXT_USERNAME) . TEXT_INPUT_MISMATCH;
             else
                 $this->username = $username;
@@ -38,7 +38,7 @@ class UserLoginRequest {
                 $errors[] = ucfirst(TEXT_PASSWORD) . TEXT_INPUT_TOOSHORT;
             else if (strlen($password) > INPUT_LENGTH['password']['max'])
                 $errors[] = ucfirst(TEXT_PASSWORD) . TEXT_INPUT_TOOSHORT;
-            else if (!preg_match(REGEX_INPUT['password'], $password))
+            else if (!preg_match(REGEX_PHP['password'], $password))
                 $errors[] = ucfirst(TEXT_PASSWORD) . TEXT_INPUT_MISMATCH;
             else
                 $this->password = $password;

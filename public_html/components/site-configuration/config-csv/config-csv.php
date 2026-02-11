@@ -48,7 +48,7 @@ $initialValue = $isDefault ? $default : $value;
             data-constant="<?= $name ?>"
             data-original-value="<?= $value ?>"
             data-default-value="<?= $default ?>" <?php // removable? ?>
-            pattern="<?= trim(REGEX_INPUT['config-text'], '/') ?>" required>
+            pattern="<?= REGEX_JS['default-text'] ?>" required>
         <ul>
             <?php foreach (explode(', ', $initialValue) as $key => $item): ?>
                 <li>
@@ -56,7 +56,7 @@ $initialValue = $isDefault ? $default : $value;
                         <input type="text" text-item id="<?= "$id-$key" ?>" placeholder="Type here"
                             value="<?= $item ?>" oninput="this.parentNode.dataset.value = this.value"
                             size="1"
-                            pattern="<?= trim(REGEX_INPUT['config-item'], '/') ?>" required
+                            pattern="<?= REGEX_JS['config-item'] ?>" required
                             title="<?= TEXT_CONFIG_ITEM_CHARS ?>">
                     </size-adjuster>
                     <button type="button" btn-delete>
@@ -72,7 +72,7 @@ $initialValue = $isDefault ? $default : $value;
                         <input type="text" text-item id="<?= "$id-template" ?>" placeholder="Type here"
                             value="" oninput="this.parentNode.dataset.value = this.value"
                             size="1"
-                            pattern="<?= trim(REGEX_INPUT['config-item'], '/') ?>" required
+                            pattern="<?= REGEX_JS['config-item'] ?>" required
                             title="<?= TEXT_CONFIG_ITEM_CHARS ?>">
                     </size-adjuster>
                     <button type="button" btn-delete>

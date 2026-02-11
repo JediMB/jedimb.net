@@ -53,17 +53,27 @@ define('INPUT_LENGTH', [
     'image_title' => [ 'min' => 1, 'max' => 50 ],
     'image_description' => [ 'min' => 10, 'max' => 500 ],
     'page_title' => [ 'min' => 1, 'max' => 50 ],
+    'page_description' => [ 'min' => 10, 'max' => 250 ],
+    'page_sociallink' => [ 'min' => 0, 'max' => 100 ],
     'blog_permalink_title' => [ 'min' => 0, 'max' => 50 ]
 ]);
 
 define('REGEX_BLOG_PATH', '/^'. PATH_BLOG_PREFIX .'(\/[0-9]{4}\/[0-9]{2}\/[0-9]{2}\/[-a-z0-9]*)$/');
 define('REGEX_MASTOLINK', '/^http[s]?:\/\/([-.a-z0-9]+)\/@([-.a-z0-9]+)\/([0-9]+)$/');
 
-define('REGEX_INPUT', [
+define('REGEX_PHP', [
+    'default-text' => '/^(?!\s)[\w@.,!?\-\' à-æÀ-Æè-ïÈ-Ïò-öÒ-Öø-ýØ-Ýÿ]+$/',
     'username' => '/^(?!\s)[\w@.!?\-\' à-æÀ-Æè-ïÈ-Ïò-öÒ-Öø-ýØ-Ýÿ]+(?<!\s)$/',
     'password' => '/^(?=.*[a-z])(?=.*[A-Z])[\w@.!#$&?*+\-\$£€à-æÀ-Æè-ïÈ-Ïò-öÒ-Öø-ýØ-Ýÿ]+$/',
-    'config-text' => '/^(?!\s)[\w@.,!?\-\' à-æÀ-Æè-ïÈ-Ïò-öÒ-Öø-ýØ-Ýÿ]+$/',
     'config-item' => '/^(?!\s)[a-z0-9\-\' à-æè-ïò-öø-ýÿ]+$/'
+]);
+
+// Copied and pasted with the front-slashes removed to avoid frequent trimming
+define('REGEX_JS', [
+    'default-text' => '^(?!\s)[\w@.,!?\-\' à-æÀ-Æè-ïÈ-Ïò-öÒ-Öø-ýØ-Ýÿ]+$',
+    'username' => '^(?!\s)[\w@.!?\-\' à-æÀ-Æè-ïÈ-Ïò-öÒ-Öø-ýØ-Ýÿ]+(?<!\s)$',
+    'password' => '^(?=.*[a-z])(?=.*[A-Z])[\w@.!#$&?*+\-\$£€à-æÀ-Æè-ïÈ-Ïò-öÒ-Öø-ýØ-Ýÿ]+$',
+    'config-item' => '^(?!\s)[a-z0-9\-\' à-æè-ïò-öø-ýÿ]+$'
 ]);
 
 define('META_DESCRIPTION', "JediMB's indie website");
