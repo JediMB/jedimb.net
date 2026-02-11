@@ -23,20 +23,38 @@ Component::addJSModule();
 
 <blog-head-content>
     <blog-head-body>
-        <input id="blog-head__title" type="text" placeholder="Title">
+        <label>
+            Title:
+            <input id="blog-head__title" full-width type="text" placeholder="Title">
+        </label>
+        
         <blog-head-permalink>
             <span>/<?= PATH_BLOG_PREFIX ?>/<span id="blog-head__permadate" data-default="<?= date('Y/m/d') ?>"><?= date('Y/m/d') ?></span>/</span>
             <input id="blog-head__permalink"
                 type="text"
                 placeholder="Permalink"
                 pattern="^[\-a-z0-9]*$"
+                aria-label="Customizable part of the post's URL (i.e. address)"
                 required>
+            <button id="blog-head__reset_permalink"
+                title="Restore default permalink"
+                aria-label="Restore default permalink">
+                <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 -960 960 960" fill="#e3e3e3">
+                    <path d="M520-330v-60h160v60H520Zm60 210v-50h-60v-60h60v-50h60v160h-60Zm100-50v-60h160v60H680Zm40-110v-160h60v50h60v60h-60v50h-60Zm111-280h-83q-26-88-99-144t-169-56q-117 0-198.5 81.5T200-480q0 72 32.5 132t87.5 98v-110h80v240H160v-80h94q-62-50-98-122.5T120-480q0-75 28.5-140.5t77-114q48.5-48.5 114-77T480-840q129 0 226.5 79.5T831-560Z"/>
+                </svg>
+            </button>
         </blog-head-permalink>
 
         <?php Component::include('text-editor')  ?>
 
-        <input id="blog-head__description" type="text" placeholder="A short description of the contents of this post">
-        <input id="blog-head__sociallink" type="url" placeholder="Social media link connected to this post">
+        <label>
+            <div>Description:</div>
+            <input id="blog-head__description" full-width type="text" placeholder="A short description of the contents of this post">
+        </label>
+        <label>
+            Social Link:
+            <input id="blog-head__sociallink" full-width type="url" placeholder="Social media link connected to this post">
+        </label>
     </blog-head-body>
     <blog-head-footer>
         <blog-head-options>
