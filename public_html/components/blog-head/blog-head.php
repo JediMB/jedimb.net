@@ -45,7 +45,9 @@ Component::addJSModule();
             </button>
         </blog-head-permalink>
 
-        <?php Component::include('text-editor')  ?>
+        <?php Component::include('text-editor', [
+            'attributes' => [ 'id' => 'blog-head__text-editor' ]
+        ])  ?>
 
         <label>
             <div>Description:</div>

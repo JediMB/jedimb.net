@@ -13,6 +13,7 @@ customElements.define('blog-head-component', class BlogHeadComponent extends HTM
         const permadate = body.querySelector('#blog-head__permadate');
         const permalink = body.querySelector('#blog-head__permalink');
         const btnResetPermalink = body.querySelector('#blog-head__reset_permalink');
+        const textEditor = this.querySelector('#blog-head__text-editor');
         const description = body.querySelector('#blog-head__description');
         const sociallink = body.querySelector('#blog-head__sociallink');
 
@@ -45,7 +46,6 @@ customElements.define('blog-head-component', class BlogHeadComponent extends HTM
             console.log('click');
         });
 
-        const textEditor = this.querySelector('text-editor-component');
         textEditor.addEventListener('text-change', event => {
             this.#textBox = event.detail;
             
