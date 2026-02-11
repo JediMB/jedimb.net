@@ -1,6 +1,8 @@
 import BlogPostDTO from "/js/models/blog-post.dto.js";
 
 customElements.define('blog-head-component', class BlogHeadComponent extends HTMLElement {
+    #textBox;
+
     constructor() { super(); }
 
     connectedCallback() {
@@ -43,11 +45,11 @@ customElements.define('blog-head-component', class BlogHeadComponent extends HTM
             console.log('click');
         });
 
-        const textEditor = querySelector('text-editor-component');
+        const textEditor = this.querySelector('text-editor-component');
         textEditor.addEventListener('text-change', event => {
-            textBox = event.detail;
+            this.#textBox = event.detail;
             
-            const isEmpty = !textBox.textContent.length;
+            const isEmpty = !this.#textBox.textContent.length;
             btnPublishPost.disabled = isEmpty;
             btnDraftPost.disabled = isEmpty;
         });
