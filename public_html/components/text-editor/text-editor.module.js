@@ -694,8 +694,7 @@ customElements.define('text-editor-component', class TextEditorComponent extends
 
         let textNode;
         if (isTextElement) {
-            textNode = document.createTextNode('');
-            textNode.innerHTML = tagInfo.content ?? '&nbsp;';
+            textNode = document.createTextNode(tagInfo.content ?? '&nbsp;');
             element.appendChild(textNode);
         }
         
