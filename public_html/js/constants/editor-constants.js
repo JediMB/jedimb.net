@@ -18,7 +18,7 @@ export const textContentTags = Object.freeze([ 'a', 'b', 'i', 'u' ]);
 
 /** Array of allowed uppsercase non-text content element tags
  * @type {string[]} */
-export const nonTextContentTags = Object.freeze([ 'br', 'img', 'img-gallery', 'img-wrapper' ]);
+export const nonTextContentTags = Object.freeze([ 'br', 'img-gallery', 'img-wrapper' ]);
 
 /** Complete array of allowed lowercase element tags
  * @type {string[]} */
