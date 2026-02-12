@@ -15,7 +15,7 @@ export class TextEditorComponent extends HTMLElement {
     #latestSelection;
 
     #fieldset;
-    #blockSelector;
+    /** @type {HTMLSelectElement} */ #blockSelector;
     #tagButtons;
     #linkButton;
     /** @type {HTMLElement} */ #textBox;
@@ -722,14 +722,21 @@ export class TextEditorComponent extends HTMLElement {
 
         let textNode;
         if (isTextElement) {
-            textNode = document.createTextNode(tagInfo.content ?? '&nbsp;');
-            element.appendChild(textNode);
+            element.innerHTML = tagInfo.content ?? '&nbsp';
+            textNode = element.firstChild;
         }
         
         const range = document.createRange();
         range.setStart(selectionData.startNode, selectionData.startOffset);
         range.collapse();
-        range.insertNode(element);
+
+        if (selectionData.startNode === this.#textBox) {
+            const block = document.createElement(this.#blockSelector.value);
+            block.appendChild(element);
+            range.insertNode(block);
+        }
+        else
+            range.insertNode(element);
 
         if (textNode) {
             selectionData.isCollapsed = false;
