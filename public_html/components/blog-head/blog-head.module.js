@@ -2,7 +2,8 @@ import BlogPostDTO from "/js/models/blog-post.dto.js";
 import { TextEditorComponent } from "/js/components/text-editor/text-editor.module.js";
 
 customElements.define('blog-head-component', class BlogHeadComponent extends HTMLElement {
-    #textBox;
+    /** @type {number} */ #scheduleTimeoutId;
+    #isScheduled = false;
 
     constructor() { super(); }
 
@@ -21,8 +22,8 @@ customElements.define('blog-head-component', class BlogHeadComponent extends HTM
         const footer = content.querySelector('blog-head-footer');
         const tglPinned = footer.querySelector('#blog-head__toggle-pinned');
         const tglScheduled = footer.querySelector('#blog-head__toggle-schedule');
-        const scheduledDate = footer.querySelector('#blog-head__scheduled-date');
-        const scheduledTime = footer.querySelector('#blog-head__scheduled-time');
+        /** @type {HTMLInputElement} */ const scheduledDate = footer.querySelector('#blog-head__scheduled-date');
+        /** @type {HTMLInputElement} */ const scheduledTime = footer.querySelector('#blog-head__scheduled-time');
         const btnAddPost = footer.querySelector('#blog-head__btn-add');
         const btnCancelPost = footer.querySelector('#blog-head__btn-cancel');
         const btnPublishPost = footer.querySelector('#blog-head__btn-publish');
@@ -42,11 +43,17 @@ customElements.define('blog-head-component', class BlogHeadComponent extends HTM
 
         tglScheduled.addEventListener('change', event => {
             const isScheduled = event.target.checked;
+            this.#isScheduled = isScheduled;
 
+            scheduledDate.toggleAttribute('required', isScheduled);
             scheduledDate.toggleAttribute('hidden', !isScheduled);
+            scheduledTime.toggleAttribute('required', isScheduled);
             scheduledTime.toggleAttribute('hidden', !isScheduled);
             btnPublishPost.textContent = isScheduled ? btnPublishPost.dataset.contentSchedule : btnPublishPost.dataset.contentPublish;
             permadate.textContent = isScheduled ? scheduledDate.value.replaceAll('-', '/') : permadate.dataset.default;
+
+            if (isScheduled && this.#scheduleTimeoutId == undefined)
+                this.#updateDateTimeFields(scheduledDate, scheduledTime);
         });
 
         btnPublishPost.addEventListener('click', () => {
@@ -65,6 +72,34 @@ customElements.define('blog-head-component', class BlogHeadComponent extends HTM
                 .replaceAll(/[^\-a-z0-9]+/g, '')
                 .replaceAll(/\-{2,}/g, '')
                 .replaceAll(/(^\-)|(\-$)/g, '');
+    }
+
+    /**
+     * @param {HTMLInputElement} dateInput 
+     * @param {HTMLInputElement} timeInput 
+     */
+    #updateDateTimeFields(dateInput, timeInput) {
+        const now = new Date();
+        
+        const minTime = new Date(now.getTime() + 900000);
+        const followingHour = new Date(minTime.getTime() + 3600000);
+        const targetDateValue = `${followingHour.getFullYear()}-${`${followingHour.getMonth() + 1}`.padStart(2, '0')}-${`${followingHour.getDate()}`.padStart(2, '0')}`;
+
+        timeInput.min = `${minTime.getHours()}:${`${minTime.getMinutes()}`.padStart(2, '0')}`;
+        dateInput.min = targetDateValue;
+
+        const defaultTimeValue = `${followingHour.getHours()}:00`;
+
+        if (this.#isScheduled
+            && timeInput.value == timeInput.defaultValue
+            && timeInput.defaultValue !== defaultTimeValue) {
+                // TODO: Send notification
+        }
+
+        timeInput.defaultValue = defaultTimeValue;
+        dateInput.defaultValue = targetDateValue;
+
+        this.#scheduleTimeoutId = setTimeout(this.#updateDateTimeFields, 60000, dateInput, timeInput);
     }
 
     #isInvalid() {
