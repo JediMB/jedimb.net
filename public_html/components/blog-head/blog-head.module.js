@@ -1,4 +1,5 @@
 import BlogPostDTO from "/js/models/blog-post.dto.js";
+import { TextEditorComponent } from "/js/components/text-editor/text-editor.module.js";
 
 customElements.define('blog-head-component', class BlogHeadComponent extends HTMLElement {
     #textBox;
@@ -13,7 +14,7 @@ customElements.define('blog-head-component', class BlogHeadComponent extends HTM
         const permadate = body.querySelector('#blog-head__permadate');
         const permalink = body.querySelector('#blog-head__permalink');
         const btnResetPermalink = body.querySelector('#blog-head__reset_permalink');
-        const textEditor = this.querySelector('#blog-head__text-editor');
+        /** @type {TextEditorComponent} */ const textEditor = this.querySelector('#blog-head__text-editor');
         const description = body.querySelector('#blog-head__description');
         const sociallink = body.querySelector('#blog-head__sociallink');
 
@@ -33,6 +34,12 @@ customElements.define('blog-head-component', class BlogHeadComponent extends HTM
         permalink.addEventListener('change', () => permalink.value = this.#formatPermalinkTitle(permalink.value));
         btnResetPermalink.addEventListener('click', () => permalink.value = permalink.defaultValue);
 
+        textEditor.content.onChange = () => {
+            const isEmpty = !textEditor.content.text.length;
+            btnPublishPost.disabled = isEmpty;
+            btnDraftPost.disabled = isEmpty;
+        }
+
         tglScheduled.addEventListener('change', event => {
             const isScheduled = event.target.checked;
 
@@ -43,15 +50,8 @@ customElements.define('blog-head-component', class BlogHeadComponent extends HTM
         });
 
         btnPublishPost.addEventListener('click', () => {
-            console.log('click');
-        });
-
-        textEditor.addEventListener('text-change', event => {
-            this.#textBox = event.detail;
-            
-            const isEmpty = !this.#textBox.textContent.length;
-            btnPublishPost.disabled = isEmpty;
-            btnDraftPost.disabled = isEmpty;
+            console.log(textEditor.content.html, textEditor.content.text);
+            console.log(textEditor.content.media);
         });
     }
 

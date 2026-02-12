@@ -22,6 +22,8 @@ export class TextEditorComponent extends HTMLElement {
     /** @type {MutationObserver} */
     #mutationObserver;
 
+    /** @type {Function[]} */ #onChange = [];
+
     constructor() {
         const component = super();
         this.#self = component;
@@ -111,11 +113,8 @@ export class TextEditorComponent extends HTMLElement {
                 break;
             }
 
-            const event = new CustomEvent('text-change', {
-                cancelable: true,
-                detail: this.#textBox
-            });
-            this.dispatchEvent(event);
+            if (this.#onChange.length)
+                this.#onChange[0].call(this);
         });
         this.#mutationObserver.observe(
             this.#textBox, {
@@ -153,6 +152,35 @@ export class TextEditorComponent extends HTMLElement {
     }
 
     connectedMoveCallback() {}
+
+    get content() {
+        const textBox = this.#textBox;
+        const onChange = this.#onChange;
+
+        const members = {
+            get html() { return textBox.innerHTML; },
+            get text() { return textBox.textContent; },
+            get media() {
+                return [
+                    ...textBox.querySelectorAll('img-gallery'),
+                    ...textBox.querySelectorAll('img-wrapper')
+                ];
+            },
+            /** @param {() => void} func  */
+            set onChange(func) {
+                if (typeof func !== 'function')
+                    throw new Error('onChange parameter is not a function');
+
+                while (onChange.length) {
+                    onChange.pop();
+                }
+
+                onChange.push(func);
+            }
+        };
+        
+        return members;
+    }
 
     #addGallery() {
         /** @type {Gallery} */
