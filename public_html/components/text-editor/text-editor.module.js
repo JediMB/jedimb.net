@@ -6,7 +6,7 @@ import Image from "/js/models/image-gallery/image.model.js";
 import SelectionData from "/js/models/selection-data.model.js";
 import undoManagementService from "/js/services/undo-management.service.js";
 
-customElements.define('text-editor-component', class TextEditorComponent extends HTMLElement {
+export class TextEditorComponent extends HTMLElement {
     static #keyMods = Object.freeze({ none: 0b0, shift: 0b1, ctrl: 0b10, alt: 0b100 });
 
     /** @type {TextEditorComponent} */ #self;
@@ -967,4 +967,6 @@ customElements.define('text-editor-component', class TextEditorComponent extends
 
         this.#makeSelection(selectionData);
     }
-});
+};
+
+customElements.define('text-editor-component', TextEditorComponent);
