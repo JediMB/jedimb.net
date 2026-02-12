@@ -406,14 +406,14 @@ export class TextEditorComponent extends HTMLElement {
 
     /**
      * 
-     * @param {Text[]} textNodes 
+     * @param {Node[]} nodes 
      * @param {Object} tagInfo
      * @param {String} tagInfo.name
      * @param {String} tagInfo.content
      * @param {Object} tagInfo.attributes
      * @param {Object} tagInfo.dataset
      */
-    #encloseNodes(textNodes, tagInfo) {
+    #encloseNodes(nodes, tagInfo) {
         const newElement = document.createElement(tagInfo.name);
         
         for (const attribute in tagInfo.attributes) {
@@ -424,25 +424,25 @@ export class TextEditorComponent extends HTMLElement {
             newElement.dataset[dataKey] = tagInfo.dataset[dataKey];
         }
 
-        if (textNodes.length === 1) {
-            textNodes[0].parentNode.insertBefore(newElement, textNodes[0]);
-            newElement.appendChild(textNodes[0]);
+        if (nodes.length === 1) {
+            nodes[0].parentNode.insertBefore(newElement, nodes[0]);
+            newElement.appendChild(nodes[0]);
             
             if (tagInfo.content)
-                textNodes[0].textContent = tagInfo.content;
+                nodes[0].textContent = tagInfo.content;
 
             return;
         }
 
         const range = document.createRange();
-        range.setStart(textNodes[0], 0);
-        const endNode = textNodes[textNodes.length-1]; 
+        range.setStart(nodes[0], 0);
+        const endNode = nodes[nodes.length-1]; 
         range.setEnd(endNode, endNode.length);
 
         const ancestor = range.commonAncestorContainer;
         let inRange = false;
         const relevantChildren = Array.from(ancestor.childNodes).filter(c => {
-            if (!inRange && c.contains(textNodes[0]))
+            if (!inRange && c.contains(nodes[0]))
                 inRange = true;
 
             if (inRange && c.contains(endNode)) {
