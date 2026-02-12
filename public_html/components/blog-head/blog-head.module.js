@@ -2,9 +2,7 @@ import BlogPostDTO from "/js/models/blog-post.dto.js";
 import { TextEditorComponent } from "/js/components/text-editor/text-editor.module.js";
 
 customElements.define('blog-head-component', class BlogHeadComponent extends HTMLElement {
-    /** @type {number} */ #scheduleTimeoutId;
-    #isScheduled = false;
-
+    #scheduledTimeout = { id: null };
     constructor() { super(); }
 
     connectedCallback() {
@@ -43,7 +41,6 @@ customElements.define('blog-head-component', class BlogHeadComponent extends HTM
 
         tglScheduled.addEventListener('change', event => {
             const isScheduled = event.target.checked;
-            this.#isScheduled = isScheduled;
 
             scheduledDate.toggleAttribute('required', isScheduled);
             scheduledDate.toggleAttribute('hidden', !isScheduled);
@@ -52,8 +49,7 @@ customElements.define('blog-head-component', class BlogHeadComponent extends HTM
             btnPublishPost.textContent = isScheduled ? btnPublishPost.dataset.contentSchedule : btnPublishPost.dataset.contentPublish;
             permadate.textContent = isScheduled ? scheduledDate.value.replaceAll('-', '/') : permadate.dataset.default;
 
-            if (isScheduled && this.#scheduleTimeoutId == undefined)
-                this.#updateDateTimeFields(scheduledDate, scheduledTime);
+            this.#updateDateTimeFields(scheduledDate, scheduledTime, isScheduled);
         });
 
         btnPublishPost.addEventListener('click', () => {
@@ -74,32 +70,73 @@ customElements.define('blog-head-component', class BlogHeadComponent extends HTM
                 .replaceAll(/(^\-)|(\-$)/g, '');
     }
 
+    // /**
+    //  * @param {HTMLInputElement} dateInput 
+    //  * @param {HTMLInputElement} timeInput 
+    //  * @param {boolean} isScheduled
+    //  */
+    // #updateDateTimeFields(dateInput, timeInput, isScheduled) {
+    //     if (!isScheduled)
+    //         return clearTimeout(this.#scheduleTimeoutId);
+        
+    //     const now = new Date();
+        
+    //     const minTime = new Date(now.getTime() + 900000);
+    //     const followingHour = new Date(minTime.getTime() + 3600000);
+    //     const targetDateValue = `${followingHour.getFullYear()}-${`${followingHour.getMonth() + 1}`.padStart(2, '0')}-${`${followingHour.getDate()}`.padStart(2, '0')}`;
+
+    //     timeInput.min = `${minTime.getHours()}:${`${minTime.getMinutes()}`.padStart(2, '0')}`;
+    //     dateInput.min = targetDateValue;
+
+    //     const defaultTimeValue = `${followingHour.getHours()}:00`;
+
+    //     if (this.isScheduled
+    //         && timeInput.value === timeInput.defaultValue
+    //         && timeInput.defaultValue !== defaultTimeValue) {
+    //             console.log('Ding!');
+    //     }
+
+    //     timeInput.defaultValue = defaultTimeValue;
+    //     dateInput.defaultValue = targetDateValue;
+
+    //     this.#scheduleTimeoutId = setTimeout(this.#updateDateTimeFields, 60000, dateInput, timeInput, isScheduled);
+    // }
+
     /**
      * @param {HTMLInputElement} dateInput 
      * @param {HTMLInputElement} timeInput 
+     * @param {boolean} isScheduled
      */
-    #updateDateTimeFields(dateInput, timeInput) {
-        const now = new Date();
-        
-        const minTime = new Date(now.getTime() + 900000);
-        const followingHour = new Date(minTime.getTime() + 3600000);
-        const targetDateValue = `${followingHour.getFullYear()}-${`${followingHour.getMonth() + 1}`.padStart(2, '0')}-${`${followingHour.getDate()}`.padStart(2, '0')}`;
+    #updateDateTimeFields(dateInput, timeInput, isScheduled) {
+        if (!isScheduled)
+            return clearTimeout(this.#scheduledTimeout.id);
 
-        timeInput.min = `${minTime.getHours()}:${`${minTime.getMinutes()}`.padStart(2, '0')}`;
-        dateInput.min = targetDateValue;
+        const recursiveLogic = (scheduledTimeout) => {
+            const now = new Date();
+            
+            const minTime = new Date(now.getTime() + 900000);
+            const followingHour = new Date(minTime.getTime() + 3600000);
+            const targetDateValue = `${followingHour.getFullYear()}-${`${followingHour.getMonth() + 1}`.padStart(2, '0')}-${`${followingHour.getDate()}`.padStart(2, '0')}`;
 
-        const defaultTimeValue = `${followingHour.getHours()}:00`;
+            timeInput.min = `${minTime.getHours()}:${`${minTime.getMinutes()}`.padStart(2, '0')}`;
+            dateInput.min = targetDateValue;
 
-        if (this.#isScheduled
-            && timeInput.value == timeInput.defaultValue
-            && timeInput.defaultValue !== defaultTimeValue) {
-                // TODO: Send notification
+            const defaultTimeValue = `${followingHour.getHours()}:00`;
+
+            if (isScheduled
+                && timeInput.value
+                && timeInput.value === timeInput.defaultValue
+                && timeInput.defaultValue !== defaultTimeValue) {
+                    console.log('Ding!');
+            }
+
+            timeInput.defaultValue = defaultTimeValue;
+            dateInput.defaultValue = targetDateValue;
+
+            scheduledTimeout.id = setTimeout(recursiveLogic, 60000, scheduledTimeout);
         }
 
-        timeInput.defaultValue = defaultTimeValue;
-        dateInput.defaultValue = targetDateValue;
-
-        this.#scheduleTimeoutId = setTimeout(this.#updateDateTimeFields, 60000, dateInput, timeInput);
+        recursiveLogic(this.#scheduledTimeout);
     }
 
     #isInvalid() {

@@ -72,12 +72,10 @@ Component::addJSModule();
             <blog-head-scheduling>
                 <input hidden
                     id="blog-head__scheduled-date"
-                    type="date"
-                    value="<?= date('Y-m-d') ?>">
+                    type="date">
                 <input hidden
                     id="blog-head__scheduled-time"
-                    type="time"
-                    value="23:59">
+                    type="time">
                 <label>
                     <input id="blog-head__toggle-schedule" type="checkbox">
                     Schedule
