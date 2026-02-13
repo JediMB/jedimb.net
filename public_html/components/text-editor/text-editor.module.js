@@ -545,9 +545,11 @@ export class TextEditorComponent extends HTMLElement {
         const textBox = this.#textBox;
 
         if (!tagName)
-            [tagName] = c.containerTags;
+            tagName = this.#blockSelector.value
+                ? this.#blockSelector.value
+                : c.containerTags[0];
 
-        if (!childNode) {
+        if (!childNode || childNode === textBox) {
             const newElement = document.createElement(tagName);
             textBox.appendChild(newElement);
             return newElement;
