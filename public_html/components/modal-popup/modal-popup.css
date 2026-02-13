@@ -15,8 +15,8 @@ modal-popup-component {
         --container-max-height: calc(95dvh - (var(--spacing-inner, 1rem) * 2));
         border-radius: var(--spacing-inner, 1rem);
         padding: var(--spacing-inner, 1rem);
-        background-color: var(--color-background, black);
-        color: var(--color-text, white);
+        background-color: var(--clr-bg, black);
+        color: var(--clr-text, white);
     }
 
     & modal-popup-content {

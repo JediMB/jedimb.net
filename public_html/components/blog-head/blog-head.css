@@ -10,11 +10,11 @@ blog-head-component {
     flex-direction: row;
     justify-content: center;
     border-radius: 9999px;
-    color: var(--color-text);
+    color: var(--clr-text);
 
     &:hover {
-        background-color: var(--color-primary);
-        color: var(--color-background);
+        background-color: var(--clr-primary);
+        color: var(--clr-bg);
     }
 }
 

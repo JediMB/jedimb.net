@@ -20,7 +20,7 @@ manager-tabs {
 
 .tab-list {
     display: block flex;
-    border-bottom: 1px solid var(--color-disabled-background);
+    border-bottom: 1px solid var(--clr-disabled-background);
     margin-bottom: var(--spacing-inner);
 }
 
@@ -28,7 +28,7 @@ manager-tabs {
     margin: -1.5px;
 
     &:has(input:checked) {
-        border-bottom: 3px solid var(--color-primary);
+        border-bottom: 3px solid var(--clr-primary);
     }
 }
 
@@ -192,17 +192,17 @@ manager-gallery-images .image-title {
 }
 
 .manager-list-item:has(input:disabled) {
-    background-color: var(--color-disabled-background);
-    color: var(--color-disabled-text);
+    background-color: var(--clr-disabled-background);
+    color: var(--clr-disabled-text);
 }
 
 .manager-list-item:has(input:enabled):hover {
-    background-color: var(--color-primary-dark);
+    background-color: var(--clr-primary-dark);
 }
 
 .manager-list-item:has(input:enabled:checked) {
-    background-color: var(--color-text);
-    color: var(--color-background);
+    background-color: var(--clr-text);
+    color: var(--clr-bg);
 }
 
 .image-header {

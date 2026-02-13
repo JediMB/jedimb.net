@@ -13,13 +13,13 @@ text-editor-component {
     }
 
     & button[data-tag]:enabled {
-        background-color: var(--color-bg-active, --color-background);
-        color: var(--color-text-active, --color-text);
+        background-color: var(--clr-bg-active, --clr-bg);
+        color: var(--clr-text-active, --clr-text);
     }
 
     & .active {
-        --color-bg-active: var(--color-text);
-        --color-text-active: var(--color-background);
+        --clr-bg-active: var(--clr-text);
+        --clr-text-active: var(--clr-bg);
     }
 }
 
@@ -30,21 +30,21 @@ text-box-wrapper + textarea {
     height: 15em;
     overflow: scroll;
     padding: var(--spacing-internal);
-    background-color: var(--color-text);
-    color: var(--color-background);
+    background-color: var(--clr-text);
+    color: var(--clr-bg);
 }
 
 text-box-wrapper:focus-within {
     border-radius: 3px;
-    outline: 3px solid var(--color-primary, purple);
+    outline: 3px solid var(--clr-primary, purple);
 }
 
 text-box {
     display: block;
     width: 100%;
     min-height: 100%;
-    background-color: var(--color-text);
-    color: var(--color-background);
+    background-color: var(--clr-text);
+    color: var(--clr-bg);
 
     &[placeholder]:empty::before {
         content: attr(placeholder);

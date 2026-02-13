@@ -1,6 +1,6 @@
 button, select, input {
-    background-color: var(--color-background);
-    color: var(--color-text);
+    background-color: var(--clr-bg);
+    color: var(--clr-text);
 }
 
 input[type="email"],
@@ -11,16 +11,16 @@ input[type="text"],
 input[type="url"],
 input[type=""],
 textarea {
-    background-color: var(--color-text);
-    color: var(--color-background);
+    background-color: var(--clr-text);
+    color: var(--clr-bg);
 }
 
 button:disabled,
 select:disabled,
 input:disabled,
 textarea:disabled {
-    background-color: var(--color-disabled-background);
-    color: var(--color-disabled-text);
+    background-color: var(--clr-disabled-background);
+    color: var(--clr-disabled-text);
 }
 
 input[type="checkbox"] {

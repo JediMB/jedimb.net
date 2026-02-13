@@ -1,12 +1,12 @@
 const styles = `
 :root {
-  --font-color: var(--color-text, #5d686f);
+  --font-color: var(--clr-text, #5d686f);
   --font-size: 1.0rem;
 
   --block-border-width: 1px;
   --block-border-radius: 0.25rem;
-  --block-border-color: var(--color-text, #ededf0);
-  --block-background-color: var(--color-background, #f7f8f8);
+  --block-border-color: var(--clr-text, #ededf0);
+  --block-background-color: var(--clr-bg, #f7f8f8);
 
   --comment-indent: 2.5rem;
 }
