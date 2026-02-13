@@ -29,11 +29,15 @@ blog-head-footer {
 blog-head-permalink {
     display: block flex;
     flex-direction: row;
-    gap: var(--spacing-edges);
+    align-items: center;
 }
 
 #blog-head__permalink {
     flex-grow: 1;
+}
+
+#blog-head__reset-permalink {
+    padding: var(--spacing-buttons);
 }
 
 blog-head-options,

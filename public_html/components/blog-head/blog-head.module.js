@@ -22,7 +22,7 @@ customElements.define('blog-head-component', class BlogHeadComponent extends HTM
         this.#title = body.querySelector('#blog-head__title');
         const permadate = body.querySelector('#blog-head__permadate');
         this.#permalink = body.querySelector('#blog-head__permalink');
-        const btnResetPermalink = body.querySelector('#blog-head__reset_permalink');
+        const btnResetPermalink = body.querySelector('#blog-head__reset-permalink');
         this.#textEditor = this.querySelector('#blog-head__text-editor');
         this.#description = body.querySelector('#blog-head__description');
         this.#socialLink = body.querySelector('#blog-head__sociallink');
