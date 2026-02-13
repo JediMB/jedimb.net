@@ -17,7 +17,7 @@ Component::queueJS(__FILE__, 'module');
         <div>
             <label for="username">Username</label>
             <input type="text" name="username" id="username" placeholder="Username"
-                pattern="<?= REGEX_JS['username'] ?>" required
+                pattern="<?= REGEX_HTML['username'] ?>" required
                 data-too-short="Username too short: <?= TEXT_USERNAME_LENGTH ?>"
                 data-too-long="Username too long: <?= TEXT_USERNAME_LENGTH ?>"
                 data-mismatch="<?= TEXT_USERNAME_CHARS ?>"
@@ -30,7 +30,7 @@ Component::queueJS(__FILE__, 'module');
         <div>
             <label for="password">Password</label>
             <input type="password" name="password" id="password" placeholder="Password"
-                pattern="<?= REGEX_JS['password'] ?>" required
+                pattern="<?= REGEX_HTML['password'] ?>" required
                 data-too-short="Password too short: <?= TEXT_PASSWORD_LENGTH ?>"
                 data-too-long="Password too long: <?= TEXT_PASSWORD_LENGTH ?>"
                 data-mismatch="<?= TEXT_PASSWORD_CHARS ?>"

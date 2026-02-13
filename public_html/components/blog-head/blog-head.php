@@ -58,7 +58,7 @@ Component::addJSModule();
                 placeholder="A short description of the contents, for search engine previews, etc."
                 minlength="<?= INPUT_LENGTH['page_description']['min'] ?>"
                 maxlength="<?= INPUT_LENGTH['page_description']['max'] ?>"
-                pattern="<?= REGEX_JS['default-text'] ?>"
+                pattern="<?= REGEX_HTML['default-text'] ?>"
                 required>
         </label>
         <label>

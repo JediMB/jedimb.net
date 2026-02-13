@@ -69,7 +69,7 @@ define('REGEX_PHP', [
 ]);
 
 // Copied and pasted with the front-slashes removed to avoid frequent trimming
-define('REGEX_JS', [
+define('REGEX_HTML', [
     'default-text' => '^(?!\s)[\w@.,!?\-\' à-æÀ-Æè-ïÈ-Ïò-öÒ-Öø-ýØ-Ýÿ]+$',
     'username' => '^(?!\s)[\w@.!?\-\' à-æÀ-Æè-ïÈ-Ïò-öÒ-Öø-ýØ-Ýÿ]+(?<!\s)$',
     'password' => '^(?=.*[a-z])(?=.*[A-Z])[\w@.!#$&?*+\-\$£€à-æÀ-Æè-ïÈ-Ïò-öÒ-Öø-ýØ-Ýÿ]+$',

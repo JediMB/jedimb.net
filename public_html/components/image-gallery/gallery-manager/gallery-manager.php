@@ -93,7 +93,7 @@ Component::addJSModule();
                         value=""
                         minlength="<?= INPUT_LENGTH['gallery_title']['min'] ?>"
                         maxlength="<?= INPUT_LENGTH['gallery_title']['max'] ?>"
-                        pattern="<?= REGEX_JS['default-text'] ?>"
+                        pattern="<?= REGEX_HTML['default-text'] ?>"
                         required>
                 </div>
                 <div>
