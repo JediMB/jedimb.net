@@ -839,7 +839,7 @@ export class TextEditorComponent extends HTMLElement {
         }
 
         if (!pasted) {
-            clipboardContent.find(i => i.types.includes('text/plain'));
+            pasted = clipboardContent.find(i => i.types.includes('text/plain'));
             contentType = 'text/plain';
 
             if (!pasted)
@@ -849,17 +849,33 @@ export class TextEditorComponent extends HTMLElement {
         selection.deleteFromDocument();
 
         const isForward = selection.direction !== 'backward';
-        const node = isForward ? selection.anchorNode : selection.focusNode,
+        let node = isForward ? selection.anchorNode : selection.focusNode,
             offset = isForward ? selection.anchorOffset : selection.focusOffset;
 
-        let text = ( await (await pasted.getType(contentType)).text() )
-            .replace(c.regexDisallowedAttributes, '')
+        const currentBlock = this.#getBlockElement(node);
+        const currentBlockTag = currentBlock.localName;
+
+        if (node === textBox) {
+            node = document.createTextNode('');
+            currentBlock.appendChild(node);
+            offset = 0;
+        }
+
+        let text = await (await pasted.getType(contentType)).text();
+
+        if (contentType === 'text/plain') {
+            const textNode = document.createTextNode(text);
+            const range = document.createRange();
+            range.setStart(node, offset);
+            range.insertNode(textNode);
+            return;
+        }
+
+        text = text.replace(c.regexDisallowedAttributes, '')
             .replace(c.regexIndentations, '')
             .replace(c.regexDisallowedElements, '');
 
         const textRows = p.splitIntoContainerRows(text);
-
-        const currentBlockTag = this.#getBlockElement(node).localName;
 
         if (!textRows[0].tag || textRows[0].tag === currentBlockTag)
             p.fillFirstContainer(textRows, node, offset);
