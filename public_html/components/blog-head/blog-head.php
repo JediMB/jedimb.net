@@ -27,7 +27,13 @@ Component::addJSModule();
     <blog-head-body>
         <label>
             Title:
-            <input id="blog-head__title" full-width type="text" placeholder="Title">
+            <input id="blog-head__title" full-width
+                type="text"
+                placeholder="Title"
+                minlength="<?= INPUT_LENGTH['page_title']['min'] ?>"
+                maxlength="<?= INPUT_LENGTH['page_title']['max'] ?>"
+                pattern="<?= REGEX_HTML['default-text'] ?>"
+                required>
         </label>
         
         <blog-head-permalink>

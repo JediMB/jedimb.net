@@ -13,6 +13,14 @@ input[type=""],
 textarea {
     background-color: var(--clr-text);
     color: var(--clr-bg);
+
+    &:enabled:user-valid {
+        background-color: var(--clr-safe-light);
+    }
+
+    &:enabled:user-invalid {
+        background-color: var(--clr-warn-light);
+    }
 }
 
 button:disabled,
