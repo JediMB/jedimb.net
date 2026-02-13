@@ -855,10 +855,14 @@ export class TextEditorComponent extends HTMLElement {
         const currentBlock = this.#getBlockElement(node);
         const currentBlockTag = currentBlock.localName;
 
-        if (node === textBox) {
+        if (node === textBox || node === currentBlock) {
             node = document.createTextNode('');
-            currentBlock.appendChild(node);
             offset = 0;
+
+            if (currentBlock.childNodes.length === 1 && currentBlock.innerHTML === '<br>')
+                currentBlock.replaceChildren(node);
+            else
+                currentBlock.appendChild(node);
         }
 
         let text = await (await pasted.getType(contentType)).text();
