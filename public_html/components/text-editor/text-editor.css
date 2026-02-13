@@ -23,20 +23,12 @@ text-editor-component {
     }
 }
 
-text-box-wrapper,
-text-box-wrapper + textarea {
+text-box,
+text-box + textarea {
     display: block;
     width: 100%;
     height: 15em;
     overflow: scroll;
-    padding: var(--spacing-internal);
-    background-color: var(--clr-text);
-    color: var(--clr-bg);
-}
-
-text-box-wrapper:focus-within {
-    border-radius: 3px;
-    outline: 3px solid var(--clr-primary, purple);
 }
 
 text-box {
@@ -56,10 +48,11 @@ text-box {
     }
 }
 
-text-box a {
-    cursor: pointer;
+text-box:focus-within {
+    border-radius: 3px;
+    outline: 3px solid var(--clr-primary, purple);
 }
 
-text-box:focus {
-    outline: 0px solid transparent;
+text-box a {
+    cursor: pointer;
 }

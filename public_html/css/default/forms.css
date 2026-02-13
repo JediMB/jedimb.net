@@ -10,7 +10,10 @@ input[type="tel"],
 input[type="text"],
 input[type="url"],
 input[type=""],
-textarea {
+textarea,
+[contenteditable] {
+    border-radius: var(--spacing-internal);
+    padding: var(--spacing-internal) var(--spacing-edges);
     background-color: var(--clr-text);
     color: var(--clr-bg);
 
@@ -18,7 +21,8 @@ textarea {
         background-color: var(--clr-safe-light);
     }
 
-    &:enabled:user-invalid {
+    &:enabled:user-invalid,
+    &[aria-invalid="true"] {
         background-color: var(--clr-warn-light);
     }
 }

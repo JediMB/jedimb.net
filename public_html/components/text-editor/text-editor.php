@@ -26,9 +26,10 @@ Component::addJSModule();
     <input type="checkbox" checkbox-html>
     Edit HTML
 </label>
-<text-box-wrapper>
-    <text-box id="text-box-<?= $cId ?>" contenteditable placeholder="What do you want to say?"></text-box>
-</text-box-wrapper>
+<text-box id="text-box-<?= $cId ?>"
+    contenteditable
+    placeholder="What do you want to say?"
+    aria-required="true"></text-box>
 <textarea html-editor hidden>Test</textarea>
 
 <?php Component::include('modal-popup', [

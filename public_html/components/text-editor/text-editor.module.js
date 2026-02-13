@@ -42,7 +42,6 @@ export class TextEditorComponent extends HTMLElement {
         this.#textBox = self.querySelector('text-box');
 
         const htmlCheck = self.querySelector('[checkbox-html]');
-        const wrapper = self.querySelector('text-box-wrapper');
         const textarea = self.querySelector('[html-editor]');
 
         document.addEventListener('selectionchange', this.#onSelectionChange);
@@ -140,7 +139,7 @@ export class TextEditorComponent extends HTMLElement {
             if (editHtml)
                 textarea.value = this.#getContent(true);
 
-            wrapper.toggleAttribute('hidden', editHtml);
+            this.#textBox.toggleAttribute('hidden', editHtml);
             textarea.toggleAttribute('hidden', !editHtml);
         });
 
