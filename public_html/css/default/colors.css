@@ -79,7 +79,7 @@ body {
     --clr-warn-dark: hsl(0, 100%, 20%);
 
     --clr-bg: hsl(var(--clrval-gray-50));
-    --clr-text: #ffffff;
+    --clr-text: white;
     --clr-link: hsl(var(--clrval-hotpink-200));
     --clr-link-hover: hsl(var(--clrval-bluelotus-200));
     --clr-link-visited: hsl(var(--clrval-lighgreenishblue-200));

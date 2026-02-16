@@ -48,3 +48,13 @@ blog-head-scheduling {
     gap: var(--spacing-inner);
     justify-content: space-between;
 }
+
+blog-head-buttons-save {
+    display: block grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--spacing-inner);
+
+    & > * {
+        min-width: fit-content;
+    }
+}

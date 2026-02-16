@@ -95,16 +95,24 @@ Component::addJSModule();
             </blog-head-scheduling>
         </blog-head-options>
         <blog-head-buttons>
-            <button id="blog-head__btn-cancel">Cancel</button>
-            <div>
+            <button id="blog-head__btn-cancel"
+                class="btn-warn btn-hover">
+                    Cancel
+            </button>
+            <blog-head-buttons-save>
                 <button id="blog-head__btn-publish"
+                    class="btn-primary"
                     data-content-publish="Publish"
                     data-content-schedule="Schedule"
                     disabled>
-                    Publish
+                        Publish
                 </button>
-                <button id="blog-head__btn-draft" disabled>Save draft</button>
-            </div>
+                <button id="blog-head__btn-draft"
+                    class="btn-secondary"
+                    disabled>
+                        Save draft
+                </button>
+        </blog-head-buttons-save>
         </blog-head-buttons>
     </blog-head-footer>
 </blog-head-content>
