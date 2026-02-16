@@ -1,7 +1,9 @@
+/** @template T */
 export default class Emitter {
     #listeners = [];
-    #value;
+    /** @type {T} */ #value;
 
+    /** @param {T} value  */
     constructor(value) {
         this.#value = value;
     }
@@ -9,7 +11,7 @@ export default class Emitter {
     /**
      * Subscribes to the first change of the value/object, then automatically unsubscribes
      * 
-     * @param {((value: any) => void|undefined)} next
+     * @param {((value: T) => void|undefined)} next
      * @param {((index: Number, value: any) => void|undefined)} nextIndexed
      */
     first(next = undefined, nextIndexed = undefined) {
@@ -21,7 +23,7 @@ export default class Emitter {
      * Gets the entire value/object, or a value within an array
      * 
      * @param {(Number|undefined)} arrayIndex 
-     * @returns {any}
+     * @returns {T}
      */
     getValue(arrayIndex = undefined) {
         if (typeof arrayIndex === 'number') {
@@ -37,7 +39,7 @@ export default class Emitter {
     /**
      * Sets the entire value/object, or a value within an array
      * 
-     * @param {any} value 
+     * @param {T} value 
      * @param {(Number|undefined)} arrayIndex 
      */
     setValue(value, arrayIndex = undefined) {
@@ -70,7 +72,7 @@ export default class Emitter {
     /**
      * Subscribes to changes of the whole value/object, to values within an array, or both
      * 
-     * @param {((value: any) => void|undefined)} next
+     * @param {((value: T) => void|undefined)} next
      * @param {Boolean} getCurrentValue 
      * @param {((index: Number, value: any) => void|undefined)} nextIndexed
      * @returns {Listener}
@@ -120,7 +122,7 @@ export class Listener {
         this.#emitter.unsubscribe(this);
     }
 
-    /** @param {any} value  */
+    /** @param {T} value  */
     next(value) {
         this.#onNext?.call(this, value);
         this.#once && this.unsubscribe();
