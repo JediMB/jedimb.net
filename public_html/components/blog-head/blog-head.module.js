@@ -1,5 +1,6 @@
 import BlogPostDTO from "/js/models/blog-post.dto.js";
 import { TextEditorComponent } from "/js/components/text-editor/text-editor.module.js";
+import blogPostService from "/js/services/blog-post.service.js";
 
 customElements.define('blog-head-component', class BlogHeadComponent extends HTMLElement {
     #scheduledTimeout = { id: null };
@@ -64,6 +65,10 @@ customElements.define('blog-head-component', class BlogHeadComponent extends HTM
         this.#btnPublishPost.addEventListener('click', () => {
             console.log(this.#textEditor.content.html, this.#textEditor.content.text);
             console.log(this.#textEditor.content.media);
+        });
+
+        blogPostService.getBlogPost(1, value => {
+            console.log(value);
         });
     }
 
