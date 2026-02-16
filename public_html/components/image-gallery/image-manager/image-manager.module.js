@@ -327,6 +327,7 @@ customElements.define('image-manager-component', class ImageManagerComponent ext
 
             const fileReader = new FileReader();
             fileReader.addEventListener('load', async event => {
+                // TODO: Create something akin to an "ImageUploadDTO" to formalize the structure
                 const data = {
                     dto: imageDTO,
                     file: event.target.result.replace(/^data:\w*\/\w*;base64,/, '')

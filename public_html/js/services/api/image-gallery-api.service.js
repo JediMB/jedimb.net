@@ -15,8 +15,8 @@ class ImageGalleryApiService {
     }
 
     /**
-     * @param {Number} id 
-     * @returns {Promise<([Number, Date]|false)>}
+     * @param {number} id 
+     * @returns {Promise<([number, Date]|false)>}
      */
     async deleteGallery(id) {
         const response = await this.#httpClient.delete('galleries', id);
@@ -34,8 +34,8 @@ class ImageGalleryApiService {
     }
 
     /**
-     * @param {Number} id 
-     * @returns {Promise<([Number, Date]|false)>}
+     * @param {number} id 
+     * @returns {Promise<([number, Date]|false)>}
      */
     async deleteImage(id) {
         const response = await this.#httpClient.delete('images', id);
@@ -131,7 +131,7 @@ class ImageGalleryApiService {
             throw new Error('Update failed to return image data');
 
         if (!response.value.modifiedOn)
-            throw new Error('Update failed to return table modified date');
+            throw new Error('Update failed to return image table modified date');
 
         return [
             new Image(response.value.image),
@@ -153,7 +153,7 @@ class ImageGalleryApiService {
             throw new Error('Create failed to return gallery data');
 
         if (!response.value.modifiedOn)
-            throw new Error('Create failed to return table modified date');
+            throw new Error('Create failed to return gallery table modified date');
 
         return [
             new Gallery(response.value.gallery),
