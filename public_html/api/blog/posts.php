@@ -3,6 +3,7 @@
 require_once 'services/blog-post.service.php';
 require_once 'utilities/response.utility.php';
 
+use Enums\UserPermission;
 use Services\BlogPostService;
 use Services\SessionService;
 use Utilities\Response;
@@ -23,7 +24,15 @@ switch ( $_SERVER['REQUEST_METHOD'] ) {
                 return Response::Success($posts);
             }
 
-            return Response::InvalidRequest();
+            if ($sessionService->hasPermissions([ UserPermission::Editing ]))
+                $post = $service->getBlogPost($id);
+            else
+                $post = $service->getPublishedBlogPost($id);
+
+            if (!$post)
+                return Response::BadRequest('Invalid blog post id, or insufficient permissions');
+
+            return Response::Success($post);
         }
         catch (Exception $e) {
             return Response::Error([$e->getMessage()]);
