@@ -17,6 +17,7 @@ use Models\User\User;
 use Services\Base\Singleton;
 use Services\UserService;
 use Services\DB\UserTokenDBService;
+use Utilities\Response;
 
 class SessionService extends Singleton {
     private UserTokenDBService $tokenDBService;
@@ -50,6 +51,19 @@ class SessionService extends Singleton {
                 'header' => 'HTTP/1.1 403 Forbidden',
                 'pagePath' => PATH_ERROR403
             ]);
+    }
+
+    public function getInvalidSubmissionResponse(mixed $requestBody, array $permissions) : array|false {
+        if (!$this->isLoggedIn())
+            return Response::Forbidden(TEXT_NOT_LOGGED_IN);
+
+        if (!$this->hasPermissions($permissions))
+            return Response::Forbidden(TEXT_INSUFFICIENT_PERMISSIONS);
+
+        if (empty($requestBody))
+            return Response::BadRequest('Request body is empty');
+
+        return false;
     }
 
     public function getUser() : User|false {
