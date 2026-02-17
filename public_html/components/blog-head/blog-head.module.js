@@ -11,6 +11,11 @@ customElements.define('blog-head-component', class BlogHeadComponent extends HTM
     /** @type {HTMLInputElement} */ #description;
     /** @type {HTMLInputElement} */ #socialLink;
 
+    /** @type {HTMLInputElement} */ #tglPinned;
+    /** @type {HTMLInputElement} */ #tglScheduled;
+    /** @type {HTMLInputElement} */ #scheduledDate;
+    /** @type {HTMLInputElement} */ #scheduledTime;
+
     #btnPublishPost;
     #btnDraftPost;
 
@@ -29,10 +34,10 @@ customElements.define('blog-head-component', class BlogHeadComponent extends HTM
         this.#socialLink = body.querySelector('#blog-head__sociallink');
 
         const footer = content.querySelector('blog-head-footer');
-        const tglPinned = footer.querySelector('#blog-head__toggle-pinned');
-        const tglScheduled = footer.querySelector('#blog-head__toggle-schedule');
-        /** @type {HTMLInputElement} */ const scheduledDate = footer.querySelector('#blog-head__scheduled-date');
-        /** @type {HTMLInputElement} */ const scheduledTime = footer.querySelector('#blog-head__scheduled-time');
+        this.#tglPinned = footer.querySelector('#blog-head__toggle-pinned');
+        this.#tglScheduled = footer.querySelector('#blog-head__toggle-schedule');
+        this.#scheduledDate = footer.querySelector('#blog-head__scheduled-date');
+        this.#scheduledTime = footer.querySelector('#blog-head__scheduled-time');
         const btnAddPost = footer.querySelector('#blog-head__btn-add');
         const btnCancelPost = footer.querySelector('#blog-head__btn-cancel');
         this.#btnPublishPost = footer.querySelector('#blog-head__btn-publish');
@@ -49,26 +54,23 @@ customElements.define('blog-head-component', class BlogHeadComponent extends HTM
         }
         this.#textEditor.content.onChange = () => this.#validation();
 
-        tglScheduled.addEventListener('change', event => {
+        this.#tglScheduled.addEventListener('change', event => {
             const isScheduled = event.target.checked;
 
-            scheduledDate.toggleAttribute('required', isScheduled);
-            scheduledDate.toggleAttribute('hidden', !isScheduled);
-            scheduledTime.toggleAttribute('required', isScheduled);
-            scheduledTime.toggleAttribute('hidden', !isScheduled);
+            this.#scheduledDate.toggleAttribute('required', isScheduled);
+            this.#scheduledDate.toggleAttribute('hidden', !isScheduled);
+            this.#scheduledTime.toggleAttribute('required', isScheduled);
+            this.#scheduledTime.toggleAttribute('hidden', !isScheduled);
             this.#btnPublishPost.textContent = isScheduled ? this.#btnPublishPost.dataset.contentSchedule : this.#btnPublishPost.dataset.contentPublish;
-            permadate.textContent = isScheduled ? scheduledDate.value.replaceAll('-', '/') : permadate.dataset.default;
+            permadate.textContent = isScheduled ? this.#scheduledDate.value.replaceAll('-', '/') : permadate.dataset.default;
 
-            this.#updateDateTimeFields(scheduledDate, scheduledTime, isScheduled);
+            this.#updateDateTimeFields(this.#scheduledDate, this.#scheduledTime, isScheduled);
         });
 
-        this.#btnPublishPost.addEventListener('click', () => {
-            console.log(this.#textEditor.content.html, this.#textEditor.content.text);
-            console.log(this.#textEditor.content.media);
-        });
+        this.#btnPublishPost.addEventListener('click', () => this.#publishPost());
 
         blogPostService.getBlogPost(1, value => {
-            console.log(value);
+            
         });
     }
 
@@ -82,6 +84,30 @@ customElements.define('blog-head-component', class BlogHeadComponent extends HTM
                 .replaceAll(/[^\-a-z0-9]+/g, '')
                 .replaceAll(/\-{2,}/g, '')
                 .replaceAll(/(^\-)|(\-$)/g, '');
+    }
+
+    #publishPost() {
+        const post = new BlogPostDTO({
+            permalink: this.#permalink.value,
+            title: this.#title.value,
+            description: this.#description.value,
+            mastolink: this.#socialLink.value,
+            isPinned: this.#tglPinned.checked,
+            scheduledOn: this.#tglScheduled.checked
+                ? new Date(`${this.#scheduledDate.value}T${this.#scheduledTime.value}`)
+                : null
+        });
+
+        /*
+            TODO: Create a "post-split" element that can be inserted into text-box
+
+            In the text-box it's visible as a divider
+
+            Outside of the text-box it's visible as a "Read more..." link
+        */
+
+        console.log(post);
+
     }
 
     /**
