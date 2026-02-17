@@ -5,7 +5,7 @@ namespace Models\Base;
 require_once 'models/base/db-created-modified.model.php';
 
 class DBPageContent extends DBCreatedModified {
-    public ?int $user_id;
+    public ?int $userId;
     public string $title;
     public ?string $description; 
     public string $contentShort;
@@ -15,7 +15,7 @@ class DBPageContent extends DBCreatedModified {
     public function __construct(array $dbRow) {
         parent::__construct($dbRow);
 
-        $this->user_id = $dbRow['user_id'] ?? null;
+        $this->userId = $dbRow['user_id'] ?? null;
         $this->title = $dbRow['title'];
         $this->description = $dbRow['description'] ?? null;
         $this->contentShort = $dbRow['content_short'];

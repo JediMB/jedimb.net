@@ -5,7 +5,7 @@ export default class BlogPost {
         createdOn, modifiedOn
     }) {
         this.id = Number(id);
-        this.userId = Number(userId);
+        this.userId = userId ? Number(userId) : null;
         this.permalink = permalink;
         this.title = title;
         this.description = description;
