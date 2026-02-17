@@ -42,7 +42,7 @@ textarea:disabled {
     --_clr-text: var(--clr-text, #000);
     background-color: var(--_clr-bg);
     color: var(--_clr-text);
-    padding: var(--spacing-buttons);
+    padding: var(--spacing-buttons) var(--spacing-inner);
     border-radius: var(--spacing-internal);
     border: 2px solid var(--_clr-border);
 }
