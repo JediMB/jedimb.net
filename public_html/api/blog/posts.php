@@ -38,6 +38,18 @@ switch ( $_SERVER['REQUEST_METHOD'] ) {
             return Response::Error([$e->getMessage()]);
         }
 
+    case 'POST':
+        try {
+            if ( ($response = $sessionService->getInvalidSubmissionResponse($input, [ UserPermission::Publishing ])) )
+                return $response;
+
+            
+            return Response::InvalidRequest();
+        }
+        catch (Exception $e) {
+            return Response::Error([$e->getMessage()]);
+        }
+
     default:
         return Response::InvalidRequest();
 }

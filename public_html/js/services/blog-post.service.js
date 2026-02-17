@@ -1,4 +1,5 @@
 import BlogPost from "/js/models/blog-post.js";
+import BlogPostDTO from "/js/models/blog-post.dto.js";
 import blogPostApiService from "/js/services/api/blog-post-api.service.js";
 import Emitter from "/js/utilities/emitter.js";
 
@@ -11,6 +12,13 @@ class BlogPostService {
     #service = blogPostApiService;
 
     constructor() {}
+
+    /**
+     * @param {BlogPostDTO} blogPostDTO 
+     */
+    async createBlogPost(blogPostDTO) {
+        const post = await this.#service.postBlogPost(blogPostDTO);
+    }
 
     /**
      * @param {number} id
@@ -34,6 +42,5 @@ class BlogPostService {
 
         next.call(this, fetchedPost);
     }
-
 }
 const blogPostService = new BlogPostService();

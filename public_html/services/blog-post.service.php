@@ -21,6 +21,10 @@ class BlogPostService extends Singleton {
         $this->tableModifiedService = TableModifiedService::getInstance();
     }
 
+    function createBlogPost() {
+        
+    }
+
     function getBlogPost(int $id) : BlogPost|false {
         return $this->blogPostDbService->getBlogPost($id, PublishedStatus::Any);
     }
