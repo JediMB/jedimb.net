@@ -18,7 +18,7 @@ class TableModifiedDBService extends BaseDBService {
 
     public function getTableModifiedDate(string $table) : \DateTime|false {
         try {
-            $result = $this->dbService->selectOneByColumnValue('table_modified', 'table_name', $table);
+            $result = $this->dbService->selectByColumnValues('table_modified', [ 'table_name' => $table ]);
 
             if (!$result)
                 return false;

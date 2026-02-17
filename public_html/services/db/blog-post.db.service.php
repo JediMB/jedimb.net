@@ -33,22 +33,33 @@ class BlogPostDBService extends BaseDBService {
         }
     }
 
-    public function getBlogPost(string $permalink): BlogPost|false {
+    /**
+     * @param int|string $identifier Blog post id (integer) or permalink (string)
+     * @param PublishedStatus $publishedStatus 
+     * @return BlogPost|false
+     */
+    public function getBlogPost(int|string $identifier, PublishedStatus $publishedStatus = PublishedStatus::Published): BlogPost|false {
         try {
-            $post = DatabaseService::getInstance()->selectFunction(
-                'read_blog_post', [
-                    1 => [ 'value' => $permalink, 'type' => PDO::PARAM_STR ]
-                ]
-            );
+            if (is_int($identifier))
+                $columnValues = [ 'id' => $identifier ];
+            else
+                $columnValues = [ 'permalink' => $identifier ];
 
-            if ($post)
-                return new BlogPost($post);
+            if ($publishedStatus === PublishedStatus::Published)
+                $columnValues += [ 'is_published' => true ];
+            else if ($publishedStatus === PublishedStatus::Unpublished)
+                $columnValues += [ 'is_published' => false ];
+
+            $post = $this->dbService->selectByColumnValues('blog_post', $columnValues);
+
+            if (!$post)
+                return false;
+
+            return new BlogPost($post);
         }
         catch (PDOException $e) {
             throw new Exception('Database error: ' . $e->getMessage());
         }
-
-        return false;
     }
 }
 

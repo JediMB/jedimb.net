@@ -6,6 +6,7 @@ require_once 'enums/db-fetch.enum.php';
 require_once 'services/base/singleton.php';
 
 use Exception;
+use InvalidArgumentException;
 use PDO;
 use Enums\DBFetch;
 use Services\Base\Singleton;
@@ -63,11 +64,25 @@ class DatabaseService extends Singleton {
         return $query->fetchAll();
     }
 
-    public function selectOneByColumnValue(string $table, string $column, mixed $value) {
+    /** 
+     * @param string $table
+     * @param (array<string, bool|int|string>) $columnValues Key-Value pairs with the name of the column and the value to match
+    */
+    public function selectByColumnValues(string $table, array $columnValues) {
+        if (empty($columnValues))
+            throw new InvalidArgumentException('No column values provided');
+
+        $whereString = $this->buildWhereString($columnValues);
+
         $query = $this->service->prepare(
-            "SELECT * FROM {$this->schema}.$table WHERE $column = :val LIMIT 1"
+            "SELECT * FROM {$this->schema}.$table WHERE $whereString LIMIT 1"
         );
-        $query->bindParam(':val', $value, $this->getPDOParamType($value));
+
+        $index = 1;
+        foreach ($columnValues as $value) {
+            $query->bindValue($index, $value, $this->getPDOParamType($value));
+            $index++;
+        }
 
         $query->execute();
 
@@ -129,6 +144,18 @@ class DatabaseService extends Singleton {
             return ' ORDER BY id ASC';
 
         return " ORDER BY \"$orderBy\" " . ($descending ? 'DESC' : 'ASC');
+    }
+
+    private function buildWhereString(array $array) {
+        $columns = array_keys($array);
+        $count = count($columns);
+
+        $result = "{$columns[0]} = ?";
+        for ($i = 1; $i < $count; $i++) {
+            $result =  "$result AND {$columns[$i]} = ?";
+        }
+
+        return $result;
     }
 
     private function getPDOParamType($value) : int {

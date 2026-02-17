@@ -26,8 +26,8 @@ class BlogPostService extends Singleton {
         return $this->blogPostDbService->getBlogPosts(PublishedStatus::Published);
     }
 
-    function getPublishedBlogPost(string $permalink) : BlogPost {
-        return $this->blogPostDbService->getBlogPost($permalink);
+    function getPublishedBlogPost(int|string $identifier) : BlogPost|false {
+        return $this->blogPostDbService->getBlogPost($identifier, PublishedStatus::Published);
     }
 }
 
