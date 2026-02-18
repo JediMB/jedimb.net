@@ -874,9 +874,9 @@ export class TextEditorComponent extends HTMLElement {
             return;
         }
 
-        text = text.replace(c.regexDisallowedAttributes, '')
-            .replace(c.regexIndentations, '')
-            .replace(c.regexDisallowedElements, '');
+        text = text.replaceAll(c.regexDisallowedAttributes, '')
+            .replaceAll(c.regexIndentations, '')
+            .replaceAll(c.regexDisallowedElements, '');
 
         const textRows = p.splitIntoContainerRows(text);
 
