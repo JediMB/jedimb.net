@@ -1,8 +1,8 @@
 blog-head-component {
     display: block flex;
     flex-direction: column;
-    gap: var(--spacing-outer);
-    margin-bottom: var(--spacing-outer);
+    gap: var(--size-l);
+    margin-bottom: var(--size-l);
 }
 
 #blog-head__btn-add {
@@ -23,7 +23,7 @@ blog-head-body,
 blog-head-footer {
     display: block flex;
     flex-direction: column;
-    gap: var(--spacing-inner)
+    gap: var(--size-m)
 }
 
 blog-head-permalink {
@@ -37,7 +37,7 @@ blog-head-permalink {
 }
 
 #blog-head__reset-permalink {
-    padding: var(--spacing-buttons);
+    padding: var(--size-s);
 }
 
 blog-head-options,
@@ -45,14 +45,14 @@ blog-head-buttons,
 blog-head-scheduling {
     display: block flex;
     flex-direction: row;
-    gap: var(--spacing-inner);
+    gap: var(--size-m);
     justify-content: space-between;
 }
 
 blog-head-buttons-save {
     display: block grid;
     grid-template-columns: 1fr 1fr;
-    gap: var(--spacing-inner);
+    gap: var(--size-m);
 
     & > * {
         min-width: fit-content;

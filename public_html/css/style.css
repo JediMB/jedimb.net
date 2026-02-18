@@ -278,7 +278,7 @@ header-container {
 
 header-links {
     display: flex;
-    padding-block-start: var(--spacing-edges);
+    padding-block-start: var(--size-s);
 }
 
 header-links a svg {
@@ -300,13 +300,13 @@ account-container {
 social-container {
     display: flex;
     justify-content: flex-end;
-    gap: var(--spacing-buttons);
+    gap: var(--size-s);
 }
 
 menu-container {
     display: flex;
     justify-content: space-between;
-    gap: var(--spacing-edges);
+    gap: var(--size-s);
 }
 
 #flip-logo {
@@ -362,15 +362,15 @@ menu-container {
 }
 
 .tagline {
-    margin-block: var(--spacing-edges) var(--spacing-inner);
+    margin-block: var(--size-s) var(--size-m);
     border-top: 2px var(--clr-primary-50) solid;
-    padding: var(--spacing-edges);
+    padding: var(--size-s);
     font-style: italic;
 }
 
 content-container {
     display: block;
-    padding-inline: var(--spacing-edges);
+    padding-inline: var(--size-s);
 }
 
 main {
@@ -430,8 +430,8 @@ main p a:hover {
 }
 
 footer {
-    margin-top: var(--spacing-outer);
-    padding-inline: var(--spacing-edges);
+    margin-top: var(--size-l);
+    padding-inline: var(--size-s);
     text-align: center;
     font-style: italic;
 }
@@ -440,17 +440,17 @@ h1 {
     display: inline-block;
     font-size: 4rem;
     line-height: 1em;
-    margin-block-end: var(--spacing-buttons);
+    margin-block-end: var(--size-s);
 }
 
 h2 {
-    margin-block: var(--spacing-inner);
+    margin-block: var(--size-m);
     font-family: 'Press Start 2P';
     font-size: 1.5em;
 }
 
 main h2::before {
-    margin-inline-end: var(--spacing-internal);
+    margin-inline-end: var(--size-xs);
     content: '>';
 }
 
@@ -557,23 +557,23 @@ header::before {
 }
 
 /* .btn:disabled, .btn.disabled {
-    background-color: var(--clrval-gray-300);
-    color: var(--clrval-gray-100);
+    background-color: var(--hsl-gray-300);
+    color: var(--hsl-gray-100);
 } */
 
 .btn-login:not(:disabled):not(.disabled):hover {
-    background-color: hsl(var(--clrval-hotpink-500));
+    background-color: hsl(var(--hsl-hotpink-500));
     color: black;
 
 }
 
 input.error {
-    background-color: hsl(var(--clrval-hotpink-200));
+    background-color: hsl(var(--hsl-hotpink-200));
     color: black;
 }
 
 input.error::selection {
-    background-color: hsl(var(--clrval-hotpink-800));
+    background-color: hsl(var(--hsl-hotpink-800));
     color: white;
 }
 
@@ -664,7 +664,7 @@ about-me-content section {
     header-container {
         border-bottom-left-radius: 1rem;
         border-bottom-right-radius: 1rem;
-        padding-inline: var(--spacing-outer);
+        padding-inline: var(--size-l);
     }
 
     header-links {
@@ -672,7 +672,7 @@ about-me-content section {
     }
 
     menu-container {
-        margin-top: var(--spacing-inner);
+        margin-top: var(--size-m);
     }
 
     mobile-title,
@@ -694,7 +694,7 @@ about-me-content section {
     }
 
     header-container {
-        padding-inline: var(--spacing-edges);
+        padding-inline: var(--size-s);
     }
 
     header-links {
@@ -702,7 +702,7 @@ about-me-content section {
     }
 
     social-container {
-        gap: var(--spacing-inner);
+        gap: var(--size-m);
     }
 
     home-wrapper,
@@ -713,7 +713,7 @@ about-me-content section {
     }
 
     menu-container {
-        padding-inline-start: var(--spacing-edges);
+        padding-inline-start: var(--size-s);
     }
 
     mobile-menu {
@@ -723,8 +723,8 @@ about-me-content section {
     }
 
     content-container {
-        margin-block: var(--spacing-outer);
-        padding-inline: var(--spacing-inner);
+        margin-block: var(--size-l);
+        padding-inline: var(--size-m);
     }
 
     h1 {

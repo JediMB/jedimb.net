@@ -1,7 +1,7 @@
 text-editor-component {
     display: flex;
     flex-direction: column;
-    gap: 1em;
+    gap: var(--size-m);
 }
 
 .text-editor-toolbar {

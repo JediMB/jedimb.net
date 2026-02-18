@@ -12,8 +12,8 @@ input[type="url"],
 input[type=""],
 textarea,
 [contenteditable] {
-    border-radius: var(--spacing-internal);
-    padding: var(--spacing-internal) var(--spacing-edges);
+    border-radius: var(--size-xs);
+    padding: var(--size-xs) calc(var(--size-xs) * 2);
     background-color: var(--clr-text);
     color: var(--clr-bg);
 
@@ -42,8 +42,8 @@ textarea:disabled {
     --_clr-text: var(--clr-text, #000);
     background-color: var(--_clr-bg);
     color: var(--_clr-text);
-    padding: var(--spacing-buttons) var(--spacing-inner);
-    border-radius: var(--spacing-internal);
+    padding: var(--size-s) calc(var(--size-s) * 2);
+    border-radius: var(--size-xs);
     border: 2px solid var(--_clr-border);
 }
 

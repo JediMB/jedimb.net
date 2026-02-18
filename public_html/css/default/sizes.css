@@ -5,9 +5,11 @@
 }
 
 body {
-    --spacing-internal: 0.25rem;
-    --spacing-edges: 0.5rem;
-    --spacing-buttons: 0.5rem;
-    --spacing-inner: 1rem;
-    --spacing-outer: 2rem;
+    --size-xxs: 0.125rem;
+    --size-xs: 0.25rem;
+    --size-s: 0.5rem;
+    --size-m: 1rem; 
+    --size-l: 2rem;
+    --size-xl: 4rem;
+    --size-xxl: 8rem;
 }

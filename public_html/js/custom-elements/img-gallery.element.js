@@ -177,7 +177,7 @@ export class ImgGalleryElement extends HTMLElement {
             gallery-container {
                 display: block;
                 position: relative;
-                border-radius: var(--spacing-internal);
+                border-radius: var(--size-xs);
                 max-width: 90%;
                 margin-inline: auto;
                 overflow: hidden;

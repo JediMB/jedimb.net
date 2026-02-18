@@ -1,14 +1,14 @@
 image-gallery-component {
     display: block flex;
     flex-direction: column;
-    gap: var(--spacing-edges);
+    gap: var(--size-s);
     height: 100%;
 }
 
 image-gallery-header {
     display: block flex;
     flex-direction: row;
-    gap: var(--spacing-inner);
+    gap: var(--size-m);
     align-items: center;
 }
 
@@ -21,7 +21,7 @@ manager-tabs {
 .tab-list {
     display: block flex;
     border-bottom: 1px solid var(--clr-disabled-background);
-    margin-bottom: var(--spacing-inner);
+    margin-bottom: var(--size-m);
 }
 
 .tab-item {
@@ -33,7 +33,7 @@ manager-tabs {
 }
 
 .tab-label {
-    padding: var(--spacing-edges);
+    padding: var(--size-s);
 }
 
 image-manager-component,
@@ -42,7 +42,7 @@ gallery-list,
 manager-gallery-images {
     display: block flex;
     height: clamp(2ch, 36ch, calc(var(--container-max-height, 100%) - 12rem));
-    gap: var(--spacing-inner);
+    gap: var(--size-m);
 }
 
 gallery-properties {
@@ -68,7 +68,7 @@ manager-gallery-images,
 gallery-properties {
     min-height: 2ch;
     overflow-y: scroll;
-    margin-bottom: var(--spacing-inner);
+    margin-bottom: var(--size-m);
 }
 
 images-included,
@@ -118,14 +118,14 @@ images-excluded,
 
 images-included fieldset,
 images-excluded fieldset {
-    padding-block-start: var(--spacing-edges);
+    padding-block-start: var(--size-s);
 }
 
 image-properties,
 gallery-properties {
     display: block flex;
     flex-direction: column;
-    gap: var(--spacing-internal);
+    gap: var(--size-xs);
     font-size: 1rem;
 }
 
@@ -133,19 +133,19 @@ image-properties,
 manager-gallery-images,
 gallery-properties {
     border-left: 1px solid;
-    padding-inline: var(--spacing-inner) var(--spacing-edges);
+    padding-inline: var(--size-m) var(--size-s);
 }
 
 manager-buttons {
     display: block flex;
     justify-content: space-between;
-    gap: var(--spacing-inner);
-    padding: var(--spacing-edges);
+    gap: var(--size-m);
+    padding: var(--size-s);
 }
 
 manager-properties manager-buttons,
 manager-selected-gallery manager-buttons {
-    padding-inline: var(--spacing-inner) var(--spacing-edges);
+    padding-inline: var(--size-m) var(--size-s);
 }
 
 manager-gallery-images manager-buttons {
@@ -158,7 +158,7 @@ manager-gallery-images manager-buttons {
 
 .gallery-images-header {
     border-bottom: 1px solid;
-    padding-block-end: var(--spacing-internal);
+    padding-block-end: var(--size-xs);
 }
 
 .image-title,
