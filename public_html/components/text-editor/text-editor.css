@@ -5,22 +5,9 @@ text-editor-component {
 }
 
 .text-editor-toolbar {
-    & button,
-    & select {
-        border: 1px solid currentColor;
-        border-radius: var(--spacing-internal);
-        padding: var(--spacing-internal) calc(var(--spacing-internal) * 2);
-    }
-
-    & button[data-tag]:enabled {
-        background-color: var(--clr-bg-active, --clr-bg);
-        color: var(--clr-text-active, --clr-text);
-    }
-
-    & .active {
-        --clr-bg-active: var(--clr-text);
-        --clr-text-active: var(--clr-bg);
-    }
+    display: flex;
+    flex-direction: row;
+    gap: var(--size-xs);
 }
 
 text-box,

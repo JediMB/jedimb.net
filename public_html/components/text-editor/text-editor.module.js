@@ -57,7 +57,7 @@ export class TextEditorComponent extends HTMLElement {
             this.#textBox.focus();
         });
 
-        this.#tagButtons.forEach(button => button.dataset.shortcut && button.addEventListener('click', () => this.#toggleTag({ name: button.dataset.tag })));
+        this.#tagButtons.forEach(button => button.dataset.shortcut && button.addEventListener('click', () => this.#toggleTag({ name: button.dataset.tag.toLowerCase() })));
 
         this.#linkButton.addEventListener('click', () => this.#addLink(this.#linkButton));
 
@@ -793,7 +793,7 @@ export class TextEditorComponent extends HTMLElement {
         this.#fieldset.disabled = !isCurrentTextbox;
 
         if (!isCurrentTextbox) {
-            this.#tagButtons.forEach(b => b.classList.remove('active'));
+            this.#tagButtons.forEach(b => b.classList.remove('highlight'));
             return;
         }
 
@@ -816,9 +816,11 @@ export class TextEditorComponent extends HTMLElement {
                 this.#linkButton.disabled = (new Set(selectedBlocks)).size !== 1;
             }
 
-            this.#tagButtons.forEach(b => b.classList.toggle('active',
-                !!selectedTextNodes.length && selectedTextNodes.every(n => !!this.#getMatchingAncestor(n, b.dataset.tag))
-            ));
+            for (const btn of this.#tagButtons)
+                btn.classList.toggle('highlight',
+                    !!selectedTextNodes.length
+                    && selectedTextNodes.every(n => !!this.#getMatchingAncestor(n, btn.dataset.tag.toLowerCase()))
+                );
     }
 
     async #paste(pasteHtml = true) {
@@ -962,7 +964,7 @@ export class TextEditorComponent extends HTMLElement {
         const button = this.#tagButtons.find(b => b.dataset.shortcut?.toUpperCase() === keyUpper);
 
         if (button)
-            this.#toggleTag({ name: button.dataset.tag });
+            this.#toggleTag({ name: button.dataset.tag.toLowerCase() });
     }
 
     /**
@@ -973,7 +975,7 @@ export class TextEditorComponent extends HTMLElement {
     #toggleTag(tagInfo) {
         const textBox = this.#textBox;
         const selectionData = new SelectionData(window.getSelection());
-        tagInfo.name = tagInfo.name.toLowerCase();
+        tagInfo.name = tagInfo.name;
 
         if (!textBox.contains(selectionData.startNode) || !textBox.contains(selectionData.endNode))
             return;

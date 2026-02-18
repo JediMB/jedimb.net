@@ -35,8 +35,8 @@ textarea:disabled {
     color: var(--clr-disabled-text);
 }
 
-
-[class|=btn] {
+[class|=btn],
+[class|=select] {
     --_clr-border: transparent;
     --_clr-bg: var(--clr-bg, #999);
     --_clr-text: var(--clr-text, #000);
@@ -45,6 +45,15 @@ textarea:disabled {
     padding: var(--size-s) calc(var(--size-s) * 2);
     border-radius: var(--size-xs);
     border: 2px solid var(--_clr-border);
+
+}
+
+[class|=btn] {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    gap: var(--size-xs);
 }
 
 .btn-hover:hover,
@@ -78,6 +87,31 @@ textarea:disabled {
         --_clr-border: var(--clr-text);
         --_clr-bg: var(--clr-primary);
         --_clr-text: black;
+    }
+}
+
+.btn-toolbar {
+    position: relative;
+    padding: var(--size-xs);
+    height: 100%;
+    aspect-ratio: 1;
+
+    &:enabled.highlight {
+        --_clr-text: var(--clr-primary-dark);
+
+        &:hover {
+            --_clr-text: black;
+        }
+    }
+}
+
+.btn-toolbar,
+.select-toolbar {
+    --_clr-bg: hsl(var(--hsl-text) / 5%);
+    --_clr-text: var(--clr-text);
+
+    &:enabled:hover {
+        --_clr-bg: var(--clr-primary-dark);
     }
 }
 
@@ -134,6 +168,7 @@ label:has(input[type="checkbox"]) {
     white-space: nowrap;
 }
 
+select,
 label:has(input[type="checkbox"]:enabled),
 input[type="checkbox"]:enabled,
 label:has(input[type="radio"]:enabled),
