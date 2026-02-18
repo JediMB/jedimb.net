@@ -51,7 +51,7 @@ export const regexMatchContainers = new RegExp(
     'i'
 ); // /<(?<tag>div|h2|p|etc)\b[ \w=\"\-#;]*>(.*?)<\/\k<tag>>/
 
-/** Matches against any attribute text that is not attached to an A tag
+/** Matches against any attribute text that is not specified in the whitelist
  * @type {RegExp} */
 export const regexDisallowedAttributes = new RegExp(
     '<(?!(' +
@@ -59,9 +59,9 @@ export const regexDisallowedAttributes = new RegExp(
     ' ))[a-z][a-z0-9\\-]*( [^>]*)>', 'gi'
 );
 
-/** Matches against any elements now in the whitelist
+/** Matches against any elements not in the whitelist
  * @type {RegExp} */
-export const regexDisallowedElements = new RegExp('(<\/?(?!(' + tagWhiteList.join('|') + ')\\b)([a-z]*>))', "gi");
+export const regexDisallowedElements = new RegExp('(<\/?(?!(' + tagWhiteList.join('|') + ')\\b)([a-z0-9\-]*>))', "gi");
 
 /** Matches against indentations (2+ whitespaces)
  * @type {RegExp} */
