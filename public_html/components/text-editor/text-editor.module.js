@@ -18,6 +18,7 @@ export class TextEditorComponent extends HTMLElement {
     /** @type {HTMLSelectElement} */ #blockSelector;
     #tagButtons;
     #linkButton;
+    #pageBreakButton;
     /** @type {HTMLElement} */ #textBox;
     /** @type {MutationObserver} */
     #mutationObserver;
@@ -39,6 +40,7 @@ export class TextEditorComponent extends HTMLElement {
         this.#blockSelector = this.#fieldset.querySelector('[select-blocktype]');
         this.#tagButtons = Array.from(this.#fieldset.querySelectorAll('[data-tag]'));
         this.#linkButton = this.#fieldset.querySelector('[btn-link]');
+        this.#pageBreakButton = this.#fieldset.querySelector('[btn-pagebreak]');
         this.#textBox = self.querySelector('text-box');
 
         const htmlCheck = self.querySelector('[checkbox-html]');
@@ -60,6 +62,16 @@ export class TextEditorComponent extends HTMLElement {
         this.#tagButtons.forEach(button => button.dataset.shortcut && button.addEventListener('click', () => this.#toggleTag({ name: button.dataset.tag.toLowerCase() })));
 
         this.#linkButton.addEventListener('click', () => this.#addLink(this.#linkButton));
+
+        this.#pageBreakButton.addEventListener('click', () => {
+            /*
+                TODO: Create a "page-break" element that can be inserted into text-box
+
+                In the text-box it's visible as a divider
+
+                Outside of the text-box it's visible as a "Read more..." link
+            */
+        });
 
         this.#textBox.addEventListener('click', (event) => {
             const link = this.#getMatchingAncestor(event.target, 'a');

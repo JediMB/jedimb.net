@@ -98,14 +98,6 @@ customElements.define('blog-head-component', class BlogHeadComponent extends HTM
                 : null
         });
 
-        /*
-            TODO: Create a "post-split" element that can be inserted into text-box
-
-            In the text-box it's visible as a divider
-
-            Outside of the text-box it's visible as a "Read more..." link
-        */
-
         console.log(post);
 
     }
