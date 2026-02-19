@@ -469,6 +469,22 @@ export class TextEditorComponent extends HTMLElement {
         }
     }
 
+    /** Encloses any text nodes placed directly in the text-box in an appropriate container element */
+    #encloseRootText() {
+        for (const rootChild of this.#textBox.childNodes) {
+            if (rootChild.nodeType !== Node.TEXT_NODE)
+                continue;
+
+            const tag = rootChild.previousSibling?.localName
+                ?? rootChild.nextSibling?.localName
+                ?? c.containerTags[0];
+
+            const newElement = document.createElement(tag);
+            this.#textBox.insertBefore(newElement, rootChild);
+            newElement.appendChild(rootChild);
+        }
+    }
+
     /**
      * Extracts the selected text from the provided list of elements
      * 
