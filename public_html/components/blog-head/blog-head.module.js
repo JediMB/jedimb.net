@@ -87,7 +87,7 @@ customElements.define('blog-head-component', class BlogHeadComponent extends HTM
                 .replaceAll(/(^\-)|(\-$)/g, '');
     }
 
-    #publishPost() {
+    async #publishPost() {
         const content = this.#textEditor.content.html;
 
         const post = new BlogPostDTO({
@@ -105,6 +105,7 @@ customElements.define('blog-head-component', class BlogHeadComponent extends HTM
 
         console.log(post);
 
+        await blogPostService.createBlogPost(post);
     }
 
     /**
@@ -136,7 +137,7 @@ customElements.define('blog-head-component', class BlogHeadComponent extends HTM
                 && timeInput.value
                 && timeInput.value === timeInput.defaultValue
                 && timeInput.defaultValue !== defaultTimeValue) {
-                    console.log('Ding!');
+                    console.log('Ding!'); // TODO: Notification
             }
 
             timeInput.defaultValue = defaultTimeValue;

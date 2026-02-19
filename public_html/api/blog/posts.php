@@ -44,7 +44,7 @@ switch ( $_SERVER['REQUEST_METHOD'] ) {
                 return $response;
 
             
-            return Response::InvalidRequest();
+            return Response::Success($input);
         }
         catch (Exception $e) {
             return Response::Error([$e->getMessage()]);

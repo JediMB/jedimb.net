@@ -18,6 +18,8 @@ class BlogPostService {
      */
     async createBlogPost(blogPostDTO) {
         const post = await this.#service.postBlogPost(blogPostDTO);
+
+        console.log(post);
     }
 
     /**
