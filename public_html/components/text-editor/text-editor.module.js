@@ -87,7 +87,7 @@ export class TextEditorComponent extends HTMLElement {
             const selection = document.getSelection();
             const node = selection.anchorNode;
             if (node.nodeType === Node.TEXT_NODE && node.parentElement === this.#textBox) {
-                this.#encloseNodes([node], { name: this.#blockSelector.value});
+                this.#getBlockElement(node);
                 selection.setPosition(node, node.textContent.length);
             }
 
@@ -566,22 +566,23 @@ export class TextEditorComponent extends HTMLElement {
             return newElement;
         }
 
-        if (childNode.nodeType === Node.TEXT_NODE)
+        if (childNode.nodeType === Node.TEXT_NODE && childNode.parentElement !== textBox)
             childNode = childNode.parentElement;
 
         while (childNode && childNode !== textBox) {
             if (this.#isBlockType(childNode.localName))
                 return childNode;
 
-            if (childNode.parentElement === textBox) {
-                const newElement = document.createElement(tagName);
-                childNode.parentElement.insertBefore(newElement, childNode);
-                newElement.appendChild(childNode);
-                return newElement;
-            }
+            if (childNode.parentElement === textBox)
+                break;
 
             childNode = childNode.parentElement;
         }
+
+        const newElement = document.createElement(tagName);
+        textBox.insertBefore(newElement, childNode);
+        newElement.appendChild(childNode);
+        return newElement;
     }
 
     /**
