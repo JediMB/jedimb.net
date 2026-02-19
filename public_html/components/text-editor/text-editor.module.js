@@ -156,12 +156,22 @@ export class TextEditorComponent extends HTMLElement {
 
     connectedMoveCallback() {}
 
+    /** Gives outside access to the text-box content */
     get content() {
         const textBox = this.#textBox;
         const onChange = this.#onChange;
+        const self = this;
 
-        const members = {
-            get html() { return textBox.innerHTML; },
+        return {
+            get html() {
+                self.#encloseRootText();
+
+                return {
+                    get full() { return textBox.innerHTML; },
+                    get rest() { return textBox.innerHTML.match(/^.*(?:<hr page-break(?:="")?>)(.+)$/si)?.at(1); },
+                    get short() { return textBox.innerHTML.match(/^(.*<hr page-break(?:="")?>)/si)?.at(1) ?? textBox.innerHTML; }
+                };
+            },
             get text() { return textBox.textContent; },
             get media() {
                 return [
@@ -181,8 +191,6 @@ export class TextEditorComponent extends HTMLElement {
                 onChange.push(func);
             }
         };
-        
-        return members;
     }
 
     #addGallery() {

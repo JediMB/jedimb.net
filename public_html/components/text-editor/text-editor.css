@@ -65,4 +65,3 @@ text-box hr[page-break]::before {
     padding: var(--size-xs) calc(var(--size-xs) * 2);
     content: 'Page break';
 }
-
