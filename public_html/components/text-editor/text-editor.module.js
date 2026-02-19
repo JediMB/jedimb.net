@@ -63,15 +63,7 @@ export class TextEditorComponent extends HTMLElement {
 
         this.#linkButton.addEventListener('click', () => this.#addLink(this.#linkButton));
 
-        this.#pageBreakButton.addEventListener('click', () => {
-            /*
-                TODO: Create a "page-break" element that can be inserted into text-box
-
-                In the text-box it's visible as a divider
-
-                Outside of the text-box it's visible as a "Read more..." link
-            */
-        });
+        this.#pageBreakButton.addEventListener('click', () => this.#insertPageBreak());
 
         this.#textBox.addEventListener('click', (event) => {
             const link = this.#getMatchingAncestor(event.target, 'a');
@@ -765,6 +757,30 @@ export class TextEditorComponent extends HTMLElement {
         selectionData.startOffset = selectionData.endOffset = element.nextSibling ? 0 : 1;
     }
 
+    #insertPageBreak() {
+        const textBox = this.#textBox;
+        const selectionData = new SelectionData(getSelection());
+
+        const existingPageBreaks = textBox.querySelectorAll('hr[page-break]');
+
+        for (const pageBreak of existingPageBreaks)
+            pageBreak.remove();
+
+        const blockElement = this.#getBlockElement(selectionData.startNode);
+        const pageBreak = document.createElement('hr');
+        pageBreak.toggleAttribute('page-break', true);
+
+        if (selectionData.startNode === blockElement || selectionData.startNode === this.#textBox) {
+            selectionData.startNode = selectionData.endNode = pageBreak;
+            selectionData.startOffset = selectionData.endOffset = 1;
+        }
+
+        if (!blockElement.firstChild || blockElement.innerHTML === '<br>')
+            blockElement.replaceWith(pageBreak);
+        else
+            blockElement.insertAdjacentElement('afterend', pageBreak);
+    }
+
     /**
      * Checks if the specified tag type is in the list of block tags
      * 
@@ -815,25 +831,28 @@ export class TextEditorComponent extends HTMLElement {
         const selectedTextNodes = this.#getTextNodesFromSelection(this.#latestSelection);
 
         if (selectedTextNodes.length === 0)
-                [this.#blockSelector.value] = c.containerTags;
-            else {
-                const selectedBlocks = selectedTextNodes.map(n => this.#getBlockElement(n));
+            [this.#blockSelector.value] = c.containerTags;
+        else {
+            const selectedBlocks = selectedTextNodes.map(n => this.#getBlockElement(n));
 
-                const identicalBlocks = selectedBlocks.length > 0
-                    && selectedBlocks.every((block, _, arr) => block && block.localName === arr[0].localName);
+            const identicalBlocks = selectedBlocks.length > 0
+                && selectedBlocks.every((block, _, arr) => block && block.localName === arr[0].localName);
 
-                this.#blockSelector.value = identicalBlocks
-                    ? selectedBlocks[0].localName
-                    : null;
+            this.#blockSelector.value = identicalBlocks
+                ? selectedBlocks[0].localName
+                : null;
 
-                this.#linkButton.disabled = (new Set(selectedBlocks)).size !== 1;
-            }
+            this.#linkButton.disabled = (new Set(selectedBlocks)).size !== 1;
+        }
 
-            for (const btn of this.#tagButtons)
-                btn.classList.toggle('highlight',
-                    !!selectedTextNodes.length
-                    && selectedTextNodes.every(n => !!this.#getMatchingAncestor(n, btn.dataset.tag.toLowerCase()))
-                );
+        for (const btn of this.#tagButtons) {
+            btn.classList.toggle('highlight',
+                !!selectedTextNodes.length
+                && selectedTextNodes.every(n => !!this.#getMatchingAncestor(n, btn.dataset.tag.toLowerCase()))
+            );
+        }
+
+        this.#pageBreakButton.disabled = !this.#latestSelection.isCollapsed;
     }
 
     async #paste(pasteHtml = true) {

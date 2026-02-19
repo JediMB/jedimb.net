@@ -20,6 +20,7 @@ text-box + textarea {
 
 text-box {
     display: block;
+    position: relative;
     width: 100%;
     min-height: 100%;
     background-color: var(--clr-text);
@@ -43,3 +44,25 @@ text-box:focus-within {
 text-box a {
     cursor: pointer;
 }
+
+text-box hr[page-break] {
+    position: absolute;
+    inset-inline: var(--size-s);
+    display: block flex;
+    flex-direction: row;
+    justify-content: center;
+    color: black;
+    opacity: 0.5;
+    overflow: visible;
+}
+
+text-box hr[page-break]::before {
+    position: absolute;
+    transform: translateY(-50%);
+    border: 2px solid currentColor;
+    background-color: var(--clr-primary-light);
+    border-radius: var(--size-s);
+    padding: var(--size-xs) calc(var(--size-xs) * 2);
+    content: 'Page break';
+}
+
