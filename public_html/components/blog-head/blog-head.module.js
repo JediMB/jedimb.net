@@ -62,10 +62,11 @@ customElements.define('blog-head-component', class BlogHeadComponent extends HTM
             this.#scheduledTime.toggleAttribute('required', isScheduled);
             this.#scheduledTime.toggleAttribute('hidden', !isScheduled);
             this.#btnPublishPost.textContent = isScheduled ? this.#btnPublishPost.dataset.contentSchedule : this.#btnPublishPost.dataset.contentPublish;
-            permadate.textContent = isScheduled ? this.#scheduledDate.value.replaceAll('-', '/') : permadate.dataset.default;
 
-            this.#updateDateTimeFields(this.#scheduledDate, this.#scheduledTime, isScheduled);
+            this.#updateDateTimeFields(this.#scheduledDate, this.#scheduledTime, permadate, isScheduled);
         });
+
+        this.#scheduledDate.addEventListener('change', () => permadate.textContent = this.#scheduledDate.value.replaceAll('-', '/'));
 
         this.#btnPublishPost.addEventListener('click', () => this.#publishPost());
 
@@ -87,9 +88,13 @@ customElements.define('blog-head-component', class BlogHeadComponent extends HTM
     }
 
     #publishPost() {
+        const content = this.#textEditor.content.html;
+
         const post = new BlogPostDTO({
             permalink: this.#permalink.value,
             title: this.#title.value,
+            contentShort: content.short,
+            contentRest: content.rest,
             description: this.#description.value,
             mastolink: this.#socialLink.value,
             isPinned: this.#tglPinned.checked,
@@ -105,11 +110,15 @@ customElements.define('blog-head-component', class BlogHeadComponent extends HTM
     /**
      * @param {HTMLInputElement} dateInput 
      * @param {HTMLInputElement} timeInput 
+     * @param {HTMLElement} permadate
      * @param {boolean} isScheduled
      */
-    #updateDateTimeFields(dateInput, timeInput, isScheduled) {
-        if (!isScheduled)
-            return clearTimeout(this.#scheduledTimeout.id);
+    #updateDateTimeFields(dateInput, timeInput, permadate, isScheduled) {
+        if (!isScheduled) {
+            permadate.textContent = permadate.dataset.default;
+            clearTimeout(this.#scheduledTimeout.id);
+            return;
+        }
 
         const recursiveLogic = (scheduledTimeout) => {
             const now = new Date();
@@ -132,6 +141,8 @@ customElements.define('blog-head-component', class BlogHeadComponent extends HTM
 
             timeInput.defaultValue = defaultTimeValue;
             dateInput.defaultValue = targetDateValue;
+
+            permadate.textContent = dateInput.value.replaceAll('-', '/');
 
             scheduledTimeout.id = setTimeout(recursiveLogic, 60000, scheduledTimeout);
         }
