@@ -11,7 +11,6 @@ class BlogPost extends DBPageContent {
     public string $permalink;
     public ?string $mastolink;
     public bool $isPinned;
-    public bool $isPublished;
     public ?\DateTime $publishedOn;
 
     public function __construct(array $dbRow) {
@@ -20,7 +19,6 @@ class BlogPost extends DBPageContent {
         $this->permalink = $dbRow['permalink'];
         $this->mastolink = $dbRow['mastolink'] ?? null;
         $this->isPinned = $dbRow['is_pinned'];
-        $this->isPublished = $dbRow['is_published'];
         $this->publishedOn = DateTime::Parse($dbRow['published_on']);
     }
 }

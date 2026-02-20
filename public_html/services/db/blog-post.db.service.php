@@ -46,11 +46,13 @@ class BlogPostDBService extends BaseDBService {
                 $columnValues = [ 'permalink' => $identifier ];
 
             if ($publishedStatus === PublishedStatus::Published)
-                $columnValues += [ 'is_published' => true ];
+                $nullChecks = [ 'published_on' => false ];
             else if ($publishedStatus === PublishedStatus::Unpublished)
-                $columnValues += [ 'is_published' => false ];
+                $nullChecks = [ 'is_published' => true ];
+            else
+                $nullChecks = [];
 
-            $post = $this->dbService->selectByColumnValues('blog_post', $columnValues);
+            $post = $this->dbService->selectByColumnValues('blog_post', $columnValues, $nullChecks);
 
             if (!$post)
                 return false;

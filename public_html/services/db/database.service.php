@@ -66,13 +66,14 @@ class DatabaseService extends Singleton {
 
     /** 
      * @param string $table
-     * @param (array<string, bool|int|string>) $columnValues Key-Value pairs with the name of the column and the value to match
+     * @param (array<string, bool|int|string>|null) $columnValues Key-Value pairs with the name of the column and the value to match
+     * @param (array<string, bool>|null) $nullChecks Columns to check whether or not they're null
     */
-    public function selectByColumnValues(string $table, array $columnValues) {
-        if (empty($columnValues))
-            throw new InvalidArgumentException('No column values provided');
+    public function selectByColumnValues(string $table, array $columnValues = [], array $nullChecks = []) {
+        if (empty($columnValues) && empty($nullChecks))
+            throw new InvalidArgumentException('No column values or null checks provided');
 
-        $whereString = $this->buildWhereString($columnValues);
+        $whereString = $this->buildWhereString($columnValues, $nullChecks);
 
         $query = $this->service->prepare(
             "SELECT * FROM {$this->schema}.$table WHERE $whereString LIMIT 1"
@@ -146,13 +147,39 @@ class DatabaseService extends Singleton {
         return " ORDER BY \"$orderBy\" " . ($descending ? 'DESC' : 'ASC');
     }
 
-    private function buildWhereString(array $array) {
-        $columns = array_keys($array);
-        $count = count($columns);
+    /** 
+     * @param (array<string, bool|int|string>|null) $columnValues Key-Value pairs with the name of the column and the value to match
+     * @param (array<string, bool>|null) $nullChecks Columns to check whether or not they're null
+    */
+    private function buildWhereString(array $columnValues, array $nullChecks) : string {
+        $result = '';
+        
+        $valueCount = count($columnValues);
+        if ($valueCount > 0) {
+            $valueColumns = array_keys($columnValues);
+            $result = "{$valueColumns[0]} = ?";
 
-        $result = "{$columns[0]} = ?";
-        for ($i = 1; $i < $count; $i++) {
-            $result =  "$result AND {$columns[$i]} = ?";
+            for ($i = 1; $i < $valueCount; $i++) {
+                $result =  "$result AND {$valueColumns[$i]} = ?";
+            }
+        }
+
+        if (!$nullChecks)
+            return $result;
+
+        $nullCount = count($nullChecks);
+        $nullColumns = array_keys($nullChecks);
+        $startIndex = 0;
+
+        if ($result) {
+            $startIndex = 1;
+            $not = $nullChecks[$nullColumns[0]] ? '' : ' NOT';
+            $result = "$result AND {$nullColumns[0]} IS$not NULL";
+        }
+
+        for ($i = $startIndex; $i < $nullCount; $i++) {
+            $not = $nullChecks[$nullColumns[$i]] ? '' : ' NOT';
+            $result = "$result AND {$nullColumns[$i]} IS$not NULL";
         }
 
         return $result;
