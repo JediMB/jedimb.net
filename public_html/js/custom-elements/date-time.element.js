@@ -1,4 +1,4 @@
-import formatDate from "/js/utilities/format-date.js";
+import { formatDate } from "/js/utilities/format-date.utility.js";
 
 export class DateTimeElement extends HTMLElement {
     #self;

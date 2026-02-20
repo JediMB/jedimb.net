@@ -1,7 +1,7 @@
 import GalleryDTO from "/js/models/image-gallery/gallery.dto.model.js";
 import Gallery from "/js/models/image-gallery/gallery.model.js";
 import imageGalleryService from "/js/services/image-gallery.service.js";
-import formatDate from "/js/utilities/format-date.js";
+import { formatDate } from "/js/utilities/format-date.utility.js";
 
 customElements.define('gallery-manager-component', class GalleryManagerComponent extends HTMLElement {
     static observedAttributes = [ 'properties-mode' ];

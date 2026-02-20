@@ -1,4 +1,4 @@
-import formatDate from "/js/utilities/format-date.js";
+import { formatDate } from "/js/utilities/format-date.utility.js";
 import Image from "/js/models/image-gallery/image.model.js";
 import ImageDTO from "/js/models/image-gallery/image.dto.model.js";
 import imageGalleryService from "/js/services/image-gallery.service.js";
