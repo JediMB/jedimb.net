@@ -4,6 +4,7 @@ namespace Services\DB;
 
 require_once 'enums/published-status.enum.php';
 require_once 'models/db/blog-post.db.model.php';
+require_once 'models/dto/blog-post.dto.model.php';
 require_once 'services/base/base.db.service.php';
 
 use PDO;
@@ -11,11 +12,36 @@ use PDOException;
 use Enums\PublishedStatus;
 use Exception;
 use Models\DB\BlogPost;
+use Models\DTO\BlogPost as BlogPostDTO;
 use Services\Base\BaseDBService;
 
 class BlogPostDBService extends BaseDBService {
     protected function __construct() {
         parent::__construct();
+    }
+
+    public function createBlogPost(BlogPostDTO $blogPostDTO, int $userId, bool $publish) : BlogPost {
+        try {
+            $functionName = $publish
+                ? 'create_published_blog_post'
+                : 'create_scheduled_blog_post';
+
+            $result = $this->dbService->selectFunction(
+                $functionName, [
+                    1 => [ 'value' => $userId, 'type' => PDO::PARAM_INT ],
+                    2 => [ 'value' => $blogPostDTO->permalink, 'type' => PDO::PARAM_STR ],
+                    3 => [ 'value' => $blogPostDTO->title, 'type' => PDO::PARAM_STR ],
+                    4 => [ 'value' => $blogPostDTO->description, 'type' => PDO::PARAM_STR ],
+                    5 => [ 'value' => $blogPostDTO->contentShort, 'type' => PDO::PARAM_STR ],
+                    6 => [ 'value' => $blogPostDTO->contentRest, 'type' => PDO::PARAM_STR ]
+                ]
+            );
+
+            return new BlogPost($result);
+        }
+        catch (PDOException $e) {
+            throw new Exception('Database error: ' . $e->getMessage());
+        }
     }
 
     // TODO: expand functionality to cover 'unpublished' and 'any'

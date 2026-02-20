@@ -1,6 +1,7 @@
 import BlogPostDTO from "/js/models/blog-post.dto.js";
 import { TextEditorComponent } from "/js/components/text-editor/text-editor.module.js";
 import blogPostService from "/js/services/blog-post.service.js";
+import { formatTimezone } from "/js/utilities/format-date.utility.js";
 
 customElements.define('blog-head-component', class BlogHeadComponent extends HTMLElement {
     #scheduledTimeout = { id: null };
@@ -99,7 +100,7 @@ customElements.define('blog-head-component', class BlogHeadComponent extends HTM
             mastolink: this.#socialLink.value,
             isPinned: this.#tglPinned.checked,
             scheduledOn: this.#tglScheduled.checked
-                ? new Date(`${this.#scheduledDate.value}T${this.#scheduledTime.value}`)
+                ? `${this.#scheduledDate.value} ${this.#scheduledTime.value.slice(0, 5)}:00.000 ${formatTimezone(new Date())}`
                 : null
         });
 

@@ -87,7 +87,8 @@ Component::addJSModule();
                     type="date">
                 <input hidden
                     id="blog-head__scheduled-time"
-                    type="time">
+                    type="time"
+                    step="60">
                 <label>
                     <input id="blog-head__toggle-schedule" type="checkbox">
                     Schedule

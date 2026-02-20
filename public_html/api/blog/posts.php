@@ -1,9 +1,11 @@
 <?php declare(strict_types=1);
 
+require_once 'models/dto/blog-post.dto.model.php';
 require_once 'services/blog-post.service.php';
 require_once 'utilities/response.utility.php';
 
 use Enums\UserPermission;
+use Models\DTO\BlogPost as BlogPostDTO;
 use Services\BlogPostService;
 use Services\SessionService;
 use Utilities\Response;
@@ -43,8 +45,20 @@ switch ( $_SERVER['REQUEST_METHOD'] ) {
             if ( ($response = $sessionService->getInvalidSubmissionResponse($input, [ UserPermission::Publishing ])) )
                 return $response;
 
+            $post = new BlogPostDTO($input);
+
+            if (empty($post->scheduledOn)) {
+                $response = $service->publishBlogPost($post);
+
+                return Response::Success($response);
+            }
+
+            $response = $service->scheduleBlogPost($post);
             
-            return Response::Success($input);
+            return Response::Success([
+                'modifiedOn' => 'test',
+                'blogPost' => $post
+            ]);
         }
         catch (Exception $e) {
             return Response::Error([$e->getMessage()]);

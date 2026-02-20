@@ -2,12 +2,17 @@
 
 namespace Models\DTO;
 
-require_once 'models/base/db-page-content.model.php';
+require_once 'models/base/db-base.model.php';
 
-use Models\Base\DBPageContent;
+use Models\Base\DBBase;
+use Utilities\DateTime;
 
-class BlogPost extends DBPageContent {
+class BlogPost extends DBBase {
     public string $permalink;
+    public string $title;
+    public string $description;
+    public string $contentShort;
+    public ?string $contentRest;
     public ?string $mastolink;
     public bool $isPinned;
     public ?\DateTime $scheduledOn;
@@ -16,11 +21,13 @@ class BlogPost extends DBPageContent {
         parent::__construct($input);
 
         $this->permalink = $input['permalink'];
+        $this->title = $input['title'];
+        $this->description = $input['description'];
+        $this->contentShort = $input['contentShort'];
+        $this->contentRest = $input['contentRest'];
         $this->mastolink = $input['mastolink'];
         $this->isPinned = $input['isPinned'];
-
-        // TODO: Proper conversion from nullable string to nullable DateTime
-        $this->scheduledOn = $input['scheduledOn'];
+        $this->scheduledOn = DateTime::Parse($input['scheduledOn']);
     }
 }
 

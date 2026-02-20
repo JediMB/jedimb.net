@@ -8,6 +8,7 @@ require_once 'services/db/blog-post.db.service.php';
 
 use Enums\PublishedStatus;
 use Models\DB\BlogPost;
+use Models\DTO\BlogPost as BlogPostDTO;
 use Services\TableModifiedService;
 use Services\Base\Singleton;
 use Services\DB\BlogPostDBService;
@@ -21,10 +22,6 @@ class BlogPostService extends Singleton {
         $this->tableModifiedService = TableModifiedService::getInstance();
     }
 
-    function createBlogPost() {
-        
-    }
-
     function getBlogPost(int $id) : BlogPost|false {
         return $this->blogPostDbService->getBlogPost($id, PublishedStatus::Any);
     }
@@ -36,6 +33,29 @@ class BlogPostService extends Singleton {
 
     function getPublishedBlogPost(int|string $identifier) : BlogPost|false {
         return $this->blogPostDbService->getBlogPost($identifier, PublishedStatus::Published);
+    }
+
+    /** @return (array{'blogPost': BlogPost, 'modifiedOn': \DateTime}) */
+    function publishBlogPost(BlogPostDTO $blogPostDTO) : array {
+        $post = $this->blogPostDbService->createBlogPost($blogPostDTO, 1, true);
+        $modifiedOn = $this->tableModifiedService->createOrUpdateTableModifiedDate('blog_post');
+
+        return [
+            'blogPost' => $post,
+            'modifiedOn' => $modifiedOn
+        ];
+    }
+
+    /** @return (array{'blogPost': BlogPost, 'modifiedOn': \DateTime}) */
+    function scheduleBlogPost(BlogPostDTO $blogPostDTO) : array {
+        $post = $this->blogPostDbService->createBlogPost($blogPostDTO, 1, false);
+        $modifiedOn = $this->tableModifiedService->createOrUpdateTableModifiedDate('blog_post');
+        // TODO: Call the create_blog_post_schedule DB function with the $post id
+
+        return [
+            'blogPost' => $post,
+            'modifiedOn' => $modifiedOn
+        ];
     }
 }
 
