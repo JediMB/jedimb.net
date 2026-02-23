@@ -110,7 +110,7 @@ function handleBlogRequests(string $path) {
             'pageType' => PageType::BlogPost,
             'title' => $blogPost->title,
             'content' => $blogPost->contentShort . $blogPost->contentRest,
-            'createdOn' => $blogPost->createdOn,
+            'createdOn' => $blogPost->publishedOn,
             'modifiedOn' => $blogPost->modifiedOn,
             'mastolink' => $blogPost->mastolink
         ]);
