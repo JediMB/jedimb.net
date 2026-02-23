@@ -7,8 +7,8 @@ require_once 'utilities/datetime.utility.php';
 use Exception;
 use Utilities\DateTime;
 
-if (!isset($createdOn) || !isset($modifiedOn))
-    throw new Exception('Created/Modified Dates component requires createdOn and modifiedOn and variables');
+if (empty($createdOn))
+    throw new Exception('Created/Modified Dates component requires createdOn variable');
 
 $createdString = DateTime::ToString($createdOn);
  
