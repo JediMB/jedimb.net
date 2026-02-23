@@ -3,7 +3,7 @@
 namespace Utilities;
 
 class DateTime {
-    static function Parse(?string $string) : \DateTime | null {
+    static function parse(?string $string) : \DateTime | null {
         if (empty($string))
             return null;
 
@@ -11,14 +11,14 @@ class DateTime {
             ?: \DateTime::createFromFormat(DB_DATETIME_FORMAT_FALLBACK, $string);
     }
 
-    static function ToPrecisionString(?\DateTime $dateTime) : string {
+    static function toPrecisionString(?\DateTime $dateTime) : string {
         if (empty($dateTime))
             return '';
 
         return $dateTime->format('Y-m-d H:i:s.v O');
     }
 
-    static function ToString(?\DateTime $dateTime) : string {
+    static function toString(?\DateTime $dateTime) : string {
         if (empty($dateTime))
             return '';
 

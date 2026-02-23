@@ -26,7 +26,7 @@ class BlogPost extends DBBase {
         $this->contentRest = $input['contentRest'];
         $this->mastolink = $input['mastolink'];
         $this->isPinned = $input['isPinned'];
-        $this->scheduledOn = DateTime::Parse($input['scheduledOn']);
+        $this->scheduledOn = DateTime::parse($input['scheduledOn']);
 
         $this->permalink = date('/Y/m/d/', $this->scheduledOn?->getTimestamp()) . $input['permalink'];
     }

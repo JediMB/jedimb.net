@@ -10,7 +10,7 @@ use Utilities\DateTime;
 if (empty($createdOn))
     throw new Exception('Created/Modified Dates component requires createdOn variable');
 
-$createdString = DateTime::ToString($createdOn);
+$createdString = DateTime::toString($createdOn);
  
 ?>
 
@@ -21,7 +21,7 @@ $createdString = DateTime::ToString($createdOn);
 </span>
 
 <?php if (!empty($modifiedOn)): ?>
-    <?php $modifiedString = DateTime::ToString($modifiedOn) ?>
+    <?php $modifiedString = DateTime::toString($modifiedOn) ?>
     <span class="weak">
         &ndash; Last modified 
         <date-time server-time="<?= $modifiedString ?>" relative-date="true">

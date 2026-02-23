@@ -19,7 +19,7 @@ class UserToken extends DBBase {
         $this->userId = $dbRow['user_id'];
         $this->selector = $dbRow['selector'];
         $this->validator_hash = $dbRow['validator_hash'];
-        $this->expiresOn = DateTime::Parse($dbRow['expires_on']);
+        $this->expiresOn = DateTime::parse($dbRow['expires_on']);
     }
 }
 

@@ -14,8 +14,8 @@ class DBCreatedModified extends DBBase {
     public function __construct(array $dbRow) {
         parent::__construct($dbRow);
 
-        $this->createdOn = DateTime::Parse($dbRow['created_on']);
-        $this->modifiedOn = DateTime::Parse($dbRow['modified_on']);
+        $this->createdOn = DateTime::parse($dbRow['created_on']);
+        $this->modifiedOn = DateTime::parse($dbRow['modified_on']);
     }
 }
 

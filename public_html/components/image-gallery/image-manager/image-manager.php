@@ -33,8 +33,8 @@ Component::addJSModule();
                                 data-image-default-title="<?= $imageTitle ?>"
                                 data-image-description="<?= $imageDesc ?>"
                                 data-image-default-description="<?= $imageDesc ?>"
-                                data-image-created-on="<?= DateTime::ToString($image->createdOn) ?>"
-                                data-image-modified-on="<?= DateTime::ToString($image->modifiedOn) ?>"
+                                data-image-created-on="<?= DateTime::toString($image->createdOn) ?>"
+                                data-image-modified-on="<?= DateTime::toString($image->modifiedOn) ?>"
                             >
                             <?= $imageTitle ?>
                         </label>

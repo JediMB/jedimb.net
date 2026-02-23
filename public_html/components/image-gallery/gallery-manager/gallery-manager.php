@@ -30,8 +30,8 @@ Component::addJSModule();
                                 data-gallery-id="<?= $gallery->id ?>"
                                 data-gallery-title="<?= $galleryTitle ?>"
                                 data-gallery-description="<?= $galleryDesc ?>"
-                                data-gallery-created-on="<?= DateTime::ToString($gallery->createdOn) ?>"
-                                data-gallery-modified-on="<?= DateTime::ToString($gallery->modifiedOn) ?>"
+                                data-gallery-created-on="<?= DateTime::toString($gallery->createdOn) ?>"
+                                data-gallery-modified-on="<?= DateTime::toString($gallery->modifiedOn) ?>"
                             >
                             <?= $galleryTitle ?>
                         </label>

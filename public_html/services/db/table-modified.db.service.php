@@ -23,7 +23,7 @@ class TableModifiedDBService extends BaseDBService {
             if (!$result)
                 return false;
 
-            return DateTime::Parse($result['modified_on']) ?? false;
+            return DateTime::parse($result['modified_on']) ?? false;
         }
         catch (PDOException $e) {
             throw new Exception('Database error: ' . $e->getMessage());
@@ -43,7 +43,7 @@ class TableModifiedDBService extends BaseDBService {
             if (!$result || empty($result['modified_on']))
                 throw new Exception('Table modified date creation failed to return value.');
 
-            return DateTime::Parse($result['modified_on']);
+            return DateTime::parse($result['modified_on']);
         }
         catch (PDOException $e) {
             throw new Exception('Database error: ' . $e->getMessage());
@@ -61,7 +61,7 @@ class TableModifiedDBService extends BaseDBService {
             if (!$result || empty($result['modified_on']))
                 throw new Exception('Table modified date update failed to return value.');
 
-            return DateTime::Parse($result['modified_on']);
+            return DateTime::parse($result['modified_on']);
         }
         catch (PDOException $e) {
             throw new Exception('Database error: ' . $e->getMessage());

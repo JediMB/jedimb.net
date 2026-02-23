@@ -27,9 +27,9 @@ class User extends DBBase {
         $this->role = UserRole::tryFrom($dbRow['role']) ?: UserRole::User;
         $this->roleString = $dbRow['role_string'];
         $this->password = $dbRow['password'];
-        $this->passwordTimestamp = DateTime::Parse($dbRow['password_timestamp']);
-        $this->registeredOn = DateTime::Parse($dbRow['registered_on']);
-        $this->lastLogin = DateTime::Parse($dbRow['last_login']);
+        $this->passwordTimestamp = DateTime::parse($dbRow['password_timestamp']);
+        $this->registeredOn = DateTime::parse($dbRow['registered_on']);
+        $this->lastLogin = DateTime::parse($dbRow['last_login']);
     }
 }
 

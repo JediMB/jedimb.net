@@ -57,14 +57,14 @@ Component::addJSModule();
     <?php Component::include('image-gallery/image-manager', [
         'attributes' => [
             'data-tab' => 'images',
-            'data-modified-on' => DateTime::ToPrecisionString($tableModService->getOrCreateModifiedDate('image'))
+            'data-modified-on' => DateTime::toPrecisionString($tableModService->getOrCreateModifiedDate('image'))
         ] + $insertAttribute,
         'images' => $images
     ]) ?>
     <?php Component::include('image-gallery/gallery-manager', [
         'attributes' => [
             'data-tab' => 'galleries',
-            'data-modified-on' => DateTime::ToPrecisionString($tableModService->getOrCreateModifiedDate('gallery'))
+            'data-modified-on' => DateTime::toPrecisionString($tableModService->getOrCreateModifiedDate('gallery'))
         ] + $insertAttribute,
         'galleries' => $galleries,
         'images' => $images

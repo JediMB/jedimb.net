@@ -19,7 +19,7 @@ class BlogPost extends DBPageContent {
         $this->permalink = $dbRow['permalink'];
         $this->mastolink = $dbRow['mastolink'] ?? null;
         $this->isPinned = $dbRow['is_pinned'];
-        $this->publishedOn = DateTime::Parse($dbRow['published_on']);
+        $this->publishedOn = DateTime::parse($dbRow['published_on']);
     }
 }
 
