@@ -100,6 +100,12 @@ function handleBlogRequests(string $path) {
         
         $blogPost = $service->getPublishedBlogPost($matches[1]);
 
+        if (!$blogPost)
+            servePHP([
+                'header' => 'HTTP/1.1 404 Not Found',
+                'pagePath' => PATH_ERROR404
+            ]);
+
         servePHP([
             'pageType' => PageType::BlogPost,
             'title' => $blogPost->title,
