@@ -20,7 +20,6 @@ class BlogPost extends DBBase {
     public function __construct(array $input) {
         parent::__construct($input);
 
-        $this->permalink = $input['permalink'];
         $this->title = $input['title'];
         $this->description = $input['description'];
         $this->contentShort = $input['contentShort'];
@@ -28,6 +27,8 @@ class BlogPost extends DBBase {
         $this->mastolink = $input['mastolink'];
         $this->isPinned = $input['isPinned'];
         $this->scheduledOn = DateTime::Parse($input['scheduledOn']);
+
+        $this->permalink = date('/Y/m/d/', $this->scheduledOn?->getTimestamp()) . $input['permalink'];
     }
 }
 
