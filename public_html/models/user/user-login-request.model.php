@@ -47,7 +47,7 @@ class UserLoginRequest {
         $this->persistent = $postData['persistent'] ?? false;
 
         if (!empty($errors))
-            throw new InputException($errors);
+            throw new InputException(__CLASS__, $errors);
             
     }
 }

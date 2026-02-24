@@ -6,22 +6,35 @@ use Exception;
 use Throwable;
 
 class InputException extends Exception {
-    protected array $messages = [];
+    /** @var (array<string, array<string, true>>) */
+    protected array $errors;
 
-    public function __construct(array $messages, int $code = 0, ?Throwable $previous = null) {
-        $this->messages = [...$messages];
+    /**
+     * @param string $className
+     * @param (array<string, array<string, true>>) $errors
+     * @param int $code
+     * @param Throwable|null $previous
+     */
+    public function __construct(string $className, array $errors, int $code = 0, ?Throwable $previous = null) {
+        $this->errors = $errors;
 
-        parent::__construct('Input errors', $code, $previous);
+        parent::__construct("Input errors in $className", $code, $previous);
     }
 
     public function __toString(): string {
-        $messages = implode(' AND ', $this->messages);
+        $errorMessage = '';
 
-        return __CLASS__ . ": [{$this->code}]: {$this->message}: $messages";
+        foreach ($this->errors as $inputKey => $err) {
+            $errKeys = implode(', ', array_keys($err));
+            $errorMessage = "$errorMessage $inputKey ($errKeys)";
+        }
+
+        return __CLASS__ . ": [{$this->code}]: {$this->message}: $errorMessage";
     }
 
-    final public function getMessages() : array {
-        return [...$this->messages];
+    /** @return (array<string, array<string, true>>) */
+    final public function getErrors() : array {
+        return $this->errors;
     }
 }
 

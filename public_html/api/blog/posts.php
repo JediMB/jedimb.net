@@ -6,6 +6,7 @@ require_once 'utilities/response.utility.php';
 
 use Enums\UserPermission;
 use Models\DTO\BlogPost as BlogPostDTO;
+use Models\Exceptions\InputException;
 use Services\BlogPostService;
 use Services\SessionService;
 use Utilities\Response;
@@ -59,6 +60,9 @@ switch ( $_SERVER['REQUEST_METHOD'] ) {
                 'modifiedOn' => 'test',
                 'blogPost' => $post
             ]);
+        }
+        catch (InputException $e) {
+            return Response::InputException($e->getErrors());
         }
         catch (Exception $e) {
             return Response::Error([$e->getMessage()]);
