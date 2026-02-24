@@ -11,6 +11,10 @@ class DateTime {
             ?: \DateTime::createFromFormat(DB_DATETIME_FORMAT_FALLBACK, $string);
     }
 
+    static function toPermadateString(?\DateTime $dateTime) : string {
+        return date('/Y/m/d/', $dateTime?->getTimestamp());
+    }
+
     static function toPrecisionString(?\DateTime $dateTime) : string {
         if (empty($dateTime))
             return '';
