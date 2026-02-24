@@ -2,10 +2,8 @@
 
 namespace Components;
 
-use Exception;
-
-if (!isset($mastolink))
-    throw new Exception('Mastodon Comments component requires mastolink variable');
+if (empty($mastolink))
+    return;
 
 $linkComponents = [];
 $isValid = ( $mastolink && preg_match(REGEX_PHP['mastolink'], $mastolink, $linkComponents) );

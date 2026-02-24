@@ -104,7 +104,7 @@ $links = !empty($links);
         <?php endif ?>
     </content-container>
 
-    <?php if ($pageType === PageType::BlogPost): ?>
+    <?php if ($pageType === PageType::BlogPost && isset($mastolink)): ?>
         <?php Component::include('mastodon-comments', [ 'mastolink' => $mastolink ]) ?>
     <?php endif ?>
 
