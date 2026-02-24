@@ -3,8 +3,10 @@
 namespace Models\User;
 
 require_once 'models/exceptions/input-exception.php';
+require_once 'utilities/input.utility.php';
 
 use Models\Exceptions\InputException;
+use Utilities\Input;
 
 class UserLoginRequest {
     public string $username;
@@ -14,36 +16,8 @@ class UserLoginRequest {
     public function __construct(array $postData) {
         $errors = [];
 
-        if (empty($postData['username']))
-            $errors[] = ucfirst(TEXT_USERNAME) . TEXT_INPUT_MISSING;
-        else {
-            $username = trim($postData['username']);
-
-            if (strlen($username) < INPUT_LENGTH['username']['min'])
-                $errors[] = ucfirst(TEXT_USERNAME) . TEXT_INPUT_TOOSHORT;
-            else if (strlen($username) > INPUT_LENGTH['username']['max'])
-                $errors[] = ucfirst(TEXT_USERNAME) . TEXT_INPUT_TOOSHORT;
-            else if (!preg_match(REGEX_PHP['username'], $username))
-                $errors[] = ucfirst(TEXT_USERNAME) . TEXT_INPUT_MISMATCH;
-            else
-                $this->username = $username;
-        }
-
-        if (empty($postData['password']))
-            $errors[] = ucfirst(TEXT_PASSWORD) . TEXT_INPUT_MISSING;
-        else {
-            $password = trim($postData['password']);
-
-            if (strlen($password) < INPUT_LENGTH['password']['min'])
-                $errors[] = ucfirst(TEXT_PASSWORD) . TEXT_INPUT_TOOSHORT;
-            else if (strlen($password) > INPUT_LENGTH['password']['max'])
-                $errors[] = ucfirst(TEXT_PASSWORD) . TEXT_INPUT_TOOSHORT;
-            else if (!preg_match(REGEX_PHP['password'], $password))
-                $errors[] = ucfirst(TEXT_PASSWORD) . TEXT_INPUT_MISMATCH;
-            else
-                $this->password = $password;
-        }
-
+        $this->username = Input::verifyRequiredTextInput('username', $postData, INPUT_LENGTH['username'], $errors, REGEX_PHP['username']);
+        $this->password = Input::verifyRequiredTextInput('password', $postData, INPUT_LENGTH['password'], $errors, REGEX_PHP['password']);
         $this->persistent = $postData['persistent'] ?? false;
 
         if (!empty($errors))

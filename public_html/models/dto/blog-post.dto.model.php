@@ -3,9 +3,13 @@
 namespace Models\DTO;
 
 require_once 'models/base/db-base.model.php';
+require_once 'models/exceptions/input-exception.php';
 require_once 'utilities/input.utility.php';
+require_once 'utilities/datetime.utility.php';
 
+use Enums\InputError;
 use Models\Base\DBBase;
+use Models\Exceptions\InputException;
 use Utilities\DateTime;
 use Utilities\Input;
 
@@ -23,9 +27,12 @@ class BlogPost extends DBBase {
         parent::__construct($input);
 
         $errors = [];
+        // $errors['title'][InputError::Required->value] = true;
+        // $errors['description'][InputError::TooShort->value] = true;
+        // $errors['description'][InputError::Mismatch->value] = true;
 
-        $this->title = Input::verifyRequiredTextInput('title', $input['title'], INPUT_LENGTH['page_title'], $errors, REGEX_PHP['default-text']);
-        $this->description = Input::verifyRequiredTextInput('description', $input['description'], INPUT_LENGTH['page_description'], $errors, REGEX_PHP['default-text']);
+        $this->title = Input::verifyRequiredTextInput('title', $input, INPUT_LENGTH['page_title'], $errors, REGEX_PHP['default-text']);
+        $this->description = Input::verifyRequiredTextInput('description', $input, INPUT_LENGTH['page_description'], $errors, REGEX_PHP['default-text']);
         
         $this->contentShort = strip_tags($input['contentShort'], INPUT_ALLOWED_TAGS);
         
@@ -33,11 +40,16 @@ class BlogPost extends DBBase {
             ? null
             : strip_tags($input['contentRest'], INPUT_ALLOWED_TAGS) ;
 
-        $this->mastolink = $input['mastolink'];
+        $this->mastolink = Input::verifyOptionalTextInput('mastolink', $input, INPUT_LENGTH['page_sociallink'], $errors, REGEX_PHP['url']);
+
         $this->isPinned = $input['isPinned'];
         $this->scheduledOn = DateTime::parse($input['scheduledOn']);
 
-        $this->permalink = date('/Y/m/d/', $this->scheduledOn?->getTimestamp()) . $input['permalink'];
+        $this->permalink = DateTime::toPermadateString($this->scheduledOn)
+            . Input::verifyRequiredTextInput('permalink', $input, INPUT_LENGTH['blog_permalink_title'], $errors, REGEX_PHP['permalink-title']);
+
+        if (!empty($errors))
+            throw new InputException(__CLASS__, $errors);
     }
 }
 

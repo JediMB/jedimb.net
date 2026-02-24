@@ -9,56 +9,57 @@ use Enums\InputError;
 class Input {
     /**
      * @param string $key
-     * @param string $input 
+     * @param array $inputs 
      * @param (array{'min': int, 'max': int}) $inputLengths 
-     * @param (array<string, array<InputError, true>>) $outErrors 
+     * @param (array<string, array<string, true>>) $outErrors 
      * @param string|null $regEx 
      * @return string|null
      * */
-    public static function verifyOptionalTextInput(string $key, string $input, array $inputLengths, array $outErrors, ?string $regEx = null) : string|null {
-        if (empty($input))
+    public static function verifyOptionalTextInput(string $key, array $inputs, array $inputLengths, array $outErrors, ?string $regEx = null) : string|null {
+        if (empty($inputs[$key]))
             return null;
 
-        return Input::verifyTextInput($key, $input, $inputLengths, $outErrors, $regEx);
+        return Input::verifyTextInput($key, $inputs[$key], $inputLengths, $outErrors, $regEx);
     }
 
     /**
      * @param string $key
-     * @param string $input 
+     * @param array $inputs 
      * @param (array{'min': int, 'max': int}) $inputLengths 
-     * @param (array<string, array<InputError, true>>) $outErrors 
+     * @param (array<string, array<string, true>>) $outErrors 
      * @param string|null $regEx 
      * @return string|null
      * */
-    public static function verifyRequiredTextInput(string $key, string $input, array $inputLengths, array $outErrors, ?string $regEx = null) : string|null {
-        if (empty($input)) {
-            $errors[$key][InputError::Required] = true;
+    public static function verifyRequiredTextInput(string $key, array $inputs, array $inputLengths, array $outErrors, ?string $regEx = null) : string|null {
+        if (empty($inputs[$key])) {
+            $errors[$key][InputError::Required->value] = true;
             return null;
         }
 
-        return Input::verifyTextInput($key, $input, $inputLengths, $outErrors, $regEx);
+        return Input::verifyTextInput($key, $inputs[$key], $inputLengths, $outErrors, $regEx);
     }
 
     /**
      * @param string $key
-     * @param string $input 
+     * @param string $inputString 
      * @param (array{'min': int, 'max': int}) $inputLengths 
-     * @param (array<string, array<InputError, true>>) $outErrors
+     * @param (array<string, array<string, true>>) $outErrors
      * @param string|null $regEx 
      * @return string|null
      * */
-    private static function verifyTextInput(string $key, string $input, array $inputLengths, array $outErrors, ?string $regEx) : string|null {
-        $length = strlen($input);
+    private static function verifyTextInput(string $key, string $inputString, array $inputLengths, array $outErrors, ?string $regEx) : string|null {
+        $inputString = trim($inputString);
+        $length = strlen($inputString);
 
         if ($length < $inputLengths['min'])
-            $outErrors[$key][InputError::TooShort] = true;
+            $outErrors[$key][InputError::TooShort->value] = true;
         else if ($length > $inputLengths['max'])
-            $outErrors[$key][InputError::TooLong] = true;
+            $outErrors[$key][InputError::TooLong->value] = true;
 
-        if ($regEx && !preg_match($regEx, $input))
-            $outErrors[$key][InputError::Mismatch] = true;
+        if ($regEx && !preg_match($regEx, $inputString))
+            $outErrors[$key][InputError::Mismatch->value] = true;
 
-        return $input;
+        return $inputString;
     }
 }
 
