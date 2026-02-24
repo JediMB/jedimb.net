@@ -4,8 +4,8 @@ namespace Enums;
 
 enum InputError : string {
     case Required = 'required';
-    case TooShort = 'too-short';
-    case TooLong = 'too-long';
+    case TooShort = 'tooShort';
+    case TooLong = 'tooLong';
     case Mismatch = 'mismatch';
 }
 
