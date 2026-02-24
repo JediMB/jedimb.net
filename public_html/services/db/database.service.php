@@ -171,10 +171,10 @@ class DatabaseService extends Singleton {
         $nullColumns = array_keys($nullChecks);
         $startIndex = 0;
 
-        if ($result) {
+        if (!$result) {
             $startIndex = 1;
             $not = $nullChecks[$nullColumns[0]] ? '' : ' NOT';
-            $result = "$result AND {$nullColumns[0]} IS$not NULL";
+            $result = "{$nullColumns[0]} IS$not NULL";
         }
 
         for ($i = $startIndex; $i < $nullCount; $i++) {
