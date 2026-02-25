@@ -25,6 +25,11 @@ textarea,
     &[aria-invalid="true"] {
         background-color: var(--clr-warn-light);
     }
+    
+    /* TODO: Use a wrapper element that handles error messages via data attributes */
+    &[class|=error] {
+        border: 2px solid var(--clr-warn);
+    }
 }
 
 button:disabled,

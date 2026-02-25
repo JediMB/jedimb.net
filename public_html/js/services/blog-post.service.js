@@ -8,18 +8,23 @@ export { blogPostService as default };
 
 class BlogPostService {
     /** @type {Emitter<BlogPost[]>} */
-    #blogPosts = new Emitter([]);
     #service = blogPostApiService;
 
     constructor() {}
 
     /**
      * @param {BlogPostDTO} blogPostDTO 
+     * @param {(value: BlogPost) => void} next 
+     * @param {(errors: object) => void} error
+     * @returns {Promise<void>}
      */
-    async createBlogPost(blogPostDTO) {
-        const post = await this.#service.postBlogPost(blogPostDTO);
+    async createBlogPost(blogPostDTO, next, error) {
+        const response = await this.#service.postBlogPost(blogPostDTO);
 
-        console.log(post);
+        if (response.success)
+            return next?.call(this, response.value.blogPost);
+
+        error?.call(this, response.errors);
     }
 
     /**
@@ -28,21 +33,12 @@ class BlogPostService {
      * @returns {void}
      */
     async getBlogPost(id, next) {
-        const blogPosts = this.#blogPosts.getValue();
-        const cachedPost = blogPosts.find(b => b.id === id);
+        const post = await this.#service.getBlogPost(id);
 
-        if (cachedPost)
-            return next.call(this, cachedPost);
-
-        const fetchedPost = await this.#service.getBlogPost(id);
-
-        if (!fetchedPost)
+        if (!post)
             throw new Error('Blog post not found');
 
-        blogPosts.push(fetchedPost);
-        this.#blogPosts.setValue([...blogPosts]);
-
-        next.call(this, fetchedPost);
+        next?.call(this, post);
     }
 }
 const blogPostService = new BlogPostService();

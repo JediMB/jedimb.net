@@ -27,9 +27,6 @@ class BlogPost extends DBBase {
         parent::__construct($input);
 
         $errors = [];
-        // $errors['title'][InputError::Required->value] = true;
-        // $errors['description'][InputError::TooShort->value] = true;
-        // $errors['description'][InputError::Mismatch->value] = true;
 
         $this->title = Input::verifyRequiredTextInput('title', $input, INPUT_LENGTH['page_title'], $errors, REGEX_PHP['default-text']);
         $this->description = Input::verifyRequiredTextInput('description', $input, INPUT_LENGTH['page_description'], $errors, REGEX_PHP['default-text']);

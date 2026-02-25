@@ -6,11 +6,9 @@ import { formatTimezone } from "/js/utilities/format-date.utility.js";
 customElements.define('blog-head-component', class BlogHeadComponent extends HTMLElement {
     #scheduledTimeout = { id: null };
 
-    /** @type {HTMLInputElement} */ #title;
-    /** @type {HTMLInputElement} */ #permalink;
+    /** @type {Map<string, HTMLInputElement>} */ #formFields = new Map();
+
     /** @type {TextEditorComponent} */ #textEditor;
-    /** @type {HTMLInputElement} */ #description;
-    /** @type {HTMLInputElement} */ #socialLink;
 
     /** @type {HTMLInputElement} */ #tglPinned;
     /** @type {HTMLInputElement} */ #tglScheduled;
@@ -26,13 +24,27 @@ customElements.define('blog-head-component', class BlogHeadComponent extends HTM
         const content = this.querySelector('blog-head-content');
 
         const body = content.querySelector('blog-head-body');
-        this.#title = body.querySelector('#blog-head__title');
+        
+        /** @type {HTMLInputElement} */
+        const title = body.querySelector('#blog-head__title');
+        this.#formFields.set('title', title);
+        
         const permadate = body.querySelector('#blog-head__permadate');
-        this.#permalink = body.querySelector('#blog-head__permalink');
+        
+        /** @type {HTMLInputElement} */
+        const permalink = body.querySelector('#blog-head__permalink');
+        this.#formFields.set('permalink', permalink);
+
         const btnResetPermalink = body.querySelector('#blog-head__reset-permalink');
-        this.#textEditor = this.querySelector('#blog-head__text-editor');
-        this.#description = body.querySelector('#blog-head__description');
-        this.#socialLink = body.querySelector('#blog-head__sociallink');
+        this.#textEditor = body.querySelector('#blog-head__text-editor');
+
+        /** @type {HTMLInputElement} */
+        const description = body.querySelector('#blog-head__description');
+        this.#formFields.set('description', description);
+
+        /** @type {HTMLInputElement} */
+        const mastolink = body.querySelector('#blog-head__sociallink')
+        this.#formFields.set('mastolink', mastolink);
 
         const footer = content.querySelector('blog-head-footer');
         this.#tglPinned = footer.querySelector('#blog-head__toggle-pinned');
@@ -44,13 +56,13 @@ customElements.define('blog-head-component', class BlogHeadComponent extends HTM
         this.#btnPublishPost = footer.querySelector('#blog-head__btn-publish');
         this.#btnDraftPost = footer.querySelector('#blog-head__btn-draft');
 
-        this.#title.addEventListener('input', () => this.#permalink.defaultValue = this.#formatPermalinkTitle(this.#title.value));
-        this.#title.addEventListener('change', () => this.#title.value = this.#title.value.trim());
+        title.addEventListener('input', () => permalink.defaultValue = this.#formatPermalinkTitle(title.value));
+        title.addEventListener('change', () => title.value = title.value.trim());
 
-        this.#permalink.addEventListener('change', () => this.#permalink.value = this.#formatPermalinkTitle(this.#permalink.value));
-        btnResetPermalink.addEventListener('click', () => this.#permalink.value = this.#permalink.defaultValue);
+        permalink.addEventListener('change', () => permalink.value = this.#formatPermalinkTitle(permalink.value));
+        btnResetPermalink.addEventListener('click', () => permalink.value = permalink.defaultValue);
 
-        for (const field of [this.#title, this.#permalink, this.#description, this.#socialLink]) {
+        for (const field of [title, permalink, description, mastolink]) {
             field.addEventListener('input', () => this.#validation());
         }
         this.#textEditor.content.onChange = () => this.#validation();
@@ -70,10 +82,6 @@ customElements.define('blog-head-component', class BlogHeadComponent extends HTM
         this.#scheduledDate.addEventListener('change', () => permadate.textContent = this.#scheduledDate.value.replaceAll('-', '/'));
 
         this.#btnPublishPost.addEventListener('click', () => this.#publishPost());
-
-        blogPostService.getBlogPost(1, value => {
-            
-        });
     }
 
     /**
@@ -92,21 +100,34 @@ customElements.define('blog-head-component', class BlogHeadComponent extends HTM
         const content = this.#textEditor.content.html;
 
         const post = new BlogPostDTO({
-            permalink: this.#permalink.value,
-            title: this.#title.value,
+            permalink: this.#formFields.get('permalink').value,
+            title: this.#formFields.get('title').value,
             contentShort: content.short,
             contentRest: content.rest,
-            description: this.#description.value,
-            mastolink: this.#socialLink.value,
+            description: this.#formFields.get('description').value,
+            mastolink: this.#formFields.get('mastolink').value,
             isPinned: this.#tglPinned.checked,
             scheduledOn: this.#tglScheduled.checked
                 ? `${this.#scheduledDate.value} ${this.#scheduledTime.value.slice(0, 5)}:00.000 ${formatTimezone(new Date())}`
                 : null
         });
 
-        console.log(post);
+        blogPostService.createBlogPost(post,
+            value => {
+                console.log('success', value);
+            },
+            errors => {
+                for (const key in errors) {
+                    const field = this.#formFields.get(key);
+                    const error = errors[key];
 
-        await blogPostService.createBlogPost(post);
+                    field.classList.toggle('error-required', !!error.required);
+                    field.classList.toggle('error-too-short', !!error.tooShort);
+                    field.classList.toggle('error-too-long', !!error.tooLong);
+                    field.classList.toggle('error-mismatch', !!error.mismatch);
+                }
+            }
+        );
     }
 
     /**
@@ -156,10 +177,10 @@ customElements.define('blog-head-component', class BlogHeadComponent extends HTM
         const textEditorValid = this.#textEditor.content.text.length || this.#textEditor.content.media.length;
 
         const valid = textEditorValid
-            && this.#title.checkValidity()
-            && this.#permalink.checkValidity()
-            && this.#description.checkValidity()
-            && this.#socialLink.checkValidity();
+            && this.#formFields.get('title').checkValidity()
+            && this.#formFields.get('permalink').checkValidity()
+            && this.#formFields.get('description').checkValidity()
+            && this.#formFields.get('mastolink').checkValidity();
 
         this.#btnPublishPost.disabled = !valid;
         this.#btnDraftPost.disabled = !valid;

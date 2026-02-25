@@ -61,24 +61,25 @@ class BlogPostApiService {
 
     /**
      * @param {BlogPostDTO} blogPostDTO
-     * @returns {Promise<([BlogPost, Date]|false)>} 
+     * @returns {Promise<({errors: object, value: { blogPost: BlogPost, modifiedOn: Date }})>} 
      */
     async postBlogPost(blogPostDTO) {
         const response = await this.#httpClient.post(this.#api, blogPostDTO);
 
         if (!response.success)
-            return false;
+            return response;
 
         if (!response.value.blogPost)
             throw new Error('Create failed to return blog post data');
 
+        response.value.blogPost = new BlogPost(response.value.blogPost);
+
         if (!response.value.modifiedOn)
             throw new Error('Create failed to return blog post table modified date');
 
-        return [
-            new BlogPost(response.value.blogPost),
-            new Date(response.value.modifiedOn.date + response.value.modifiedOn.timezone)
-        ];
+        response.value.modifiedOn = new Date(response.value.modifiedOn.date + response.value.modifiedOn.timezone);
+
+        return response;
     }
 }
 const blogPostApiService = new BlogPostApiService();
