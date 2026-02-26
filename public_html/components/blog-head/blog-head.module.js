@@ -92,6 +92,11 @@ customElements.define('blog-head-component', class BlogHeadComponent extends HTM
             this.#toggleFormView(!wasActive);
         });
 
+        btnCancelPost.addEventListener('click', () => {
+            // TODO: associate the input elements with a form via the form attribute, for easier reset
+            // TODO: callable text-editor reset function
+        });
+
         this.#btnAddPost.disabled = false;
     }
 
