@@ -78,7 +78,10 @@ Component::addJSModule();
 </label>
 <text-box id="text-box-<?= $cId ?>"
     contenteditable
+    role="textbox"
     placeholder="What do you want to say?"
+    aria-placeholder="What do you want to say?"
+    aria-multiline="true"
     aria-required="true"></text-box>
 <textarea html-editor hidden>Test</textarea>
 
