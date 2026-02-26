@@ -53,16 +53,19 @@ customElements.define('image-gallery-component', class ImageGalleryComponent ext
 
         const tabContainers = self.querySelectorAll('[data-tab]');
         const managerTabs = self.querySelector('manager-tabs');
-        managerTabs.addEventListener('change', event => {
-            const tab = event.target.dataset.tabTarget;
 
-            for (const element of tabContainers)
-                element.toggleAttribute('hidden', element.dataset.tab !== tab);
+        const btnImages = managerTabs.querySelector('.tab-images');
+        const btnGalleries = managerTabs.querySelector('.tab-galleries');
+
+        btnImages.addEventListener('click', () => {
+            this.#toggleTab(btnGalleries, false);
+            this.#toggleTab(btnImages, true);
         });
 
-        const tab = managerTabs.querySelector(':checked').dataset.tabTarget;
-        for (const element of tabContainers)
-            element.toggleAttribute('hidden', element.dataset.tab !== tab);
+        btnGalleries.addEventListener('click', () => {
+            this.#toggleTab(btnImages, false);
+            this.#toggleTab(btnGalleries, true);
+        });
 
         new MutationObserver((mutationList, _) =>
             this.#attributeObservation(mutationList, 'upload-mode', this.#imageUploadButton, this.#cancelUploadButton)
@@ -102,5 +105,19 @@ customElements.define('image-gallery-component', class ImageGalleryComponent ext
                     break;
             }
         }
+    }
+
+    /**
+     * @param {HTMLButtonElement} button
+     * @param {HTMLElement} pane 
+     * @param {boolean} activate 
+     */
+    #toggleTab(button, activate) {
+        button.classList.toggle('active', activate);
+        button.ariaPressed = activate ? 'true' : 'false';
+
+        const pane = button.ariaControlsElements.at(0);
+
+        pane.toggleAttribute('hidden', !activate);
     }
 });

@@ -8,7 +8,6 @@ require_once 'utilities/datetime.utility.php';
 use Utilities\Component;
 use Utilities\DateTime;
 
-Component::hide();
 Component::renderCSS();
 Component::addJSModule();
 

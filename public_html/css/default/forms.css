@@ -1,5 +1,5 @@
 button, select, input {
-    background-color: var(--clr-bg);
+    background-color: transparent;
     color: var(--clr-text);
 }
 

@@ -31,6 +31,8 @@ $galleries = $GLOBALS['galleries']; /** @var Gallery[] $galleries */
 
 $insertAttribute = ( empty($insertTarget) ? [] : [ 'insert-target' => $insertTarget] );
 
+$cPrefix = 'image-gallery';
+
 Component::renderCSS();
 Component::addJSModule();
 
@@ -49,22 +51,43 @@ Component::addJSModule();
 </image-gallery-header>
 <image-gallery-body>
     <manager-tabs>
-        <ul class="tab-list">
-            <li class="tab-item"><label class="tab-label"><input hidden type="radio" name="image-tabs" data-tab-target="images"><h3>Images</h3></label></li>
-            <li class="tab-item"><label class="tab-label"><input hidden type="radio" name="image-tabs" data-tab-target="galleries" checked><h3>Galleries</h3></label></li>
+        <ul class="tab-list" role="tablist">
+            <li class="tab-item">
+                <button type="button"
+                    role="tab"
+                    class="tab-images active"
+                    aria-pressed="true"
+                    aria-controls="<?= "{$cPrefix}__image-manager-$cId" ?>"
+                    >
+                    <h3>Images</h3>
+                </button>
+            </li>
+            <li class="tab-item">
+                <button type="button"
+                    role="tab"
+                    class="tab-galleries"
+                    aria-controls="<?= "{$cPrefix}__gallery-manager-$cId" ?>"
+                    >
+                    <h3>Galleries</h3>
+                </button>
+                </label>
+            </li>
         </ul>
     </manager-tabs>
     <?php Component::include('image-gallery/image-manager', [
         'attributes' => [
-            'data-tab' => 'images',
+            'id' => "{$cPrefix}__image-manager-$cId",
+            'role' => 'tabpanel',
             'data-modified-on' => DateTime::toPrecisionString($tableModService->getOrCreateModifiedDate('image'))
         ] + $insertAttribute,
         'images' => $images
     ]) ?>
     <?php Component::include('image-gallery/gallery-manager', [
         'attributes' => [
-            'data-tab' => 'galleries',
-            'data-modified-on' => DateTime::toPrecisionString($tableModService->getOrCreateModifiedDate('gallery'))
+            'id' => "{$cPrefix}__gallery-manager-$cId",
+            'role' => 'tabpanel',
+            'data-modified-on' => DateTime::toPrecisionString($tableModService->getOrCreateModifiedDate('gallery')),
+            'hidden' => ''
         ] + $insertAttribute,
         'galleries' => $galleries,
         'images' => $images

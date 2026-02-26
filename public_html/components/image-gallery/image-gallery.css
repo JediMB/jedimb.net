@@ -27,12 +27,13 @@ manager-tabs {
 .tab-item {
     margin-bottom: -1.5px;
 
-    &:has(input:checked) {
+    &:has(button.active) {
         border-bottom: 3px solid var(--clr-primary);
     }
 }
 
-.tab-label {
+.tab-images,
+.tab-galleries {
     display: inline-block;
     padding: var(--size-s);
 }
