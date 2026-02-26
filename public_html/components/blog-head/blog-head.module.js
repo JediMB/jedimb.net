@@ -6,6 +6,8 @@ import { formatTimezone } from "/js/utilities/format-date.utility.js";
 customElements.define('blog-head-component', class BlogHeadComponent extends HTMLElement {
     #scheduledTimeout = { id: null };
 
+    /** @type {HTMLButtonElement} */ #btnAddPost;
+
     /** @type {Map<string, HTMLInputElement>} */ #formFields = new Map();
 
     /** @type {TextEditorComponent} */ #textEditor;
@@ -21,6 +23,8 @@ customElements.define('blog-head-component', class BlogHeadComponent extends HTM
     constructor() { super(); }
 
     connectedCallback() {
+        this.#btnAddPost = this.querySelector('#blog-head__btn-add');
+
         const content = this.querySelector('blog-head-content');
 
         const body = content.querySelector('blog-head-body');
@@ -51,7 +55,7 @@ customElements.define('blog-head-component', class BlogHeadComponent extends HTM
         this.#tglScheduled = footer.querySelector('#blog-head__toggle-schedule');
         this.#scheduledDate = footer.querySelector('#blog-head__scheduled-date');
         this.#scheduledTime = footer.querySelector('#blog-head__scheduled-time');
-        const btnAddPost = footer.querySelector('#blog-head__btn-add');
+
         const btnCancelPost = footer.querySelector('#blog-head__btn-cancel');
         this.#btnPublishPost = footer.querySelector('#blog-head__btn-publish');
         this.#btnDraftPost = footer.querySelector('#blog-head__btn-draft');
@@ -82,6 +86,13 @@ customElements.define('blog-head-component', class BlogHeadComponent extends HTM
         this.#scheduledDate.addEventListener('change', () => permadate.textContent = this.#scheduledDate.value.replaceAll('-', '/'));
 
         this.#btnPublishPost.addEventListener('click', () => this.#publishPost());
+
+        this.#btnAddPost.addEventListener('click', () => {
+            const wasActive = !this.#btnAddPost.ariaPressed || this.#btnAddPost.ariaPressed !== 'false';
+            this.#toggleFormView(!wasActive);
+        });
+
+        this.#btnAddPost.disabled = false;
     }
 
     /**
@@ -128,6 +139,18 @@ customElements.define('blog-head-component', class BlogHeadComponent extends HTM
                 }
             }
         );
+    }
+
+    /** @param {boolean} makeActive  */
+    #toggleFormView(makeActive) {
+        const button = this.#btnAddPost;
+
+        button.ariaPressed = `${makeActive}`;
+        button.classList.toggle('btn-primary', !makeActive);
+        button.classList.toggle('btn-secondary', makeActive);
+        button.title = makeActive ? button.dataset.titleClose : button.dataset.titleOpen;
+        button.ariaControlsElements.at(0).toggleAttribute('hidden', !makeActive);
+        button.querySelector('path').setAttribute('d', makeActive ? button.dataset.pathClose : button.dataset.pathOpen);
     }
 
     /**

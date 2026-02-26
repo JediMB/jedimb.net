@@ -17,13 +17,24 @@ Component::addJSModule();
 
 ?>
 
-<button id="blog-head__btn-add" type="button" class="btn btn-add">
-    <svg id="svg-blog-add" width="2em" height="2em" fill="currentColor" xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960">
+<button id="blog-head__btn-add"
+    type="button"
+    class="btn-primary"
+    aria-pressed="false"
+    aria-controls="blog-head__content"
+    title="Add a new post"
+    data-title-open="Add a new post"
+    data-title-close="Hide post form"
+    data-path-open="M440-440H200v-80h240v-240h80v240h240v80H520v240h-80v-240Z"
+    data-path-close="M240-640v-80h480v80H240Zm56 416-56-56 240-240 240 240-56 56-184-184-184 184Z"
+    disabled
+    >
+    <svg width="2em" height="2em" fill="currentColor" xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960">
         <path d="M440-440H200v-80h240v-240h80v240h240v80H520v240h-80v-240Z"/>
     </svg>
 </button>
 
-<blog-head-content>
+<blog-head-content id="blog-head__content" role="form" hidden>
     <blog-head-body>
         <label>
             Title:
