@@ -7,10 +7,12 @@ import Emitter from "/js/utilities/emitter.js";
 export { blogPostService as default };
 
 class BlogPostService {
-    /** @type {Emitter<BlogPost[]>} */
     #service = blogPostApiService;
+    /** @type {Emitter<BlogPost>} */ #newBlogPost = new Emitter(null);
 
     constructor() {}
+
+    get subscription() { return this.#newBlogPost; }
 
     /**
      * @param {BlogPostDTO} blogPostDTO 
@@ -21,10 +23,11 @@ class BlogPostService {
     async createBlogPost(blogPostDTO, next, error) {
         const response = await this.#service.postBlogPost(blogPostDTO);
 
-        if (response.success)
-            return next?.call(this, response.value.blogPost);
+        if (!response.success)
+            return error?.call(this, response.errors);
 
-        error?.call(this, response.errors);
+        this.#newBlogPost.setValue(response.value.blogPost);
+        next?.call(this, response.value.blogPost);
     }
 
     /**
