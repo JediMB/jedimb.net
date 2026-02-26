@@ -11,6 +11,8 @@ customElements.define('modal-popup-component', class ModalPopupContainer extends
     }
 
     connectedCallback() {
+        // TODO: Implement some kind of focus trap
+
         const self = this.#self;
         this.#root = document.querySelector('html');
         this.#body = document.querySelector('body');
