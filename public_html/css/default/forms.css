@@ -40,6 +40,14 @@ textarea:disabled {
     color: var(--clr-disabled-text);
 }
 
+button:enabled [is-loading] {
+    display: none;
+}
+
+button:disabled [has-loaded] {
+    display: none;
+}
+
 [class|=btn],
 [class|=select] {
     --_clr-border: transparent;

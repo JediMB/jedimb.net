@@ -97,6 +97,7 @@ customElements.define('blog-head-component', class BlogHeadComponent extends HTM
             // TODO: callable text-editor reset function
         });
 
+        this.#btnAddPost.title = this.#btnAddPost.dataset.titleOpen;
         this.#btnAddPost.disabled = false;
     }
 
@@ -155,7 +156,8 @@ customElements.define('blog-head-component', class BlogHeadComponent extends HTM
         button.classList.toggle('btn-secondary', makeActive);
         button.title = makeActive ? button.dataset.titleClose : button.dataset.titleOpen;
         button.ariaControlsElements.at(0).toggleAttribute('hidden', !makeActive);
-        button.querySelector('path').setAttribute('d', makeActive ? button.dataset.pathClose : button.dataset.pathOpen);
+
+        button.querySelector('#blog-head__btn-add__path').setAttribute('d', makeActive ? button.dataset.pathClose : button.dataset.pathOpen);
     }
 
     /**

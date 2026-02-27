@@ -22,7 +22,6 @@ class UserLoginRequest {
 
         if (!empty($errors))
             throw new InputException(__CLASS__, $errors);
-            
     }
 }
 

@@ -12,6 +12,14 @@
     text-align: center;
 }
 
+[is-loading] {
+    animation: is-loading 1s steps(15, end) infinite;
+}
+
+@keyframes is-loading {
+    to { transform: rotate(360deg); }    
+}
+
 *, ::before, ::after {
     --tw-border-spacing-x: 0;
     --tw-border-spacing-y: 0;
