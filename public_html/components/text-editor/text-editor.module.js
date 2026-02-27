@@ -20,8 +20,8 @@ export class TextEditorComponent extends HTMLElement {
     #linkButton;
     #pageBreakButton;
     /** @type {HTMLElement} */ #textBox;
-    /** @type {MutationObserver} */
-    #mutationObserver;
+    /** @type {HTMLTextAreaElement} */  #htmlEditor;
+    /** @type {MutationObserver} */ #mutationObserver;
 
     /** @type {Function[]} */ #onChange = [];
 
@@ -42,9 +42,9 @@ export class TextEditorComponent extends HTMLElement {
         this.#linkButton = this.#fieldset.querySelector('[btn-link]');
         this.#pageBreakButton = this.#fieldset.querySelector('[btn-pagebreak]');
         this.#textBox = self.querySelector('text-box');
+        this.#htmlEditor = self.querySelector('[html-editor]');
 
         const htmlCheck = self.querySelector('[checkbox-html]');
-        const textarea = self.querySelector('[html-editor]');
 
         document.addEventListener('selectionchange', this.#onSelectionChange);
 
@@ -128,12 +128,12 @@ export class TextEditorComponent extends HTMLElement {
             }
         );
 
-        textarea.addEventListener('input', () => {
+        this.#htmlEditor.addEventListener('input', () => {
             this.#undo.clear(this.#textBox);
-            const lines = textarea.value.split(/\r?\n|\r|\n/g);
+            const lines = this.#htmlEditor.value.split(/\r?\n|\r|\n/g);
             this.#textBox.innerHTML = lines.map(line => line.trim()).join('');
         });
-        textarea.addEventListener('change', event => event.stopPropagation());
+        this.#htmlEditor.addEventListener('change', event => event.stopPropagation());
 
         htmlCheck.addEventListener('change', event => {
             event.stopPropagation();
@@ -141,10 +141,10 @@ export class TextEditorComponent extends HTMLElement {
             const editHtml = htmlCheck.checked;
 
             if (editHtml)
-                textarea.value = this.#getContent(true);
+                this.#htmlEditor.value = this.#getContent(true);
 
             this.#textBox.toggleAttribute('hidden', editHtml);
-            textarea.toggleAttribute('hidden', !editHtml);
+            this.#htmlEditor.toggleAttribute('hidden', !editHtml);
         });
 
         self.removeAttribute('hidden');
@@ -158,25 +158,22 @@ export class TextEditorComponent extends HTMLElement {
 
     /** Gives outside access to the text-box content */
     get content() {
-        const textBox = this.#textBox;
-        const onChange = this.#onChange;
         const self = this;
 
         return {
             get html() {
                 self.#encloseRootText();
-
                 return {
-                    get full() { return textBox.innerHTML; },
-                    get rest() { return textBox.innerHTML.match(/^.*(?:<hr page-break(?:="")?>)(.+)$/si)?.at(1); },
-                    get short() { return textBox.innerHTML.match(/^(.*<hr page-break(?:="")?>)/si)?.at(1) ?? textBox.innerHTML; }
+                    get full() { return self.#textBox.innerHTML; },
+                    get rest() { return self.#textBox.innerHTML.match(/^.*(?:<hr page-break(?:="")?>)(.+)$/si)?.at(1); },
+                    get short() { return self.#textBox.innerHTML.match(/^(.*<hr page-break(?:="")?>)/si)?.at(1) ?? self.#textBox.innerHTML; }
                 };
             },
             get text() { return textBox.textContent; },
             get media() {
                 return [
-                    ...textBox.querySelectorAll('img-gallery'),
-                    ...textBox.querySelectorAll('img-wrapper')
+                    ...self.#textBox.querySelectorAll('img-gallery'),
+                    ...self.#textBox.querySelectorAll('img-wrapper')
                 ];
             },
             /** @param {() => void} func  */
@@ -184,11 +181,15 @@ export class TextEditorComponent extends HTMLElement {
                 if (typeof func !== 'function')
                     throw new Error('onChange parameter is not a function');
 
-                while (onChange.length) {
-                    onChange.pop();
+                while (self.#onChange.length) {
+                    self.#onChange.pop();
                 }
 
-                onChange.push(func);
+                self.#onChange.push(func);
+            },
+            reset() {
+                self.#textBox.textContent = '';
+                self.#htmlEditor.textContent = '';
             }
         };
     }

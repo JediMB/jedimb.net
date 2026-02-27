@@ -8,7 +8,7 @@ customElements.define('blog-head-component', class BlogHeadComponent extends HTM
 
     /** @type {HTMLButtonElement} */ #btnAddPost;
 
-    /** @type {Map<string, HTMLInputElement>} */ #formFields = new Map();
+    /** @type {HTMLFormElement} */ #form;
 
     /** @type {TextEditorComponent} */ #textEditor;
 
@@ -26,29 +26,13 @@ customElements.define('blog-head-component', class BlogHeadComponent extends HTM
         this.#btnAddPost = this.querySelector('#blog-head__btn-add');
 
         const content = this.querySelector('blog-head-content');
+        this.#form = content.querySelector('#blog-head__form');
+        const inputs = this.#form.elements;
 
         const body = content.querySelector('blog-head-body');
-        
-        /** @type {HTMLInputElement} */
-        const title = body.querySelector('#blog-head__title');
-        this.#formFields.set('title', title);
-        
         const permadate = body.querySelector('#blog-head__permadate');
-        
-        /** @type {HTMLInputElement} */
-        const permalink = body.querySelector('#blog-head__permalink');
-        this.#formFields.set('permalink', permalink);
-
-        const btnResetPermalink = body.querySelector('#blog-head__reset-permalink');
         this.#textEditor = body.querySelector('#blog-head__text-editor');
-
-        /** @type {HTMLInputElement} */
-        const description = body.querySelector('#blog-head__description');
-        this.#formFields.set('description', description);
-
-        /** @type {HTMLInputElement} */
-        const mastolink = body.querySelector('#blog-head__sociallink')
-        this.#formFields.set('mastolink', mastolink);
+        this.#form.onreset = () => this.#textEditor.content.reset();
 
         const footer = content.querySelector('blog-head-footer');
         this.#tglPinned = footer.querySelector('#blog-head__toggle-pinned');
@@ -60,13 +44,18 @@ customElements.define('blog-head-component', class BlogHeadComponent extends HTM
         this.#btnPublishPost = footer.querySelector('#blog-head__btn-publish');
         this.#btnDraftPost = footer.querySelector('#blog-head__btn-draft');
 
-        title.addEventListener('input', () => permalink.defaultValue = this.#formatPermalinkTitle(title.value));
-        title.addEventListener('change', () => title.value = title.value.trim());
+        inputs['title'].addEventListener('input', () => inputs['permalink'].defaultValue = this.#formatPermalinkTitle(inputs['title'].value));
+        inputs['title'].addEventListener('change', () => inputs['title'].value = inputs['title'].value.trim());
 
-        permalink.addEventListener('change', () => permalink.value = this.#formatPermalinkTitle(permalink.value));
-        btnResetPermalink.addEventListener('click', () => permalink.value = permalink.defaultValue);
+        inputs['permalink'].addEventListener('change', () => inputs['permalink'].value = this.#formatPermalinkTitle(inputs['permalink'].value));
+        body.querySelector('#blog-head__reset-permalink').addEventListener('click', () => inputs['permalink'].value = inputs['permalink'].defaultValue);
 
-        for (const field of [title, permalink, description, mastolink]) {
+        for (const field of [
+                inputs['title'],
+                inputs['permalink'],
+                inputs['description'],
+                inputs['mastolink']
+            ]) {
             field.addEventListener('input', () => this.#validation());
         }
         this.#textEditor.content.onChange = () => this.#validation();
@@ -80,7 +69,7 @@ customElements.define('blog-head-component', class BlogHeadComponent extends HTM
             this.#scheduledTime.toggleAttribute('hidden', !isScheduled);
             this.#btnPublishPost.textContent = isScheduled ? this.#btnPublishPost.dataset.contentSchedule : this.#btnPublishPost.dataset.contentPublish;
 
-            this.#updateDateTimeFields(this.#scheduledDate, this.#scheduledTime, permadate, isScheduled);
+            this.#updateDateTimeFields(this.#scheduledDate, this.#scheduledTime, inputs['permadate'], isScheduled);
         });
 
         this.#scheduledDate.addEventListener('change', () => permadate.textContent = this.#scheduledDate.value.replaceAll('-', '/'));
@@ -93,8 +82,8 @@ customElements.define('blog-head-component', class BlogHeadComponent extends HTM
         });
 
         btnCancelPost.addEventListener('click', () => {
-            // TODO: associate the input elements with a form via the form attribute, for easier reset
-            // TODO: callable text-editor reset function
+            this.#form.reset();
+            this.#toggleFormView(false);
         });
 
         this.#btnAddPost.title = this.#btnAddPost.dataset.titleOpen;
@@ -116,13 +105,15 @@ customElements.define('blog-head-component', class BlogHeadComponent extends HTM
     async #publishPost() {
         const content = this.#textEditor.content.html;
 
+        // TODO: Fully integrate form inputs (like tglPinned) into form and initialize DTO with FormData
+
         const post = new BlogPostDTO({
-            permalink: this.#formFields.get('permalink').value,
-            title: this.#formFields.get('title').value,
+            permalink: this.#form.elements['permalink'].value,
+            title: this.#form.elements['title'].value,
             contentShort: content.short,
             contentRest: content.rest,
-            description: this.#formFields.get('description').value,
-            mastolink: this.#formFields.get('mastolink').value,
+            description: this.#form.elements['description'].value,
+            mastolink: this.#form.elements['mastolink'].value,
             isPinned: this.#tglPinned.checked,
             scheduledOn: this.#tglScheduled.checked
                 ? `${this.#scheduledDate.value} ${this.#scheduledTime.value.slice(0, 5)}:00.000 ${formatTimezone(new Date())}`
@@ -134,8 +125,9 @@ customElements.define('blog-head-component', class BlogHeadComponent extends HTM
                 console.log('success', value);
             },
             errors => {
+                // TODO: This only touches elements that have errors, and doesn't remove errors that are no longer relevant
                 for (const key in errors) {
-                    const field = this.#formFields.get(key);
+                    const field = this.#form.elements[key];
                     const error = errors[key];
 
                     field.classList.toggle('error-required', !!error.required);
@@ -207,10 +199,10 @@ customElements.define('blog-head-component', class BlogHeadComponent extends HTM
         const textEditorValid = this.#textEditor.content.text.length || this.#textEditor.content.media.length;
 
         const valid = textEditorValid
-            && this.#formFields.get('title').checkValidity()
-            && this.#formFields.get('permalink').checkValidity()
-            && this.#formFields.get('description').checkValidity()
-            && this.#formFields.get('mastolink').checkValidity();
+            && this.#form.elements['title'].checkValidity()
+            && this.#form.elements['permalink'].checkValidity()
+            && this.#form.elements['description'].checkValidity()
+            && this.#form.elements['mastolink'].checkValidity();
 
         this.#btnPublishPost.disabled = !valid;
         this.#btnDraftPost.disabled = !valid;
