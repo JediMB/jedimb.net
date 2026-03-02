@@ -169,7 +169,7 @@ export class TextEditorComponent extends HTMLElement {
                     get short() { return self.#textBox.innerHTML.match(/^(.*<hr page-break(?:="")?>)/si)?.at(1) ?? self.#textBox.innerHTML; }
                 };
             },
-            get text() { return textBox.textContent; },
+            get text() { return self.#textBox.textContent; },
             get media() {
                 return [
                     ...self.#textBox.querySelectorAll('img-gallery'),
