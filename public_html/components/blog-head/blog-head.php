@@ -86,6 +86,7 @@ Component::addJSModule();
         <?php Component::include('text-editor', [
             'attributes' => [ 'id' => 'blog-head__text-editor' ]
         ])  ?>
+        
         <input id="blog-head__content-short"
             type="hidden"
             form="blog-head__form"

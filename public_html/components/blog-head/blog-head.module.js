@@ -113,15 +113,25 @@ customElements.define('blog-head-component', class BlogHeadComponent extends HTM
                 console.log('success', value);
             },
             errors => {
-                // TODO: This only touches elements that have errors, and doesn't remove errors that are no longer relevant
-                for (const key in errors) {
-                    const field = this.#form.elements[key];
-                    const error = errors[key];
+                for (const input of this.#form.elements) {
+                    const error = errors[input.name];
 
-                    field.classList.toggle('error-required', !!error.required);
-                    field.classList.toggle('error-too-short', !!error.tooShort);
-                    field.classList.toggle('error-too-long', !!error.tooLong);
-                    field.classList.toggle('error-mismatch', !!error.mismatch);
+                    if (!error) {
+                        if (!input.classList.length)
+                            continue;
+
+                        input.classList.remove('error-required');
+                        input.classList.remove('error-too-short');
+                        input.classList.remove('error-too-long');
+                        input.classList.remove('error-mismatch');
+                        continue;
+                    }
+
+                    input.classList.toggle('error-required', !!error.required);
+                    input.classList.toggle('error-too-short', !!error.tooShort);
+                    input.classList.toggle('error-too-long', !!error.tooLong);
+                    input.classList.toggle('error-mismatch', !!error.mismatch);
+
                 }
             }
         );
