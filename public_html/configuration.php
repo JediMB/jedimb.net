@@ -5,7 +5,8 @@ define('CONFIGURABLE_CONSTANTS', [
     'SITE_TAGLINE',
     'SITE_AUTHOR',
     'META_DESCRIPTION',
-    'META_KEYWORDS'
+    'META_KEYWORDS',
+    'PAGINATION_PAGE_SIZE'
 ]);
 
 define('PATH_HOMEPAGE', 'pages/blog.php');
@@ -117,6 +118,8 @@ define('TEXT_CONFIG_ITEM_CHARS', 'Lowercase characters, numbers, apostrophes, an
 define('PAGE_ADMIN_TITLE', 'Administration');
 define('PAGE_ADMIN_SECTION_SITE', 'Site settings');
 define('PAGE_ADMIN_USEDEFAULT', 'Use default');
+
+define('PAGINATION_PAGE_SIZE', '10');
 
 define('DB_OPTIONS', [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]);
 define('DB_DATETIME_FORMAT', 'Y-m-d H:i:s.u e');

@@ -3,17 +3,27 @@
 namespace Pages;
 
 require_once 'services/blog-post.service.php';
+require_once 'services/configuration.service.php';
 require_once 'utilities/component.utility.php';
 
 use Enums\UserPermission;
 use Services\BlogPostService;
+use Services\ConfigurationService;
 use Services\SessionService;
 use Utilities\Component;
 
-$sessionService = SessionService::getInstance(); /** @var SessionService $sessionService */
-$blogPostService = BlogPostService::getInstance(); /** @var BlogPostService $blogPostService */
+
+$sessionService = SessionService::getInstance();
+$blogPostService = BlogPostService::getInstance();
+$configurationService = ConfigurationService::getInstance();
+
+$count = $blogPostService->getCount();
+// TODO: Update configuration/administration to make integer use safer
+$pageSize = (int)$configurationService->getUserConstant('PAGINATION_PAGE_SIZE');
 
 $posts = $blogPostService->getPublishedBlogPosts();
+
+var_dump($count, $pageSize);
 
 ?>
 
