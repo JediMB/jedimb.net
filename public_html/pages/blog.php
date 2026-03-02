@@ -2,14 +2,18 @@
 
 namespace Pages;
 
+require_once 'services/blog-post.service.php';
 require_once 'utilities/component.utility.php';
 
 use Enums\UserPermission;
+use Services\BlogPostService;
 use Services\SessionService;
 use Utilities\Component;
 
-
 $sessionService = SessionService::getInstance(); /** @var SessionService $sessionService */
+$blogPostService = BlogPostService::getInstance(); /** @var BlogPostService $blogPostService */
+
+$posts = $blogPostService->getPublishedBlogPosts();
 
 ?>
 
@@ -17,7 +21,26 @@ $sessionService = SessionService::getInstance(); /** @var SessionService $sessio
     <?php Component::include('blog-head') ?>
 <?php endif ?>
 
-<!-- TODO: Implement pagination and include the first page as part of the document -->
+<!--
+    TODO:
+    Implement pagination
+-->
+
+<blog-posts>
+    <?php foreach ($posts as $post): ?>
+        <article class="flex flex-col">
+            <h2><a href="/<?= PATH_BLOG_PREFIX . $post->permalink ?>"><?= $post->title ?></a></h2>
+            <article-byline>
+                <?php Component::include('created-modified-dates', [
+                    'createdOn' => $post->publishedOn,
+                    'modifiedOn' => $post->modifiedOn
+                ]) ?>
+            </article-byline>
+            <article-content><?= $post->contentShort ?></article-content>
+        </article>
+    <?php endforeach ?>
+</blog-posts>
+
 <template blog-post-template>
     <article class="flex flex-col">
         <h2><a href="/blog/{id}">Title</a></h2>
@@ -29,6 +52,7 @@ $sessionService = SessionService::getInstance(); /** @var SessionService $sessio
     </article>
 </template>
 
+<!--
 <script type="module">
     import blogPostApiService from "/js/services/api/blog-post-api.service.js";
 
@@ -76,3 +100,4 @@ $sessionService = SessionService::getInstance(); /** @var SessionService $sessio
         });
     }
 </script>
+-->
