@@ -39,7 +39,12 @@ Component::addJSModule();
 
 <blog-head-content id="blog-head__content" role="form" hidden>
     <blog-head-body>
-        <form id="blog-head__form" autocomplete="off"></form>
+        <form id="blog-head__form" autocomplete="off">
+            <input id="blog-head__id"
+                type="hidden"
+                name="id"
+                value="0">
+        </form>
         <label>
             Title:
             <input id="blog-head__title" full-width
@@ -81,14 +86,16 @@ Component::addJSModule();
         <?php Component::include('text-editor', [
             'attributes' => [ 'id' => 'blog-head__text-editor' ]
         ])  ?>
-        <input id="blog-head__contentShort"
+        <input id="blog-head__content-short"
             type="hidden"
             form="blog-head__form"
-            name="contentShort">
-        <input id="blog-head__contentRest"
+            name="contentShort"
+            value="">
+        <input id="blog-head__content-rest"
             type="hidden"
             form="blog-head__form"
-            name="contentRest">
+            name="contentRest"
+            value="">
 
         <label>
             <div>Description:</div>
@@ -113,7 +120,13 @@ Component::addJSModule();
     </blog-head-body>
     <blog-head-footer>
         <blog-head-options>
-            <label><input id="blog-head__toggle-pinned" type="checkbox">Pinned</label>
+            <label>
+                <input id="blog-head__toggle-pinned"
+                    type="checkbox"
+                    form="blog-head__form"
+                    name="isPinned">
+                Pinned
+            </label>
             <blog-head-scheduling>
                 <input hidden
                     id="blog-head__scheduled-date"
