@@ -110,7 +110,10 @@ customElements.define('blog-head-component', class BlogHeadComponent extends HTM
 
         blogPostService.createBlogPost(post,
             value => {
+                // TODO: Notification
                 console.log('success', value);
+                this.#form.reset();
+                this.#toggleFormView(false);
             },
             errors => {
                 for (const input of this.#form.elements) {
