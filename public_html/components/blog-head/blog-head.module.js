@@ -1,7 +1,6 @@
 import BlogPostDTO from "/js/models/blog-post.dto.js";
 import { TextEditorComponent } from "/js/components/text-editor/text-editor.module.js";
 import blogPostService from "/js/services/blog-post.service.js";
-import { formatTimezone } from "/js/utilities/format-date.utility.js";
 
 customElements.define('blog-head-component', class BlogHeadComponent extends HTMLElement {
     #scheduledTimeout = { id: null };
@@ -104,21 +103,10 @@ customElements.define('blog-head-component', class BlogHeadComponent extends HTM
 
     async #publishPost() {
         const content = this.#textEditor.content.html;
+        this.#form.elements['contentShort'].value = content.short;
+        this.#form.elements['contentRest'].value = content.rest;
 
-        // TODO: Fully integrate form inputs (like tglPinned) into form and initialize DTO with FormData
-
-        const post = new BlogPostDTO({
-            permalink: this.#form.elements['permalink'].value,
-            title: this.#form.elements['title'].value,
-            contentShort: content.short,
-            contentRest: content.rest,
-            description: this.#form.elements['description'].value,
-            mastolink: this.#form.elements['mastolink'].value,
-            isPinned: this.#tglPinned.checked,
-            scheduledOn: this.#tglScheduled.checked
-                ? `${this.#scheduledDate.value} ${this.#scheduledTime.value.slice(0, 5)}:00.000 ${formatTimezone(new Date())}`
-                : null
-        });
+        const post = new BlogPostDTO(new FormData(this.#form));
 
         blogPostService.createBlogPost(post,
             value => {

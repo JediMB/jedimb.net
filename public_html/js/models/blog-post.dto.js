@@ -1,17 +1,25 @@
+import { formatTimezone } from "/js/utilities/format-date.utility.js";
+
 export default class BlogPostDTO {
     /**
-     * @param {{ id: ?number, permalink: string, title: string, description: string, contentShort: string, contentRest: ?string, mastolink: ?string, isPinned: boolean, scheduledOn: ?string }} param0 
+     * @param {FormData} formData
      */
-    constructor({id, permalink, title, description, contentShort, contentRest,
-        mastolink, isPinned, scheduledOn}) {
-        this.id = id ?? 0;
-        this.permalink = permalink;
-        this.title = title;
-        this.description = description;
-        this.contentShort = contentShort;
-        this.contentRest = contentRest ? contentRest : null;
-        this.mastolink = mastolink ? mastolink : null;
-        this.isPinned = isPinned;
-        this.scheduledOn = scheduledOn ?? null;
+    constructor(formData) {
+        this.id = Number(formData.get('id'));
+        this.permalink = formData.get('permalink');
+        this.title = formData.get('title');
+        this.description = formData.get('description');
+        this.contentShort = formData.get('contentShort');
+        this.contentRest = formData.get('contentRest') || null;
+        this.mastolink = formData.get('mastolink') || null;
+        this.isPinned = Boolean(formData.get('isPinned'));
+
+        const isScheduled = formData.get('isScheduled');
+        const scheduledDate = formData.get('scheduledDate');
+        const scheduledTime = formData.get('scheduledTime');
+
+        this.scheduledOn = isScheduled && scheduledDate && scheduledTime
+            ? `${scheduledDate} ${scheduledTime.slice(0, 5)}:00.000 ${formatTimezone(new Date())}`
+            : null;
     }
 }
