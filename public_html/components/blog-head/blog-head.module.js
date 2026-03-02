@@ -69,7 +69,7 @@ customElements.define('blog-head-component', class BlogHeadComponent extends HTM
             this.#scheduledTime.toggleAttribute('hidden', !isScheduled);
             this.#btnPublishPost.textContent = isScheduled ? this.#btnPublishPost.dataset.contentSchedule : this.#btnPublishPost.dataset.contentPublish;
 
-            this.#updateDateTimeFields(this.#scheduledDate, this.#scheduledTime, inputs['permadate'], isScheduled);
+            this.#updateDateTimeFields(this.#scheduledDate, this.#scheduledTime, permadate, isScheduled);
         });
 
         this.#scheduledDate.addEventListener('change', () => permadate.textContent = this.#scheduledDate.value.replaceAll('-', '/'));
