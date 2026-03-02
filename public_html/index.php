@@ -45,11 +45,7 @@ if (!$sessionService->isLoggedIn())
 $navService = NavigationService::getInstance();
 $navService->menu[] = new MenuItem('About me', '/about');
 
-if ($requestPath === '')
-    servePHP([
-        'pagePath' => PATH_HOMEPAGE,
-        'links' => true
-    ]);
+handleHome($requestPath);
 
 foreach (SPECIAL_PATHS as $request => $path) {
     if ($requestPath === $request)

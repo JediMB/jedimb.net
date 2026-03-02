@@ -145,6 +145,22 @@ function handleComponentModules(string $path) {
     exit;
 }
 
+function handleHome(string $path) {
+    $matches = [];
+    if (preg_match(REGEX_HOME_PATH_PAGINATION, $path, $matches)) {
+        $page = (int)$matches[1];
+
+        if ($page < 1)
+            $page = 1;
+
+        servePHP([
+            'pagePath' => PATH_HOMEPAGE,
+            'links' => true,
+            'page' => $page
+        ]);
+    }
+}
+
 function handleVirtualPages(string $requestPath) {
     $nav = NavigationService::getInstance(); /** @var NavigationService $nav */
 
