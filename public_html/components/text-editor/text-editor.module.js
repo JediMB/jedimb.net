@@ -164,9 +164,9 @@ export class TextEditorComponent extends HTMLElement {
             get html() {
                 self.#encloseRootText();
                 return {
-                    get full() { return self.#textBox.innerHTML; },
-                    get rest() { return self.#textBox.innerHTML.match(/^.*(?:<hr page-break(?:="")?>)(.+)$/si)?.at(1); },
-                    get short() { return self.#textBox.innerHTML.match(/^(.*<hr page-break(?:="")?>)/si)?.at(1) ?? self.#textBox.innerHTML; }
+                    get full() { return self.#textBox.innerHTML ?? ''; },
+                    get rest() { return self.#textBox.innerHTML.match(/^.*(?:<hr page-break(?:="")?>)(.+)$/si)?.at(1) ?? ''; },
+                    get short() { return self.#textBox.innerHTML.match(/^(.*<hr page-break(?:="")?>)/si)?.at(1) ?? self.#textBox.innerHTML ?? ''; }
                 };
             },
             get text() { return self.#textBox.textContent; },
