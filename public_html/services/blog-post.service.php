@@ -26,6 +26,10 @@ class BlogPostService extends Singleton {
         return $this->blogPostDbService->getBlogPost($id, PublishedStatus::Any);
     }
 
+    function getCount(PublishedStatus $publishedStatus = PublishedStatus::Published) : int {
+        return $this->blogPostDbService->getCount($publishedStatus);
+    }
+
     /** @return BlogPost[] */
     function getPublishedBlogPosts() : array {
         return $this->blogPostDbService->getBlogPosts(PublishedStatus::Published);

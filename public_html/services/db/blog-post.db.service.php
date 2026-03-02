@@ -89,6 +89,22 @@ class BlogPostDBService extends BaseDBService {
             throw new Exception('Database error: ' . $e->getMessage());
         }
     }
+
+    public function getCount(PublishedStatus $publishedStatus = PublishedStatus::Published) : int {
+        try {
+            if ($publishedStatus === PublishedStatus::Published)
+                $nullChecks = [ 'published_on' => false];
+            else if ($publishedStatus === PublishedStatus::Unpublished)
+                $nullChecks = [ 'is_published' => true ];
+            else
+                $nullChecks = [];
+
+            return $this->dbService->selectCount('blog_post', [], $nullChecks);
+        }
+        catch (PDOException $e) {
+            throw new Exception('Database error: ' . $e->getMessage());
+        }
+    }
 }
 
 ?>

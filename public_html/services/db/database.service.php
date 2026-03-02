@@ -102,9 +102,19 @@ class DatabaseService extends Singleton {
         return $query->fetch();
     }
 
-    public function selectCount(string $table) : int {
+    /** 
+     * @param string $table
+     * @param (array<string, bool|int|string>|null) $columnValues Key-Value pairs with the name of the column and the value to match
+     * @param (array<string, bool>|null) $nullChecks Columns to check whether or not they're null
+    */
+    public function selectCount(string $table, array $columnValues = [], array $nullChecks = []) : int {
+        if (empty($columnValues) && empty($nullChecks))
+            $where = '';
+        else
+            $where = " WHERE {$this->buildWhereString($columnValues, $nullChecks)}";
+
         $query = $this->service->prepare(
-            "SELECT count(*) FROM {$this->schema}.$table"
+            "SELECT count(*) FROM {$this->schema}.$table" . $where
         );
         
         $query->execute();
