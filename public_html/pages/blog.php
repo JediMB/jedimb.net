@@ -12,7 +12,6 @@ use Services\ConfigurationService;
 use Services\SessionService;
 use Utilities\Component;
 
-
 $sessionService = SessionService::getInstance();
 $blogPostService = BlogPostService::getInstance();
 $configurationService = ConfigurationService::getInstance();
@@ -22,8 +21,6 @@ $count = $blogPostService->getCount();
 $pageSize = (int)$configurationService->getUserConstant('PAGINATION_PAGE_SIZE');
 
 $posts = $blogPostService->getPublishedBlogPosts();
-
-var_dump($count, $pageSize);
 
 ?>
 
@@ -53,10 +50,12 @@ var_dump($count, $pageSize);
 
 <template blog-post-template>
     <article class="flex flex-col">
-        <h2><a href="/blog/{id}">Title</a></h2>
+        <h2><a href="/<?= PATH_BLOG_PREFIX ?>">Title</a></h2>
         <article-byline>
-            <date-created>6h ago</date-created>
-            <date-modified class="weak">last modified 4h ago</date-modified>
+            <?php Component::include('created-modified-dates', [
+                'createdOn' => new \DateTime(),
+                'modifiedOn' => new \DateTime()
+            ]) ?>
         </article-byline>
         <article-content>Content</article-content>
     </article>
