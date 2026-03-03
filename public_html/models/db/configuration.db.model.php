@@ -8,14 +8,16 @@ use Models\Base\DBCreatedModified;
 
 class Configuration extends DBCreatedModified {
     public string $name;
-    public string $value;
+    public ?int $valueInt;
+    public ?string $valueString;
     public bool $isActive;
 
     public function __construct(array $dbRow) {
         parent::__construct($dbRow);
 
         $this->name = $dbRow['name'];
-        $this->value = $dbRow['value'];
+        $this->valueString = $dbRow['value'];
+        $this->valueInt = $dbRow['value_int'];
         $this->isActive = $dbRow['is_active'];
     }
 }

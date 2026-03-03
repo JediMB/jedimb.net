@@ -9,13 +9,21 @@ require_once 'models/db/configuration.db.model.php';
 class Configuration {
     public int $id;
     public string $name;
-    public ?string $value;
+    public string|int|null $value;
     public ?bool $isActive;
 
     public function __construct(array $input) {
         $this->id = $input['id'];
         $this->name = trim($input['name']);
-        $this->value = isset($input['value']) ? trim($input['value']) : null;
+
+        $value = $input['value'];
+        $this->value = is_null($value)
+            ? null
+            : (
+                is_int($value)
+                ? $value
+                : trim("$value")
+            );
         $this->isActive = $input['isActive'] ?? null;
     }
 
@@ -25,7 +33,17 @@ class Configuration {
         if ($object->name !== $source->name)
             throw new InvalidArgumentException('Incorrect Configuration name in update call');
 
-        if ($source->value !== null) $object->value = $source->value;
+        if ($source->value !== null) {
+            if (is_int($source->value)) {
+                $object->valueInt = $source->value;
+                $object->valueString = null;
+            }
+            else {
+                $object->valueString = $source->value;
+                $object->valueInt = null;
+            }
+        }
+
         if ($source->isActive !== null) $object->isActive = $source->isActive;
     }
 }

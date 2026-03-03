@@ -25,7 +25,7 @@ if (empty($config)) {
 }
 else { /** @var \Models\DB\Configuration $config */
     $dbId = $config->id;
-    $value = $config->value;
+    $value = $config->valueInt ?? $config->valueString;
     $isDefault = !$config->isActive;
 }
 

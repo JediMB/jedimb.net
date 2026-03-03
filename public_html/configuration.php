@@ -119,7 +119,7 @@ define('PAGE_ADMIN_TITLE', 'Administration');
 define('PAGE_ADMIN_SECTION_SITE', 'Site settings');
 define('PAGE_ADMIN_USEDEFAULT', 'Use default');
 
-define('PAGINATION_PAGE_SIZE', '10');
+define('PAGINATION_PAGE_SIZE', 10);
 
 define('DB_OPTIONS', [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]);
 define('DB_DATETIME_FORMAT', 'Y-m-d H:i:s.u e');

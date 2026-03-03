@@ -4,6 +4,7 @@ button, select, input {
 }
 
 input[type="email"],
+input[type="number"],
 input[type="password"],
 input[type="search"],
 input[type="tel"],

@@ -9,19 +9,19 @@ config-field-component input-container {
     border-radius: 1em;
 }
 
-config-field-component input-container:has(input[type="text"]:disabled) {
+config-field-component input-container:has(input[config-field]:disabled) {
     background-color: #999999;
 }
 
-config-field-component input-container:has(input[type="text"]:valid) {
+config-field-component input-container:has(input[config-field]:valid) {
     background-color: #99ff99;
 }
 
-config-field-component input-container:has(input[type="text"]:invalid) {
+config-field-component input-container:has(input[config-field]:invalid) {
     background-color: #ff9999;
 }
 
-config-field-component input-container input[type="text"] {
+config-field-component input-container input[config-field] {
     background-color: inherit;
 }
 

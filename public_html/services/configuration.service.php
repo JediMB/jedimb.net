@@ -13,7 +13,9 @@ use Services\DB\ConfigurationDBService;
 
 class ConfigurationService extends Singleton {
     private readonly ConfigurationDBService $configDbService;
+    /** @var (array<string, Configuration>) $configuration */
     private readonly array $configuration;
+    /** @var (array<string, string|int>) */
     private readonly array $constants;
 
     protected function __construct() {
@@ -24,6 +26,8 @@ class ConfigurationService extends Singleton {
         $this->constants = get_defined_constants(true)['user'] ?? [];
     }
 
+
+    /** @return (array{'default': int|string, 'config': ?Configuration}) */
     public function getConfiguration(string $name) : array {
         if (empty($this->constants[$name]))
             throw new Exception('Trying to access nonexistent constant');
@@ -36,16 +40,22 @@ class ConfigurationService extends Singleton {
         ];
     }
 
-    public function getUserConstant(string $name) : Configuration|string {
+    public function getUserConstant(string $name) : Configuration|string|int {
         if (empty($this->constants[$name]))
             throw new Exception('Trying to access nonexistent constant');
 
         if ($this->noActiveConfiguration($name))
             return $this->constants[$name];
 
-        return $this->configuration[$name]->value;
+        $configItem = $this->configuration[$name];
+
+        if ($configItem->valueInt !== null)
+            return $configItem->valueInt;
+
+        return $configItem->valueString;
     }
 
+    /** @return (array<string, Configuration|string|int>) */
     public function getUserConstants(array $names) : array {
         $constants = [];
 

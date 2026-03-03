@@ -17,8 +17,9 @@ $blogPostService = BlogPostService::getInstance();
 $configurationService = ConfigurationService::getInstance();
 
 $count = $blogPostService->getCount();
-// TODO: Update configuration/administration to make integer use safer
-$pageSize = (int)$configurationService->getUserConstant('PAGINATION_PAGE_SIZE');
+$pageSize = $configurationService->getUserConstant('PAGINATION_PAGE_SIZE');
+
+var_dump($count, $pageSize);
 
 $posts = $blogPostService->getPublishedBlogPosts();
 
