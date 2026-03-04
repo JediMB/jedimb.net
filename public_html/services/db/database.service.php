@@ -73,10 +73,10 @@ class DatabaseService extends Singleton {
         if (empty($columnValues) && empty($nullChecks))
             throw new InvalidArgumentException('No column values or null checks provided');
 
-        $whereString = $this->buildWhereString($columnValues, $nullChecks);
-
         $query = $this->service->prepare(
-            "SELECT * FROM {$this->schema}.$table WHERE $whereString LIMIT 1"
+            "SELECT * FROM {$this->schema}.$table" .
+            $this->buildWhereString($columnValues, $nullChecks) .
+            " LIMIT 1"
         );
 
         $index = 1;
@@ -108,13 +108,9 @@ class DatabaseService extends Singleton {
      * @param (array<string, bool>|null) $nullChecks Columns to check whether or not they're null
     */
     public function selectCount(string $table, array $columnValues = [], array $nullChecks = []) : int {
-        if (empty($columnValues) && empty($nullChecks))
-            $where = '';
-        else
-            $where = " WHERE {$this->buildWhereString($columnValues, $nullChecks)}";
-
         $query = $this->service->prepare(
-            "SELECT count(*) FROM {$this->schema}.$table" . $where
+            "SELECT count(*) FROM {$this->schema}.$table" . 
+            $this->buildWhereString($columnValues, $nullChecks)
         );
         
         $query->execute();
@@ -177,12 +173,16 @@ class DatabaseService extends Singleton {
      * @param (array<string, bool>|null) $nullChecks Columns to check whether or not they're null
     */
     private function buildWhereString(array $columnValues, array $nullChecks) : string {
-        $result = '';
+        if (empty($columnValues) && empty($nullChecks))
+            return '';
+
+        $result = ' WHERE';
+
         
         $valueCount = count($columnValues);
         if ($valueCount > 0) {
             $valueColumns = array_keys($columnValues);
-            $result = "{$valueColumns[0]} = ?";
+            $result = "$result {$valueColumns[0]} = ?";
 
             for ($i = 1; $i < $valueCount; $i++) {
                 $result =  "$result AND {$valueColumns[$i]} = ?";
@@ -196,10 +196,10 @@ class DatabaseService extends Singleton {
         $nullColumns = array_keys($nullChecks);
         $startIndex = 0;
 
-        if (!$result) {
+        if ($valueCount < 1) {
             $startIndex = 1;
             $not = $nullChecks[$nullColumns[0]] ? '' : ' NOT';
-            $result = "{$nullColumns[0]} IS$not NULL";
+            $result = "$result {$nullColumns[0]} IS$not NULL";
         }
 
         for ($i = $startIndex; $i < $nullCount; $i++) {
