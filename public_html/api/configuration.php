@@ -42,6 +42,11 @@ switch ( $_SERVER['REQUEST_METHOD'] ) {
                     continue;
                 }
 
+                if (is_int($configDTO->value) && $configDTO->value < 1) {
+                    $errors[] = 'Attempted to create a new configuration with a non-positive integer value';
+                    continue;
+                }
+
                 if (empty( ($result = $configService->createConfiguration($configDTO)) ))
                     $errors[] = "Failed to create: {$configDTO->name}";
             }
@@ -65,6 +70,11 @@ switch ( $_SERVER['REQUEST_METHOD'] ) {
 
                 if (!in_array($configDTO->name, CONFIGURABLE_CONSTANTS)) {
                     $errors[] = 'Attempted to create new configuration for disallowed constant';
+                    continue;
+                }
+
+                if (is_int($configDTO->value) && $configDTO->value < 1) {
+                    $errors[] = 'Attempted to create a new configuration with a non-positive integer value';
                     continue;
                 }
                 
