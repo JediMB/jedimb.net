@@ -2,26 +2,24 @@
 
 namespace Pages;
 
+require_once 'models/pagination.model.php';
 require_once 'services/blog-post.service.php';
-require_once 'services/configuration.service.php';
 require_once 'utilities/component.utility.php';
 
 use Enums\UserPermission;
+use Models\Pagination;
 use Services\BlogPostService;
-use Services\ConfigurationService;
 use Services\SessionService;
 use Utilities\Component;
 
 $sessionService = SessionService::getInstance();
 $blogPostService = BlogPostService::getInstance();
-$configurationService = ConfigurationService::getInstance();
 
-$count = $blogPostService->getCount();
-$pageSize = $configurationService->getUserConstant('PAGINATION_PAGE_SIZE');
+$page ??= 1;
+$result = $blogPostService->getPublishedBlogPosts($page);
 
-var_dump($count, $pageSize);
-
-$posts = $blogPostService->getPublishedBlogPosts();
+$pagination = $result['pagination'];
+$posts = $result['posts'];
 
 ?>
 
@@ -34,6 +32,9 @@ $posts = $blogPostService->getPublishedBlogPosts();
     Implement pagination
 -->
 
+<div text-right>
+    Showing posts <?= $pagination->offset + 1 ?>&ndash;<?= $pagination->offset + count($posts) ?> (of <?= $pagination->total ?>)
+</div>
 <blog-posts>
     <?php foreach ($posts as $post): ?>
         <article class="flex flex-col">
@@ -48,6 +49,16 @@ $posts = $blogPostService->getPublishedBlogPosts();
         </article>
     <?php endforeach ?>
 </blog-posts>
+<nav>
+    <!-- TODO: Accessibility-friendly descriptions of navigation items -->
+    <ul class="nav-pagination">
+        <li><svg width="1em" height="1em"><use xlink:href="#svg-left-double" href="#svg-left-double"></use></svg></li>
+        <li><svg width="1em" height="1em"><use xlink:href="#svg-left" href="#svg-left"></use></svg></li>
+        <li>1</li>
+        <li><svg width="1em" height="1em"><use xlink:href="#svg-right" href="#svg-right"></use></svg></li>
+        <li><svg width="1em" height="1em"><use xlink:href="#svg-right-double" href="#svg-right-double"></use></svg></li>
+    </ul>
+</nav>
 
 <template blog-post-template>
     <article class="flex flex-col">
