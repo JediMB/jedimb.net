@@ -49,13 +49,18 @@ class ConfigurationService extends Singleton {
 
         $configItem = $this->configuration[$name];
 
-        if ($configItem->valueInt !== null)
-            return $configItem->valueInt;
+        $value = $configItem->valueInt ?? $configItem->valueString;
 
-        return $configItem->valueString;
+        if (gettype($value) !== gettype($this->constants[$name]))
+            throw new Exception("Retreieved configuration value type does not match constant value type for $name");
+
+        return $value;
     }
 
-    /** @return (array<string, Configuration|string|int>) */
+    /**
+     * @param string[] $names
+     * @return (array<string, Configuration|string|int>)
+     */
     public function getUserConstants(array $names) : array {
         $constants = [];
 
@@ -72,10 +77,24 @@ class ConfigurationService extends Singleton {
     }
 
     public function createConfiguration(ConfigurationDTO $object) : Configuration {
+        if (!isset($this->constants[$object->name]))
+            throw new Exception("Trying to create a configuration for a non-eligible constant name {$object->name}");
+
+        if (gettype($object->value) !== gettype($this->constants[$object->name]))
+            throw new Exception("Submitted configuration value type does not match constant value type for {$object->name}");
+
         return $this->configDbService->createConfiguration($object);
     }
 
     public function updateConfiguration(Configuration $object) : Configuration {
+        if (!isset($this->constants[$object->name]))
+            throw new Exception("Trying to update a configuration for non-eligible constant name {$object->name}");
+
+        $value = $object->valueInt ?? $object->valueString;
+
+        if (gettype($value) !== gettype($this->constants[$object->name]))
+            throw new Exception("Submitted configuration value type does not match constant value type for {$object->name}");
+
         return $this->configDbService->updateConfiguration($object);
     }
 }
