@@ -46,9 +46,9 @@ class BlogPostDBService extends BaseDBService {
 
     // TODO: expand functionality to cover 'unpublished' and 'any'
     /** @return BlogPost[] */
-    public function getBlogPosts(PublishedStatus $publishedStatus = PublishedStatus::Published) : array {
+    public function getBlogPosts(int $limit, int $offset, PublishedStatus $publishedStatus = PublishedStatus::Published) : array {
         try {
-            $posts = $this->dbService->selectView('blog_posts_published_short', 'published_on', true);
+            $posts = $this->dbService->selectView('blog_posts_published_short', orderBy: 'published_on', descending: true, limit: $limit, offset: $offset);
             
             return array_map(function($post) {
                 return new BlogPost($post);

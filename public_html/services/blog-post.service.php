@@ -2,23 +2,29 @@
 
 namespace Services;
 
+require_once 'models/pagination.model.php';
+require_once 'services/configuration.service.php';
 require_once 'services/table-modified.service.php';
 require_once 'services/base/singleton.php';
 require_once 'services/db/blog-post.db.service.php';
 
 use Enums\PublishedStatus;
+use Models\Pagination;
 use Models\DB\BlogPost;
 use Models\DTO\BlogPost as BlogPostDTO;
+use Services\ConfigurationService;
 use Services\TableModifiedService;
 use Services\Base\Singleton;
 use Services\DB\BlogPostDBService;
 
 class BlogPostService extends Singleton {
     private BlogPostDBService $blogPostDbService;
+    private ConfigurationService $configurationService;
     private TableModifiedService $tableModifiedService;
 
     protected function __construct() {
         $this->blogPostDbService = BlogPostDBService::getInstance();
+        $this->configurationService = ConfigurationService::getInstance();
         $this->tableModifiedService = TableModifiedService::getInstance();
     }
 
@@ -26,13 +32,36 @@ class BlogPostService extends Singleton {
         return $this->blogPostDbService->getBlogPost($id, PublishedStatus::Any);
     }
 
+    /** @return (array{'pagination': Pagination, 'posts': BlogPost[]}) */
+    private function getBlogPosts(int $page, ?int $pageSize, PublishedStatus $publishedStatus) : array {
+        if ($page < 1) $page = 1;
+
+        $pageSize ??= $this->configurationService->getUserConstant('PAGINATION_PAGE_SIZE');
+
+        if ($pageSize < 1) $pageSize = 1;
+
+        $count = $this->getCount($publishedStatus);
+
+        $offset = ($page - 1) * $pageSize;
+        
+        if ($offset > 0 && $offset >= $count) {
+            $page = ceil($count / $pageSize);
+            $offset = ($page - 1) * $pageSize;
+        }
+
+        return [
+            'pagination' => new Pagination($page, $pageSize, $offset, $count),
+            'posts' => $this->blogPostDbService->getBlogPosts($pageSize, $offset, $publishedStatus)
+        ];
+    }
+
     function getCount(PublishedStatus $publishedStatus = PublishedStatus::Published) : int {
         return $this->blogPostDbService->getCount($publishedStatus);
     }
 
-    /** @return BlogPost[] */
-    function getPublishedBlogPosts() : array {
-        return $this->blogPostDbService->getBlogPosts(PublishedStatus::Published);
+    /** @return (array{'pagination': Pagination, 'posts': BlogPost[]}) */
+    function getPublishedBlogPosts(int $page = 1, ?int $pageSize = null) : array {
+        return $this->getBlogPosts($page,$pageSize, PublishedStatus::Published);        
     }
 
     function getPublishedBlogPost(int|string $identifier) : BlogPost|false {

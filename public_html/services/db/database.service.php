@@ -136,9 +136,10 @@ class DatabaseService extends Singleton {
         return $query->fetch();
     }
 
-    public function selectView(string $view, ?string $orderBy = null, bool $descending = false, int $limit = -1, int $offset = -1) {
+    public function selectView(string $view, array $columnValues = [], array $nullChecks = [], ?string $orderBy = null, bool $descending = false, int $limit = -1, int $offset = -1) : array {
         $query = $this->service->prepare(
             "SELECT * FROM {$this->schema}.$view" .
+            $this->buildWhereString($columnValues, $nullChecks) .
             $this->buildOrderString($orderBy, $descending) .
             $this->buildPaginationString($limit, $offset)
         );

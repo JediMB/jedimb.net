@@ -23,7 +23,7 @@ switch ( $_SERVER['REQUEST_METHOD'] ) {
     case 'GET':
         try {
             if (empty($id)) {
-                $posts = $service->getPublishedBlogPosts();
+                $posts = $service->getPublishedBlogPosts()['posts'];
                 return Response::Success($posts);
             }
 

@@ -50,7 +50,7 @@ class GalleryImageDBService extends BaseDBService {
     public function getGalleryImages(?int $id = null, bool $isImageId = false) : array {
         try {
             if ($id === null)
-                $galleryImageData = $this->dbService->selectView('gallery_image', 'order');
+                $galleryImageData = $this->dbService->selectView('gallery_image', orderBy: 'order');
             else if (!$isImageId)
                 $galleryImageData = $this->dbService->selectAllByColumnValue('gallery_image', 'gallery_id', $id, 'order');
             else
