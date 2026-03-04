@@ -140,21 +140,36 @@ class DatabaseService extends Singleton {
         return $query->fetch();
     }
 
-    public function selectView(string $view, ?string $orderBy = null, bool $descending = false) {
+    public function selectView(string $view, ?string $orderBy = null, bool $descending = false, int $limit = -1, int $offset = -1) {
         $query = $this->service->prepare(
             "SELECT * FROM {$this->schema}.$view" .
-            $this->buildOrderString($orderBy, $descending)
+            $this->buildOrderString($orderBy, $descending) .
+            $this->buildPaginationString($limit, $offset)
         );
         $query->execute();
 
         return $query->fetchAll() ?: [];
     }
 
-    private function buildOrderString(?string $orderBy = null, bool $descending = false) : string {
-        if (empty($orderBy))
+    private function buildOrderString(?string $column = null, bool $descending = false) : string {
+        if (empty($column))
             return ' ORDER BY id ASC';
 
-        return " ORDER BY \"$orderBy\" " . ($descending ? 'DESC' : 'ASC');
+        return " ORDER BY \"$column\" " . ($descending ? 'DESC' : 'ASC');
+    }
+
+    private function buildPaginationString(int $limit, int $offset) : string {
+        $result = '';
+
+        if ($limit > 0) {
+            $result = " LIMIT $limit";
+        }
+
+        if ($offset > 0) {
+            $result = "$result OFFSET $offset";
+        }
+        
+        return $result;
     }
 
     /** 
