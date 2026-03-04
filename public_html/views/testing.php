@@ -74,6 +74,18 @@ $links = !empty($links);
             <path style="opacity: 0.22;" d="M72.8,75.1c-3.2-3.2-3.2-8,0-11.2l0,0c3.2-3.2,8.8-3.2,12,0l96.8,96.8c3.2,3.2,3.2,8.8,0,12l0,0c-3.2,3.2-8.8,3.2-12,0L72.8,75.1z"/>
             <path style="opacity: 0.16;" d="M148,20.7c-1.6-4,0-9.6,4.8-11.2l0,0c4-1.6,9.6,0,11.2,4.8l52,126.4c1.6,4,0,9.6-4.8,11.2l0,0c-4,1.6-9.6,0-11.2-4.8L148,20.7z"/>
         </symbol>
+        <symbol id="svg-left" viewBox="0 -960 960 960" fill="currentColor">
+            <path d="M560-240 320-480l240-240 56 56-184 184 184 184-56 56Z"/>
+        </symbol>
+        <symbol id="svg-left-double" viewBox="0 -960 960 960" fill="currentColor">
+            <path d="M440-240 200-480l240-240 56 56-183 184 183 184-56 56Zm264 0L464-480l240-240 56 56-183 184 183 184-56 56Z"/>
+        </symbol>
+        <symbol id="svg-right" viewBox="0 -960 960 960" fill="currentColor">
+            <path d="M504-480 320-664l56-56 240 240-240 240-56-56 184-184Z"/>
+        </symbol>
+        <symbol id="svg-right-double" viewBox="0 -960 960 960" fill="currentColor">
+            <path d="M383-480 200-664l56-56 240 240-240 240-56-56 183-184Zm264 0L464-664l56-56 240 240-240 240-56-56 183-184Z"/>
+        </symbol>
     </svg>
 </body>
 </html>
