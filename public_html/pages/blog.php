@@ -25,13 +25,12 @@ $posts = $result['posts'];
     <?php Component::include('blog-head') ?>
 <?php endif ?>
 
-<!--
-    TODO:
-    Implement pagination
--->
+
 
 <div text-right>
-    Showing posts <?= $pagination->offset + 1 ?>&ndash;<?= $pagination->offset + count($posts) ?> (of <?= $pagination->itemCount ?>)
+    Showing posts
+    <span id="blog__pagination-start"><?= $pagination->offset + 1 ?></span>&ndash;<span id="blog__pagination-end"><?= $pagination->offset + count($posts) ?></span>
+    (of <span id="blog__pagination-total"><?= $pagination->itemCount ?></span>)
 </div>
 <blog-posts>
     <?php foreach ($posts as $post): ?>
@@ -48,10 +47,10 @@ $posts = $result['posts'];
     <?php endforeach ?>
 </blog-posts>
 <nav>
-    <!-- TODO: Accessibility-friendly descriptions of navigation items -->
     <ul class="nav-pagination">
         <li>
             <a href="<?= $baseRoute ?>/1"
+                id="blog__pagination-first"
                 title="First page"
                 >
                 <svg width="1em" height="1em">
@@ -61,6 +60,7 @@ $posts = $result['posts'];
         </li>
         <li>
             <a href="<?= $baseRoute ?>/<?= max(1, $pagination->page - 1) ?>"
+                id="blog__pagination-previous"
                 title="Previous page"
                 >
                 <svg width="1em" height="1em">
@@ -69,10 +69,48 @@ $posts = $result['posts'];
             </a>
         </li>
         <li>
-            1
+            <?php
+            $currentPage = $pagination->page;
+            $totalPages = $pagination->pageCount;
+            $paginationPages = [ $currentPage => $currentPage ];
+            $pageCount = 1;
+            $pageSteps = 1;
+
+            while ($pageCount < 5 && $pageSteps < 5) {
+                $prev = max($currentPage - $pageSteps, 1);
+                $paginationPages[$prev] = $prev;
+
+                $next = min($currentPage + $pageSteps, $totalPages);
+                $paginationPages[$next] = $next;
+
+                if ( ($newCount = count($paginationPages)) === $pageCount )
+                    break;
+
+                $pageCount = $newCount;
+                $pageSteps++;
+            }
+
+            ksort($paginationPages);
+            ?>
+            <ul id="blog__pagination-pages" class="nav-pagination">
+                <?php foreach ($paginationPages as $pageNumber): ?>
+                    <?php if ($pageNumber === $currentPage): ?>
+                        <li><strong><?= $pageNumber ?></strong></li>
+                    <?php else: ?>
+                        <li>
+                            <a href="<?= $baseRoute ?>/<?= $pageNumber ?>"
+                                title="Page <?= $pageNumber ?>"
+                                >
+                                <?= $pageNumber ?>
+                            </a>
+                        </li>
+                    <?php endif ?>
+                <?php endforeach ?>
+            </ul>
         </li>
         <li>
             <a href="<?= $baseRoute ?>/<?= min($pagination->pageCount, $pagination->page + 1) ?>"
+                id="blog__pagination-next"
                 title="Next page"
                 >
                 <svg width="1em" height="1em">
@@ -82,6 +120,7 @@ $posts = $result['posts'];
         </li>
         <li>
             <a href="<?= $baseRoute ?>/<?= $pagination->pageCount ?>"
+                id="blog__pagination-last"
                 title="Last page"
                 >
                 <svg width="1em" height="1em">
