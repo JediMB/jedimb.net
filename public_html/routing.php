@@ -158,7 +158,7 @@ function handleHome(string $path) {
         servePHP([
             'pagePath' => PATH_HOMEPAGE,
             'links' => true,
-            'baseRoute' => '/',
+            'baseRoute' => '',
             'page' => $page
         ]);
     }
@@ -203,10 +203,10 @@ function servePHP(array $variables = [ 'header' => false ]) {
     if (!empty($header))
         header($header);
 
-    if (isset($baseRoute))
-        $baseRoute = DIRECTORY_SEPARATOR . trim($baseRoute, '/');
+    if (empty($baseRoute))
+        $baseRoute = '';
     else
-        $baseRoute = DIRECTORY_SEPARATOR;
+        $baseRoute = '/' . trim($baseRoute, '/');
 
     if (empty($template))
         $template = SITE_VIEW;
