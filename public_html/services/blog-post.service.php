@@ -40,17 +40,18 @@ class BlogPostService extends Singleton {
 
         if ($pageSize < 1) $pageSize = 1;
 
-        $count = $this->getCount($publishedStatus);
+        $postCount = $this->getCount($publishedStatus);
+        $pageCount = (int)ceil($postCount / $pageSize);
 
         $offset = ($page - 1) * $pageSize;
         
-        if ($offset > 0 && $offset >= $count) {
-            $page = ceil($count / $pageSize);
+        if ($offset > 0 && $offset >= $postCount) {
+            $page = $pageCount;
             $offset = ($page - 1) * $pageSize;
         }
 
         return [
-            'pagination' => new Pagination($page, $pageSize, $offset, $count),
+            'pagination' => new Pagination($page, $pageSize, $offset, $postCount, $pageCount),
             'posts' => $this->blogPostDbService->getBlogPosts($pageSize, $offset, $publishedStatus)
         ];
     }

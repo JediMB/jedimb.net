@@ -33,7 +33,7 @@ $posts = $result['posts'];
 -->
 
 <div text-right>
-    Showing posts <?= $pagination->offset + 1 ?>&ndash;<?= $pagination->offset + count($posts) ?> (of <?= $pagination->total ?>)
+    Showing posts <?= $pagination->offset + 1 ?>&ndash;<?= $pagination->offset + count($posts) ?> (of <?= $pagination->itemCount ?>)
 </div>
 <blog-posts>
     <?php foreach ($posts as $post): ?>

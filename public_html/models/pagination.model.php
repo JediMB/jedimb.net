@@ -6,13 +6,15 @@ class Pagination {
     public readonly int $page;
     public readonly int $pageSize;
     public readonly int $offset;
-    public readonly int $total;
+    public readonly int $itemCount;
+    public readonly int $pageCount;
 
-    public function __construct(int $page, int $pageSize, int $offset, int $total) {
+    public function __construct(int $page, int $pageSize, int $offset, int $itemCount, int $pageCount) {
         $this->page = $page;
         $this->pageSize = $pageSize;
         $this->offset = $offset;
-        $this->total = $total;
+        $this->itemCount = $itemCount;
+        $this->pageCount = $pageCount;
     }
 }
 
