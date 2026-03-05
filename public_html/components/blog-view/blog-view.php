@@ -24,7 +24,8 @@ if (!isset($baseRoute) || !is_string($baseRoute))
 
 Component::addAttributes([
     'base-route' => $baseRoute,
-    'start-page' => $pagination->page
+    'start-page' => $pagination->page,
+    'page-size' => $pagination->pageSize
 ]);
 
 Component::renderCSS();
@@ -35,34 +36,54 @@ Component::renderOnce();
 
 <div text-right>
     Showing posts
-    <span id="blog__pagination-start"><?= $pagination->offset + 1 ?></span>&ndash;<span id="blog__pagination-end"><?= $pagination->offset + count($posts) ?></span>
-    (of <span id="blog__pagination-total"><?= $pagination->itemCount ?></span>)
+    <span id="blog__items-start"><?= $pagination->offset + 1 ?></span>&ndash;<span id="blog__items-end"><?= $pagination->offset + count($posts) ?></span>
+    (of <span id="blog__items-total"><?= $pagination->itemCount ?></span>)
 </div>
 <blog-posts>
-    <?php foreach ($posts as $post): ?>
-        <article class="flex flex-col">
-            <h2><a href="/<?= PATH_BLOG_PREFIX . $post->permalink ?>"><?= $post->title ?></a></h2>
-            <article-byline>
-                <?php Component::include('created-modified-dates', [
-                    'createdOn' => $post->publishedOn,
-                    'modifiedOn' => $post->modifiedOn
-                ]) ?>
-            </article-byline>
-            <article-content><?= $post->contentShort ?></article-content>
+    <?php foreach ($posts as $key => $post): ?>
+        <article>
+            <article-header>
+                <h2>
+                    <a href="/<?= PATH_BLOG_PREFIX . $post->permalink ?>"
+                        class="title"
+                        >
+                        <?= $post->title ?>
+                    </a>
+                </h2>
+                <article-byline>
+                    <?php Component::include('created-modified-dates', [
+                        'createdOn' => $post->publishedOn,
+                        'modifiedOn' => $post->modifiedOn
+                    ]) ?>
+                </article-byline>
+            </article-header>
+            <article-content class="content">
+                <?= $post->contentShort ?>
+            </article-content>
         </article>
     <?php endforeach ?>
 </blog-posts>
 
 <template blog-post-template>
-    <article class="flex flex-col">
-        <h2><a href="/<?= PATH_BLOG_PREFIX ?>">Title</a></h2>
-        <article-byline>
-            <?php Component::include('created-modified-dates', [
-                'createdOn' => new \DateTime(),
-                'modifiedOn' => new \DateTime()
-            ]) ?>
-        </article-byline>
-        <article-content>Content</article-content>
+    <article>
+        <article-header>
+            <h2>
+                <a href="/<?= PATH_BLOG_PREFIX ?>"
+                    class="title"
+                    >
+                    Title
+                </a>
+            </h2>
+            <article-byline>
+                <?php Component::include('created-modified-dates', [
+                    'createdOn' => new \DateTime(),
+                    'modifiedOn' => new \DateTime()
+                ]) ?>
+            </article-byline>
+        </article-header>
+        <article-content class="content">
+            Content
+        </article-content>
     </article>
 </template>
 
@@ -92,12 +113,13 @@ ksort($pageNumbers);
 
 ?>
 
-<nav>
+<nav id="blog__pagination">
     <ul class="nav-pagination">
         <li>
             <a href="<?= $baseRoute ?>/1"
                 id="blog__pagination-first"
                 title="First page"
+                target-page="1"
                 >
                 <svg width="1em" height="1em">
                     <use xlink:href="#svg-left-double" href="#svg-left-double"></use>
@@ -108,6 +130,7 @@ ksort($pageNumbers);
             <a href="<?= $baseRoute ?>/<?= max(1, $currentPage - 1) ?>"
                 id="blog__pagination-previous"
                 title="Previous page"
+                target-page="<?= max(1, $currentPage - 1) ?>"
                 >
                 <svg width="1em" height="1em">
                     <use xlink:href="#svg-left" href="#svg-left"></use>
@@ -123,6 +146,7 @@ ksort($pageNumbers);
                         <li>
                             <a href="<?= $baseRoute ?>/<?= $pageNumber ?>"
                                 title="Page <?= $pageNumber ?>"
+                                target-page="<?= $pageNumber ?>"
                                 >
                                 <?= $pageNumber ?>
                             </a>
@@ -135,6 +159,7 @@ ksort($pageNumbers);
             <a href="<?= $baseRoute ?>/<?= min($totalPages, $currentPage + 1) ?>"
                 id="blog__pagination-next"
                 title="Next page"
+                target-page="<?= min($totalPages, $currentPage + 1) ?>"
                 >
                 <svg width="1em" height="1em">
                     <use xlink:href="#svg-right" href="#svg-right"></use>
@@ -145,6 +170,7 @@ ksort($pageNumbers);
             <a href="<?= $baseRoute ?>/<?= $totalPages ?>"
                 id="blog__pagination-last"
                 title="Last page"
+                target-page="<?= $totalPages ?>"
                 >
                 <svg width="1em" height="1em">
                     <use xlink:href="#svg-right-double" href="#svg-right-double"></use>

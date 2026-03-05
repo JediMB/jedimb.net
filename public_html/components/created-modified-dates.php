@@ -19,7 +19,10 @@ $relativeDate = empty($relativeDate) ? 'false' : 'true';
 ?>
 
 <span>
-    <date-time server-time="<?= $createdString ?>" relative-date="<?= $relativeDate ?>">
+    <date-time class="created-on"
+        server-time="<?= $createdString ?>"
+        relative-date="<?= $relativeDate ?>"
+        >
         <?=  $createdString ?>
     </date-time>
 </span>
@@ -28,7 +31,10 @@ $relativeDate = empty($relativeDate) ? 'false' : 'true';
     <?php $modifiedString = DateTime::toString($modifiedOn) ?>
     <span class="weak">
         &ndash; Last modified 
-        <date-time server-time="<?= $modifiedString ?>" relative-date="<?= $relativeDate ?>">
+        <date-time class="modified-on"
+            server-time="<?= $modifiedString ?>"
+            relative-date="<?= $relativeDate ?>"
+            >
             <?= $modifiedString ?>
         </date-time>.
     </span>
