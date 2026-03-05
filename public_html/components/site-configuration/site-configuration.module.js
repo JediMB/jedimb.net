@@ -48,9 +48,11 @@ class SiteConfiguration {
         if (updatedConfigs.length > 0)
             responses.push(this.#configApiService.updateConfigurations(updatedConfigs));
 
-        // Promise.all(responses).then(() => {
-        //     setTimeout(() => location.reload(), 1000);
-        // })
+        Promise.all(responses).then(() => {
+            setTimeout(() => location.reload(), 1000);
+        }, reason => {
+            console.error(reason);
+        });
     }
 }
 const siteConfiguration = new SiteConfiguration();
