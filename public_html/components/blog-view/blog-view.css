@@ -1,0 +1,16 @@
+blog-view-component {
+    font-size: inherit;
+}
+
+.nav-pagination {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    gap: var(--size-xs);
+
+    & li {
+        min-width: 1em;
+        text-align: center;
+    }
+}
