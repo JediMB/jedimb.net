@@ -2,12 +2,10 @@
 
 namespace Pages;
 
-require_once 'models/pagination.model.php';
 require_once 'services/blog-post.service.php';
 require_once 'utilities/component.utility.php';
 
 use Enums\UserPermission;
-use Models\Pagination;
 use Services\BlogPostService;
 use Services\SessionService;
 use Utilities\Component;
@@ -52,11 +50,45 @@ $posts = $result['posts'];
 <nav>
     <!-- TODO: Accessibility-friendly descriptions of navigation items -->
     <ul class="nav-pagination">
-        <li><svg width="1em" height="1em"><use xlink:href="#svg-left-double" href="#svg-left-double"></use></svg></li>
-        <li><svg width="1em" height="1em"><use xlink:href="#svg-left" href="#svg-left"></use></svg></li>
-        <li>1</li>
-        <li><svg width="1em" height="1em"><use xlink:href="#svg-right" href="#svg-right"></use></svg></li>
-        <li><svg width="1em" height="1em"><use xlink:href="#svg-right-double" href="#svg-right-double"></use></svg></li>
+        <li>
+            <a href="<?= $baseRoute ?>/1"
+                title="First page"
+                >
+                <svg width="1em" height="1em">
+                    <use xlink:href="#svg-left-double" href="#svg-left-double"></use>
+                </svg>
+            </a>
+        </li>
+        <li>
+            <a href="<?= $baseRoute ?>/<?= max(1, $pagination->page - 1) ?>"
+                title="Previous page"
+                >
+                <svg width="1em" height="1em">
+                    <use xlink:href="#svg-left" href="#svg-left"></use>
+                </svg>
+            </a>
+        </li>
+        <li>
+            1
+        </li>
+        <li>
+            <a href="<?= $baseRoute ?>/<?= min($pagination->pageCount, $pagination->page + 1) ?>"
+                title="Next page"
+                >
+                <svg width="1em" height="1em">
+                    <use xlink:href="#svg-right" href="#svg-right"></use>
+                </svg>
+            </a>
+        </li>
+        <li>
+            <a href="<?= $baseRoute ?>/<?= $pagination->pageCount ?>"
+                title="Last page"
+                >
+                <svg width="1em" height="1em">
+                    <use xlink:href="#svg-right-double" href="#svg-right-double"></use>
+                </svg>
+            </a>
+        </li>
     </ul>
 </nav>
 
