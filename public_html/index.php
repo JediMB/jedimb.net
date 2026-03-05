@@ -62,17 +62,22 @@ $realPath = getRealPath($requestPath, $isForbidden);
 if (!$realPath)
     servePHP([
         'header' => 'HTTP/1.1 404 Not Found',
-        'pagePath' => PATH_ERROR404
+        'pagePath' => PATH_ERROR404,
+        'baseRoute' => $requestPath
     ]);
 
 if ($isForbidden)
     servePHP([
         'header' => 'HTTP/1.1 403 Forbidden',
-        'pagePath' => PATH_ERROR403
+        'pagePath' => PATH_ERROR403,
+        'baseRoute' => $requestPath
     ]);
 
 if (isPHP($realPath))
-    servePHP([ 'pagePath' => $realPath ]);
+    servePHP([
+        'pagePath' => $realPath,
+        'baseRoute' => $requestPath
+    ]);
 
 // Serve asset file from filesystem
 return false;

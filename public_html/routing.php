@@ -103,11 +103,13 @@ function handleBlogRequests(string $path) {
         if (!$blogPost)
             servePHP([
                 'header' => 'HTTP/1.1 404 Not Found',
-                'pagePath' => PATH_ERROR404
+                'pagePath' => PATH_ERROR404,
+                'baseRoute' => $path
             ]);
 
         servePHP([
             'pageType' => PageType::BlogPost,
+            'baseRoute' => $path,
             'title' => $blogPost->title,
             'content' => $blogPost->contentShort . $blogPost->contentRest,
             'createdOn' => $blogPost->publishedOn,
@@ -156,6 +158,7 @@ function handleHome(string $path) {
         servePHP([
             'pagePath' => PATH_HOMEPAGE,
             'links' => true,
+            'baseRoute' => '/',
             'page' => $page
         ]);
     }
@@ -172,6 +175,7 @@ function handleVirtualPages(string $requestPath) {
 
             servePHP([
                 'pageType' => PageType::Virtual,
+                'baseRoute' => $route,
                 'title' => $page->title,
                 'content' => $page->contentShort . $page->contentRest,
                 'createdOn' => $page->createdOn,
@@ -198,6 +202,11 @@ function servePHP(array $variables = [ 'header' => false ]) {
     
     if (!empty($header))
         header($header);
+
+    if (isset($baseRoute))
+        $baseRoute = DIRECTORY_SEPARATOR . trim($baseRoute, '/');
+    else
+        $baseRoute = DIRECTORY_SEPARATOR;
 
     if (empty($template))
         $template = SITE_VIEW;
