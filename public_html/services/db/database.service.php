@@ -118,6 +118,11 @@ class DatabaseService extends Singleton {
         return (int) $query->fetch()['count'];
     }
 
+    /**
+     * @param string $function
+     * @param (array<int, (array{'value': int|string|boolean, 'type': int})>) $parameters
+     * @param DBFetch $amount
+     */
     public function selectFunction(string $function, array $parameters, DBFetch $amount = DBFetch::One) {
         $paramString = rtrim(str_repeat('?, ', count($parameters)), ', ');
         $query = $this->service->prepare(

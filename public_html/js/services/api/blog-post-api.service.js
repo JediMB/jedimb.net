@@ -1,6 +1,7 @@
 import httpClient from '/js/http-client.js';
 import BlogPost from '/js/models/blog-post.js';
 import BlogPostDTO from '/js/models/blog-post.dto.js';
+import BlogPostSchedule from '/js/models/blog-post-schedule.js';
 
 export { blogPostApiService as default };
 
@@ -61,7 +62,7 @@ class BlogPostApiService {
 
     /**
      * @param {BlogPostDTO} blogPostDTO
-     * @returns {Promise<({errors: object, value: { blogPost: BlogPost, modifiedOn: Date }})>} 
+     * @returns {Promise<({errors: object, value: { blogPost: BlogPost, schedule: BlogPostSchedule }})>} 
      */
     async postBlogPost(blogPostDTO) {
         const response = await this.#httpClient.post(this.#api, blogPostDTO);
@@ -69,15 +70,13 @@ class BlogPostApiService {
         if (!response.success)
             return response;
 
-        if (!response.value.blogPost)
-            throw new Error('Create failed to return blog post data');
+        if (!response.value.id)
+            throw new Error('Create blog post failed to return data');
 
-        response.value.blogPost = new BlogPost(response.value.blogPost);
-
-        if (!response.value.modifiedOn)
-            throw new Error('Create failed to return blog post table modified date');
-
-        response.value.modifiedOn = new Date(response.value.modifiedOn.date + response.value.modifiedOn.timezone);
+        if (blogPostDTO.scheduledOn)
+            response.value = { schedule: new BlogPostSchedule(response.value) };
+        else
+            response.value = { blogPost: new BlogPost(response.value) };
 
         return response;
     }

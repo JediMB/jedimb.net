@@ -9,6 +9,7 @@ use Models\DTO\BlogPost as BlogPostDTO;
 use Models\Exceptions\InputException;
 use Services\BlogPostService;
 use Services\SessionService;
+use Utilities\DateTime;
 use Utilities\Response;
 
 $service = BlogPostService::getInstance(); /** @var BlogPostService $service */
@@ -49,17 +50,17 @@ switch ( $_SERVER['REQUEST_METHOD'] ) {
             $post = new BlogPostDTO($input);
 
             if (empty($post->scheduledOn)) {
-                $response = $service->publishBlogPost($post);
+                $post = $service->publishBlogPost($post)['blogPost'];
 
-                return Response::Success($response);
+                return Response::Success($post);
             }
 
-            $response = $service->scheduleBlogPost($post);
+            if (!DateTime::parse($post->scheduledOn))
+                return Response::BadRequest('Invalid publishing date format');
+
+            $schedule = $service->scheduleBlogPost($post);
             
-            return Response::Success([
-                'modifiedOn' => 'test',
-                'blogPost' => $post
-            ]);
+            return Response::Success($schedule);
         }
         catch (InputException $e) {
             return Response::InputException($e->getErrors());

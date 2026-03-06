@@ -21,7 +21,7 @@ class BlogPost extends DBBase {
     public ?string $contentRest;
     public ?string $mastolink;
     public bool $isPinned;
-    public ?\DateTime $scheduledOn;
+    public ?string $scheduledOn;
 
     public function __construct(array $input) {
         parent::__construct($input);
@@ -40,9 +40,9 @@ class BlogPost extends DBBase {
         $this->mastolink = Input::verifyOptionalTextInput('mastolink', $input, INPUT_LENGTH['page_sociallink'], $errors, REGEX_PHP['url']);
 
         $this->isPinned = $input['isPinned'];
-        $this->scheduledOn = DateTime::parse($input['scheduledOn']);
+        $this->scheduledOn = $input['scheduledOn'];
 
-        $this->permalink = DateTime::toPermadateString($this->scheduledOn)
+        $this->permalink = DateTime::toPermadateString(DateTime::parse($this->scheduledOn))
             . Input::verifyRequiredTextInput('permalink', $input, INPUT_LENGTH['blog_permalink_title'], $errors, REGEX_PHP['permalink-title']);
 
         if (!empty($errors))

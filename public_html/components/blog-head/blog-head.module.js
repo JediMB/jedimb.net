@@ -73,7 +73,10 @@ customElements.define('blog-head-component', class BlogHeadComponent extends HTM
 
         this.#scheduledDate.addEventListener('change', () => permadate.textContent = this.#scheduledDate.value.replaceAll('-', '/'));
 
-        this.#btnPublishPost.addEventListener('click', () => this.#publishPost());
+        this.#form.addEventListener('submit', event => {
+            event.preventDefault();
+            this.#publishPost();
+        });
 
         this.#btnAddPost.addEventListener('click', () => {
             const wasActive = !this.#btnAddPost.ariaPressed || this.#btnAddPost.ariaPressed !== 'false';
@@ -81,6 +84,7 @@ customElements.define('blog-head-component', class BlogHeadComponent extends HTM
         });
 
         btnCancelPost.addEventListener('click', () => {
+            this.#form.elements['permalink'].defaultValue = '';
             this.#form.reset();
             this.#toggleFormView(false);
         });
@@ -110,10 +114,27 @@ customElements.define('blog-head-component', class BlogHeadComponent extends HTM
 
         blogPostService.createBlogPost(post,
             value => {
-                // TODO: Notification
-                console.log('success', value);
+                this.#form.elements['permalink'].defaultValue = '';
                 this.#form.reset();
                 this.#toggleFormView(false);
+
+                for (const input of this.#form.elements) {
+                    if (!input.classList.length)
+                        continue;
+
+                    input.classList.remove('error-required');
+                    input.classList.remove('error-too-short');
+                    input.classList.remove('error-too-long');
+                    input.classList.remove('error-mismatch');
+                }
+
+                if (value.blogPost) {
+                    // TODO: Blog Post notification
+                }
+                else {
+                    // TODO: Schedule notification
+                }
+                console.log(value.blogPost ?? value.schedule);
             },
             errors => {
                 for (const input of this.#form.elements) {

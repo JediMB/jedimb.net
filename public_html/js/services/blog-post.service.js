@@ -2,6 +2,7 @@ import BlogPost from "/js/models/blog-post.js";
 import BlogPostDTO from "/js/models/blog-post.dto.js";
 import blogPostApiService from "/js/services/api/blog-post-api.service.js";
 import Emitter from "/js/utilities/emitter.js";
+import BlogPostSchedule from "/js/models/blog-post-schedule.js";
 
 
 export { blogPostService as default };
@@ -16,7 +17,7 @@ class BlogPostService {
 
     /**
      * @param {BlogPostDTO} blogPostDTO 
-     * @param {(value: BlogPost) => void} next 
+     * @param {(value: { blogPost: BlogPost, schedule: BlogPostSchedule }) => void} next 
      * @param {(errors: object) => void} error
      * @returns {Promise<void>}
      */
@@ -26,8 +27,10 @@ class BlogPostService {
         if (!response.success)
             return error?.call(this, response.errors);
 
-        this.#newBlogPost.setValue(response.value.blogPost);
-        next?.call(this, response.value.blogPost);
+        if (response.value.blogPost)
+            this.#newBlogPost.setValue(response.value.blogPost);
+
+        next?.call(this, response.value);
     }
 
     /**

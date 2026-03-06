@@ -156,6 +156,8 @@ Component::addJSModule();
             </button>
             <blog-head-buttons-save>
                 <button id="blog-head__btn-publish"
+                    type="submit"
+                    form="blog-head__form"
                     class="btn-primary"
                     data-content-publish="Publish"
                     data-content-schedule="Schedule"
