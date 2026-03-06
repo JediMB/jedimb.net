@@ -111,6 +111,8 @@ while ($pageCount < 5 && $pageSteps < 5) {
 
 ksort($pageNumbers);
 
+$nextPage = min($totalPages, $currentPage + 1);
+
 ?>
 
 <nav id="blog__pagination">
@@ -120,6 +122,7 @@ ksort($pageNumbers);
                 id="blog__pagination-first"
                 title="First page"
                 target-page="1"
+                <?= $currentPage < 3 ? 'disabled' : null ?>
                 >
                 <svg width="1em" height="1em">
                     <use xlink:href="#svg-left-double" href="#svg-left-double"></use>
@@ -131,6 +134,7 @@ ksort($pageNumbers);
                 id="blog__pagination-previous"
                 title="Previous page"
                 target-page="<?= max(1, $currentPage - 1) ?>"
+                <?= $currentPage === 1 ? 'disabled' : null ?>
                 >
                 <svg width="1em" height="1em">
                     <use xlink:href="#svg-left" href="#svg-left"></use>
@@ -140,26 +144,24 @@ ksort($pageNumbers);
         <li>
             <ul id="blog__pagination-pages" class="nav-pagination">
                 <?php foreach ($pageNumbers as $pageNumber): ?>
-                    <?php if ($pageNumber === $currentPage): ?>
-                        <li><strong><?= $pageNumber ?></strong></li>
-                    <?php else: ?>
-                        <li>
-                            <a href="<?= $baseRoute ?>/<?= $pageNumber ?>"
-                                title="Page <?= $pageNumber ?>"
-                                target-page="<?= $pageNumber ?>"
-                                >
-                                <?= $pageNumber ?>
-                            </a>
-                        </li>
-                    <?php endif ?>
+                    <li>
+                        <a href="<?= $baseRoute ?>/<?= $pageNumber ?>"
+                            title="Page <?= $pageNumber ?>"
+                            target-page="<?= $pageNumber ?>"
+                            <?= $pageNumber === $currentPage ? 'class="active"' : null ?>
+                            >
+                            <?= $pageNumber ?>
+                        </a>
+                    </li>
                 <?php endforeach ?>
             </ul>
         </li>
         <li>
-            <a href="<?= $baseRoute ?>/<?= min($totalPages, $currentPage + 1) ?>"
+            <a href="<?= $baseRoute ?>/<?= $nextPage ?>"
                 id="blog__pagination-next"
                 title="Next page"
-                target-page="<?= min($totalPages, $currentPage + 1) ?>"
+                target-page="<?= $nextPage ?>"
+                <?= $currentPage === $totalPages ? 'disabled' : null ?>
                 >
                 <svg width="1em" height="1em">
                     <use xlink:href="#svg-right" href="#svg-right"></use>
@@ -171,6 +173,7 @@ ksort($pageNumbers);
                 id="blog__pagination-last"
                 title="Last page"
                 target-page="<?= $totalPages ?>"
+                <?= $currentPage > $totalPages - 2 ? 'disabled' : null ?>
                 >
                 <svg width="1em" height="1em">
                     <use xlink:href="#svg-right-double" href="#svg-right-double"></use>

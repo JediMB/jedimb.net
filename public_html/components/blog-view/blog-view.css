@@ -32,8 +32,28 @@ article-content {
     align-items: center;
     gap: var(--size-xs);
 
-    & li {
+    & a {
+        display: inline-block;
         min-width: 1em;
+        border-radius: var(--size-xs);
         text-align: center;
+        vertical-align: middle;
+        transition:
+            background-color 1s,
+            transform 1s,
+            font-weight 1s,
+            color 1s;
+
+        &.active {
+            pointer-events: none;
+            background-color: var(--clr-primary);
+            transform: scale(1.1);
+            font-weight: 700;
+            color: black;
+        }
+    }
+
+    & [disabled] {
+        opacity: 0.75;
     }
 }
