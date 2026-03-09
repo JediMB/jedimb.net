@@ -5,9 +5,10 @@ namespace Services\DB;
 require_once 'services/base/base.db.service.php';
 
 use Exception;
-use Models\DB\BlogPostSchedule;
 use PDO;
 use PDOException;
+use Enums\DBFetch;
+use Models\DB\BlogPostSchedule;
 use Services\Base\BaseDBService;
 
 class BlogPostScheduleDbService extends BaseDBService {
@@ -43,6 +44,24 @@ class BlogPostScheduleDbService extends BaseDBService {
                 $blogPostSchedules
             );
 
+        }
+        catch (PDOException $e) {
+            throw new Exception('Database error: ' . $e->getMessage());
+        }
+    }
+
+    /** @return BlogPostSchedule[] */
+    public function publishPendingScheduledBlogPost() : array {
+        try {
+            $blogPostSchedules = $this->dbService->selectFunction('publish_pending_scheduled_posts', amount: DBFetch::All);
+
+            if (!$blogPostSchedules)
+                return [];
+
+            return array_map(
+                fn($schedule) => new BlogPostSchedule($schedule),
+                $blogPostSchedules
+            );
         }
         catch (PDOException $e) {
             throw new Exception('Database error: ' . $e->getMessage());

@@ -12,12 +12,14 @@ require_once 'secrets.php';
 
 require_once 'routing.php';
 require_once 'enums/page-type.enum.php';
+require_once 'services/blog-post-schedule.service.php';
 require_once 'services/navigation.service.php';
 require_once 'services/session.service.php';
 require_once 'services/db/user-token.db.service.php';
 require_once 'utilities/response.utility.php';
 
 use Models\MenuItem;
+use Services\BlogPostScheduleService;
 use Services\NavigationService;
 use Services\SessionService;
 
@@ -31,7 +33,10 @@ $requestPath = strtolower(
     )
 );
 
-$sessionService = SessionService::getInstance(); /** @var SessionService $sessionService */
+$sessionService = SessionService::getInstance();
+
+$blogPostScheduleService = BlogPostScheduleService::getInstance();
+$blogPostScheduleService->publishPendingScheduledBlogPosts();
 
 handleBots();
 
