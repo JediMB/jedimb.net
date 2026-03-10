@@ -16,6 +16,10 @@ class Pagination {
         $this->itemCount = $itemCount;
         $this->pageCount = $pageCount;
     }
+
+    public function __toString() : string {
+        return "{$this->page},{$this->pageSize},{$this->offset},{$this->itemCount},{$this->pageCount}";
+    }
 }
 
 ?>

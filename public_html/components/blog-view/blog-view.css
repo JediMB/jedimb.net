@@ -32,9 +32,13 @@ article-content {
     align-items: center;
     gap: var(--size-xs);
 
+    &[disabled] {
+        pointer-events: none;
+    }
+
     & a {
         display: inline-block;
-        min-width: 1em;
+        min-width: 3ch;
         border-radius: var(--size-xs);
         text-align: center;
         vertical-align: middle;
@@ -51,6 +55,10 @@ article-content {
             font-weight: 700;
             color: black;
         }
+    }
+
+    & svg {
+        margin: auto;
     }
 
     & [disabled] {

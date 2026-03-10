@@ -24,8 +24,7 @@ if (!isset($baseRoute) || !is_string($baseRoute))
 
 Component::addAttributes([
     'base-route' => $baseRoute,
-    'start-page' => $pagination->page,
-    'page-size' => $pagination->pageSize
+    'data-pagination' => $pagination
 ]);
 
 Component::renderCSS();
@@ -119,6 +118,7 @@ $nextPage = min($totalPages, $currentPage + 1);
     <ul class="nav-pagination">
         <li>
             <a href="<?= $baseRoute ?>/1"
+                onclick="return false;"
                 id="blog__pagination-first"
                 title="First page"
                 target-page="1"
@@ -131,6 +131,7 @@ $nextPage = min($totalPages, $currentPage + 1);
         </li>
         <li>
             <a href="<?= $baseRoute ?>/<?= max(1, $currentPage - 1) ?>"
+                onclick="return false;"
                 id="blog__pagination-previous"
                 title="Previous page"
                 target-page="<?= max(1, $currentPage - 1) ?>"
@@ -146,6 +147,7 @@ $nextPage = min($totalPages, $currentPage + 1);
                 <?php foreach ($pageNumbers as $pageNumber): ?>
                     <li>
                         <a href="<?= $baseRoute ?>/<?= $pageNumber ?>"
+                            onclick="return false;"
                             title="Page <?= $pageNumber ?>"
                             target-page="<?= $pageNumber ?>"
                             <?= $pageNumber === $currentPage ? 'class="active"' : null ?>
@@ -158,6 +160,7 @@ $nextPage = min($totalPages, $currentPage + 1);
         </li>
         <li>
             <a href="<?= $baseRoute ?>/<?= $nextPage ?>"
+                onclick="return false;"
                 id="blog__pagination-next"
                 title="Next page"
                 target-page="<?= $nextPage ?>"
@@ -170,6 +173,7 @@ $nextPage = min($totalPages, $currentPage + 1);
         </li>
         <li>
             <a href="<?= $baseRoute ?>/<?= $totalPages ?>"
+                onclick="return false;"
                 id="blog__pagination-last"
                 title="Last page"
                 target-page="<?= $totalPages ?>"
