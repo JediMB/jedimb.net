@@ -1,11 +1,13 @@
 <?php
 
 require_once 'enums/page-type.enum.php';
+require_once 'services/blog-post-schedule.service.php';
 require_once 'services/blog-post.service.php';
 require_once 'services/db/page.db.service.php';
 
 use Enums\PageType;
 use Services\NavigationService;
+use Services\BlogPostScheduleService;
 use Services\BlogPostService;
 use Services\DB\PageDBService;
 
@@ -63,30 +65,16 @@ function handleApiRequests(string $path) {
     $pathComponents = explode('/', $path, 10);
     $pathComponents = array_splice($pathComponents, 1);
 
-    header('Content-Type: application/json');
-    
     foreach ($pathComponents as $index => $component) {
         $apiPath = "$apiPath/$component";
         
         if ( ($filePath = realpath("$apiPath.php")) ) {
             $GLOBALS['api_params'] = array_slice($pathComponents, $index + 1);
-
-            if ( !($result = include $filePath) ) {
-                header('HTTP/1.1 500 Internal Server Error');
-                echo json_encode([ 'success' => false, 'errors' => [ 'No data from API' ] ]);
-                exit;
-            }
-
-            if (isset($result['header'])) {
-                header($result['header']);
-                unset($result['header']);
-            }
-
-            echo json_encode($result);
-            exit;
+            serveApiData($filePath);
         }
     }
 
+    header('Content-Type: application/json');
     header('HTTP/1.1 404 Not Found');
     echo json_encode([ 'success' => false, 'errors' => [ 'Invalid API address' ] ]);
     exit;
@@ -194,7 +182,29 @@ function isUnsafe(string $realPath) : bool {
         || substr(basename($realPath), 0, 1) === '.'; 
 }
 
+function serveApiData(string $filePath) {
+    BlogPostScheduleService::getInstance()->publishPendingScheduledBlogPosts();
+
+    header('Content-Type: application/json');
+
+    if ( !($result = include $filePath) ) {
+        header('HTTP/1.1 500 Internal Server Error');
+        echo json_encode([ 'success' => false, 'errors' => [ 'No data from API' ] ]);
+        exit;
+    }
+
+    if (isset($result['header'])) {
+        header($result['header']);
+        unset($result['header']);
+    }
+
+    echo json_encode($result);
+    exit;
+}
+
 function servePHP(array $variables = [ 'header' => false ]) {
+    BlogPostScheduleService::getInstance()->publishPendingScheduledBlogPosts();
+    
     extract($variables);
 
     if (!isset($pageType))
