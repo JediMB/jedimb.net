@@ -36,14 +36,11 @@ class HttpClient {
     /**
      * Requests data from the API
      * @param {string} api 
-     * @param {number|string} identifier
+     * @param {(number|string)[]} args
      * @returns {Promise<any>}
      */
-    async get(api, identifier = undefined) {
-        const queryString =
-            identifier === undefined
-            ? ''
-            : `/${identifier}`;
+    async get(api, ...args) {
+        const queryString = args ? `/${args.join('/')}` : '';
 
         const response = await fetch(this.#baseApiUrl + api + queryString).catch(
             error => ({
