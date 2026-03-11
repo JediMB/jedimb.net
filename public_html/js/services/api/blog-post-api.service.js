@@ -7,7 +7,10 @@ export { blogPostApiService as default };
 
 class BlogPostApiService {
     #httpClient;
-    #api = 'blog/posts';
+    #api = {
+        post: 'blog/post',
+        posts: 'blog/posts'
+    };
 
     constructor() {
         this.#httpClient = httpClient;
@@ -18,7 +21,7 @@ class BlogPostApiService {
      * @returns {Promise<([number, Date]|false)>}
      */
     async deleteBlogPost(id) {
-        const response = await this.#httpClient.delete(this.#api, id);
+        const response = await this.#httpClient.delete(this.#api.post, id);
 
         if (!response.success)
             return false;
@@ -37,7 +40,7 @@ class BlogPostApiService {
      * @returns {Promise<(BlogPost|false)>}
      */
     async getBlogPost(id) {
-        const response = await this.#httpClient.get(this.#api, id);
+        const response = await this.#httpClient.get(this.#api.post, id);
 
         if (!response.success)
             return false;
@@ -48,14 +51,17 @@ class BlogPostApiService {
         return new BlogPost(response.value);
     }
 
-    /** @returns {Promise<BlogPost[]>}  */
-    async getBlogPosts() {
-        const response = await this.#httpClient.get(this.#api);
+    /**
+     * @param {number} page 
+     * @param {number} pageSize 
+     * @returns {Promise<{posts: BlogPost[], pagination: ''}>}  */
+    async getBlogPosts(page, pageSize) {
+        const response = await this.#httpClient.get(this.#api.posts, page, pageSize);
 
         if (!response.success)
             return response;
 
-        response.value = response.value.map(post => new BlogPost(post));
+        response.value.posts = response.value.posts.map(post => new BlogPost(post));
 
         return response;
     }
@@ -65,7 +71,7 @@ class BlogPostApiService {
      * @returns {Promise<({errors: object, value: { blogPost: BlogPost, schedule: BlogPostSchedule }})>} 
      */
     async postBlogPost(blogPostDTO) {
-        const response = await this.#httpClient.post(this.#api, blogPostDTO);
+        const response = await this.#httpClient.post(this.#api.post, blogPostDTO);
 
         if (!response.success)
             return response;
