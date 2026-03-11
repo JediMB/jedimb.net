@@ -1,4 +1,4 @@
-export class Pagination {
+export default class Pagination {
     constructor({page, pageSize, offset, itemCount, pageCount}) {
         this.page = Number(page);
         this.pageSize = Number(pageSize);

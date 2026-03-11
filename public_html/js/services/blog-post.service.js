@@ -2,6 +2,7 @@ import BlogPost from "/js/models/blog/blog-post.model.js";
 import BlogPostDTO from "/js/models/blog/blog-post.dto.model.js";
 import BlogPostSchedule from "/js/models/blog/blog-post-schedule.model.js";
 import Emitter from "/js/utilities/emitter.js";
+import Pagination from "/js/models/blog/pagination.model.js";
 import blogPostApiService from "/js/services/api/blog-post-api.service.js";
 
 export { blogPostService as default };
@@ -35,7 +36,7 @@ class BlogPostService {
     /**
      * @param {number} id
      * @param {(value: BlogPost|undefined) => void} next 
-     * @returns {void}
+     * @returns {Promise<void>}
      */
     async getBlogPost(id, next) {
         const post = await this.#service.getBlogPost(id);
@@ -44,6 +45,18 @@ class BlogPostService {
             throw new Error('Blog post not found');
 
         next?.call(this, post);
+    }
+
+    /**
+     * @param {number} page 
+     * @param {number} pageSize 
+     * @param {(blogPosts: BlogPost[], pagination: Pagination) => void} next
+     * @returns {Promise<void>}
+     */
+    async getBlogPosts(page, pageSize, next) {
+        const { blogPosts, pagination } = await this.#service.getBlogPosts(page, pageSize);
+
+        next?.call(this, blogPosts, pagination);
     }
 }
 const blogPostService = new BlogPostService();

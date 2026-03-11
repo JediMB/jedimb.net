@@ -2,6 +2,7 @@ import httpClient from '/js/http-client.js';
 import BlogPost from '/js/models/blog/blog-post.model.js';
 import BlogPostDTO from '/js/models/blog/blog-post.dto.model.js';
 import BlogPostSchedule from '/js/models/blog/blog-post-schedule.model.js';
+import Pagination from '/js/models/blog/pagination.model.js';
 
 export { blogPostApiService as default };
 
@@ -54,16 +55,17 @@ class BlogPostApiService {
     /**
      * @param {number} page 
      * @param {number} pageSize 
-     * @returns {Promise<{posts: BlogPost[], pagination: ''}>}  */
+     * @returns {Promise<{blogPosts: BlogPost[], pagination: Pagination}>}  */
     async getBlogPosts(page, pageSize) {
         const response = await this.#httpClient.get(this.#api.posts, page, pageSize);
 
         if (!response.success)
             return response;
 
-        response.value.posts = response.value.posts.map(post => new BlogPost(post));
-
-        return response;
+        return {
+            blogPosts: response.value.blogPosts.map(post => new BlogPost(post)),
+            pagination: new Pagination(response.value.pagination)
+        };
     }
 
     /**

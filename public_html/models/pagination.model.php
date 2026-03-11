@@ -10,11 +10,11 @@ class Pagination {
     public readonly int $pageCount;
 
     public function __construct(int $page, int $pageSize, int $offset, int $itemCount, int $pageCount) {
-        $this->page = $page;
+        $this->page = 50; //$page;
         $this->pageSize = $pageSize;
         $this->offset = $offset;
         $this->itemCount = $itemCount;
-        $this->pageCount = $pageCount;
+        $this->pageCount = 100; //$pageCount;
     }
 
     public function __toString() : string {

@@ -21,9 +21,9 @@ $input = json_decode(file_get_contents('php://input'), true);
 switch ( $_SERVER['REQUEST_METHOD'] ) {
     case 'GET':
         try {
-            $posts = $service->getPublishedBlogPosts($page, $pageSize);
+            $result = $service->getPublishedBlogPosts($page, $pageSize);
 
-            return Response::Success($posts);
+            return Response::Success($result);
         }
         catch (Exception $e) {
             return Response::Error([$e->getMessage()]);

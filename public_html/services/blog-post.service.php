@@ -39,7 +39,7 @@ class BlogPostService extends Singleton {
         return $this->blogPostDbService->getBlogPost($id, PublishedStatus::Any);
     }
 
-    /** @return (array{'pagination': Pagination, 'posts': BlogPost[]}) */
+    /** @return (array{'blogPosts': BlogPost[], 'pagination': Pagination}) */
     private function getBlogPosts(int $page, ?int $pageSize, PublishedStatus $publishedStatus) : array {
         if ($page < 1) $page = 1;
 
@@ -58,8 +58,8 @@ class BlogPostService extends Singleton {
         }
 
         return [
-            'pagination' => new Pagination($page, $pageSize, $offset, $postCount, $pageCount),
-            'posts' => $this->blogPostDbService->getBlogPosts($pageSize, $offset, $publishedStatus)
+            'blogPosts' => $this->blogPostDbService->getBlogPosts($pageSize, $offset, $publishedStatus),
+            'pagination' => new Pagination($page, $pageSize, $offset, $postCount, $pageCount)
         ];
     }
 
@@ -67,7 +67,7 @@ class BlogPostService extends Singleton {
         return $this->blogPostDbService->getCount($publishedStatus);
     }
 
-    /** @return (array{'pagination': Pagination, 'posts': BlogPost[]}) */
+    /** @return (array{'blogPosts': BlogPost[], 'pagination': Pagination}) */
     function getPublishedBlogPosts(int $page = 1, ?int $pageSize = null) : array {
         return $this->getBlogPosts($page,$pageSize, PublishedStatus::Published);        
     }

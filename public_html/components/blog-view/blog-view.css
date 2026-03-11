@@ -5,14 +5,16 @@ blog-view-component {
 blog-posts {
     display: flex block;
     flex-direction: column;
-    gap: var(--size-m);
+    gap: var(--size-l);
+    align-items: center;
+    margin-block: var(--size-l);
 }
 
 blog-posts article {
     display: flex block;
     flex-direction: column;
     gap: var(--size-m);
-    padding: var(--size-s);
+    width: 100%;
 }
 
 article-content {
