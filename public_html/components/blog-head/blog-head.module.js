@@ -1,4 +1,4 @@
-import BlogPostDTO from "/js/models/blog-post.dto.js";
+import BlogPostDTO from "/js/models/blog/blog-post.dto.model.js";
 import { TextEditorComponent } from "/js/components/text-editor/text-editor.module.js";
 import blogPostService from "/js/services/blog-post.service.js";
 

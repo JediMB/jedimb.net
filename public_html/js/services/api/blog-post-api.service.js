@@ -1,7 +1,7 @@
 import httpClient from '/js/http-client.js';
-import BlogPost from '/js/models/blog-post.js';
-import BlogPostDTO from '/js/models/blog-post.dto.js';
-import BlogPostSchedule from '/js/models/blog-post-schedule.js';
+import BlogPost from '/js/models/blog/blog-post.model.js';
+import BlogPostDTO from '/js/models/blog/blog-post.dto.model.js';
+import BlogPostSchedule from '/js/models/blog/blog-post-schedule.model.js';
 
 export { blogPostApiService as default };
 
