@@ -1,10 +1,12 @@
 import BlogPost from "/js/models/blog/blog-post.model.js";
 import Pagination from "/js/models/blog/pagination.model.js";
 import blogPostService from "/js/services/blog-post.service.js";
+import Emitter from "/js/utilities/emitter.js";
 import { formatDate } from "/js/utilities/format-date.utility.js";
 
 customElements.define('blog-view-component', class BlogViewComponent extends HTMLElement {
     #baseRoute;
+    #paginate;
     #pagination;
 
     #pageChangeDelay = 1000;
@@ -32,7 +34,15 @@ customElements.define('blog-view-component', class BlogViewComponent extends HTM
 
         const paginationData = this.dataset.pagination.split(',');
 
-        this.#pagination = new Pagination({
+        this.#pagination = new Emitter(new Pagination({
+            page: Number(paginationData[0]),
+            pageSize: Number(paginationData[1]),
+            offset: Number(paginationData[2]),
+            itemCount: Number(paginationData[3]),
+            pageCount: Number(paginationData[4])
+        }));
+
+        this.#paginate = new Pagination({
             page: Number(paginationData[0]),
             pageSize: Number(paginationData[1]),
             offset: Number(paginationData[2]),
@@ -90,14 +100,19 @@ customElements.define('blog-view-component', class BlogViewComponent extends HTM
             });
         }
 
-        blogPostService.subscription.subscribe(newBlogPost => {
-            this.#pagination.itemCount++;
-            this.#total.textContent = this.#pagination.itemCount;
+        this.#pagination.subscribe(value => {
+            this.#start.textContent = value.offset + 1;
+            this.#end.textContent = value.offset + Number(this.#blogPosts.childElementCount);
+            this.#total.textContent = value.itemCount;
+        });
 
-            if (this.#pagination.page !== 1) {
-                this.#pagination.offset++;
-                this.#start.textContent = this.#pagination.offset + 1;
-                this.#end.textContent = this.#pagination.offset + this.#blogPosts.children.length;
+        blogPostService.subscription.subscribe(newBlogPost => {
+            const paginationData = new Pagination(this.#pagination.getValue());
+            paginationData.itemCount++;
+
+            if (paginationData.page !== 1) {
+                paginationData.offset++;
+                this.#pagination.setValue(paginationData);
                 return;
             }
             
@@ -105,14 +120,12 @@ customElements.define('blog-view-component', class BlogViewComponent extends HTM
                 this.#createBlogPostItem(newBlogPost)
             );
 
-            const childCount = this.#blogPosts.children.length;
-            if (childCount > this.#pagination.pageSize) {
+            if (this.#blogPosts.childElementCount > paginationData.pageSize) {
                 this.#blogPosts.lastElementChild.remove();
-                // TODO: Update pagination if necessary
-                return;
+                paginationData.pageCount = Math.ceil(paginationData.itemCount / paginationData.pageSize);
             }
 
-            this.#end.textContent = childCount;
+            this.#pagination.setValue(paginationData);
         });
     }
 
@@ -190,7 +203,7 @@ customElements.define('blog-view-component', class BlogViewComponent extends HTM
 
         const newActive = neighbor.firstElementChild;
         const targetPage = Number(newActive.getAttribute('target-page'));
-        const pageCount = this.#pagination.pageCount;
+        const pageCount = this.#pagination.getValue().pageCount;
 
         this.#lnkFirst.toggleAttribute('disabled', targetPage < 3);
         this.#lnkPrev.toggleAttribute('disabled', targetPage === 1);
@@ -248,7 +261,7 @@ customElements.define('blog-view-component', class BlogViewComponent extends HTM
 
         await this.#scrollPagination(targetPage, currentPage);
 
-        const pageCount = this.#pagination.pageCount;
+        const pageCount = this.#pagination.getValue().pageCount;
 
         this.#lnkFirst.toggleAttribute('disabled', targetPage < 3);
         this.#lnkPrev.toggleAttribute('disabled', targetPage === 1);
@@ -265,7 +278,7 @@ customElements.define('blog-view-component', class BlogViewComponent extends HTM
      * @param {() =>  void} next 
      */
     #loadPageContent(page, next = undefined) {
-        blogPostService.getBlogPosts(page, this.#pagination.pageSize,
+        blogPostService.getBlogPosts(page, this.#pagination.getValue().pageSize,
             (blogPosts, pagination) => {
                 history.pushState(null, null, `${this.#baseRoute}/${page}`);
                 this.#blogPosts.innerText = '';
@@ -276,11 +289,7 @@ customElements.define('blog-view-component', class BlogViewComponent extends HTM
                     );
                 }
 
-                // TODO: Maybe use an Emitter/Subscription that updates both start/end/total fields and pagination to be current
-                this.#pagination = pagination;
-                this.#start.textContent = pagination.offset + 1;
-                this.#end.textContent = pagination.offset + Math.min(pagination.pageSize, this.#blogPosts.childElementCount);
-                this.#total.textContent = pagination.itemCount;
+                this.#pagination.setValue(pagination);
 
                 next?.call(this);
             }
@@ -302,7 +311,7 @@ customElements.define('blog-view-component', class BlogViewComponent extends HTM
         const pageList = this.#lstPages;
 
         const scrollForward = targetPage > startPage;
-        const pageCount = this.#pagination.pageCount;
+        const pageCount = this.#pagination.getValue().pageCount;
         let currentPage = startPage;
         
         while (
