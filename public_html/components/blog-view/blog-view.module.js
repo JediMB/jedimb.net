@@ -72,15 +72,23 @@ customElements.define('blog-view-component', class BlogViewComponent extends HTM
 
         this.#lnkFirst.addEventListener('click', event => {
             event.preventDefault();
-            this.#gotoFirstOrLastPage(false);
+            this.#gotoPage(Number(this.#lnkFirst.getAttribute('target-page')));
             return false;
         });
 
         this.#lnkLast.addEventListener('click', event => {
             event.preventDefault();
-            this.#gotoFirstOrLastPage(true);
+            this.#gotoPage(Number(this.#lnkLast.getAttribute('target-page')));
             return false;
         });
+
+        for (const { firstElementChild: link } of this.#lstPages.children) {
+            link.addEventListener('click', event => {
+                event.preventDefault();
+                this.#gotoPage(Number(link.getAttribute('target-page')));
+                return false;
+            });
+        }
 
         blogPostService.subscription.subscribe(newBlogPost => {
             this.#pagination.itemCount++;
@@ -157,6 +165,11 @@ customElements.define('blog-view-component', class BlogViewComponent extends HTM
         a.title = `Page ${page}`;
         a.setAttribute('target-page', `${page}`);
         a.textContent = `${page}`;
+        a.addEventListener('click', event => {
+            event.preventDefault();
+            this.#gotoPage(page);
+            return false;
+        });
 
         const li = document.createElement('li');
         li.appendChild(a);
@@ -215,12 +228,15 @@ customElements.define('blog-view-component', class BlogViewComponent extends HTM
                 <use xlink:href="#svg-loading" href="#svg-loading"></use>
             </svg>`;
 
-            this.#gotoPage(targetPage);
+            this.#loadPageContent(targetPage);
         }, this.#pageChangeDelay);
     }
 
-    /** @param {boolean} gotoLast  */
-    async #gotoFirstOrLastPage(gotoLast) {
+    /**
+     * 
+     * @param {number} targetPage 
+     */
+    async #gotoPage(targetPage) {
         clearTimeout(this.#pageChangeId);
         this.#blogPosts.innerHTML = `<svg is-loading width="2em" height="2em">
             <use xlink:href="#svg-loading" href="#svg-loading"></use>
@@ -228,44 +244,51 @@ customElements.define('blog-view-component', class BlogViewComponent extends HTM
 
         this.#lstPagination.toggleAttribute('disabled', true);
 
+        const currentPage = Number(this.#lnkActive.getAttribute('target-page'));
+
+        await this.#scrollPagination(targetPage, currentPage);
+
         const pageCount = this.#pagination.pageCount;
 
-        const targetPage = gotoLast
-            ? pageCount
-            : 1;
+        this.#lnkFirst.toggleAttribute('disabled', targetPage < 3);
+        this.#lnkPrev.toggleAttribute('disabled', targetPage === 1);
+        this.#lnkNext.toggleAttribute('disabled', targetPage === pageCount);
+        this.#lnkLast.toggleAttribute('disabled', targetPage > pageCount - 2);
 
-        const availableLink = gotoLast
-            ? this.#lstPages.lastElementChild.firstElementChild
-            : this.#lstPages.firstElementChild.firstElementChild;
+        this.#loadPageContent(targetPage,
+            () => this.#lstPagination.removeAttribute('disabled')
+        );
+    }
 
-        const availablePage = Number(availableLink.getAttribute('target-page'));
-
-        if (availablePage == targetPage) {
-            this.#lnkActive.classList.remove('active');
-            availableLink.classList.add('active');
-            this.#lnkActive = availableLink;
-
-            this.#lstPagination.removeAttribute('disabled');
+    /**
+     * @param {number} targetPage 
+     * @param {number} currentPage 
+     * @returns {Promise<void>}
+     */
+    async #scrollPagination(targetPage, currentPage) {
+        if (targetPage === currentPage)
             return;
-        }
 
-        let newPage = availablePage;
         const pageList = this.#lstPages;
 
         const delay = (ms) => new Promise(res => setTimeout(res, ms));
-        const ms = Math.ceil(1000 / pageCount);
+        const ms = Math.ceil(1000 / Math.abs(targetPage - currentPage));
 
-        if (gotoLast) {
+        if (targetPage > currentPage) {
             while (this.#lnkActive.parentElement.nextElementSibling) {
                 this.#lnkActive.classList.remove('active');
                 this.#lnkActive = this.#lnkActive.parentElement.nextElementSibling.firstElementChild;
                 this.#lnkActive.classList.add('active');
                 await delay(ms);
+
+                currentPage = Number(this.#lnkActive.getAttribute('target-page'));
+                if (targetPage === currentPage)
+                    return;
             }
 
-            while (newPage < targetPage) {
+            while (currentPage < targetPage) {
                 this.#lnkActive.classList.remove('active');
-                const newItem = this.#createPaginationItem(++newPage); 
+                const newItem = this.#createPaginationItem(++currentPage);
                 pageList.append(newItem);
                 pageList.firstElementChild.remove();
 
@@ -273,42 +296,40 @@ customElements.define('blog-view-component', class BlogViewComponent extends HTM
                 this.#lnkActive.classList.add('active');
                 await delay(ms);
             }
-        }
-        else {
-            while (this.#lnkActive.parentElement.previousElementSibling) {
-                this.#lnkActive.classList.remove('active');
-                this.#lnkActive = this.#lnkActive.parentElement.previousElementSibling.firstElementChild;
-                this.#lnkActive.classList.add('active');
-                await delay(ms);
-            }
 
-            while (newPage > targetPage) {
-                this.#lnkActive.classList.remove('active');
-                const newItem = this.#createPaginationItem(--newPage);
-                pageList.prepend(newItem);
-                pageList.lastElementChild.remove();
-                
-                this.#lnkActive = newItem.firstElementChild;
-                this.#lnkActive.classList.add('active');
-                await delay(ms);
-            }
+            return;
         }
 
-        this.#lnkFirst.toggleAttribute('disabled', targetPage < 3);
-        this.#lnkPrev.toggleAttribute('disabled', targetPage === 1);
-        this.#lnkNext.toggleAttribute('disabled', targetPage === pageCount);
-        this.#lnkLast.toggleAttribute('disabled', targetPage > pageCount - 2);
+        while (this.#lnkActive.parentElement.previousElementSibling) {
+            this.#lnkActive.classList.remove('active');
+            this.#lnkActive = this.#lnkActive.parentElement.previousElementSibling.firstElementChild;
+            this.#lnkActive.classList.add('active');
+            await delay(ms);
 
-        this.#gotoPage(targetPage,
-            () => this.#lstPagination.removeAttribute('disabled')
-        );
+            currentPage = Number(this.#lnkActive.getAttribute('target-page'));
+            if (targetPage === currentPage)
+                return;
+        }
+
+        while (currentPage > targetPage) {
+            this.#lnkActive.classList.remove('active');
+            const newItem = this.#createPaginationItem(--currentPage);
+            pageList.prepend(newItem);
+            pageList.lastElementChild.remove();
+
+            this.#lnkActive = newItem.firstElementChild;
+            this.#lnkActive.classList.add('active');
+            await delay(ms);
+        }
+
+        return;
     }
 
     /**
      * @param {number} page 
      * @param {() =>  void} next 
      */
-    #gotoPage(page, next = undefined) {
+    #loadPageContent(page, next = undefined) {
         blogPostService.getBlogPosts(page, this.#pagination.pageSize,
             (blogPosts, pagination) => {
                 history.pushState(null, null, `${this.#baseRoute}/${page}`);
