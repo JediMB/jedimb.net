@@ -261,71 +261,6 @@ customElements.define('blog-view-component', class BlogViewComponent extends HTM
     }
 
     /**
-     * @param {number} targetPage 
-     * @param {number} currentPage 
-     * @returns {Promise<void>}
-     */
-    async #scrollPagination(targetPage, currentPage) {
-        if (targetPage === currentPage)
-            return;
-
-        const pageList = this.#lstPages;
-
-        const delay = (ms) => new Promise(res => setTimeout(res, ms));
-        const ms = Math.ceil(1000 / Math.abs(targetPage - currentPage));
-
-        if (targetPage > currentPage) {
-            while (this.#lnkActive.parentElement.nextElementSibling) {
-                this.#lnkActive.classList.remove('active');
-                this.#lnkActive = this.#lnkActive.parentElement.nextElementSibling.firstElementChild;
-                this.#lnkActive.classList.add('active');
-                await delay(ms);
-
-                currentPage = Number(this.#lnkActive.getAttribute('target-page'));
-                if (targetPage === currentPage)
-                    return;
-            }
-
-            while (currentPage < targetPage) {
-                this.#lnkActive.classList.remove('active');
-                const newItem = this.#createPaginationItem(++currentPage);
-                pageList.append(newItem);
-                pageList.firstElementChild.remove();
-
-                this.#lnkActive = newItem.firstElementChild;
-                this.#lnkActive.classList.add('active');
-                await delay(ms);
-            }
-
-            return;
-        }
-
-        while (this.#lnkActive.parentElement.previousElementSibling) {
-            this.#lnkActive.classList.remove('active');
-            this.#lnkActive = this.#lnkActive.parentElement.previousElementSibling.firstElementChild;
-            this.#lnkActive.classList.add('active');
-            await delay(ms);
-
-            currentPage = Number(this.#lnkActive.getAttribute('target-page'));
-            if (targetPage === currentPage)
-                return;
-        }
-
-        while (currentPage > targetPage) {
-            this.#lnkActive.classList.remove('active');
-            const newItem = this.#createPaginationItem(--currentPage);
-            pageList.prepend(newItem);
-            pageList.lastElementChild.remove();
-
-            this.#lnkActive = newItem.firstElementChild;
-            this.#lnkActive.classList.add('active');
-            await delay(ms);
-        }
-
-        return;
-    }
-
-    /**
      * @param {number} page 
      * @param {() =>  void} next 
      */
@@ -350,5 +285,73 @@ customElements.define('blog-view-component', class BlogViewComponent extends HTM
                 next?.call(this);
             }
         );
+    }
+
+    /**
+     * @param {number} targetPage 
+     * @param {number} startPage 
+     * @returns {Promise<void>}
+     */
+    async #scrollPagination(targetPage, startPage) {
+        if (targetPage === startPage)
+            return;
+
+        const delay = (ms) => new Promise(res => setTimeout(res, ms));
+        const ms = Math.ceil(1000 / Math.abs(targetPage - startPage));
+
+        const pageList = this.#lstPages;
+
+        const scrollForward = targetPage > startPage;
+        const pageCount = this.#pagination.pageCount;
+        let currentPage = startPage;
+        
+        while (
+            ( scrollForward && currentPage < targetPage )
+            ||
+            ( !scrollForward && currentPage > targetPage )
+        ) {
+            if (currentPage !== startPage)
+                await delay(ms);
+
+            this.#lnkActive.classList.remove('active');
+
+            if (scrollForward) {
+                this.#lnkActive = this.#lnkActive.parentElement.nextElementSibling.firstElementChild;
+                currentPage++;
+            }
+            else {
+                this.#lnkActive = this.#lnkActive.parentElement.previousElementSibling.firstElementChild;
+                currentPage--;
+            }
+
+            this.#lnkActive.classList.add('active');
+
+            if (pageCount < 6)
+                continue;
+
+            const middlePageNumber = Number(pageList.children.item(2).firstElementChild.getAttribute('target-page'));
+            if (scrollForward && currentPage <= middlePageNumber)
+                continue;
+            if (!scrollForward && currentPage >= middlePageNumber)
+                continue;
+
+            const edgeNumber = scrollForward
+                ? Number(pageList.lastElementChild.firstElementChild.getAttribute('target-page'))
+                : Number(pageList.firstElementChild.firstElementChild.getAttribute('target-page'));
+
+            if (edgeNumber === (scrollForward ? pageCount : 1))
+                continue;
+
+            if (scrollForward) {
+                const newItem = this.#createPaginationItem(edgeNumber + 1);
+                pageList.append(newItem);
+                pageList.firstElementChild.remove();
+            }
+            else {
+                const newItem = this.#createPaginationItem(edgeNumber - 1);
+                pageList.prepend(newItem);
+                pageList.lastElementChild.remove();
+            }
+        }
     }
 });
