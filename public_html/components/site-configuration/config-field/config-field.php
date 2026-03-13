@@ -62,7 +62,7 @@ Component::addJSModule();
         required>
     <button type="button" restore-input class="hidden">
         <svg width="100%" height="100%">
-            <use xlink:href="#svg-config-restore" href="#svg-config-restore"></use>
+            <use xlink:href="#svg-restore" href="#svg-restore"></use>
         </svg>
     </button>
 </input-container>

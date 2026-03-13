@@ -61,7 +61,7 @@ $initialValue = $isDefault ? $default : $value;
                     </size-adjuster>
                     <button type="button" btn-delete>
                         <svg width="100%" height="100%">
-                            <use xlink:href="#svg-config-delete" href="#svg-config-delete"></use>
+                            <use xlink:href="#svg-delete" href="#svg-delete"></use>
                         </svg>
                     </button>
                 </li>
@@ -77,7 +77,7 @@ $initialValue = $isDefault ? $default : $value;
                     </size-adjuster>
                     <button type="button" btn-delete>
                         <svg width="100%" height="100%">
-                            <use xlink:href="#svg-config-delete" href="#svg-config-delete"></use>
+                            <use xlink:href="#svg-delete" href="#svg-delete"></use>
                         </svg>
                     </button>
                 </li>
@@ -85,7 +85,7 @@ $initialValue = $isDefault ? $default : $value;
         </ul>
         <button type="button" btn-add>
             <svg width="100%" height="100%">
-                <use xlink:href="#svg-config-add" href="#svg-config-add"></use>
+                <use xlink:href="#svg-add" href="#svg-add"></use>
             </svg>
         </button>
     </fieldset>
