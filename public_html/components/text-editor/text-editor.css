@@ -54,6 +54,7 @@ text-box hr[page-break] {
     color: black;
     opacity: 0.5;
     overflow: visible;
+    z-index: 5;
 }
 
 text-box hr[page-break]::before {
