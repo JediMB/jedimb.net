@@ -50,6 +50,11 @@ article-content {
             font-weight 1s,
             color 1s;
 
+        &:hover,
+        &:focus-visible {
+            background-color: var(--clr-primary-50);
+        }
+
         &.active {
             pointer-events: none;
             background-color: var(--clr-primary);
