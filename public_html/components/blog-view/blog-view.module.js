@@ -6,7 +6,6 @@ import { formatDate } from "/js/utilities/format-date.utility.js";
 
 customElements.define('blog-view-component', class BlogViewComponent extends HTMLElement {
     #baseRoute;
-    #paginate;
     #pagination;
 
     #pageChangeDelay = 1000;
@@ -42,13 +41,7 @@ customElements.define('blog-view-component', class BlogViewComponent extends HTM
             pageCount: Number(paginationData[4])
         }));
 
-        this.#paginate = new Pagination({
-            page: Number(paginationData[0]),
-            pageSize: Number(paginationData[1]),
-            offset: Number(paginationData[2]),
-            itemCount: Number(paginationData[3]),
-            pageCount: Number(paginationData[4])
-        });
+        this.#startPage = page;
     }
 
     connectedCallback() {
