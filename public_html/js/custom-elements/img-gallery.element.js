@@ -7,14 +7,11 @@ export class ImgGalleryElement extends HTMLElement {
     static observedAttributes = [
         'gallery-id',
         'aspect-ratio',
+        'auto-margin',
         'width',
         'transition-time',
         'wait-time'
     ];
-    static #cssTextNode = inlineStyle.addCSS('img-gallery', {
-        display: 'inline-block',
-        'max-width': '100%'
-    });
 
     /** @type {ImgGalleryElement} */ #self;
     #service;
@@ -40,6 +37,7 @@ export class ImgGalleryElement extends HTMLElement {
 
     #cssBase = new CSSStyleSheet();
     #cssAspectRatio = new CSSStyleSheet();
+    #cssAutoMargin = new CSSStyleSheet();
     #cssTransitionTime = new CSSStyleSheet();
     #cssWaitTime = new CSSStyleSheet();
     #cssWidth = new CSSStyleSheet();
@@ -68,6 +66,10 @@ export class ImgGalleryElement extends HTMLElement {
                 this.#processAspectRatio(newValue);
                 return;
 
+            case 'auto-margin':
+                this.#processAutoMargin(newValue);
+                return;
+
             case 'width':
                 this.#processWidth(newValue);
                 return;
@@ -88,6 +90,7 @@ export class ImgGalleryElement extends HTMLElement {
         this.#shadow = self.attachShadow({ mode: 'open' });
         this.#shadow.adoptedStyleSheets = [
             this.#cssBase,
+            this.#cssAutoMargin,
             this.#cssAspectRatio,
             this.#cssTransitionTime,
             this.#cssWaitTime,
@@ -177,9 +180,9 @@ export class ImgGalleryElement extends HTMLElement {
             gallery-container {
                 display: block;
                 position: relative;
+                margin-block: 1em;
                 border-radius: var(--size-xs);
                 max-width: 90%;
-                margin-inline: auto;
                 overflow: hidden;
             }
 
@@ -325,6 +328,29 @@ export class ImgGalleryElement extends HTMLElement {
             container.prepend(container.lastElementChild);
             container.firstElementChild.nextSibling.classList.value = 'cover';
         }, { once: true });
+    }
+
+    /** @param {string} value  */
+    #processAutoMargin(value) {
+        let css = '';
+
+        switch (value) {
+            case 'left':
+            case 'start':
+                css = 'gallery-container { margin-inline: auto 1em; }';
+                break;
+
+            case 'both':
+                css = 'gallery-container { margin-inline: auto; }';
+                break;
+
+            case 'right':
+            case 'end':
+                css = 'gallery-container { margin-inline: 1em auto; }';
+                break;
+        }
+
+        this.#cssAutoMargin.replaceSync(css);
     }
 
     /** @param {string} value  */
