@@ -33,6 +33,12 @@ export const allowedAttributes = Object.freeze({
     'img-wrapper': [ 'image-id', 'aspect-ratio', 'width', 'height', 'fullscreen-click' ]
 });
 
+export const configurableElements = Object.freeze({
+    hr: [ 'delete' ],
+    'img-gallery': [ 'delete' ],
+    'img-wrapper': [ 'delete' ]
+});
+
 /** Array of uppercase keys that should have their default behavior even when accompanied by modifier keys
  * @type {string[]} */
 export const defaultBehaviorKeys = Object.freeze([

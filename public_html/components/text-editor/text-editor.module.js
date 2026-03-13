@@ -21,6 +21,8 @@ export class TextEditorComponent extends HTMLElement {
     #pageBreakButton;
     /** @type {HTMLElement} */ #textBox;
     /** @type {HTMLTextAreaElement} */  #htmlEditor;
+    /** @type {HTMLElement} */ #objectSettings;
+
     /** @type {MutationObserver} */ #mutationObserver;
 
     /** @type {Function[]} */ #onChange = [];
@@ -41,10 +43,12 @@ export class TextEditorComponent extends HTMLElement {
         this.#tagButtons = Array.from(this.#fieldset.querySelectorAll('[data-tag]'));
         this.#linkButton = this.#fieldset.querySelector('[btn-link]');
         this.#pageBreakButton = this.#fieldset.querySelector('[btn-pagebreak]');
+
+        const htmlCheck = self.querySelector('[checkbox-html]');
         this.#textBox = self.querySelector('text-box');
         this.#htmlEditor = self.querySelector('[html-editor]');
 
-        const htmlCheck = self.querySelector('[checkbox-html]');
+        this.#objectSettings = self.querySelector('[object-settings]');
 
         document.addEventListener('selectionchange', this.#onSelectionChange);
 
@@ -88,6 +92,15 @@ export class TextEditorComponent extends HTMLElement {
 
         this.#textBox.addEventListener('keydown', event => {
             this.#textboxKeydown(event);
+        });
+
+        this.#textBox.addEventListener('mouseover', event => {
+            const isMatch = !!c.configurableElements[event.target.localName];
+
+            if (!isMatch)
+                return;
+
+            // Ditch the idea of a toolbar hovering over the object and have it as a part of the larger text editor GUI?
         });
 
         this.#mutationObserver = new MutationObserver((mutationList, _) => {
