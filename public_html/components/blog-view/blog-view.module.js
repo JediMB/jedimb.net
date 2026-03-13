@@ -7,6 +7,7 @@ import { formatDate } from "/js/utilities/format-date.utility.js";
 customElements.define('blog-view-component', class BlogViewComponent extends HTMLElement {
     #baseRoute;
     #pagination;
+    #startPage;
 
     #pageChangeDelay = 1000;
     #pageChangeId = 0;
@@ -32,9 +33,10 @@ customElements.define('blog-view-component', class BlogViewComponent extends HTM
         this.#baseRoute = this.getAttribute('base-route');
 
         const paginationData = this.dataset.pagination.split(',');
+        const page = Number(paginationData[0]);
 
         this.#pagination = new Emitter(new Pagination({
-            page: Number(paginationData[0]),
+            page: page,
             pageSize: Number(paginationData[1]),
             offset: Number(paginationData[2]),
             itemCount: Number(paginationData[3]),
@@ -119,6 +121,13 @@ customElements.define('blog-view-component', class BlogViewComponent extends HTM
             }
 
             this.#pagination.setValue(paginationData);
+        });
+
+        window.addEventListener('popstate', event => {
+            const page = event.state ?? this.#startPage;
+            
+            if (page !== this.#pagination.getValue().page)
+                this.#gotoPage(page, true);
         });
     }
 
@@ -239,10 +248,10 @@ customElements.define('blog-view-component', class BlogViewComponent extends HTM
     }
 
     /**
-     * 
      * @param {number} targetPage 
+     * @param {boolean} isHistory 
      */
-    async #gotoPage(targetPage) {
+    async #gotoPage(targetPage, isHistory = false) {
         clearTimeout(this.#pageChangeId);
         this.#blogPosts.innerHTML = `<svg is-loading width="2em" height="2em">
             <use xlink:href="#svg-loading" href="#svg-loading"></use>
@@ -261,19 +270,22 @@ customElements.define('blog-view-component', class BlogViewComponent extends HTM
         this.#lnkNext.toggleAttribute('disabled', targetPage === pageCount);
         this.#lnkLast.toggleAttribute('disabled', targetPage > pageCount - 2);
 
-        this.#loadPageContent(targetPage,
+        this.#loadPageContent(targetPage, isHistory,
             () => this.#lstPagination.removeAttribute('disabled')
         );
     }
 
     /**
      * @param {number} page 
+     * @param {boolean} isHistory
      * @param {() =>  void} next 
      */
-    #loadPageContent(page, next = undefined) {
+    #loadPageContent(page, isHistory = false, next = undefined) {
         blogPostService.getBlogPosts(page, this.#pagination.getValue().pageSize,
             (blogPosts, pagination) => {
-                history.pushState(null, null, `${this.#baseRoute}/${page}`);
+                if (!isHistory)
+                    history.pushState(pagination.page, null, `${this.#baseRoute}/${page}`);
+
                 this.#blogPosts.innerText = '';
 
                 for (const post of blogPosts) {
