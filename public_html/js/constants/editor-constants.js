@@ -33,7 +33,7 @@ export const allowedAttributes = Object.freeze({
     'img-wrapper': [ 'image-id', 'aspect-ratio', 'width', 'height', 'fullscreen-click' ]
 });
 
-export const configurableElements = Object.freeze({
+export const elementsWithOptions = Object.freeze({
     hr: [ 'delete' ],
     'img-gallery': [ 'delete' ],
     'img-wrapper': [ 'delete' ]

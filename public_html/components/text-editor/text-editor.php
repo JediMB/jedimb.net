@@ -77,20 +77,21 @@ Component::addJSModule();
     Edit HTML
 </label>
 
-<text-box id="text-box-<?= $cId ?>"
-    contenteditable
-    role="textbox"
-    placeholder="What do you want to say?"
-    aria-placeholder="What do you want to say?"
-    aria-multiline="true"
-    aria-required="true"><div>Test<img-gallery gallery-id="1" aspect-ratio="16/9" auto-margin="left" width="50%" transition-time="2000" wait-time="2000"></img-gallery></div><hr page-break=""><div>Test<img-wrapper image-id="1"></img-wrapper></div></text-box>
+<text-box-container>
+    <text-box id="text-box-<?= $cId ?>"
+        contenteditable
+        role="textbox"
+        placeholder="What do you want to say?"
+        aria-placeholder="What do you want to say?"
+        aria-multiline="true"
+        aria-required="true"><div>Test<img-gallery gallery-id="1" aspect-ratio="16/9" auto-margin="left" width="50%" transition-time="2000" wait-time="2000"></img-gallery></div><hr page-break=""><div>Test<img-wrapper image-id="1"></img-wrapper></div></text-box>
+    <options-panel>
+        <svg width="1em" height="1em">
+            <use xlink:href="#svg-delete" href="#svg-delete"></use>
+        </svg>
+    </options-panel>
+</text-box-container>
 <textarea html-editor hidden>Test</textarea>
-
-<div object-settings>
-    <svg width="1em" height="1em">
-        <use xlink:href="#svg-delete" href="#svg-delete"></use>
-    </svg>
-</div>
 
 <?php Component::include('modal-popup', [
     'attributes' => [ 'id' => "modal-images-$cId" ],

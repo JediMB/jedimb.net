@@ -19,9 +19,10 @@ export class TextEditorComponent extends HTMLElement {
     #tagButtons;
     #linkButton;
     #pageBreakButton;
+    /** @type {HTMLElement} */ #textBoxContainer;
     /** @type {HTMLElement} */ #textBox;
     /** @type {HTMLTextAreaElement} */  #htmlEditor;
-    /** @type {HTMLElement} */ #objectSettings;
+    /** @type {HTMLElement} */ #optionsPanel;
 
     /** @type {MutationObserver} */ #mutationObserver;
 
@@ -45,10 +46,12 @@ export class TextEditorComponent extends HTMLElement {
         this.#pageBreakButton = this.#fieldset.querySelector('[btn-pagebreak]');
 
         const htmlCheck = self.querySelector('[checkbox-html]');
-        this.#textBox = self.querySelector('text-box');
+        this.#textBoxContainer = self.querySelector('text-box-container');
+        this.#textBox = this.#textBoxContainer.querySelector('text-box');
+
         this.#htmlEditor = self.querySelector('[html-editor]');
 
-        this.#objectSettings = self.querySelector('[object-settings]');
+        this.#optionsPanel = self.querySelector('options-panel');
 
         document.addEventListener('selectionchange', this.#onSelectionChange);
 
@@ -94,14 +97,21 @@ export class TextEditorComponent extends HTMLElement {
             this.#textboxKeydown(event);
         });
 
-        this.#textBox.addEventListener('mouseover', event => {
-            const isMatch = !!c.configurableElements[event.target.localName];
+        this.#textBox.addEventListener('click', event => {
+            const isMatch = !!c.elementsWithOptions[event.target.localName]
+            // Avoids elements being considered clicked on when clicking in their margins:
+                && (event.target.localName === 'hr' || event.target !== event.originalTarget);
+
+            this.#optionsPanel.classList.toggle('active', isMatch);
 
             if (!isMatch)
                 return;
 
+            event.stopPropagation();
+            
+
             // Ditch the idea of a toolbar hovering over the object and have it as a part of the larger text editor GUI?
-        });
+        }, { capture: true });
 
         this.#mutationObserver = new MutationObserver((mutationList, _) => {
             for (const record of mutationList) {
@@ -156,7 +166,7 @@ export class TextEditorComponent extends HTMLElement {
             if (editHtml)
                 this.#htmlEditor.value = this.#getContent(true);
 
-            this.#textBox.toggleAttribute('hidden', editHtml);
+            this.#textBoxContainer.toggleAttribute('hidden', editHtml);
             this.#htmlEditor.toggleAttribute('hidden', !editHtml);
         });
 

@@ -10,8 +10,16 @@ text-editor-component {
     gap: var(--size-xs);
 }
 
+text-box-container {
+    display: block flex;
+    flex-direction: row;
+    position: relative;
+    border-radius: var(--size-xs);
+    overflow: hidden;
+}
+
 text-box,
-text-box + textarea {
+[html-editor] {
     display: block;
     width: 100%;
     height: 15em;
@@ -65,4 +73,20 @@ text-box hr[page-break]::before {
     border-radius: var(--size-s);
     padding: var(--size-xs) calc(var(--size-xs) * 2);
     content: 'Page break';
+}
+
+options-panel {
+    display: block flex;
+    flex-direction: column;
+    position: absolute;
+    inset: 0 0 0 auto;
+    z-index: 50;
+    border-radius: var(--size-xs);
+    background-color: var(--clr-primary);
+    transform: translateX(100%);
+    transition: transform 0.8s ease-in-out 0.2s;
+
+    &.active {
+        transform: translateX(0);
+    }
 }

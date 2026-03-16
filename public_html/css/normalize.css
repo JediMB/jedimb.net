@@ -230,5 +230,5 @@ video {
 }
 
 [hidden]:where(:not([hidden="until-found"])) {
-  display: none;
+  display: none !important;
 }
