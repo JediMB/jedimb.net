@@ -33,10 +33,11 @@ export const allowedAttributes = Object.freeze({
     'img-wrapper': [ 'image-id', 'aspect-ratio', 'width', 'height', 'fullscreen-click' ]
 });
 
+/** @type {Object.<string, string[]>} */
 export const elementsWithOptions = Object.freeze({
     hr: [ 'delete' ],
-    'img-gallery': [ 'delete' ],
-    'img-wrapper': [ 'delete' ]
+    'img-gallery': [ 'aspect-ratio', 'delete', 'transition-time', 'wait-time', 'width' ],
+    'img-wrapper': [ 'aspect-ratio', 'delete', 'fullscreen-click', 'height', 'width' ]
 });
 
 /** Array of uppercase keys that should have their default behavior even when accompanied by modifier keys
