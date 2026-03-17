@@ -76,15 +76,18 @@ text-box hr[page-break]::before {
 }
 
 options-panel {
-    display: block flex;
-    flex-direction: column;
     position: absolute;
     inset: 0 0 0 auto;
     z-index: 50;
-    border-radius: var(--size-xs);
-    background-color: var(--clr-primary);
     transform: translateX(100%);
     transition: transform 0.8s ease-in-out 0.2s;
+
+    display: block flex;
+    flex-direction: column;
+    gap: var(--size-xs);
+    border-radius: var(--size-xs);
+    padding: var(--size-xs);
+    background-color: var(--clr-primary);
 
     &.active {
         transform: translateX(0);

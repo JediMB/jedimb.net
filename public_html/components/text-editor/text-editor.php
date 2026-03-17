@@ -86,9 +86,57 @@ Component::addJSModule();
         aria-multiline="true"
         aria-required="true"><div>Test<img-gallery gallery-id="1" aspect-ratio="16/9" auto-margin="left" width="50%" transition-time="2000" wait-time="2000"></img-gallery></div><hr page-break=""><div>Test<img-wrapper image-id="1"></img-wrapper></div></text-box>
     <options-panel>
-        <svg width="1em" height="1em">
-            <use xlink:href="#svg-delete" href="#svg-delete"></use>
-        </svg>
+        <button element-option="delete"
+            title="Delete"
+            >
+            <svg width="1em" height="1em">
+                <use xlink:href="#svg-delete" href="#svg-delete"></use>
+            </svg>
+        </button>
+        <button element-option="aspect-ratio"
+            title="Aspect ratio"
+            >
+            <svg width="1em" height="1em">
+                <use xlink:href="#svg-aspect-ratio" href="#svg-aspect-ratio"></use>
+            </svg>
+        </button>
+        <button element-option="width"
+            title="Width"
+            >
+            <svg width="1em" height="1em">
+                <use xlink:href="#svg-width" href="#svg-width"></use>
+            </svg>
+        </button>
+        <button element-option="height"
+            title="Height"
+            >
+            <svg width="1em" height="1em">
+                <use xlink:href="#svg-height" href="#svg-height"></use>
+            </svg>
+        </button>
+        <button element-option="transition-time"
+            title="Transition time"
+            >
+            <svg width="1em" height="1em">
+                <use xlink:href="#svg-timer-active" href="#svg-timer-active"></use>
+            </svg>
+        </button>
+        <button element-option="wait-time"
+            title="Wait time"
+            >
+            <svg width="1em" height="1em">
+                <use xlink:href="#svg-timer-paused" href="#svg-timer-paused"></use>
+            </svg>
+        </button>
+        <button element-option="fullscreen-click"
+            title="Fullscreen click"
+            >
+            <svg width="1em" height="1em">
+                <use xlink:href="#svg-fit-screen" href="#svg-fit-screen"></use>
+            </svg>
+        </button>
+        
+        
     </options-panel>
 </text-box-container>
 <textarea html-editor hidden>Test</textarea>
