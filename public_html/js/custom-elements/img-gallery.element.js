@@ -1,7 +1,6 @@
 import { imageGalleryPath } from "/js/constants/meta-constants.js";
 import fullscreenImage from "/js/custom-elements/fullscreen-image.element.js";
 import imageGalleryService from "/js/services/image-gallery.service.js";
-import inlineStyle from "/js/utilities/inline-style.utility.js";
 
 export class ImgGalleryElement extends HTMLElement {
     static observedAttributes = [

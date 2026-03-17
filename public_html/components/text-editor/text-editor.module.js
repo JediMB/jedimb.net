@@ -24,7 +24,9 @@ export class TextEditorComponent extends HTMLElement {
     /** @type {HTMLTextAreaElement} */  #htmlEditor;
 
     /** @type {HTMLElement} */ #optionsPanel;
-    /** @type {Object} */ #optionsButtons = {};
+    /** @type {Object.<string, HTMLButtonElement>} */ #optionsButtons = {};
+    /** @type {HTMLElement} */ #optionFields;
+    /** @type {HTMLElement} */ #optionsElement;
 
     /** @type {MutationObserver} */ #mutationObserver;
 
@@ -54,9 +56,10 @@ export class TextEditorComponent extends HTMLElement {
         this.#htmlEditor = self.querySelector('[html-editor]');
 
         this.#optionsPanel = self.querySelector('options-panel');
-        this.#optionsPanel.querySelectorAll('button').forEach(
+        this.#optionsPanel.querySelectorAll('[element-option]').forEach(
             btn => this.#optionsButtons[btn.getAttribute('element-option')] = btn
         );
+        this.#optionFields = Array.from(this.#optionsPanel.querySelectorAll('option-fields'));
 
         document.addEventListener('selectionchange', this.#onSelectionChange);
 
@@ -112,6 +115,7 @@ export class TextEditorComponent extends HTMLElement {
             // Avoids image elements being considered clicked on when clicking in their margins:
             const isMatch = !!options && (element.localName === 'hr' || element !== event.originalTarget);
 
+            this.#optionsElement = null;
             this.#optionsPanel.classList.toggle('active', isMatch);
 
             if (!isMatch)
@@ -120,6 +124,15 @@ export class TextEditorComponent extends HTMLElement {
             event.stopPropagation();
             this.#adaptOptionsPanel(element, options);
         }, { capture: true });
+
+        this.#optionsButtons['delete'].addEventListener('click', () => this.#optionDelete());
+        for (const btnName in this.#optionsButtons) {
+            if (btnName === 'delete')
+                continue;
+
+            const button = this.#optionsButtons[btnName];
+            button.addEventListener('click', () => button.nextElementSibling.hidden = !button.nextElementSibling.hidden);
+        }
 
         this.#mutationObserver = new MutationObserver((mutationList, _) => {
             for (const record of mutationList) {
@@ -230,9 +243,17 @@ export class TextEditorComponent extends HTMLElement {
      * @param {string[]} options 
     */
     #adaptOptionsPanel(element, options) {
+        this.#optionsElement = element;
+
+        for (const field of this.#optionFields) {
+            field.hidden = true;
+        }
+
         const buttons = this.#optionsButtons;
         for (const btnName in buttons) {
-            buttons[btnName].toggleAttribute('hidden', !options.includes(btnName));
+            const nonValidOption = !options.includes(btnName);
+            buttons[btnName].hidden = nonValidOption;
+            buttons[btnName].disabled = nonValidOption;
         }
     }
 
@@ -920,6 +941,19 @@ export class TextEditorComponent extends HTMLElement {
         }
 
         this.#pageBreakButton.disabled = !this.#latestSelection.isCollapsed;
+    }
+
+    #optionDelete() {
+        this.#optionsPanel.classList.remove('active');
+        this.#optionsElement?.remove();
+
+        const buttons = this.#optionsButtons;
+        for (const btnName in buttons) {
+            buttons[btnName].hidden = true;
+            buttons[btnName].disabled = true;
+        }
+
+        this.#optionsElement = null;
     }
 
     async #paste(pasteHtml = true) {

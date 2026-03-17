@@ -37,7 +37,7 @@ Component::addJSModule();
     </svg>
 </button>
 
-<blog-head-content id="blog-head__content" role="form" hidden>
+<blog-head-content id="blog-head__content" role="form">
     <blog-head-body>
         <form id="blog-head__form" autocomplete="off">
             <input id="blog-head__id"

@@ -42,15 +42,19 @@ text-box {
     &[placeholder]:empty:focus::before {
         content: "";
     }
+
+    & a,
+    & hr[page-break],
+    & hr[page-break]::before,
+    & img-gallery,
+    & img-wrapper {
+        cursor: pointer;
+    }
 }
 
 text-box:focus-within {
     border-radius: 3px;
     outline: 3px solid var(--clr-primary, purple);
-}
-
-text-box a {
-    cursor: pointer;
 }
 
 text-box hr[page-break] {
@@ -91,5 +95,21 @@ options-panel {
 
     &.active {
         transform: translateX(0);
+    }
+
+    & panel-option,
+    & option-fields {
+        display: block flex;
+        flex-direction: row;
+        gap: var(--size-xxs);
+    }
+
+    & button {
+        border-radius: var(--size-xs);
+        width: fit-content;
+    }
+
+    & button:hover {
+        background-color: var(--clr-primary-dark);
     }
 }
