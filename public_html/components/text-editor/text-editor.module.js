@@ -22,7 +22,9 @@ export class TextEditorComponent extends HTMLElement {
     /** @type {HTMLElement} */ #textBoxContainer;
     /** @type {HTMLElement} */ #textBox;
     /** @type {HTMLTextAreaElement} */  #htmlEditor;
+
     /** @type {HTMLElement} */ #optionsPanel;
+    /** @type {Object} */ #optionsButtons = {};
 
     /** @type {MutationObserver} */ #mutationObserver;
 
@@ -52,6 +54,9 @@ export class TextEditorComponent extends HTMLElement {
         this.#htmlEditor = self.querySelector('[html-editor]');
 
         this.#optionsPanel = self.querySelector('options-panel');
+        this.#optionsPanel.querySelectorAll('button').forEach(
+            btn => this.#optionsButtons[btn.getAttribute('element-option')] = btn
+        );
 
         document.addEventListener('selectionchange', this.#onSelectionChange);
 
@@ -98,9 +103,14 @@ export class TextEditorComponent extends HTMLElement {
         });
 
         this.#textBox.addEventListener('click', event => {
-            const isMatch = !!c.elementsWithOptions[event.target.localName]
-            // Avoids elements being considered clicked on when clicking in their margins:
-                && (event.target.localName === 'hr' || event.target !== event.originalTarget);
+            if (event.ctrlKey)
+                return;
+
+            const element = event.target;
+            const options = c.elementsWithOptions[element.localName];
+
+            // Avoids image elements being considered clicked on when clicking in their margins:
+            const isMatch = !!options && (element.localName === 'hr' || element !== event.originalTarget);
 
             this.#optionsPanel.classList.toggle('active', isMatch);
 
@@ -108,9 +118,7 @@ export class TextEditorComponent extends HTMLElement {
                 return;
 
             event.stopPropagation();
-            
-
-            // Ditch the idea of a toolbar hovering over the object and have it as a part of the larger text editor GUI?
+            this.#adaptOptionsPanel(element, options);
         }, { capture: true });
 
         this.#mutationObserver = new MutationObserver((mutationList, _) => {
@@ -215,6 +223,17 @@ export class TextEditorComponent extends HTMLElement {
                 self.#htmlEditor.textContent = '';
             }
         };
+    }
+
+    /**
+     * @param {HTMLElement} element 
+     * @param {string[]} options 
+    */
+    #adaptOptionsPanel(element, options) {
+        const buttons = this.#optionsButtons;
+        for (const btnName in buttons) {
+            buttons[btnName].toggleAttribute('hidden', !options.includes(btnName));
+        }
     }
 
     #addGallery() {
