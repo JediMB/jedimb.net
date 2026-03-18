@@ -86,13 +86,15 @@ Component::addJSModule();
         aria-multiline="true"
         aria-required="true"><div>Test<img-gallery gallery-id="1" aspect-ratio="16/9" auto-margin="left" width="50%" transition-time="2000" wait-time="2000"></img-gallery></div><hr page-break=""><div>Test<img-wrapper image-id="1"></img-wrapper></div></text-box>
     <options-panel>
-        <button element-option="delete"
-            title="Delete"
-            >
-            <svg width="1em" height="1em">
-                <use xlink:href="#svg-delete" href="#svg-delete"></use>
-            </svg>
-        </button>
+        <panel-option>
+            <button element-option="delete"
+                title="Delete"
+                >
+                <svg width="1em" height="1em">
+                    <use xlink:href="#svg-delete" href="#svg-delete"></use>
+                </svg>
+            </button>
+        </panel-option>
         <panel-option>
             <button element-option="aspect-ratio"
                 title="Change aspect ratio"
@@ -101,14 +103,17 @@ Component::addJSModule();
                     <use xlink:href="#svg-aspect-ratio" href="#svg-aspect-ratio"></use>
                 </svg>
             </button>
-            <option-fields hidden>
-                <input type="text" title="Aspect ratio" placeholder="1, 4/3, 16/9, etc.">
+            <form hidden>
+                <input type="text"
+                    name="aspectRatio"
+                    title="Aspect ratio"
+                    placeholder="1, 4/3, 16/9, etc.">
                 <button>
                     <svg width="1em" height="1em">
                         <use xlink:href="#svg-check" href="#svg-check"></use>
                     </svg>
                 </button>
-            </option-fields>
+            </form>
         </panel-option>
         <panel-option>
             <button element-option="width"
@@ -118,9 +123,9 @@ Component::addJSModule();
                     <use xlink:href="#svg-width" href="#svg-width"></use>
                 </svg>
             </button>
-            <option-fields hidden>
-                <input type="number" title="Width">
-                <select>
+            <form hidden>
+                <input type="number" name="width" title="Width">
+                <select name="unit" title="Width unit">
                     <option value="px">px</option>
                     <option value="%">%</option>
                 </select>
@@ -129,7 +134,7 @@ Component::addJSModule();
                         <use xlink:href="#svg-check" href="#svg-check"></use>
                     </svg>
                 </button>
-            </option-fields>
+            </form>
         </panel-option>
         <panel-option>
             <button element-option="height"
@@ -139,9 +144,9 @@ Component::addJSModule();
                     <use xlink:href="#svg-height" href="#svg-height"></use>
                 </svg>
             </button>
-            <option-fields hidden>
-                <input type="number" title="Height">
-                <select>
+            <form hidden>
+                <input type="number" name="height" title="Height">
+                <select name="unit" title="Height unit">
                     <option value="px">px</option>
                     <option value="%">%</option>
                 </select>
@@ -150,7 +155,7 @@ Component::addJSModule();
                         <use xlink:href="#svg-check" href="#svg-check"></use>
                     </svg>
                 </button>
-            </option-fields>
+            </form>
         </panel-option>
         <panel-option>
             <button element-option="transition-time"
@@ -160,9 +165,9 @@ Component::addJSModule();
                     <use xlink:href="#svg-timer-active" href="#svg-timer-active"></use>
                 </svg>
             </button>
-            <option-fields hidden>
-                <input type="number" title="Transition time">
-                <select>
+            <form hidden>
+                <input type="number" name="time" title="Transition time">
+                <select name="unit" title="Time unit">
                     <option value="ms">ms</option>
                     <option value="s">s</option>
                 </select>
@@ -171,7 +176,7 @@ Component::addJSModule();
                         <use xlink:href="#svg-check" href="#svg-check"></use>
                     </svg>
                 </button>
-            </option-fields>
+            </form>
         </panel-option>
         <panel-option>
             <button element-option="wait-time"
@@ -181,9 +186,9 @@ Component::addJSModule();
                     <use xlink:href="#svg-timer-paused" href="#svg-timer-paused"></use>
                 </svg>
             </button>
-            <option-fields hidden>
-                <input type="number" title="Wait time">
-                <select>
+            <form hidden>
+                <input type="number" name="time" title="Wait time">
+                <select name="unit" title="Time unit">
                     <option value="ms">ms</option>
                     <option value="s">s</option>
                 </select>
@@ -192,7 +197,7 @@ Component::addJSModule();
                         <use xlink:href="#svg-check" href="#svg-check"></use>
                     </svg>
                 </button>
-            </option-fields>
+            </form>
         </panel-option>
         <panel-option>
             <button element-option="fullscreen-click"
@@ -202,9 +207,13 @@ Component::addJSModule();
                     <use xlink:href="#svg-fit-screen" href="#svg-fit-screen"></use>
                 </svg>
             </button>
-            <option-fields hidden>
-                <input type="checkbox">
-            </option-fields>
+            <form hidden>
+                <input id="text-editor__option-fullscreen-<?= $cId ?>"
+                    type="checkbox"
+                    title="Click image to view in fullscreen"
+                    name="doesFullscreen"
+                    onchange="this.form.requestSubmit();">
+            </form>
         </panel-option>
     </options-panel>
 </text-box-container>

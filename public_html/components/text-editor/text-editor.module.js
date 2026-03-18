@@ -25,7 +25,7 @@ export class TextEditorComponent extends HTMLElement {
 
     /** @type {HTMLElement} */ #optionsPanel;
     /** @type {Object.<string, HTMLButtonElement>} */ #optionsButtons = {};
-    /** @type {HTMLElement} */ #optionFields;
+    /** @type {HTMLElement} */ #optionForms;
     /** @type {HTMLElement} */ #optionsElement;
 
     /** @type {MutationObserver} */ #mutationObserver;
@@ -59,7 +59,7 @@ export class TextEditorComponent extends HTMLElement {
         this.#optionsPanel.querySelectorAll('[element-option]').forEach(
             btn => this.#optionsButtons[btn.getAttribute('element-option')] = btn
         );
-        this.#optionFields = Array.from(this.#optionsPanel.querySelectorAll('option-fields'));
+        this.#optionForms = Array.from(this.#optionsPanel.querySelectorAll('form'));
 
         document.addEventListener('selectionchange', this.#onSelectionChange);
 
@@ -126,12 +126,18 @@ export class TextEditorComponent extends HTMLElement {
         }, { capture: true });
 
         this.#optionsButtons['delete'].addEventListener('click', () => this.#optionDelete());
-        for (const btnName in this.#optionsButtons) {
-            if (btnName === 'delete')
+        for (const attribute in this.#optionsButtons) {
+            if (attribute === 'delete')
                 continue;
 
-            const button = this.#optionsButtons[btnName];
+            const button = this.#optionsButtons[attribute];
             button.addEventListener('click', () => button.nextElementSibling.hidden = !button.nextElementSibling.hidden);
+            button.nextElementSibling?.addEventListener('submit', event => {
+                event.preventDefault();
+
+                const formData = new FormData(event.target);
+                console.log(formData);
+            });
         }
 
         this.#mutationObserver = new MutationObserver((mutationList, _) => {
@@ -239,21 +245,63 @@ export class TextEditorComponent extends HTMLElement {
     }
 
     /**
-     * @param {HTMLElement} element 
+     * @param {HTMLElement} editorElement 
      * @param {string[]} options 
     */
-    #adaptOptionsPanel(element, options) {
-        this.#optionsElement = element;
+    #adaptOptionsPanel(editorElement, options) {
+        this.#optionsElement = editorElement;
 
-        for (const field of this.#optionFields) {
-            field.hidden = true;
+        for (const form of this.#optionForms) {
+            form.hidden = true;
         }
 
         const buttons = this.#optionsButtons;
-        for (const btnName in buttons) {
-            const nonValidOption = !options.includes(btnName);
-            buttons[btnName].hidden = nonValidOption;
-            buttons[btnName].disabled = nonValidOption;
+        for (const attribute in buttons) {
+            const nonValidOption = !options.includes(attribute);
+            const button = buttons[attribute];
+            button.hidden = nonValidOption;
+            button.disabled = nonValidOption;
+
+            if (nonValidOption || attribute === 'delete')
+                continue;
+
+            /** @type {HTMLInputElement} */
+            const firstFormInput = button.nextElementSibling.firstElementChild;
+            firstFormInput.form.reset();
+
+            const oldValue = editorElement.getAttribute(attribute);
+
+            if (oldValue === null)
+                continue;
+
+            switch (firstFormInput.type) {
+                case 'text':
+                    firstFormInput.value = oldValue;
+                    continue;
+                
+                case 'number':
+                    const match = oldValue?.toLowerCase()
+                        .match(/^(\d+)([a-z]*|%)$/);
+
+                    if (match?.at(0) == undefined)
+                        continue;
+
+                    firstFormInput.value = match[1];
+
+                    /** @type {HTMLSelectElement} */
+                    const select = firstFormInput.nextElementSibling;
+
+                    if (match[2] && select?.localName === 'select')
+                        select.value = match[2];
+
+                    continue;
+                
+                case 'checkbox':
+                    firstFormInput.checked = ['', 'true', 'yes', '1'].includes(oldValue);
+                    continue;
+            }
+
+            console.log(attribute, editorElement.getAttribute(attribute), firstFormInput.type);
         }
     }
 
@@ -949,7 +997,7 @@ export class TextEditorComponent extends HTMLElement {
 
         const buttons = this.#optionsButtons;
         for (const btnName in buttons) {
-            buttons[btnName].hidden = true;
+            buttons[btnName].parentElement.hidden = true;
             buttons[btnName].disabled = true;
         }
 

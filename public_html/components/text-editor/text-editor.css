@@ -88,28 +88,55 @@ options-panel {
 
     display: block flex;
     flex-direction: column;
-    gap: var(--size-xs);
     border-radius: var(--size-xs);
     padding: var(--size-xs);
     background-color: var(--clr-primary);
+    font-size: 1.25em;
 
     &.active {
         transform: translateX(0);
     }
 
-    & panel-option,
-    & option-fields {
-        display: block flex;
-        flex-direction: row;
-        gap: var(--size-xxs);
-    }
-
     & button {
         border-radius: var(--size-xs);
-        width: fit-content;
     }
 
     & button:hover {
         background-color: var(--clr-primary-dark);
+    }
+}
+
+[element-option] {
+    margin: var(--size-xxs);
+}
+
+panel-option,
+panel-option form {
+    display: block flex;
+    flex-direction: row;
+    gap: var(--size-xxs);
+    align-items: center;
+}
+
+panel-option form {
+    width: 100%;
+    font-size: 50%;
+    line-height: 50%;
+    justify-content: space-between;
+
+    & input[type="text"] {
+        width: calc(10ch + var(--size-xxs) + 5ch);
+    }
+
+    & input[type="number"] {
+        width: 10ch;
+    }
+
+    & select {
+        width: 5ch;
+    }
+
+    & button {
+        padding: 0.5em;
     }
 }
