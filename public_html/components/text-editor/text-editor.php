@@ -108,11 +108,6 @@ Component::addJSModule();
                     name="aspectRatio"
                     title="Aspect ratio"
                     placeholder="1, 4/3, 16/9, etc.">
-                <button>
-                    <svg width="1em" height="1em">
-                        <use xlink:href="#svg-check" href="#svg-check"></use>
-                    </svg>
-                </button>
             </form>
         </panel-option>
         <panel-option>
@@ -129,11 +124,6 @@ Component::addJSModule();
                     <option value="px">px</option>
                     <option value="%">%</option>
                 </select>
-                <button>
-                    <svg width="1em" height="1em">
-                        <use xlink:href="#svg-check" href="#svg-check"></use>
-                    </svg>
-                </button>
             </form>
         </panel-option>
         <panel-option>
@@ -150,11 +140,6 @@ Component::addJSModule();
                     <option value="px">px</option>
                     <option value="%">%</option>
                 </select>
-                <button>
-                    <svg width="1em" height="1em">
-                        <use xlink:href="#svg-check" href="#svg-check"></use>
-                    </svg>
-                </button>
             </form>
         </panel-option>
         <panel-option>
@@ -171,11 +156,6 @@ Component::addJSModule();
                     <option value="ms">ms</option>
                     <option value="s">s</option>
                 </select>
-                <button>
-                    <svg width="1em" height="1em">
-                        <use xlink:href="#svg-check" href="#svg-check"></use>
-                    </svg>
-                </button>
             </form>
         </panel-option>
         <panel-option>
@@ -192,11 +172,6 @@ Component::addJSModule();
                     <option value="ms">ms</option>
                     <option value="s">s</option>
                 </select>
-                <button>
-                    <svg width="1em" height="1em">
-                        <use xlink:href="#svg-check" href="#svg-check"></use>
-                    </svg>
-                </button>
             </form>
         </panel-option>
         <panel-option>

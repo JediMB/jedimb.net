@@ -135,8 +135,4 @@ panel-option form {
     & select {
         width: 5ch;
     }
-
-    & button {
-        padding: 0.5em;
-    }
 }
