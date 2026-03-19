@@ -2,6 +2,8 @@ import { imageGalleryPath } from "/js/constants/meta-constants.js";
 import fullscreenImage from "/js/custom-elements/fullscreen-image.element.js";
 import imageGalleryService from "/js/services/image-gallery.service.js";
 
+const imgGalleryTag = 'img-gallery';
+
 export class ImgGalleryElement extends HTMLElement {
     static observedAttributes = [
         'gallery-id',
@@ -438,4 +440,4 @@ export class ImgGalleryElement extends HTMLElement {
     }
 }
 
-customElements.define('img-gallery', ImgGalleryElement);
+customElements.define(imgGalleryTag, ImgGalleryElement);

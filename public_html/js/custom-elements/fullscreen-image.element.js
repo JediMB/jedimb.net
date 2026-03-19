@@ -1,10 +1,8 @@
-import inlineStyle from "/js/utilities/inline-style.utility.js";
 export { fullscreenImage as default };
 
 const fullscreenImageTag = 'fullscreen-image';
 
 class FullscreenImage extends HTMLElement {
-    static #cssTextNode = inlineStyle.addCSS(fullscreenImageTag, { display: 'contents' });
     /** @type {FullscreenImage} */ #self;
     /** @type {HTMLElement} */ #imageWrapper;
     /** @type {() => void} */ #onClose;
@@ -87,6 +85,7 @@ class FullscreenImage extends HTMLElement {
         this.#onClose = null;
     }
 }
+
 customElements.define(fullscreenImageTag, FullscreenImage);
 
 /** @type {FullscreenImage} */

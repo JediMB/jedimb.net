@@ -111,9 +111,7 @@ export class TextEditorComponent extends HTMLElement {
 
             const element = event.target;
             const options = c.elementsWithOptions[element.localName];
-
-            // Avoids image elements being considered clicked on when clicking in their margins:
-            const isMatch = !!options && (element.localName === 'hr' || element !== event.originalTarget);
+            const isMatch = !!options;
 
             this.#optionsElement = null;
             this.#optionsPanel.classList.toggle('active', isMatch);

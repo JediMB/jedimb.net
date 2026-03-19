@@ -2,6 +2,8 @@ import { imageGalleryPath } from "/js/constants/meta-constants.js";
 import fullscreenImage from "/js/custom-elements/fullscreen-image.element.js";
 import imageGalleryService from "/js/services/image-gallery.service.js";
 
+const imgWrapperTag = 'img-wrapper';
+
 export class ImgWrapperElement extends HTMLElement {
     static observedAttributes = [
         'image-id',
@@ -149,4 +151,4 @@ export class ImgWrapperElement extends HTMLElement {
     }
 }
 
-customElements.define('img-wrapper', ImgWrapperElement);
+customElements.define(imgWrapperTag, ImgWrapperElement);

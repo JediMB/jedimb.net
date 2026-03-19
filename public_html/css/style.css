@@ -4,6 +4,13 @@
 @import url('default/fonts.css');
 @import url('default/forms.css');
 
+/* Custom elements */
+fullscreen-image,
+img-gallery,
+img-wrapper {
+    display: contents;
+}
+
 a[disabled] {
     pointer-events: none;
 }
