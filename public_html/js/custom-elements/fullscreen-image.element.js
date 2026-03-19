@@ -2,28 +2,38 @@ export { fullscreenImage as default };
 
 const fullscreenImageTag = 'fullscreen-image';
 
-class FullscreenImage extends HTMLElement {
-    /** @type {FullscreenImage} */ #self;
+class FullscreenImageElement extends HTMLElement {
     /** @type {HTMLElement} */ #imageWrapper;
     /** @type {() => void} */ #onClose;
 
     constructor() {
         const component = super();
-        this.#self = component;
     }
 
     connectedCallback() {
-        const self = this.#self;
-        self.toggleAttribute('hidden', true);
-        const shadow = self.attachShadow({ mode: 'open' });
+        this.toggleAttribute('hidden', true);
+        const shadow = this.attachShadow({ mode: 'open' });
 
         const fullscreenContainer = document.createElement('fullscreen-container');
         shadow.appendChild(fullscreenContainer);
 
         const btnClose = document.createElement('button');
-        btnClose.textContent = 'Close';
+        const targetSymbol = document.querySelector('#svg-close');
+
+        if (targetSymbol) {
+            const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+            svg.setAttribute('viewBox', targetSymbol.getAttribute('viewBox'));
+            svg.setAttribute('width', '2em');
+            svg.setAttribute('height', '2em');
+            svg.setAttribute('fill', 'currentColor');
+            svg.innerHTML = targetSymbol.innerHTML;
+            btnClose.appendChild(svg);
+        }
+        else
+            btnClose.textContent = 'Close';
+
         fullscreenContainer.appendChild(btnClose);
-        btnClose.addEventListener('click', () => self.close());
+        btnClose.addEventListener('click', () => this.close());
 
         this.#imageWrapper = document.createElement('image-wrapper');
         fullscreenContainer.appendChild(this.#imageWrapper);
@@ -32,7 +42,7 @@ class FullscreenImage extends HTMLElement {
         baseCSS.replaceSync(`
             fullscreen-container {
                 display: block;
-                position: absolute;
+                position: fixed;
                 inset: 0;
                 background-color: #000;
                 z-index: 9999;
@@ -40,9 +50,16 @@ class FullscreenImage extends HTMLElement {
 
             button {
                 position: absolute;
-                right: 0;
-                top: 0;
+                inset: 0 0 auto auto;
+                border: none;
+                background: transparent;
                 font-size: 2rem;
+                color: #fff;
+                cursor: pointer;
+
+                &:hover {
+                    color: var(--clr-primary);
+                }
             }
 
             image-wrapper {
@@ -76,18 +93,18 @@ class FullscreenImage extends HTMLElement {
         const clone = img.cloneNode();
         clone.removeAttribute('style');
         this.#imageWrapper.replaceChildren(clone);
-        this.#self.toggleAttribute('hidden', false);
+        this.toggleAttribute('hidden', false);
     }
 
     close() {
-        this.#self.toggleAttribute('hidden', true);
+        this.toggleAttribute('hidden', true);
         this.#onClose?.call(this);
         this.#onClose = null;
     }
 }
 
-customElements.define(fullscreenImageTag, FullscreenImage);
+customElements.define(fullscreenImageTag, FullscreenImageElement);
 
-/** @type {FullscreenImage} */
+/** @type {FullscreenImageElement} */
 const fullscreenImage = document.createElement(fullscreenImageTag);
 document.querySelector('body')?.appendChild(fullscreenImage);
