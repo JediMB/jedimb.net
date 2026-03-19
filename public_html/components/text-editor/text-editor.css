@@ -91,14 +91,18 @@ options-panel {
     border-radius: var(--size-xs);
     padding: var(--size-xs);
     background-color: var(--clr-primary);
-    font-size: 1.25em;
 
     &.active {
         transform: translateX(0);
     }
 
     & button {
+        display: block flex;
+        flex-direction: row;
+        gap: var(--size-xs);
+        align-items: center;
         border-radius: var(--size-xs);
+        font-size: 1rem;
     }
 
     & button:hover {
@@ -110,29 +114,29 @@ options-panel {
     margin: var(--size-xxs);
 }
 
-panel-option,
+panel-option {
+    display: block flex;
+    flex-direction: column;
+    gap: var(--size-xxs);
+}
+
 panel-option form {
     display: block flex;
     flex-direction: row;
     gap: var(--size-xxs);
     align-items: center;
-}
-
-panel-option form {
     width: 100%;
     font-size: 50%;
     line-height: 50%;
-    justify-content: space-between;
+}
 
-    & input[type="text"] {
-        width: calc(10ch + var(--size-xxs) + 5ch);
-    }
-
-    & input[type="number"] {
-        width: 10ch;
-    }
-
-    & select {
-        width: 5ch;
-    }
+panel-option input[type="checkbox"]::after {
+    position: relative;
+    right: -100%;
+    padding-left: var(--size-xs);
+    line-height: 1em;
+    content: 'off';
+}
+panel-option input[type="checkbox"]:checked::after {
+    content: 'on';
 }
