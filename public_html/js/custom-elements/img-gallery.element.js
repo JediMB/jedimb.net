@@ -41,6 +41,8 @@ export class ImgGalleryElement extends HTMLElement {
     #cssWaitTime = new CSSStyleSheet();
     #cssWidth = new CSSStyleSheet();
 
+    #transitionTimeout;
+
     constructor() {
         const element = super();
         this.#self = element;
@@ -360,7 +362,11 @@ export class ImgGalleryElement extends HTMLElement {
         if (transitionTime < 0)
             transitionTime = ImgGalleryElement.#defaultTransitionTime;
 
-        setTimeout(() => {
+        clearTimeout(this.#transitionTimeout);
+
+        this.#transitionTimeout = setTimeout(() => {
+            console.log('Replacing transition time with', transitionTime);
+
             this.#cssTransitionTime.replaceSync(`
                 .slide-in {
                     animation: slide-in ${transitionTime}ms forwards;
