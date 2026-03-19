@@ -123,20 +123,7 @@ export class TextEditorComponent extends HTMLElement {
             this.#adaptOptionsPanel(element, options);
         }, { capture: true });
 
-        this.#optionsButtons['delete'].addEventListener('click', () => this.#optionDelete());
-        for (const attribute in this.#optionsButtons) {
-            if (attribute === 'delete')
-                continue;
-
-            const button = this.#optionsButtons[attribute];
-            button.addEventListener('click', () => button.nextElementSibling.hidden = !button.nextElementSibling.hidden);
-            button.nextElementSibling?.addEventListener('submit', event => {
-                event.preventDefault();
-
-                const formData = new FormData(event.target);
-                console.log(formData);
-            });
-        }
+        this.#setupPanelOptions();
 
         this.#mutationObserver = new MutationObserver((mutationList, _) => {
             for (const record of mutationList) {
@@ -1093,6 +1080,65 @@ export class TextEditorComponent extends HTMLElement {
         element.replaceWith(newElement);
 
         return newElement;
+    }
+
+    #setupPanelOptions() {
+        this.#optionsButtons['delete'].addEventListener('click', () => this.#optionDelete());
+
+        for (const attribute in this.#optionsButtons) {
+            if (attribute === 'delete')
+                continue;
+
+            const button = this.#optionsButtons[attribute];
+            const form = button.nextElementSibling;
+            button.addEventListener('click', () => form.hidden = !form.hidden);
+
+            /** @type {HTMLInputElement} */
+            const primaryField = form.firstElementChild;
+
+            switch (primaryField.type) {
+                case 'text':
+                    primaryField.addEventListener('input', () => {
+                        if (!primaryField.value.length) {
+                            this.#optionsElement.removeAttribute(attribute);
+                            return;
+                        }
+
+                        this.#optionsElement.setAttribute(attribute, primaryField.value);
+                    });
+                    break;
+
+                case 'number':
+                    const select = primaryField.nextElementSibling;
+                    
+                    primaryField.addEventListener('input', () => {
+                        if (!primaryField.value.length) {
+                            this.#optionsElement.removeAttribute(attribute);
+                            return;
+                        }
+
+                        const suffix = select ? select.value : '';
+                        this.#optionsElement.setAttribute(attribute, primaryField.value + suffix);
+
+                    });
+
+                    select?.addEventListener('change', () => {
+                        if (!primaryField.value.length) {
+                            this.#optionsElement.removeAttribute(attribute);
+                            return;
+                        }
+
+                        this.#optionsElement.setAttribute(attribute, primaryField.value + select.value);
+                    });
+                    break;
+
+                case 'checkbox':
+                    primaryField.addEventListener('change', () => {
+                        this.#optionsElement.toggleAttribute(attribute, primaryField.checked);
+                    });
+                    break;
+            }
+        }
     }
 
     /**

@@ -365,8 +365,6 @@ export class ImgGalleryElement extends HTMLElement {
         clearTimeout(this.#transitionTimeout);
 
         this.#transitionTimeout = setTimeout(() => {
-            console.log('Replacing transition time with', transitionTime);
-
             this.#cssTransitionTime.replaceSync(`
                 .slide-in {
                     animation: slide-in ${transitionTime}ms forwards;

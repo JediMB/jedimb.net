@@ -195,8 +195,7 @@ Component::addJSModule();
                 <input id="text-editor__option-fullscreen-<?= $cId ?>"
                     type="checkbox"
                     title="Click image to view in fullscreen"
-                    name="doesFullscreen"
-                    onchange="this.form.requestSubmit();">
+                    name="doesFullscreen">
             </form>
         </panel-option>
     </options-panel>
