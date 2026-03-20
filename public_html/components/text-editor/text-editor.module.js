@@ -16,9 +16,10 @@ export class TextEditorComponent extends HTMLElement {
 
     #fieldset;
     /** @type {HTMLSelectElement} */ #blockSelector;
-    #tagButtons;
-    #linkButton;
-    #pageBreakButton;
+    /** @type {HTMLButtonElement[]} */ #tagButtons;
+    /** @type {HTMLButtonElement} */ #linkButton;
+    /** @type {HTMLButtonElement[]} */ #blockAttributeButtons;
+    /** @type {HTMLButtonElement} */ #pageBreakButton;
     /** @type {HTMLElement} */ #textBoxContainer;
     /** @type {HTMLElement} */ #textBox;
     /** @type {HTMLTextAreaElement} */  #htmlEditor;
@@ -47,6 +48,7 @@ export class TextEditorComponent extends HTMLElement {
         this.#blockSelector = this.#fieldset.querySelector('[select-blocktype]');
         this.#tagButtons = Array.from(this.#fieldset.querySelectorAll('[data-tag]'));
         this.#linkButton = this.#fieldset.querySelector('[btn-link]');
+        this.#blockAttributeButtons = Array.from(this.#fieldset.querySelectorAll('[data-block-attribute]'));
         this.#pageBreakButton = this.#fieldset.querySelector('[btn-pagebreak]');
 
         const htmlCheck = self.querySelector('[checkbox-html]');
@@ -77,6 +79,10 @@ export class TextEditorComponent extends HTMLElement {
         this.#tagButtons.forEach(button => button.dataset.shortcut && button.addEventListener('click', () => this.#toggleTag({ name: button.dataset.tag.toLowerCase() })));
 
         this.#linkButton.addEventListener('click', () => this.#addLink(this.#linkButton));
+
+        for (const button of this.#blockAttributeButtons) {
+            button.addEventListener('click', () => this.#toggleBlockAttribute(button));
+        }
 
         this.#pageBreakButton.addEventListener('click', () => this.#insertPageBreak());
 
@@ -944,6 +950,7 @@ export class TextEditorComponent extends HTMLElement {
 
         if (!isCurrentTextbox) {
             this.#tagButtons.forEach(b => b.classList.remove('highlight'));
+            this.#blockAttributeButtons.forEach(b => b.classList.remove('highlight'));
             return;
         }
 
@@ -951,10 +958,14 @@ export class TextEditorComponent extends HTMLElement {
 
         const selectedTextNodes = this.#getTextNodesFromSelection(this.#latestSelection);
 
-        if (selectedTextNodes.length === 0)
+        if (selectedTextNodes.length === 0) {
             [this.#blockSelector.value] = c.containerTags;
+            this.#blockAttributeButtons.forEach(b => b.classList.remove('highlight'));
+        }
         else {
-            const selectedBlocks = selectedTextNodes.map(n => this.#getBlockElement(n));
+            const selectedBlocks = [ ...new Set(
+                selectedTextNodes.map(n => this.#getBlockElement(n))
+            )];
 
             const identicalBlocks = selectedBlocks.length > 0
                 && selectedBlocks.every((block, _, arr) => block && block.localName === arr[0].localName);
@@ -964,6 +975,12 @@ export class TextEditorComponent extends HTMLElement {
                 : null;
 
             this.#linkButton.disabled = (new Set(selectedBlocks)).size !== 1;
+
+            for (const button of this.#blockAttributeButtons) {
+                button.classList.toggle('highlight',
+                    selectedBlocks.length && selectedBlocks.every(block => block.hasAttribute(button.dataset.blockAttribute))
+                );
+            }
         }
 
         for (const btn of this.#tagButtons) {
@@ -1190,6 +1207,51 @@ export class TextEditorComponent extends HTMLElement {
 
         if (button)
             this.#toggleTag({ name: button.dataset.tag.toLowerCase() });
+    }
+
+    /** @param {HTMLButtonElement} button  */
+    #toggleBlockAttribute(button) {
+        const attribute = button?.dataset.blockAttribute?.toLowerCase();
+
+        if (!attribute)
+            return;
+
+        const textBox = this.#textBox;
+        const selectionData = new SelectionData(getSelection());
+        
+        if (!textBox.contains(selectionData.startNode) || !textBox.contains(selectionData.endNode))
+            return;
+
+        const textNodes = this.#getTextNodesFromSelection(selectionData);
+
+        if (!textNodes)
+            return;
+
+        const blockElements = [...new Set(
+            textNodes.map(node => this.#getBlockElement(node))
+        )];
+
+        const isAlign = c.textAlignAttributes.includes(attribute);
+
+        for (const block of blockElements) {
+            const hasAttribute = block.hasAttribute(attribute);
+
+            if (hasAttribute) {
+                block.removeAttribute(attribute);
+                continue;
+            }
+
+            if (isAlign) {
+                c.textAlignAttributes.forEach(
+                    attr => block.toggleAttribute(attr, attr === attribute)
+                );
+                continue;
+            }
+
+            block.toggleAttribute(attribute, true);
+        }
+
+        this.#onSelectionChange();
     }
 
     /**

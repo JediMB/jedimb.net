@@ -59,6 +59,7 @@ Component::addJSModule();
     <span aria-hidden="true">&nbsp;</span>
     
     <button btn-align-left
+        data-block-attribute="text-left"
         title="Text align left"
         class="btn-toolbar"
         >
@@ -67,6 +68,7 @@ Component::addJSModule();
         </svg>
     </button>
     <button btn-align-center
+        data-block-attribute="text-center"
         title="Text align center"
         class="btn-toolbar"
         >
@@ -75,6 +77,7 @@ Component::addJSModule();
         </svg>
     </button>
     <button btn-align-right
+        data-block-attribute="text-right"
         title="Text align right"
         class="btn-toolbar"
         >
@@ -83,6 +86,7 @@ Component::addJSModule();
         </svg>
     </button>
     <button btn-align-justify
+        data-block-attribute="text-justify"
         title="Text align justify"
         class="btn-toolbar"
         >

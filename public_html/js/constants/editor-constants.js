@@ -1,7 +1,7 @@
 /** Key-value pairs of lowercase container element tags and their uses in the text editor
  * @type {[string, string][]} */
 export const containerTagsAndLabels = Object.freeze([
-    ['div', 'Text'],
+    ['div', 'Default'],
     ['p', 'Paragraph'],
     ['h3', 'Subheading 1'],
     ['h4', 'Subheading 2'],
@@ -24,10 +24,18 @@ export const nonTextContentTags = Object.freeze([ 'br', 'img-gallery', 'img-wrap
  * @type {string[]} */
 export const tagWhiteList = Object.freeze([...containerTags, ...textContentTags, ...nonTextContentTags]);
 
+/** @type {string[]} */
+export const textAlignAttributes = Object.freeze([ 'text-left', 'text-center', 'text-right', 'text-justify' ]);
+
 /** A map-like object containing properties for element tags that can have attributes,
  * where the values are arrays of those allowed attributes.
  * */
 export const allowedAttributes = Object.freeze({
+    div: textAlignAttributes,
+    p: textAlignAttributes,
+    h3: textAlignAttributes,
+    h4: textAlignAttributes,
+    h5: textAlignAttributes,
     a: [ 'href', 'target', 'title' ],
     'img-gallery': [ 'gallery-id', 'aspect-ratio', 'width', 'transition-time', 'wait-time' ],
     'img-wrapper': [ 'image-id', 'aspect-ratio', 'width', 'height', 'fullscreen-click' ]
