@@ -31,6 +31,10 @@ a[disabled] {
     text-align: right;
 }
 
+[text-justify] {
+    text-align: justify;
+}
+
 [is-loading] {
     animation: is-loading 1s steps(15, end) infinite;
 }

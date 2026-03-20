@@ -55,6 +55,44 @@ Component::addJSModule();
             <use xlink:href="#svg-link-add" href="#svg-link-add"></use>
         </svg>
     </button>
+
+    <span aria-hidden="true">&nbsp;</span>
+    
+    <button btn-align-left
+        title="Text align left"
+        class="btn-toolbar"
+        >
+        <svg width="1.25em" height="1.25em">
+            <use xlink:href="#svg-text-align-left" href="#svg-text-align-left"></use>
+        </svg>
+    </button>
+    <button btn-align-center
+        title="Text align center"
+        class="btn-toolbar"
+        >
+        <svg width="1.25em" height="1.25em">
+            <use xlink:href="#svg-text-align-center" href="#svg-text-align-center"></use>
+        </svg>
+    </button>
+    <button btn-align-right
+        title="Text align right"
+        class="btn-toolbar"
+        >
+        <svg width="1.25em" height="1.25em">
+            <use xlink:href="#svg-text-align-right" href="#svg-text-align-right"></use>
+        </svg>
+    </button>
+    <button btn-align-justify
+        title="Text align justify"
+        class="btn-toolbar"
+        >
+        <svg width="1.25em" height="1.25em">
+            <use xlink:href="#svg-text-align-justify" href="#svg-text-align-justify"></use>
+        </svg>
+    </button>
+
+    <span aria-hidden="true">&nbsp;</span>
+    
     <button modal-target="modal-images-<?= $cId ?>"
         title="Insert an image or gallery"
         class="btn-toolbar"
