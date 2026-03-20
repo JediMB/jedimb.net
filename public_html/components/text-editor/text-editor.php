@@ -19,9 +19,9 @@ Component::addJSModule();
         title="Bold"
         class="btn-toolbar"
         >
-        <svg xmlns="http://www.w3.org/2000/svg" height="1.25em" width="1.25em" viewBox="0 -960 960 960" fill="currentColor">
-            <path d="M272-200v-560h221q65 0 120 40t55 111q0 51-23 78.5T602-491q25 11 55.5 41t30.5 90q0 89-65 124.5T501-200H272Zm121-112h104q48 0 58.5-24.5T566-372q0-11-10.5-35.5T494-432H393v120Zm0-228h93q33 0 48-17t15-38q0-24-17-39t-44-15h-95v109Z"/>
-    </svg>
+        <svg width="1.25em" height="1.25em">
+            <use xlink:href="#svg-text-bold" href="#svg-text-bold"></use>
+        </svg>
     </button>
     <button btn-italics
         data-shortcut="I"
@@ -29,8 +29,8 @@ Component::addJSModule();
         title="Italics"
         class="btn-toolbar"
         >
-        <svg xmlns="http://www.w3.org/2000/svg" width="1.25em" height="1.25em" viewBox="0 -960 960 960" fill="currentColor">
-            <path d="M200-200v-100h160l120-360H320v-100h400v100H580L460-300h140v100H200Z"/>
+        <svg width="1.25em" height="1.25em">
+            <use xlink:href="#svg-text-italics" href="#svg-text-italics"></use>
         </svg>
     </button>
     <button btn-underline
@@ -39,8 +39,8 @@ Component::addJSModule();
         title="Underline"
         class="btn-toolbar"
         >
-        <svg xmlns="http://www.w3.org/2000/svg" width="1.25em" height="1.25em" viewBox="0 -960 960 960" fill="currentColor">
-            <path d="M200-120v-80h560v80H200Zm123-223q-56-63-56-167v-330h103v336q0 56 28 91t82 35q54 0 82-35t28-91v-336h103v330q0 104-56 167t-157 63q-101 0-157-63Z"/>
+        <svg width="1.25em" height="1.25em">
+            <use xlink:href="#svg-text-underline" href="#svg-text-underline"></use>
         </svg>
     </button>
     <button btn-link
@@ -51,24 +51,24 @@ Component::addJSModule();
         title="Link"
         class="btn-toolbar"
         >
-        <svg xmlns="http://www.w3.org/2000/svg" width="1.25em" height="1.25em" viewBox="0 -960 960 960" fill="currentColor">
-            <path d="M680-160v-120H560v-80h120v-120h80v120h120v80H760v120h-80ZM440-280H280q-83 0-141.5-58.5T80-480q0-83 58.5-141.5T280-680h160v80H280q-50 0-85 35t-35 85q0 50 35 85t85 35h160v80ZM320-440v-80h320v80H320Zm560-40h-80q0-50-35-85t-85-35H520v-80h160q83 0 141.5 58.5T880-480Z"/>
+        <svg width="1.25em" height="1.25em">
+            <use xlink:href="#svg-link-add" href="#svg-link-add"></use>
         </svg>
     </button>
     <button modal-target="modal-images-<?= $cId ?>"
         title="Insert an image or gallery"
         class="btn-toolbar"
         >
-        <svg xmlns="http://www.w3.org/2000/svg" width="1.25em" height="1.25em" viewBox="0 -960 960 960" fill="currentColor">
-            <path d="M120-200q-33 0-56.5-23.5T40-280v-400q0-33 23.5-56.5T120-760h400q33 0 56.5 23.5T600-680v400q0 33-23.5 56.5T520-200H120Zm600-320q-17 0-28.5-11.5T680-560v-160q0-17 11.5-28.5T720-760h160q17 0 28.5 11.5T920-720v160q0 17-11.5 28.5T880-520H720Zm40-80h80v-80h-80v80ZM120-280h400v-400H120v400Zm40-80h320L375-500l-75 100-55-73-85 113Zm560 160q-17 0-28.5-11.5T680-240v-160q0-17 11.5-28.5T720-440h160q17 0 28.5 11.5T920-400v160q0 17-11.5 28.5T880-200H720Zm40-80h80v-80h-80v80Zm-640 0v-400 400Zm640-320v-80 80Zm0 320v-80 80Z"/>
+        <svg width="1.25em" height="1.25em">
+            <use xlink:href="#svg-image-gallery" href="#svg-image-gallery"></use>
         </svg>
     </button>
     <button btn-pagebreak
         title="Insert page break for the content preview"
         class="btn-toolbar"
         >
-        <svg xmlns="http://www.w3.org/2000/svg" width="1.25em" height="1.25em" viewBox="0 -960 960 960" fill="currentColor">
-            <path d="M240-80q-33 0-56.5-23.5T160-160v-120h80v120h480v-120h80v120q0 33-23.5 56.5T720-80H240Zm-80-440v-280q0-33 23.5-56.5T240-880h320l240 240v120h-80v-80H520v-200H240v280h-80Zm200 160v-80h240v80H360Zm320 0v-80h240v80H680Zm-640 0v-80h240v80H40Zm440-160Zm0 240Z"/>
+        <svg width="1.25em" height="1.25em">
+            <use xlink:href="#svg-page-break" href="#svg-page-break"></use>
         </svg>
     </button>
 </fieldset>
