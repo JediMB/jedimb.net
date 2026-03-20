@@ -58,6 +58,7 @@ text-box:focus-within {
 }
 
 text-box hr[page-break] {
+    border: var(--size-xxs) var(--clr-primary-dark) dashed;
     position: absolute;
     inset-inline: var(--size-s);
     display: block flex;
@@ -77,6 +78,14 @@ text-box hr[page-break]::before {
     border-radius: var(--size-s);
     padding: var(--size-xs) calc(var(--size-xs) * 2);
     content: 'Page break';
+}
+
+text-box *:has(+ hr[page-break]) {
+    margin-bottom: 1em;
+}
+
+text-box hr[page-break] + * {
+    margin-top: 2em;
 }
 
 options-panel {
