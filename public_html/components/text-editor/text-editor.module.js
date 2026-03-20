@@ -303,8 +303,8 @@ export class TextEditorComponent extends HTMLElement {
                 'gallery-id': gallery.id,
                 'aspect-ratio': '16/9',
                 'width': '50%',
-                'transition-time': '2000',
-                'wait-time': '2000'
+                'transition-time': '2000ms',
+                'wait-time': '2000ms'
             }
         });
     }

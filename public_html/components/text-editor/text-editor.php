@@ -85,7 +85,7 @@ Component::addJSModule();
         aria-placeholder="What do you want to say?"
         aria-multiline="true"
         aria-required="true"
-        ><div>Test<img-gallery gallery-id="1" aspect-ratio="16/9" auto-margin="left" width="50%" transition-time="2000" wait-time="2000"></img-gallery></div><hr page-break=""><div>Test<img-wrapper image-id="1"></img-wrapper></div></text-box>
+        ><div>Test<img-gallery gallery-id="1" aspect-ratio="16/9" auto-margin="left" width="50%" transition-time="2000ms" wait-time="2000ms"></img-gallery></div><hr page-break=""><div>Test<img-wrapper image-id="1"></img-wrapper></div></text-box>
 
     <options-panel>
         <panel-option>
