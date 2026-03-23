@@ -11,108 +11,114 @@ Component::addJSModule();
 
 ?>
 
-<fieldset class="text-editor-toolbar">
+<fieldset class="text-editor__toolbar">
     <select select-blocktype class="select-toolbar"></select>
-    <button btn-bold
-        data-shortcut="B"
-        data-tag="B"
-        title="Bold"
-        class="btn-toolbar"
-        >
-        <svg width="1.25em" height="1.25em">
-            <use xlink:href="#svg-text-bold" href="#svg-text-bold"></use>
-        </svg>
-    </button>
-    <button btn-italics
-        data-shortcut="I"
-        data-tag="I"
-        title="Italics"
-        class="btn-toolbar"
-        >
-        <svg width="1.25em" height="1.25em">
-            <use xlink:href="#svg-text-italics" href="#svg-text-italics"></use>
-        </svg>
-    </button>
-    <button btn-underline
-        data-shortcut="U"
-        data-tag="U"
-        title="Underline"
-        class="btn-toolbar"
-        >
-        <svg width="1.25em" height="1.25em">
-            <use xlink:href="#svg-text-underline" href="#svg-text-underline"></use>
-        </svg>
-    </button>
-    <button btn-link
-        data-tag="A"
-        data-text-query="Please input display text:"
-        data-url-query="Please input link:"
-        data-url-invalid="Invalid link. Please try again:"
-        title="Link"
-        class="btn-toolbar"
-        >
-        <svg width="1.25em" height="1.25em">
-            <use xlink:href="#svg-link-add" href="#svg-link-add"></use>
-        </svg>
-    </button>
 
-    <span aria-hidden="true">&nbsp;</span>
-    
-    <button btn-align-left
-        data-block-attribute="text-left"
-        title="Text align left"
-        class="btn-toolbar"
-        >
-        <svg width="1.25em" height="1.25em">
-            <use xlink:href="#svg-text-align-left" href="#svg-text-align-left"></use>
-        </svg>
-    </button>
-    <button btn-align-center
-        data-block-attribute="text-center"
-        title="Text align center"
-        class="btn-toolbar"
-        >
-        <svg width="1.25em" height="1.25em">
-            <use xlink:href="#svg-text-align-center" href="#svg-text-align-center"></use>
-        </svg>
-    </button>
-    <button btn-align-right
-        data-block-attribute="text-right"
-        title="Text align right"
-        class="btn-toolbar"
-        >
-        <svg width="1.25em" height="1.25em">
-            <use xlink:href="#svg-text-align-right" href="#svg-text-align-right"></use>
-        </svg>
-    </button>
-    <button btn-align-justify
-        data-block-attribute="text-justify"
-        title="Text align justify"
-        class="btn-toolbar"
-        >
-        <svg width="1.25em" height="1.25em">
-            <use xlink:href="#svg-text-align-justify" href="#svg-text-align-justify"></use>
-        </svg>
-    </button>
+    <div class="text-editor__toolbar-group">
+        <button btn-bold
+            data-shortcut="B"
+            data-tag="B"
+            title="Bold"
+            class="btn-toolbar"
+            >
+            <svg width="1.25em" height="1.25em">
+                <use xlink:href="#svg-text-bold" href="#svg-text-bold"></use>
+            </svg>
+        </button>
+        <button btn-italics
+            data-shortcut="I"
+            data-tag="I"
+            title="Italics"
+            class="btn-toolbar"
+            >
+            <svg width="1.25em" height="1.25em">
+                <use xlink:href="#svg-text-italics" href="#svg-text-italics"></use>
+            </svg>
+        </button>
+        <button btn-underline
+            data-shortcut="U"
+            data-tag="U"
+            title="Underline"
+            class="btn-toolbar"
+            >
+            <svg width="1.25em" height="1.25em">
+                <use xlink:href="#svg-text-underline" href="#svg-text-underline"></use>
+            </svg>
+        </button>
+    </div>
 
-    <span aria-hidden="true">&nbsp;</span>
+    <div class="text-editor__toolbar-group">
+        <button btn-link
+            data-tag="A"
+            data-text-query="Please input display text:"
+            data-url-query="Please input link:"
+            data-url-invalid="Invalid link. Please try again:"
+            title="Link"
+            class="btn-toolbar"
+            >
+            <svg width="1.25em" height="1.25em">
+                <use xlink:href="#svg-link-add" href="#svg-link-add"></use>
+            </svg>
+        </button>
+    </div>
     
-    <button modal-target="modal-images-<?= $cId ?>"
-        title="Insert an image or gallery"
-        class="btn-toolbar"
-        >
-        <svg width="1.25em" height="1.25em">
-            <use xlink:href="#svg-image-gallery" href="#svg-image-gallery"></use>
-        </svg>
-    </button>
-    <button btn-pagebreak
-        title="Insert page break for the content preview"
-        class="btn-toolbar"
-        >
-        <svg width="1.25em" height="1.25em">
-            <use xlink:href="#svg-page-break" href="#svg-page-break"></use>
-        </svg>
-    </button>
+    <div class="text-editor__toolbar-group">
+        <button btn-align-left
+            data-block-attribute="text-left"
+            title="Text align left"
+            class="btn-toolbar"
+            >
+            <svg width="1.25em" height="1.25em">
+                <use xlink:href="#svg-text-align-left" href="#svg-text-align-left"></use>
+            </svg>
+        </button>
+        <button btn-align-center
+            data-block-attribute="text-center"
+            title="Text align center"
+            class="btn-toolbar"
+            >
+            <svg width="1.25em" height="1.25em">
+                <use xlink:href="#svg-text-align-center" href="#svg-text-align-center"></use>
+            </svg>
+        </button>
+        <button btn-align-right
+            data-block-attribute="text-right"
+            title="Text align right"
+            class="btn-toolbar"
+            >
+            <svg width="1.25em" height="1.25em">
+                <use xlink:href="#svg-text-align-right" href="#svg-text-align-right"></use>
+            </svg>
+        </button>
+        <button btn-align-justify
+            data-block-attribute="text-justify"
+            title="Text align justify"
+            class="btn-toolbar"
+            >
+            <svg width="1.25em" height="1.25em">
+                <use xlink:href="#svg-text-align-justify" href="#svg-text-align-justify"></use>
+            </svg>
+        </button>
+    </div>
+    
+    <div class="text-editor__toolbar-group">
+        <button modal-target="modal-images-<?= $cId ?>"
+            title="Insert an image or gallery"
+            class="btn-toolbar"
+            >
+            <svg width="1.25em" height="1.25em">
+                <use xlink:href="#svg-image-gallery" href="#svg-image-gallery"></use>
+            </svg>
+        </button>
+        <button btn-pagebreak
+            title="Insert page break for the content preview"
+            class="btn-toolbar"
+            >
+            <svg width="1.25em" height="1.25em">
+                <use xlink:href="#svg-page-break" href="#svg-page-break"></use>
+            </svg>
+        </button>
+    </div>
 </fieldset>
 <label>
     <input type="checkbox" checkbox-html>

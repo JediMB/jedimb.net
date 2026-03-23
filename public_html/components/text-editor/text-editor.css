@@ -4,10 +4,23 @@ text-editor-component {
     gap: var(--size-m);
 }
 
-.text-editor-toolbar {
-    display: flex;
+.text-editor__toolbar {
+    display: block flex;
+    flex-direction: row;
+    gap: var(--size-m);
+    flex-wrap: wrap;
+}
+
+.text-editor__toolbar-group {
+    display: block flex;
     flex-direction: row;
     gap: var(--size-xs);
+}
+
+@media all and (max-width: 23.5rem) {
+    .select-toolbar {
+        flex-grow: 1;
+    }
 }
 
 text-box-container {
