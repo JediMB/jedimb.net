@@ -26,7 +26,7 @@ $requestPath = strtolower(
     // Remove query string from end
     parse_url(
         // Remove slashes and dots from start
-        ltrim($_SERVER['REQUEST_URI'], '/.'),
+        trim($_SERVER['REQUEST_URI'], '/.'),
         PHP_URL_PATH
     )
 );
