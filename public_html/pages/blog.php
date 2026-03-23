@@ -24,10 +24,10 @@ $pagination = $result['pagination'];
 ?>
 
 <?php if ($sessionService->hasPermissions([ UserPermission::Publishing ])): ?>
-    <?php Component::include('blog-head') ?>
+    <?php Component::include('blog/blog-head') ?>
 <?php endif ?>
 
-<?php Component::include('blog-view', [
+<?php Component::include('blog/blog-view', [
     'posts' => $posts,
     'pagination' => $pagination,
     'baseRoute' => $baseRoute

@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Components;
+namespace Components\Blog;
 
 require_once 'models/pagination.model.php';
 require_once 'models/db/blog-post.db.model.php';

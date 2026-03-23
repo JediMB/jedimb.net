@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Components;
+namespace Components\Blog;
 
 require_once 'utilities/component.utility.php';
 
