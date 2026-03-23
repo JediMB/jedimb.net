@@ -168,8 +168,10 @@ customElements.define('blog-head-component', class BlogHeadComponent extends HTM
         button.ariaPressed = `${makeActive}`;
         button.classList.toggle('btn-primary', !makeActive);
         button.classList.toggle('btn-secondary', makeActive);
-        button.title = makeActive ? button.dataset.titleClose : button.dataset.titleOpen;
-        button.ariaControlsElements.at(0).toggleAttribute('hidden', !makeActive);
+        button.title = makeActive
+            ? button.dataset.titleClose
+            : button.dataset.titleOpen;
+        button.ariaControlsElements[0].toggleAttribute('hidden', !makeActive);
 
         const svgUse = button.querySelector('#blog-head__btn-add__use');
         const href = makeActive
