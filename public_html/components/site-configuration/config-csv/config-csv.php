@@ -85,7 +85,7 @@ $initialValue = $isDefault ? $default : $value;
         </ul>
         <button type="button" btn-add>
             <svg width="100%" height="100%">
-                <use xlink:href="#svg-add" href="#svg-add"></use>
+                <use xlink:href="#svg-add-box" href="#svg-add-box"></use>
             </svg>
         </button>
     </fieldset>

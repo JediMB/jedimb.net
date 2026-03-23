@@ -171,7 +171,12 @@ customElements.define('blog-head-component', class BlogHeadComponent extends HTM
         button.title = makeActive ? button.dataset.titleClose : button.dataset.titleOpen;
         button.ariaControlsElements.at(0).toggleAttribute('hidden', !makeActive);
 
-        button.querySelector('#blog-head__btn-add__path').setAttribute('d', makeActive ? button.dataset.pathClose : button.dataset.pathOpen);
+        const svgUse = button.querySelector('#blog-head__btn-add__use');
+        const href = makeActive
+            ? button.dataset.hrefClose
+            : button.dataset.hrefOpen
+        svgUse.setAttribute('xlink:href', href)
+        svgUse.setAttribute('href', href);
     }
 
     /**
