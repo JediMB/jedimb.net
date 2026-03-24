@@ -1,0 +1,19 @@
+blog-editor-component {
+    display: block flex;
+    flex-direction: column;
+    gap: var(--size-m)
+}
+
+blog-editor-permalink {
+    display: block flex;
+    flex-direction: row;
+    align-items: center;
+
+    & input {
+        flex-grow: 1;
+    }
+
+    & button {
+        padding: var(--size-s);
+    }
+}

@@ -1,34 +1,16 @@
-blog-head-component {
+blog-head-component,
+blog-head-content {
     display: block flex;
     flex-direction: column;
     gap: var(--size-l);
+}
+
+blog-head-component {
     margin-bottom: var(--size-l);
 }
 
 #blog-head__btn-add {
     border-radius: 9999px;
-}
-
-blog-head-content,
-blog-head-body,
-blog-head-footer {
-    display: block flex;
-    flex-direction: column;
-    gap: var(--size-m)
-}
-
-blog-head-permalink {
-    display: block flex;
-    flex-direction: row;
-    align-items: center;
-}
-
-#blog-head__permalink {
-    flex-grow: 1;
-}
-
-#blog-head__reset-permalink {
-    padding: var(--size-s);
 }
 
 blog-head-options,
