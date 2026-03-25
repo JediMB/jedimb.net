@@ -77,7 +77,7 @@ Component::addJSModule();
 
     <blog-head-buttons>
         <button id="blog-head__btn-cancel"
-            class="btn-warn btn-hover">
+            class="btn-warn btn-hover-heavy">
                 Cancel
         </button>
         <blog-head-buttons-save>

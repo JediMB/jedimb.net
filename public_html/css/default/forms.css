@@ -52,7 +52,7 @@ button:disabled [has-loaded] {
 [class|=btn],
 [class|=select] {
     --_clr-border: transparent;
-    --_clr-bg: var(--clr-bg, #999);
+    --_clr-bg: transparent;
     --_clr-text: var(--clr-text, #000);
     background-color: var(--_clr-bg);
     color: var(--_clr-text);
@@ -70,8 +70,13 @@ button:disabled [has-loaded] {
     gap: var(--size-xs);
 }
 
-.btn-hover:hover,
-.btn-hover:focus-visible {
+.btn-hover-light:hover,
+.btn-hover-light:focus-visible {
+    --clr-text: var(--clr-primary);
+}
+
+.btn-hover-heavy:hover,
+.btn-hover-heavy:focus-visible {
     --_clr-border: var(--clr-text);
     font-weight: 600;
 }
