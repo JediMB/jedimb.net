@@ -36,12 +36,18 @@ Component::renderOnce();
     <symbol id="svg-left-double" viewBox="0 -960 960 960" fill="currentColor">
         <path d="M440-240 200-480l240-240 56 56-183 184 183 184-56 56Zm264 0L464-480l240-240 56 56-183 184 183 184-56 56Z"/>
     </symbol>
+    <symbol id="svg-first" viewBox="0 -960 960 960" fill="currentColor">
+        <path d="M240-240v-480h80v480h-80Zm440 0L440-480l240-240 56 56-184 184 184 184-56 56Z"/>
+    </symbol>
     <symbol id="svg-right" viewBox="0 -960 960 960" fill="currentColor">
         <path d="M504-480 320-664l56-56 240 240-240 240-56-56 184-184Z"/>
     </symbol>
     <symbol id="svg-right-double" viewBox="0 -960 960 960" fill="currentColor">
         <path d="M383-480 200-664l56-56 240 240-240 240-56-56 183-184Zm264 0L464-664l56-56 240 240-240 240-56-56 183-184Z"/>
     </symbol>
+    <symbol id="svg-last" viewBox="0 -960 960 960" fill="currentColor">
+        <path d="m280-240-56-56 184-184-184-184 56-56 240 240-240 240Zm360 0v-480h80v480h-80Z"/>
+    </svg>
     
     <symbol id="svg-add" viewBox="0 -960 960 960" fill="currentColor">
         <path d="M440-440H200v-80h240v-240h80v240h240v80H520v240h-80v-240Z"/>

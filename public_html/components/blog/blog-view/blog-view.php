@@ -125,7 +125,7 @@ $nextPage = min($totalPages, $currentPage + 1);
                 <?= $currentPage < 3 ? 'disabled' : null ?>
                 >
                 <svg width="1em" height="1em">
-                    <use xlink:href="#svg-left-double" href="#svg-left-double"></use>
+                    <use xlink:href="#svg-first" href="#svg-first"></use>
                 </svg>
             </a>
         </li>
@@ -180,7 +180,7 @@ $nextPage = min($totalPages, $currentPage + 1);
                 <?= $currentPage > $totalPages - 2 ? 'disabled' : null ?>
                 >
                 <svg width="1em" height="1em">
-                    <use xlink:href="#svg-right-double" href="#svg-right-double"></use>
+                    <use xlink:href="#svg-last" href="#svg-last"></use>
                 </svg>
             </a>
         </li>
