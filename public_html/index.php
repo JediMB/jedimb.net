@@ -45,16 +45,18 @@ if (!$sessionService->isLoggedIn())
 $navService = NavigationService::getInstance();
 $navService->menu[] = new MenuItem('About me', '/about');
 
-handleHome($requestPath);
+$pageNumber = separatePageNumber($requestPath);
+
+handleHome($requestPath, $pageNumber);
 
 foreach (SPECIAL_PATHS as $request => $path) {
     if ($requestPath === $request)
         servePHP([ 'pagePath' => $path ]);
 }
 
-handleVirtualPages($requestPath);
+handleVirtualPages($requestPath, $pageNumber);
 
-handleBlogRequests($requestPath);
+handleBlogRequests($requestPath, $pageNumber);
 
 $isForbidden = false;
 $realPath = getRealPath($requestPath, $isForbidden);
@@ -63,7 +65,8 @@ if (!$realPath)
     servePHP([
         'header' => 'HTTP/1.1 404 Not Found',
         'pagePath' => PATH_ERROR404,
-        'baseRoute' => $requestPath
+        'baseRoute' => $requestPath,
+        'page' => $pageNumber
     ]);
 
 if ($isForbidden)

@@ -65,7 +65,7 @@ define('INPUT_ALLOWED_TAGS', [
     'br', 'img-gallery', 'img-wrapper'
 ]);
 
-define('REGEX_HOME_PATH_PAGINATION', '/^(\d*)$/');
+define('REGEX_PATH_WITH_PAGE', '/^(?:(.+)\/)?(\d{1,7})\/?$/');
 define('REGEX_BLOG_PATH', '/^'. PATH_BLOG_PREFIX .'(\/[0-9]{4}\/[0-9]{2}\/[0-9]{2}\/[-a-z0-9]*)$/');
 
 define('REGEX_PHP', [

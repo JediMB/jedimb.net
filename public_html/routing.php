@@ -37,7 +37,7 @@ function getRealPath(string $path, bool &$isForbidden) : string|false {
         as $pathSuffix
         ) {
 
-        if ( ( $realPath = realpath(PATH_REALPAGES_DIR . DIRECTORY_SEPARATOR . $path . $pathSuffix) ) === false )
+        if ( ( $realPath = realpath(PATH_REALPAGES_DIR . "/$path" . $pathSuffix) ) === false )
             continue;
 
         if ( is_dir($realPath) ) {
@@ -81,7 +81,7 @@ function handleApiRequests(string $path) {
 }
 
 // If it's trying to access a blog entry, serve a match
-function handleBlogRequests(string $path) {
+function handleBlogRequests(string $path, int|null $pageNumber) {
     $matches = [];
     if (preg_match(REGEX_BLOG_PATH, $path, $matches)) {
         $service = BlogPostService::getInstance(); /** @var BlogPostService $service */
@@ -102,7 +102,8 @@ function handleBlogRequests(string $path) {
             'content' => $blogPost->contentShort . $blogPost->contentRest,
             'createdOn' => $blogPost->publishedOn,
             'modifiedOn' => $blogPost->modifiedOn,
-            'mastolink' => $blogPost->mastolink
+            'mastolink' => $blogPost->mastolink,
+            'page' => $pageNumber
         ]);
     }
 }
@@ -135,28 +136,23 @@ function handleComponentModules(string $path) {
     exit;
 }
 
-function handleHome(string $path) {
-    $matches = [];
-    if (preg_match(REGEX_HOME_PATH_PAGINATION, $path, $matches)) {
-        $page = (int)$matches[1];
+function handleHome(string $path, int|null $pageNumber) {
+    if (!empty($path))
+        return;
 
-        if ($page < 1)
-            $page = 1;
-
-        servePHP([
-            'pagePath' => PATH_HOMEPAGE,
-            'links' => true,
-            'baseRoute' => '',
-            'page' => $page
-        ]);
-    }
+    servePHP([
+        'pagePath' => PATH_HOMEPAGE,
+        'links' => true,
+        'baseRoute' => '',
+        'page' => $pageNumber
+    ]);
 }
 
-function handleVirtualPages(string $requestPath) {
+function handleVirtualPages(string $path, int|null $pageNumber) {
     $nav = NavigationService::getInstance(); /** @var NavigationService $nav */
 
     foreach ($nav->virtualPageRoutes as $id => $route) {
-        if (ltrim($route, '/') === $requestPath) {
+        if (ltrim($route, '/') === $path) {
             $service = PageDBService::getInstance(); /** @var PageDBService $service */
 
             $page = $service->getPage($id);
@@ -167,7 +163,8 @@ function handleVirtualPages(string $requestPath) {
                 'title' => $page->title,
                 'content' => $page->contentShort . $page->contentRest,
                 'createdOn' => $page->createdOn,
-                'modifiedOn' => $page->modifiedOn
+                'modifiedOn' => $page->modifiedOn,
+                'page' => $pageNumber
             ]);
         }
     }
@@ -180,6 +177,21 @@ function isPHP(string $path) : bool {
 function isUnsafe(string $realPath) : bool {
     return strpos($realPath, getcwd() . DIRECTORY_SEPARATOR) !== 0
         || substr(basename($realPath), 0, 1) === '.'; 
+}
+
+function separatePageNumber(string &$requestPath) : int|null {
+    $matches = [];
+
+    if (!preg_match(REGEX_PATH_WITH_PAGE, $requestPath, $matches))
+        return null;
+
+    $requestPath = $matches[1];
+    $page = (int)$matches[2];
+
+    if ($page < 1)
+        return null;
+
+    return $page;
 }
 
 function serveApiData(string $filePath) {
