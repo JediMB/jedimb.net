@@ -420,7 +420,7 @@ main {
     color: var(--clr-bg);
 }
 
-main a {
+main a:not([class|=btn]) {
     color: var(--clr-link);
 }
 
@@ -451,7 +451,7 @@ main p a:visited {
     color: var(--clr-link-visited);
 }
 
-main a:hover {
+main a:not([class|=btn]):hover {
     color: var(--clr-link-hover);
     text-decoration: underline;
 }
