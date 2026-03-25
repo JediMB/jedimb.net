@@ -21,6 +21,8 @@ $result = $blogPostService->getPublishedBlogPosts($page);
 $posts = $result['blogPosts'];
 $pagination = $result['pagination'];
 
+$editPermissions = $sessionService->hasPermissions([ UserPermission::Editing ]);
+
 ?>
 
 <?php if ($sessionService->hasPermissions([ UserPermission::Publishing ])): ?>
@@ -30,5 +32,6 @@ $pagination = $result['pagination'];
 <?php Component::include('blog/blog-view', [
     'posts' => $posts,
     'pagination' => $pagination,
-    'baseRoute' => $baseRoute
+    'baseRoute' => $baseRoute,
+    'editPermissions' => $editPermissions
 ]) ?>

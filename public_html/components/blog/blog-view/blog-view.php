@@ -14,6 +14,7 @@ use Utilities\Component;
 /** @var Pagination $pagination */
 /** @var BlogPost[] $posts */
 /** @var string $baseRoute */
+/** @var bool $editPermissions */
 
 if (!isset($posts) || !is_array($posts))
     throw new Exception('BlogPost array data ($posts) not provided for BlogView component');
@@ -21,6 +22,7 @@ if (!isset($pagination) || get_class($pagination) !== Pagination::class)
     throw new Exception('Pagination data ($pagination) not provided for BlogView component');
 if (!isset($baseRoute) || !is_string($baseRoute))
     throw new Exception('Base path string data ($basePath) not provided for BlogView component');
+$editPermissions ??= false;
 
 Component::addAttributes([
     'base-route' => $baseRoute,
@@ -55,6 +57,18 @@ Component::renderOnce();
                         'modifiedOn' => $post->modifiedOn
                     ]) ?>
                 </article-byline>
+                <?php if ($editPermissions): ?>
+                    <article-toolbar>
+                        <a href="/blog/edit/<?= $post->id ?>"
+                            class="btn-hover-light"
+                            title="Edit post"
+                            >
+                            <svg width="1.5em" height="1.5em">
+                                <use xlink:href="#svg-edit" href="#svg-edit"></use>
+                            </svg>
+                        </a>
+                    </article-toolbar>
+                <?php endif ?>
             </article-header>
             <article-content class="content">
                 <?= $post->contentShort ?>

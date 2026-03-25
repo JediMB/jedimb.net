@@ -11,10 +11,27 @@ blog-posts {
 }
 
 blog-posts article {
-    display: flex block;
+    display: block flex;
     flex-direction: column;
     gap: var(--size-m);
     width: 100%;
+
+    &:hover article-toolbar,
+    &:focus-within article-toolbar {
+        display: block;
+    }
+}
+
+article-header {
+    display: block;
+    position: relative;
+}
+
+article-toolbar {
+    display: none;
+    position: absolute;
+    top: 0;
+    right: 0;
 }
 
 article-content {
