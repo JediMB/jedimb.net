@@ -65,8 +65,7 @@ if (!$realPath)
     servePHP([
         'header' => 'HTTP/1.1 404 Not Found',
         'pagePath' => PATH_ERROR404,
-        'baseRoute' => $requestPath,
-        'page' => $pageNumber
+        'baseRoute' => $requestPath
     ]);
 
 if ($isForbidden)
@@ -79,7 +78,8 @@ if ($isForbidden)
 if (isPHP($realPath))
     servePHP([
         'pagePath' => $realPath,
-        'baseRoute' => $requestPath
+        'baseRoute' => $requestPath,
+        'page' => $pageNumber
     ]);
 
 // Serve asset file from filesystem
