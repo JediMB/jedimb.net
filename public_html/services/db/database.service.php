@@ -155,7 +155,7 @@ class DatabaseService extends Singleton {
 
     private function buildOrderString(?string $column = null, bool $descending = false) : string {
         if (empty($column))
-            return ' ORDER BY id ASC';
+            return '';
 
         return " ORDER BY \"$column\" " . ($descending ? 'DESC' : 'ASC');
     }
