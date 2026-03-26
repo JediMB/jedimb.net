@@ -63,6 +63,19 @@ customElements.define('blog-view-component', class BlogViewComponent extends HTM
         this.#lstPages = pagination.querySelector('#blog__pagination-pages');
         this.#lnkActive = pagination.querySelector('.active');
 
+        const actionButtons = this.#blogPosts.querySelectorAll('[post-action]');
+
+        for (const button of actionButtons) {
+            switch (button.getAttribute('post-action')) {
+                case 'delete':
+                    button.addEventListener('click', () => window.alert('delete'));
+                    continue;
+                case 'pin':
+                    button.addEventListener('click', () => window.alert('pin'));
+                    continue;
+            }
+        }
+
         this.#lnkPrev.addEventListener('click', event => {
             event.preventDefault();
             this.#gotoNeighboringPage(false);

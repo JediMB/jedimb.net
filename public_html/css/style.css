@@ -43,6 +43,14 @@ a[disabled] {
     to { transform: rotate(360deg); }    
 }
 
+.link-svg {
+    color: inherit;
+
+    &:hover {
+        color: var(--clr-primary);
+    }
+}
+
 *, ::before, ::after {
     --tw-border-spacing-x: 0;
     --tw-border-spacing-y: 0;
@@ -420,8 +428,13 @@ main {
     color: var(--clr-bg);
 }
 
-main a:not([class|=btn]) {
+a {
     color: var(--clr-link);
+
+    &:hover {
+        color: var(--clr-link-hover);
+        text-decoration: underline;
+    }
 }
 
 main p a {
@@ -451,10 +464,6 @@ main p a:visited {
     color: var(--clr-link-visited);
 }
 
-main a:not([class|=btn]):hover {
-    color: var(--clr-link-hover);
-    text-decoration: underline;
-}
 
 main p a:hover {
     --clr-hsl-highlighter: 244, 79%, 65%;

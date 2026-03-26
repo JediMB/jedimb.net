@@ -15,23 +15,41 @@ blog-posts article {
     flex-direction: column;
     gap: var(--size-m);
     width: 100%;
-
-    &:hover article-toolbar,
-    &:focus-within article-toolbar {
-        display: block;
-    }
 }
 
 article-header {
     display: block;
     position: relative;
+
+    padding-right: var(--size-l);
+}
+
+.article-pin {
+    display: none;
+}
+
+.article-pinned .article-pin {
+    display: inline;
+}
+
+article-byline {
+    display: block flex;
+    flex-direction: row;
+    align-items: center;
+    gap: var(--size-s);
+}
+
+blog-posts article:not(:hover, :focus-within) article-toolbar {
+    display: none;
 }
 
 article-toolbar {
-    display: none;
     position: absolute;
     top: 0;
     right: 0;
+    display: block flex;
+    flex-direction: row;
+    gap: var(--size-xs);
 }
 
 article-content {

@@ -42,7 +42,7 @@ Component::renderOnce();
 </div>
 <blog-posts>
     <?php foreach ($posts as $key => $post): ?>
-        <article>
+        <article data-id="<?= $post->id ?>" <?= $post->isPinned ? ' class="article-pinned"' : null ?>>
             <article-header>
                 <h2>
                     <a href="/<?= PATH_BLOG_PREFIX . $post->permalink ?>"
@@ -52,6 +52,10 @@ Component::renderOnce();
                     </a>
                 </h2>
                 <article-byline>
+                    <svg width="1em" height="1em" class="article-pin">
+                        <title>Pinned</title>
+                        <use xlink:href="#svg-pinned" href="#svg-pinned"></use>
+                    </svg>
                     <?php Component::include('created-modified-dates', [
                         'createdOn' => $post->publishedOn,
                         'modifiedOn' => $post->modifiedOn
@@ -59,14 +63,34 @@ Component::renderOnce();
                 </article-byline>
                 <?php if ($editPermissions): ?>
                     <article-toolbar>
+                        <button post-action="delete"
+                            class="link-svg"
+                            title="Delete post"
+                            >
+                            <svg width="1.5em" height="1.5em">
+                                <use xlink:href="#svg-delete" href="#svg-delete"></use>
+                            </svg>
+                        </button>
                         <a href="/blog/edit/<?= $post->id ?>"
-                            class="btn-hover-light"
+                            class="link-svg"
                             title="Edit post"
                             >
                             <svg width="1.5em" height="1.5em">
                                 <use xlink:href="#svg-edit" href="#svg-edit"></use>
                             </svg>
                         </a>
+                        <button post-action="pin"
+                            class="link-svg"
+                            title="Pin post"
+                            data-title-pinned="Unpin post"
+                            data-title-unpinned="Pin post"
+                            data-href-pinned="#svg-pinned"
+                            data-href-unpinned="#svg-pin"
+                            >
+                            <svg width="1.5em" height="1.5em">
+                                <use xlink:href="#svg-pin" href="#svg-pin"></use>
+                            </svg>
+                        </button>
                     </article-toolbar>
                 <?php endif ?>
             </article-header>
