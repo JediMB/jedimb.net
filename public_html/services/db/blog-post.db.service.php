@@ -48,7 +48,7 @@ class BlogPostDBService extends BaseDBService {
     /** @return BlogPost[] */
     public function getBlogPosts(int $limit, int $offset, PublishedStatus $publishedStatus = PublishedStatus::Published) : array {
         try {
-            $posts = $this->dbService->selectView('blog_posts_published_short', limit: $limit, offset: $offset);
+            $posts = $this->dbService->selectView('blog_posts_public_feed', limit: $limit, offset: $offset);
             
             return array_map(function($post) {
                 return new BlogPost($post);
