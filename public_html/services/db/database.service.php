@@ -52,10 +52,17 @@ class DatabaseService extends Singleton {
         return false;
     }
 
-    public function selectAllByColumnValue(string $table, string $column, mixed $value, ?string $orderBy = null, bool $descending = false) {
+
+    /**
+     * @param string $table
+     * @param string $column The column to check for a value
+     * @param mixed $value The value to check for
+     * @param (array<int, (array{name: string, descending?: bool})>) $orderBy
+     */
+    public function selectAllByColumnValue(string $table, string $column, mixed $value, array $orderBy = []) {
         $query = $this->service->prepare(
             "SELECT * FROM {$this->schema}.$table WHERE $column = :val" .
-            $this->buildOrderString($orderBy, $descending)
+            $this->buildOrderString($orderBy)
         );
         $query->bindParam(':val', $value, $this->getPDOParamType($value));
 
@@ -90,10 +97,16 @@ class DatabaseService extends Singleton {
         return $query->fetch();
     }
 
-    public function selectById(string $table, int $id, ?string $orderBy = null, bool $descending = false) {
+
+    /**
+     * @param string $table
+     * @param int $id
+     * @param (array<int, (array{name: string, descending?: bool})>) $orderBy
+     */
+    public function selectById(string $table, int $id, array $orderBy = []) {
         $query = $this->service->prepare(
             "SELECT * FROM {$this->schema}.$table WHERE id = :id" .
-            $this->buildOrderString($orderBy, $descending)
+            $this->buildOrderString($orderBy)
         );
         $query->bindParam(':id', $id, PDO::PARAM_INT);
 
@@ -120,7 +133,7 @@ class DatabaseService extends Singleton {
 
     /**
      * @param string $function
-     * @param (array<int, (array{'value': int|string|boolean, 'type': int})>) $parameters
+     * @param (array<int, (array{value: int|string|boolean, type: int})>) $parameters
      * @param DBFetch $amount
      */
     public function selectFunction(string $function, array $parameters = [], DBFetch $amount = DBFetch::One) {
@@ -141,11 +154,19 @@ class DatabaseService extends Singleton {
         return $query->fetch();
     }
 
-    public function selectView(string $view, array $columnValues = [], array $nullChecks = [], ?string $orderBy = null, bool $descending = false, int $limit = -1, int $offset = -1) : array {
+    /**
+     * @param string $view View or table name
+     * @param (array<string, bool|int|string>|null) $columnValues Key-Value pairs with the name of the column and the value to match
+     * @param (array<string, bool>|null) $nullChecks Columns to check whether or not they're null
+     * @param (array<int, (array{name: string, descending?: bool})>) $orderBy
+     * @param int $limit
+     * @param int $offset
+     */
+    public function selectView(string $view, array $columnValues = [], array $nullChecks = [], array $orderBy = [], int $limit = -1, int $offset = -1) : array {
         $query = $this->service->prepare(
             "SELECT * FROM {$this->schema}.$view" .
             $this->buildWhereString($columnValues, $nullChecks) .
-            $this->buildOrderString($orderBy, $descending) .
+            $this->buildOrderString($orderBy) .
             $this->buildPaginationString($limit, $offset)
         );
         $query->execute();
@@ -153,11 +174,20 @@ class DatabaseService extends Singleton {
         return $query->fetchAll() ?: [];
     }
 
-    private function buildOrderString(?string $column = null, bool $descending = false) : string {
-        if (empty($column))
+    /**
+     * @param (array<int, (array{name: string, descending?: bool})>) $columns
+     */
+    private function buildOrderString($columns) : string {
+        if (!($count = count($columns)))
             return '';
+        
+        $orderBy = " ORDER BY \"{$columns[0]['name']}\" " . (empty($columns[0]['descending']) ? 'ASC' : 'DESC');
 
-        return " ORDER BY \"$column\" " . ($descending ? 'DESC' : 'ASC');
+        for ($i = 1; $i < $count; $i++) {
+            $orderBy = $orderBy . ", \"{$columns[$i]['name']}\" " . (empty($columns[$i]['descending']) ? 'ASC' : 'DESC');
+        }
+
+        return $orderBy;
     }
 
     private function buildPaginationString(int $limit, int $offset) : string {

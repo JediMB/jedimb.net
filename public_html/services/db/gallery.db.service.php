@@ -51,7 +51,7 @@ class GalleryDBService extends BaseDBService {
     /** @return Gallery[] */
     public function getGalleries() : array {
         try {
-            $galleries = $this->dbService->selectView('gallery', orderBy: 'id');
+            $galleries = $this->dbService->selectView('gallery', orderBy: [ [ 'name' => 'id' ] ]);
 
             return array_map(function($gallery) {
                 return new Gallery($gallery);

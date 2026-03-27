@@ -49,12 +49,14 @@ class GalleryImageDBService extends BaseDBService {
     /** @return GalleryImage[] */
     public function getGalleryImages(?int $id = null, bool $isImageId = false) : array {
         try {
+            $orderBy = [ [ 'name' => 'order' ] ];
+
             if ($id === null)
-                $galleryImageData = $this->dbService->selectView('gallery_image', orderBy: 'order');
+                $galleryImageData = $this->dbService->selectView('gallery_image', orderBy: $orderBy);
             else if (!$isImageId)
-                $galleryImageData = $this->dbService->selectAllByColumnValue('gallery_image', 'gallery_id', $id, 'order');
+                $galleryImageData = $this->dbService->selectAllByColumnValue('gallery_image', 'gallery_id', $id, $orderBy);
             else
-                $galleryImageData = $this->dbService->selectAllByColumnValue('gallery_image', 'image_id', $id, 'order');
+                $galleryImageData = $this->dbService->selectAllByColumnValue('gallery_image', 'image_id', $id, $orderBy);
             
             return array_map(fn($galleryImage) => new GalleryImage($galleryImage), $galleryImageData);
         }

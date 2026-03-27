@@ -66,7 +66,7 @@ class ImageDBService extends BaseDBService {
     /** @return Image[] */
     public function getImages() : array {
         try {
-            $images = $this->dbService->selectView('image', orderBy: 'id');
+            $images = $this->dbService->selectView('image', orderBy: [ [ 'name' => 'id' ] ]);
 
             if (!$images)
                 return [];

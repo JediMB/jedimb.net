@@ -17,7 +17,7 @@ class SocialLinkDBService extends BaseDBService {
 
     public function getSocialLinks() : array {
         try {
-            $links = $this->dbService->selectView('social_link', orderBy: 'order');
+            $links = $this->dbService->selectView('social_link', orderBy: [ [ 'name' => 'order'] ]);
 
             return array_map(function($link) {
                 return new SocialLink($link);
