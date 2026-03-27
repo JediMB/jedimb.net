@@ -125,6 +125,12 @@ class DatabaseService extends Singleton {
             "SELECT count(*) FROM {$this->schema}.$table" . 
             $this->buildWhereString($columnValues, $nullChecks)
         );
+
+        $index = 1;
+        foreach ($columnValues as $value) {
+            $query->bindValue($index, $value, $this->getPDOParamType($value));
+            $index++;
+        }
         
         $query->execute();
 
@@ -169,6 +175,13 @@ class DatabaseService extends Singleton {
             $this->buildOrderString($orderBy) .
             $this->buildPaginationString($limit, $offset)
         );
+
+        $index = 1;
+        foreach ($columnValues as $value) {
+            $query->bindValue($index, $value, $this->getPDOParamType($value));
+            $index++;
+        }
+
         $query->execute();
 
         return $query->fetchAll() ?: [];
