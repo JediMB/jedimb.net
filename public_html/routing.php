@@ -86,7 +86,7 @@ function handleBlogRequests(string $path, int|null $pageNumber) {
     if (preg_match(REGEX_BLOG_PATH, $path, $matches)) {
         $service = BlogPostService::getInstance(); /** @var BlogPostService $service */
         
-        $blogPost = $service->getPublishedBlogPost($matches[1]);
+        $blogPost = $service->getPublicBlogPost($matches[1]);
 
         if (!$blogPost)
             servePHP([

@@ -10,8 +10,9 @@ require_once 'services/table-modified.service.php';
 require_once 'services/base/singleton.php';
 require_once 'services/db/blog-post.db.service.php';
 
-use Enums\PublishedStatus;
 use Exception;
+use Enums\PublishedStatus;
+use Enums\Visibility;
 use Models\Pagination;
 use Models\DB\BlogPost;
 use Models\DB\BlogPostSchedule;
@@ -40,7 +41,7 @@ class BlogPostService extends Singleton {
     }
 
     /** @return (array{'blogPosts': BlogPost[], 'pagination': Pagination}) */
-    private function getBlogPosts(int $page, ?int $pageSize, PublishedStatus $publishedStatus) : array {
+    private function getBlogPosts(int $page, ?int $pageSize, PublishedStatus $publishedStatus, Visibility $visibility) : array {
         if ($page < 1) $page = 1;
 
         $pageSize ??= $this->configurationService->getUserConstant('PAGINATION_PAGE_SIZE');
@@ -58,7 +59,7 @@ class BlogPostService extends Singleton {
         }
 
         return [
-            'blogPosts' => $this->blogPostDbService->getBlogPosts($pageSize, $offset, $publishedStatus),
+            'blogPosts' => $this->blogPostDbService->getBlogPosts($pageSize, $offset, $publishedStatus, $visibility),
             'pagination' => new Pagination($page, $pageSize, $offset, $postCount, $pageCount)
         ];
     }
@@ -68,12 +69,12 @@ class BlogPostService extends Singleton {
     }
 
     /** @return (array{'blogPosts': BlogPost[], 'pagination': Pagination}) */
-    function getPublishedBlogPosts(int $page = 1, ?int $pageSize = null) : array {
-        return $this->getBlogPosts($page,$pageSize, PublishedStatus::Published);        
+    function getPublicBlogPosts(int $page = 1, ?int $pageSize = null) : array {
+        return $this->getBlogPosts($page,$pageSize, PublishedStatus::Published, Visibility::Visible);
     }
 
-    function getPublishedBlogPost(int|string $identifier) : BlogPost|false {
-        return $this->blogPostDbService->getBlogPost($identifier, PublishedStatus::Published);
+    function getPublicBlogPost(int|string $identifier) : BlogPost|false {
+        return $this->blogPostDbService->getBlogPost($identifier, PublishedStatus::Published, Visibility::Visible);
     }
 
     /** @return (array{'blogPost': BlogPost, 'modifiedOn': \DateTime}) */

@@ -29,7 +29,7 @@ switch ( $_SERVER['REQUEST_METHOD'] ) {
             if ($sessionService->hasPermissions([ UserPermission::Editing ]))
                 $post = $service->getBlogPost($id);
             else
-                $post = $service->getPublishedBlogPost($id);
+                $post = $service->getPublicBlogPost($id);
 
             if (!$post)
                 return Response::BadRequest('Invalid blog post id, or insufficient permissions');

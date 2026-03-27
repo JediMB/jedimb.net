@@ -3,6 +3,7 @@
 namespace Services\DB;
 
 require_once 'enums/published-status.enum.php';
+require_once 'enums/visibility.enum.php';
 require_once 'models/db/blog-post.db.model.php';
 require_once 'models/dto/blog-post.dto.model.php';
 require_once 'services/base/base.db.service.php';
@@ -10,6 +11,7 @@ require_once 'services/base/base.db.service.php';
 use PDO;
 use PDOException;
 use Enums\PublishedStatus;
+use Enums\Visibility;
 use Exception;
 use Models\DB\BlogPost;
 use Models\DTO\BlogPost as BlogPostDTO;
@@ -46,9 +48,18 @@ class BlogPostDBService extends BaseDBService {
 
     // TODO: expand functionality to cover 'unpublished' and 'any'
     /** @return BlogPost[] */
-    public function getBlogPosts(int $limit, int $offset, PublishedStatus $publishedStatus = PublishedStatus::Published) : array {
+    public function getBlogPosts(int $limit, int $offset, PublishedStatus $publishedStatus = PublishedStatus::Published, Visibility $visibility = Visibility::Visible) : array {
         try {
-            $posts = $this->dbService->selectView('blog_posts_public_feed', limit: $limit, offset: $offset);
+            $columnValues = [];
+            $nullChecks = [];
+
+            if ($visibility !== Visibility::Any)
+                $columnValues = [ 'is_hidden' => $visibility === Visibility::Hidden ];
+
+            if ($publishedStatus !== PublishedStatus::Any)
+                $nullChecks = [ 'published_on' => $publishedStatus === PublishedStatus::Unpublished ];
+
+            $posts = $this->dbService->selectView('blog_posts_short', $columnValues, $nullChecks, limit: $limit, offset: $offset);
             
             return array_map(function($post) {
                 return new BlogPost($post);
@@ -64,19 +75,20 @@ class BlogPostDBService extends BaseDBService {
      * @param PublishedStatus $publishedStatus 
      * @return BlogPost|false
      */
-    public function getBlogPost(int|string $identifier, PublishedStatus $publishedStatus = PublishedStatus::Published): BlogPost|false {
+    public function getBlogPost(int|string $identifier, PublishedStatus $publishedStatus = PublishedStatus::Published, Visibility $visibility = Visibility::Visible): BlogPost|false {
         try {
             if (is_int($identifier))
                 $columnValues = [ 'id' => $identifier ];
             else
                 $columnValues = [ 'permalink' => $identifier ];
 
-            if ($publishedStatus === PublishedStatus::Published)
-                $nullChecks = [ 'published_on' => false ];
-            else if ($publishedStatus === PublishedStatus::Unpublished)
-                $nullChecks = [ 'is_published' => true ];
-            else
+            if ($visibility !== Visibility::Any)
+                $columnValues += [ 'is_hidden' => $visibility === Visibility::Hidden ];
+
+            if ($publishedStatus === PublishedStatus::Any)
                 $nullChecks = [];
+            else
+                $nullChecks = [ 'published_on' => $publishedStatus === PublishedStatus::Unpublished ];
 
             $post = $this->dbService->selectByColumnValues('blog_post', $columnValues, $nullChecks);
 

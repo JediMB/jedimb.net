@@ -16,7 +16,7 @@ $sessionService = SessionService::getInstance();
 $blogPostService = BlogPostService::getInstance();
 
 $page ??= 1;
-$result = $blogPostService->getPublishedBlogPosts($page);
+$result = $blogPostService->getPublicBlogPosts($page);
 
 $posts = $result['blogPosts'];
 $pagination = $result['pagination'];
