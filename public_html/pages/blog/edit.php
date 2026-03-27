@@ -3,11 +3,21 @@
 namespace Pages\Blog;
 
 require_once 'services/blog-post.service.php';
+require_once 'services/session.service.php';
+require_once 'utilities/component.utility.php';
 
-use Models\DB\BlogPost;
+use Exception;
+use Enums\UserPermission;
 use Services\BlogPostService;
+use Services\SessionService;
+use Utilities\Component;
 
 /** @var int|null $page */
+
+if (!isset($page))
+    throw new Exception('Page number data ($page) unset in Blog Edit page');
+
+SessionService::getInstance()->enforcePermissions([ UserPermission::Editing ]);
 
 ?>
 
@@ -22,9 +32,10 @@ use Services\BlogPostService;
 
 <?php if (!$post): ?>
     <div>Blog post (id: <?= $page ?>) not found.</div>
-    <?php return ?>
+    <?php return; ?>
 <?php endif ?>
 
-<div>
-    Editing blog post titled <i>"<?= $post->title ?>"</i>
-</div>
+<?php Component::include('blog/blog-editor', [
+    'formId' => 'blog__edit__form',
+    'post' => $post
+]) ?>

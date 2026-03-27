@@ -5,6 +5,8 @@ export default class BlogEditorComponent extends HTMLElement {
     #isLoaded = Object.freeze(new Emitter(false));
     #isValid = Object.freeze(new Emitter(false));
 
+    /** @type {HTMLInputElement[]} */ #inputsToValidate;
+
     /** @type {HTMLFormElement} */ #form;
     /** @type {HTMLElement} */ #permadate;
     /** @type {TextEditorComponent} */ #textEditor;
@@ -26,15 +28,19 @@ export default class BlogEditorComponent extends HTMLElement {
         inputs['title'].addEventListener('input', () => inputs['permalink'].defaultValue = this.#formatPermalinkTitle(inputs['title'].value));
         inputs['title'].addEventListener('change', () => inputs['title'].value = inputs['title'].value.trim());
 
-        inputs['permalink'].addEventListener('change', () => inputs['permalink'].value = this.#formatPermalinkTitle(inputs['permalink'].value));
-        this.querySelector(`#${formId}__reset-permalink`).addEventListener('click', () => inputs['permalink'].value = inputs['permalink'].defaultValue);
+        this.#inputsToValidate = [
+            inputs['title'],
+            inputs['description'],
+            inputs['mastolink']
+        ];
 
-        for (const field of [
-                inputs['title'],
-                inputs['permalink'],
-                inputs['description'],
-                inputs['mastolink']
-            ]) {
+        if (inputs['id'] === '0') {
+            inputs['permalink']?.addEventListener('change', () => inputs['permalink'].value = this.#formatPermalinkTitle(inputs['permalink'].value));
+            this.querySelector(`#${formId}__reset-permalink`).addEventListener('click', () => inputs['permalink'].value = inputs['permalink'].defaultValue);
+            this.#inputsToValidate.push(inputs['permalink']);
+        }
+
+        for (const field of this.#inputsToValidate) {
             field.addEventListener('input', () => this.#validation());
         }
         this.#textEditor.content.onChange = () => this.#validation();
@@ -98,7 +104,9 @@ export default class BlogEditorComponent extends HTMLElement {
     }
 
     reset() {
-        this.#form.elements['permalink'].defaultValue = '';
+        if (this.#form.elements['permalink'])
+            this.#form.elements['permalink'].defaultValue = '';
+        
         this.#form.reset();
 
         for (const input of this.#form.elements) {
@@ -137,13 +145,10 @@ export default class BlogEditorComponent extends HTMLElement {
     #validation() {
         const textEditorValid = this.#textEditor.content.text.length || this.#textEditor.content.media.length;
 
-        const valid = textEditorValid
-            && this.#form.elements['title'].checkValidity()
-            && this.#form.elements['permalink'].checkValidity()
-            && this.#form.elements['description'].checkValidity()
-            && this.#form.elements['mastolink'].checkValidity();
+        const isValid = textEditorValid
+            && this.#inputsToValidate.every(input => input.checkValidity());
 
-        this.#isValid.setValue(valid);
+        this.#isValid.setValue(isValid);
     }
 }
 
