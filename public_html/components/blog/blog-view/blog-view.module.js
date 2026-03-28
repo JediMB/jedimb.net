@@ -1,13 +1,17 @@
 import BlogPost from "/js/models/blog/blog-post.model.js";
+import Emitter from "/js/utilities/emitter.js";
 import Pagination from "/js/models/blog/pagination.model.js";
 import blogPostService from "/js/services/blog-post.service.js";
-import Emitter from "/js/utilities/emitter.js";
+import sessionService from "/js/services/session.service.js";
+import { UserRole } from "/js/enums/user-role.enum.js";
 import { formatDate } from "/js/utilities/format-date.utility.js";
 
 customElements.define('blog-view-component', class BlogViewComponent extends HTMLElement {
     #baseRoute;
     #pagination;
     #startPage;
+
+    #editingPermissions = false;
 
     #pageChangeDelay = 1000;
     #pageChangeId = 0;
@@ -47,6 +51,14 @@ customElements.define('blog-view-component', class BlogViewComponent extends HTM
     }
 
     connectedCallback() {
+        sessionService.user.subscribe(user => {
+            // TODO: Proper permission checks
+            const editingPermissions = user && (user.role === UserRole.Administrator || user.role === UserRole.Contributor);
+            this.#editingPermissions = editingPermissions;
+
+            this.querySelectorAll('article-toolbar').forEach(toolbar => toolbar.toggleAttribute('hidden', !editingPermissions));
+        }, true);
+
         this.#start = this.querySelector('#blog__items-start');
         this.#end = this.querySelector('#blog__items-end');
         this.#total = this.querySelector('#blog__items-total');
@@ -64,17 +76,7 @@ customElements.define('blog-view-component', class BlogViewComponent extends HTM
         this.#lnkActive = pagination.querySelector('.active');
 
         const actionButtons = this.#blogPosts.querySelectorAll('[post-action]');
-
-        for (const button of actionButtons) {
-            switch (button.getAttribute('post-action')) {
-                case 'delete':
-                    button.addEventListener('click', () => window.alert('delete'));
-                    continue;
-                case 'pin':
-                    button.addEventListener('click', () => window.alert('pin'));
-                    continue;
-            }
-        }
+        this.#assignButtonActions(actionButtons);
 
         this.#lnkPrev.addEventListener('click', event => {
             event.preventDefault();
@@ -149,10 +151,34 @@ customElements.define('blog-view-component', class BlogViewComponent extends HTM
     connectedMoveCallback() {}
 
     /**
+     * @param {HTMLButtonElement[]} buttons 
+     * @param {number} [id=null] 
+     */
+    #assignButtonActions(buttons, id = null) {
+        for (const button of buttons) {
+            switch (button.getAttribute('post-action')) {
+                case 'delete':
+                    button.addEventListener('click', () => window.alert(`delete: ${id ?? button.dataset.id}`));
+                    continue;
+                case 'pin':
+                    button.addEventListener('click', () => window.alert(`pin: ${id ?? button.dataset.id}`));
+                    continue;
+            }
+        }
+    }
+
+    /**
      * @param {BlogPost} newBlogPost 
      * @returns {DocumentFragment} */
     #createBlogPostItem(newBlogPost) {
         const clone = this.#blogPostTemplate.content.cloneNode(true);
+        
+        const id = newBlogPost.id;
+
+        /** @type {HTMLElement} */
+        const article = clone.querySelector('article');
+        article.dataset.id = id;
+        article.classList.toggle('article-pinned', newBlogPost.isPinned);
 
         /** @type {HTMLAnchorElement} */
         const headingLink = clone.querySelector('.title');
@@ -175,6 +201,16 @@ customElements.define('blog-view-component', class BlogViewComponent extends HTM
         }
         else
             modifiedOn.parentElement.remove();
+
+        const toolbar = clone.querySelector('article-toolbar');
+        toolbar.toggleAttribute('hidden', !this.#editingPermissions);
+
+        /** @type {HTMLAnchorElement} */
+        const editLink = toolbar.querySelector('[post-edit]');
+        editLink.href += id;
+
+        const actionButtons = toolbar.querySelectorAll('[post-action]');
+        this.#assignButtonActions(actionButtons, id);
 
         clone.querySelector('.content').innerHTML = newBlogPost.contentShort;
 

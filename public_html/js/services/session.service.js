@@ -1,4 +1,5 @@
 import Emitter from '/js/utilities/emitter.js';
+import User from '/js/models/user/user.model.js';
 import sessionApiService from '/js/services/api/session-api.service.js';
 import { cookieUserKey, cookieTokenKey, cookieValidatorKey } from '/js/constants/meta-constants.js';
 
@@ -7,8 +8,8 @@ export { sessionService as default };
 class SessionService {
     #sessionApiService;
 
-    isLoggedIn = new Emitter(undefined);
-    user = new Emitter(undefined);
+    /** @type {Emitter<boolean>} */ isLoggedIn = new Emitter(undefined);
+    /** @type {Emitter<User>} */ user = new Emitter(undefined);
 
     constructor() {
         this.#sessionApiService = sessionApiService;

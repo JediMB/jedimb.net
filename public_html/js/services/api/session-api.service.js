@@ -21,6 +21,7 @@ class SessionApiService {
         return response.value;
     }
 
+    /** @returns {{success: boolean, value: User}} */
     async getUser() {
         const response = await this.#httpClient.get('session/user');
 
@@ -28,7 +29,7 @@ class SessionApiService {
             return response;
 
         if (response.value)
-            response.value = new  User(response.value);
+            response.value = new User(response.value);
 
         return response;
     }
