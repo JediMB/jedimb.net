@@ -138,7 +138,7 @@ Component::addJSModule();
         aria-required="true"
         ><?= $value ?></text-box>
 
-    <options-panel>
+    <options-panel class="hidden">
         <panel-option>
             <button element-option="delete"
                 title="Delete"

@@ -201,10 +201,6 @@ a[disabled] {
     display: contents;
 }
 
-.hidden {
-    display: none;
-}
-
 .w-80 {
     width: 20rem;
 }

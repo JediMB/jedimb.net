@@ -62,6 +62,12 @@ export class TextEditorComponent extends HTMLElement {
             btn => this.#optionsButtons[btn.getAttribute('element-option')] = btn
         );
         this.#optionForms = Array.from(this.#optionsPanel.querySelectorAll('form'));
+        this.#optionsPanel.addEventListener('animationend', (event) => {
+            if (event.animationName === 'panel-out')
+                this.#optionsPanel.classList.replace('panel-out', 'hidden');
+            else
+                this.#optionsPanel.classList.remove('panel-in');
+        });
 
         document.addEventListener('selectionchange', this.#onSelectionChange);
 
@@ -120,7 +126,12 @@ export class TextEditorComponent extends HTMLElement {
             const isMatch = !!options;
 
             this.#optionsElement = null;
-            this.#optionsPanel.classList.toggle('active', isMatch);
+            
+            if (isMatch) {
+                this.#optionsPanel.classList.replace('hidden', 'panel-in');
+            }
+            else if (!this.#optionsPanel.classList.contains('hidden'))
+                this.#optionsPanel.classList.toggle('panel-out', true);
 
             if (!isMatch)
                 return;
@@ -994,7 +1005,7 @@ export class TextEditorComponent extends HTMLElement {
     }
 
     #optionDelete() {
-        this.#optionsPanel.classList.remove('active');
+        this.#optionsPanel.classList.add('panel-out');
         this.#optionsElement?.remove();
 
         const buttons = this.#optionsButtons;
