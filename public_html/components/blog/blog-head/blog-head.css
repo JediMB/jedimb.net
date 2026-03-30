@@ -1,33 +1,7 @@
-blog-head-component,
-blog-head-content {
-    display: block flex;
-    flex-direction: column;
-    gap: var(--size-l);
-}
-
 blog-head-component {
     margin-bottom: var(--size-l);
 }
 
 #blog-head__btn-add {
     border-radius: 9999px;
-}
-
-blog-head-options,
-blog-head-buttons,
-blog-head-scheduling {
-    display: block flex;
-    flex-direction: row;
-    gap: var(--size-m);
-    justify-content: space-between;
-}
-
-blog-head-buttons-save {
-    display: block grid;
-    grid-template-columns: 1fr 1fr;
-    gap: var(--size-m);
-
-    & > * {
-        min-width: fit-content;
-    }
 }

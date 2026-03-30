@@ -1,3 +1,32 @@
+.form-column {
+    display: block flex;
+    flex-direction: column;
+    gap: var(--size-l);
+}
+
+
+.form-spaced-row,
+.form-row-group {
+    display: block flex;
+    flex-direction: row;
+    gap: var(--size-m);
+}
+
+.form-spaced-row {
+    justify-content: space-between;
+}
+
+.form-matching-buttons {
+    display: block grid;
+    grid-auto-columns: 1fr;
+    gap: var(--size-m);
+
+    & > * {
+        grid-row: 1;
+        min-width: fit-content;
+    }
+}
+
 button, select, input {
     background-color: transparent;
     color: var(--clr-text);

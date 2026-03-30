@@ -8,7 +8,7 @@ class BlogHeadComponent extends HTMLElement {
     /** @type {HTMLButtonElement} */ #btnAddPost;
     /** @type {HTMLButtonElement} */ #btnCancelPost;
     /** @type {HTMLButtonElement} */ #btnPublishPost;
-    /** @type {HTMLButtonElement} */ #btnDraftPost;
+    /** @type {HTMLButtonElement} */ #btnSaveDraft;
 
     /** @type {HTMLElement} */ #content;
     /** @type {BlogEditorComponent} */ #blogEditor;
@@ -37,7 +37,7 @@ class BlogHeadComponent extends HTMLElement {
         const buttons = this.querySelector('blog-head-buttons');
         this.#btnCancelPost = buttons.querySelector('#blog-head__btn-cancel');
         this.#btnPublishPost = buttons.querySelector('#blog-head__btn-publish');
-        this.#btnDraftPost = buttons.querySelector('#blog-head__btn-draft');
+        this.#btnSaveDraft = buttons.querySelector('#blog-head__btn-save');
 
         this.#btnAddPost.addEventListener('click', () => {
             const wasActive = !this.#btnAddPost.ariaPressed || this.#btnAddPost.ariaPressed !== 'false';
@@ -70,7 +70,7 @@ class BlogHeadComponent extends HTMLElement {
 
         blogEditor.isValid.subscribe(valid => {
             this.#btnPublishPost.disabled = !valid;
-            this.#btnDraftPost.disabled = !valid;
+            this.#btnSaveDraft.disabled = !valid;
         }, true);
 
         blogEditor.onLoaded(() => {

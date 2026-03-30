@@ -42,7 +42,7 @@ Component::addJSModule();
 </label>
 
 <blog-editor-permalink>
-    <?php if ($post->publishedOn): ?>
+    <?php if ($post && $post->publishedOn): ?>
         /<?= PATH_BLOG_PREFIX . $post->permalink ?>
         <input id="<?= $formId ?>__is-published"
             type="hidden"

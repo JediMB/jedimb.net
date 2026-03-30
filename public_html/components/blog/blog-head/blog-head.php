@@ -13,6 +13,7 @@ $sessionService->enforcePermissions([UserPermission::Publishing]);
 
 $formId = 'blog-head__form';
 
+Component::addAttributes(['class' => 'form-column']);
 Component::renderOnce();
 Component::renderCSS();
 Component::addJSModule();
@@ -39,13 +40,16 @@ Component::addJSModule();
     </svg>
 </button>
 
-<blog-head-content id="blog-head__content" hidden>
+<blog-head-content id="blog-head__content"
+    class="form-column"
+    hidden
+    >
     <?php Component::include('blog/blog-editor', [
         'attributes' => [ 'id' => 'blog-head__editor' ],
         'formId' => $formId
     ]) ?>
 
-    <blog-head-options>
+    <blog-head-options class="form-spaced-row">
         <label>
             <input id="blog-head__toggle-pinned"
                 type="checkbox"
@@ -53,7 +57,7 @@ Component::addJSModule();
                 name="isPinned">
             Pinned
         </label>
-        <blog-head-scheduling>
+        <options-group class="form-row-group">
             <input hidden
                 id="blog-head__scheduled-date"
                 type="date"
@@ -72,15 +76,15 @@ Component::addJSModule();
                     name="isScheduled">
                 Schedule
             </label>
-        </blog-head-scheduling>
+        </options-group>
     </blog-head-options>
 
-    <blog-head-buttons>
+    <blog-head-buttons class="form-spaced-row">
         <button id="blog-head__btn-cancel"
             class="btn-warn btn-hover-heavy">
                 Cancel
         </button>
-        <blog-head-buttons-save>
+        <buttons-save class="form-matching-buttons">
             <button id="blog-head__btn-publish"
                 type="submit"
                 form="<?= $formId ?>"
@@ -90,11 +94,11 @@ Component::addJSModule();
                 disabled>
                     Publish
             </button>
-            <button id="blog-head__btn-draft"
+            <button id="blog-head__btn-save"
                 class="btn-secondary"
                 disabled>
                     Save draft
             </button>
-        </blog-head-buttons-save>
+        </buttons-save>
     </blog-head-buttons>
 </blog-head-content>
