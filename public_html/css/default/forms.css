@@ -70,12 +70,22 @@ textarea:disabled {
     color: var(--clr-disabled-text);
 }
 
-button:enabled [is-loading] {
+button[btn-loading] {
+    display: grid;
+
+    & > * {
+        grid-row: 1;
+        grid-column: 1;
+        justify-self: center;
+    }
+}
+
+button:not([btn-loading]) [is-loading] {
     display: none;
 }
 
-button:disabled [has-loaded] {
-    display: none;
+button[btn-loading] [has-loaded] {
+    opacity: 0;
 }
 
 [class|=btn],

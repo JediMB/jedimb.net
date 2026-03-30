@@ -13,7 +13,6 @@ class BlogHeadComponent extends HTMLElement {
     /** @type {HTMLElement} */ #content;
     /** @type {BlogEditorComponent} */ #blogEditor;
 
-    /** @type {HTMLInputElement} */ #tglPinned;
     /** @type {HTMLInputElement} */ #tglScheduled;
     /** @type {HTMLInputElement} */ #scheduledDate;
     /** @type {HTMLInputElement} */ #scheduledTime;
@@ -29,7 +28,6 @@ class BlogHeadComponent extends HTMLElement {
         const blogEditor = this.#blogEditor;
 
         const options = this.querySelector('blog-head-options');
-        this.#tglPinned = options.querySelector('#blog-head__toggle-pinned');
         this.#tglScheduled = options.querySelector('#blog-head__toggle-schedule');
         this.#scheduledDate = options.querySelector('#blog-head__scheduled-date');
         this.#scheduledTime = options.querySelector('#blog-head__scheduled-time');
@@ -68,6 +66,8 @@ class BlogHeadComponent extends HTMLElement {
             this.#publishPost();
         });
 
+        this.#btnSaveDraft.addEventListener('click', () => this.#saveDraft());
+
         blogEditor.isValid.subscribe(valid => {
             this.#btnPublishPost.disabled = !valid;
             this.#btnSaveDraft.disabled = !valid;
@@ -76,6 +76,7 @@ class BlogHeadComponent extends HTMLElement {
         blogEditor.onLoaded(() => {
             this.#btnAddPost.title = this.#btnAddPost.dataset.titleOpen;
             this.#btnAddPost.disabled = false;
+            this.#btnAddPost.removeAttribute('btn-loading');
         });
     }
 
@@ -101,6 +102,13 @@ class BlogHeadComponent extends HTMLElement {
             },
             errors => this.#blogEditor.error(errors)
         );
+    }
+
+    async #saveDraft() {
+        this.#btnSaveDraft.disabled = true;
+        this.#btnSaveDraft.toggleAttribute('btn-loading', true);
+
+        
     }
 
     /** @param {boolean} makeActive  */

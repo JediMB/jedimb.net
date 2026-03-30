@@ -30,6 +30,7 @@ Component::addJSModule();
     data-title-close="Hide post form"
     data-href-open="#svg-add"
     data-href-close="#svg-hide"
+    btn-loading
     disabled
     >
     <svg is-loading width="2em" height="2em">
@@ -91,13 +92,21 @@ Component::addJSModule();
                 class="btn-primary"
                 data-content-publish="Publish"
                 data-content-schedule="Schedule"
-                disabled>
-                    Publish
+                disabled
+                >
+                <svg is-loading width="1em" height="1em">
+                    <use xlink:href="#svg-loading" href="#svg-loading"></use>
+                </svg>
+                <span has-loaded>Publish</span>
             </button>
             <button id="blog-head__btn-save"
                 class="btn-secondary"
-                disabled>
-                    Save draft
+                disabled
+                >
+                <svg is-loading width="1em" height="1em">
+                    <use xlink:href="#svg-loading" href="#svg-loading"></use>
+                </svg>
+                <span has-loaded>Save draft</span>
             </button>
         </buttons-save>
     </blog-head-buttons>
