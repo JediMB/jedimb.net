@@ -62,7 +62,7 @@ define('INPUT_LENGTH', [
 define('INPUT_ALLOWED_TAGS', [
     'div', 'p', 'h3', 'h4', 'h5',
     'a', 'b', 'i', 'u',
-    'br', 'img-gallery', 'img-wrapper'
+    'br', 'hr', 'img-gallery', 'img-wrapper'
 ]);
 
 define('REGEX_PATH_WITH_PAGE', '/^(?:(.+)\/)?(\d{1,7})\/?$/');
