@@ -66,7 +66,10 @@ class BlogHeadComponent extends HTMLElement {
             this.#publishPost();
         });
 
-        this.#btnSaveDraft.addEventListener('click', () => this.#saveDraft());
+        this.#btnSaveDraft.addEventListener('click', event => {
+            event.preventDefault();
+            this.#saveDraft()
+        });
 
         blogEditor.isValid.subscribe(valid => {
             this.#btnPublishPost.disabled = !valid;
@@ -85,12 +88,17 @@ class BlogHeadComponent extends HTMLElement {
     disconnectedCallback() {}
 
     async #publishPost() {
+        this.#btnPublishPost.disabled = true;
+        this.#btnSaveDraft.disabled = true;
+        this.#btnPublishPost.toggleAttribute('btn-loading', true);
+
         const post = new BlogPostDTO(this.#blogEditor.formData);
 
         blogPostService.createBlogPost(post,
             value => {
                 this.#blogEditor.reset();
                 this.#toggleFormView(false);
+                this.#btnPublishPost.removeAttribute('btn-loading');
 
                 if (value.blogPost) {
                     // TODO: Blog Post notification
@@ -100,15 +108,32 @@ class BlogHeadComponent extends HTMLElement {
                 }
                 console.log(value.blogPost ?? value.schedule);
             },
-            errors => this.#blogEditor.error(errors)
+            errors => {
+                // TODO: Error notification
+                this.#btnPublishPost.removeAttribute('btn-loading');
+                this.#blogEditor.error(errors);
+            }
         );
     }
 
     async #saveDraft() {
         this.#btnSaveDraft.disabled = true;
+        this.#btnPublishPost.disabled = true;
         this.#btnSaveDraft.toggleAttribute('btn-loading', true);
 
-        
+        const draft = new BlogPostDTO(this.#blogEditor.formData);
+
+        blogPostService.saveDraft(draft,
+            value => {
+                // TODO: Update form with returned data
+                // TODO: Draft saved notification
+                this.#btnSaveDraft.removeAttribute('btn-loading');
+            },
+            errors => {
+                this.#btnSaveDraft.removeAttribute('btn-loading');
+                this.#blogEditor.error(errors);
+            }
+        );
     }
 
     /** @param {boolean} makeActive  */

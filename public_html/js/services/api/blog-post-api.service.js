@@ -9,6 +9,7 @@ export { blogPostApiService as default };
 class BlogPostApiService {
     #httpClient;
     #api = {
+        draft: 'blog/draft',
         post: 'blog/post',
         posts: 'blog/posts'
     };
@@ -47,7 +48,7 @@ class BlogPostApiService {
             return false;
 
         if (!response.value)
-            throw new Error('Get failed to return blog post data');
+            throw new Error('Get blog post failed to return blog post data');
 
         return new BlogPost(response.value);
     }
@@ -85,6 +86,42 @@ class BlogPostApiService {
             response.value = { schedule: new BlogPostSchedule(response.value) };
         else
             response.value = { blogPost: new BlogPost(response.value) };
+
+        return response;
+    }
+
+    /**
+     * @param {BlogPostDTO} blogPostDTO 
+     * @returns {Promise<({success: boolean, errors: object|undefined, value: BlogPost|undefined})>}
+     */
+    async postDraft(blogPostDTO) {
+        const response = await this.#httpClient.post(this.#api.draft, blogPostDTO);
+
+        if (!response.success)
+            return response;
+
+        if (!response.value.id)
+            throw new Error('Post draft failed to return data');
+
+        response.value = new BlogPost(response.value);
+
+        return response;
+    }
+
+    /**
+     * @param {BlogPostDTO} blogPostDTO 
+     * @returns {Promise<({success: boolean, errors: object|undefined, value: BlogPost|undefined})>}
+     */
+    async updateDraft(blogPostDTO) {
+        const response = await this.#httpClient.put(this.#api.draft, blogPostDTO);
+
+        if (!response.success)
+            return response;
+
+        if (!response.value.id)
+            throw new Error('Update draft failed to return data');
+
+        response.value = new BlogPost(response.value);
 
         return response;
     }

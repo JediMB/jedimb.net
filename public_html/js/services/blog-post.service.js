@@ -58,5 +58,23 @@ class BlogPostService {
 
         next?.call(this, blogPosts, pagination);
     }
+
+    /**
+     * 
+     * @param {BlogPostDTO} blogPostDTO 
+     * @param {(value: BlogPost) => void} next 
+     * @param {(errors: object) => void} error 
+     * @returns {Promise<void>}
+     */
+    async saveDraft(blogPostDTO, next, error) {
+        const response = blogPostDTO.id
+            ? await this.#service.updateDraft(blogPostDTO)
+            : await this.#service.postDraft(blogPostDTO);
+
+        if (!response.success)
+            return error?.call(this, response.errors);
+
+        next?.call(this, response.value);
+    }
 }
 const blogPostService = new BlogPostService();

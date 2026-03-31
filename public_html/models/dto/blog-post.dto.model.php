@@ -4,10 +4,9 @@ namespace Models\DTO;
 
 require_once 'models/base/db-base.model.php';
 require_once 'models/exceptions/input-exception.php';
-require_once 'utilities/input.utility.php';
 require_once 'utilities/datetime.utility.php';
+require_once 'utilities/input.utility.php';
 
-use Enums\InputError;
 use Models\Base\DBBase;
 use Models\Exceptions\InputException;
 use Utilities\DateTime;
@@ -35,7 +34,7 @@ class BlogPost extends DBBase {
         
         $this->contentRest = empty($input['contentRest'])
             ? null
-            : strip_tags($input['contentRest'], INPUT_ALLOWED_TAGS) ;
+            : strip_tags($input['contentRest'], INPUT_ALLOWED_TAGS);
 
         $this->mastolink = Input::verifyOptionalTextInput('mastolink', $input, INPUT_LENGTH['page_sociallink'], $errors, REGEX_PHP['url']);
 

@@ -72,6 +72,8 @@ textarea:disabled {
 
 button[btn-loading] {
     display: grid;
+    cursor: default;
+    pointer-events: none;
 
     & > * {
         grid-row: 1;
