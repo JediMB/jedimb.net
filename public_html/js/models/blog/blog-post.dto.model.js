@@ -12,6 +12,7 @@ export default class BlogPostDTO {
         this.contentShort = formData.get('contentShort');
         this.contentRest = formData.get('contentRest') || null;
         this.mastolink = formData.get('mastolink') || null;
+        this.isHidden = Boolean(formData.get('isHidden'));
         this.isPinned = Boolean(formData.get('isPinned'));
 
         const isScheduled = formData.get('isScheduled');
