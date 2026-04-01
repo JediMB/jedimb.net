@@ -12,39 +12,44 @@ use Models\DTO\BlogPost as BlogPostDTO;
 use Models\Exceptions\InputException;
 use Services\BlogPostService;
 use Services\SessionService;
-use Utilities\DateTime;
 use Utilities\Response;
-
-$service = BlogPostService::getInstance(); /** @var BlogPostService $service */
-$sessionService = SessionService::getInstance(); /** @var SessionService $sessionService */
 
 $input = json_decode(file_get_contents('php://input'), true);
 
-switch ( $_SERVER['REQUEST_METHOD'] ) {
-    case 'POST':
-        try {
+$sessionService = SessionService::getInstance();
 
-        }
-        catch (InputException $e) {
-            return Response::InputException($e->getErrors());
-        }
-        catch (Exception $e) {
-            return Response::Error([$e->getMessage()]);
-        }
+if ( ($response = $sessionService->getInvalidSubmissionResponse($input, [ UserPermission::Editing ])) )
+    return $response;
 
-    case 'PUT':
-        try {
+$userId = $sessionService->getUser()->id;
 
-        }
-        catch (InputException $e) {
-            return Response::InputException($e->getErrors());
-        }
-        catch (Exception $e) {
-            return Response::Error([$e->getMessage()]);
-        }
+$service = BlogPostService::getInstance();
 
-    default:
-        return Response::InvalidRequest();
+try {
+    switch ( $_SERVER['REQUEST_METHOD'] ) {
+        case 'POST':
+            $draftDTO = new BlogPostDTO($input);
+
+            $post = $service->createDraft($draftDTO, $userId);
+
+            return Response::Success($post);
+
+        case 'PUT':
+            $draftDTO = new BlogPostDTO($input);
+
+            $post = $service->updateDraft($draftDTO, $userId);
+
+            return Response::Success($post);
+
+        default:
+            return Response::InvalidRequest();
+    }
+}
+catch (InputException $e) {
+    return Response::InputException($e->getErrors());
+}
+catch (Exception $e) {
+    return Response::Error([$e->getMessage()]);
 }
 
 ?>

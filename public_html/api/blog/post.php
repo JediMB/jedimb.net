@@ -49,9 +49,10 @@ switch ( $_SERVER['REQUEST_METHOD'] ) {
                 return $response;
 
             $post = new BlogPostDTO($input);
+            $userId = $sessionService->getUser()->id;
 
             if (empty($post->scheduledOn)) {
-                $post = $service->publishBlogPost($post)['blogPost'];
+                $post = $service->publishBlogPost($post, $userId)['blogPost'];
 
                 return Response::Success($post);
             }
@@ -59,7 +60,7 @@ switch ( $_SERVER['REQUEST_METHOD'] ) {
             if (!DateTime::parse($post->scheduledOn))
                 return Response::BadRequest('Invalid publishing date format');
 
-            $schedule = $service->scheduleBlogPost($post);
+            $schedule = $service->scheduleBlogPost($post, $userId);
             
             return Response::Success($schedule);
         }

@@ -26,7 +26,7 @@ class BlogPostDBService extends BaseDBService {
         try {
             $functionName = $publish
                 ? 'create_published_blog_post'
-                : 'create_scheduled_blog_post';
+                : 'create_unpublished_blog_post';
 
             $result = $this->dbService->selectFunction(
                 $functionName, [
@@ -46,7 +46,33 @@ class BlogPostDBService extends BaseDBService {
         }
     }
 
-    // TODO: expand functionality to cover 'unpublished' and 'any'
+    public function updateBlogPost(BlogPost $updatedBlogPost, bool $isPublished) : BlogPost {
+        try {
+            $functionName = $isPublished
+                ? 'update_published_blog_post'
+                : 'update_unpublished_blog_post';
+
+            $result = $this->dbService->selectFunction(
+                $functionName, [
+                    1 => [ 'value' => $updatedBlogPost->id, 'type' => PDO::PARAM_INT ],
+                    2 => [ 'value' => $updatedBlogPost->userId, 'type' => PDO::PARAM_INT ],
+                    3 => [ 'value' => $updatedBlogPost->permalink, 'type' => PDO::PARAM_STR ],
+                    4 => [ 'value' => $updatedBlogPost->title, 'type' => PDO::PARAM_STR ],
+                    5 => [ 'value' => $updatedBlogPost->description, 'type' => PDO::PARAM_STR ],
+                    6 => [ 'value' => $updatedBlogPost->contentShort, 'type' => PDO::PARAM_STR ],
+                    7 => [ 'value' => $updatedBlogPost->contentRest, 'type' => PDO::PARAM_STR ],
+                    8 => [ 'value' => $updatedBlogPost->isHidden, 'type' => PDO::PARAM_BOOL ],
+                    9 => [ 'value' => $updatedBlogPost->isPinned, 'type' => PDO::PARAM_BOOL]
+                ]
+            );
+
+            return new BlogPost($result);
+        }
+        catch (PDOException $e) {
+            throw new Exception('Database error: ' . $e->getMessage());
+        }
+    }
+
     /** @return BlogPost[] */
     public function getBlogPosts(int $limit, int $offset, PublishedStatus $publishedStatus = PublishedStatus::Published, Visibility $visibility = Visibility::Visible) : array {
         try {

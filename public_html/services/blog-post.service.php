@@ -36,6 +36,10 @@ class BlogPostService extends Singleton {
         $this->tableModifiedService = TableModifiedService::getInstance();
     }
 
+    function createDraft(BlogPostDTO $draftDTO, int $userId) : BlogPost {
+        return $this->blogPostDbService->createBlogPost($draftDTO, $userId, false);
+    }
+
     function getBlogPost(int $id) : BlogPost|false {
         return $this->blogPostDbService->getBlogPost($id, PublishedStatus::Any);
     }
@@ -78,8 +82,8 @@ class BlogPostService extends Singleton {
     }
 
     /** @return (array{'blogPost': BlogPost, 'modifiedOn': \DateTime}) */
-    function publishBlogPost(BlogPostDTO $blogPostDTO) : array {
-        $post = $this->blogPostDbService->createBlogPost($blogPostDTO, 1, true);
+    function publishBlogPost(BlogPostDTO $blogPostDTO, int $userId) : array {
+        $post = $this->blogPostDbService->createBlogPost($blogPostDTO, $userId, true);
         $modifiedOn = $this->tableModifiedService->createOrUpdateTableModifiedDate('blog_post');
 
         return [
@@ -88,8 +92,8 @@ class BlogPostService extends Singleton {
         ];
     }
 
-    function scheduleBlogPost(BlogPostDTO $blogPostDTO) : BlogPostSchedule {
-        $post = $this->blogPostDbService->createBlogPost($blogPostDTO, 1, false);
+    function scheduleBlogPost(BlogPostDTO $blogPostDTO, int $userId) : BlogPostSchedule {
+        $post = $this->blogPostDbService->createBlogPost($blogPostDTO, $userId, false);
 
         if (!$post)
             throw new Exception('Failed to create new scheduled blog post');
@@ -102,6 +106,28 @@ class BlogPostService extends Singleton {
             throw new Exception('Failed to schedule newly created blog post');
 
         return $schedule;
+    }
+
+    function updateBlogPost(BlogPostDTO $blogPostDTO) : BlogPost {
+        $dbPost = $this->getBlogPost($blogPostDTO->id);
+
+        if (!$dbPost || !$dbPost->publishedOn)
+            throw new Exception('Existing blog post not found');
+
+        BlogPostDTO::update($dbPost, $blogPostDTO);
+
+        return $this->blogPostDbService->updateBlogPost($dbPost, true);
+    }
+
+    function updateDraft(BlogPostDTO $draftDTO, int $userId) : BlogPost {
+        $dbPost = $this->getBlogPost($draftDTO->id);
+
+        if (!$dbPost || $dbPost->publishedOn)
+            throw new Exception('Existing draft not found');
+        
+        BlogPostDTO::update($dbPost, $draftDTO, $userId);
+
+        return $this->blogPostDbService->updateBlogPost($dbPost, false);
     }
 }
 
