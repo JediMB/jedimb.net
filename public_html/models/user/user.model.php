@@ -9,6 +9,7 @@ use DateTime;
 use Enums\UserRole;
 
 class User {
+    public int $id;
     public string $username;
     public string $email;
     public UserRole $role;
@@ -17,6 +18,7 @@ class User {
     public ?DateTime $lastLogin;
 
     public function __construct(\Models\DB\User $dbUser) {
+        $this->id = $dbUser->id;
         $this->username = $dbUser->username;
         $this->email = $dbUser->email;
         $this->role = $dbUser->role;
