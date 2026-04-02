@@ -65,14 +65,18 @@ $formId = 'blog__edit__form';
                 <input id="blog-edit__toggle-pinned"
                     type="checkbox"
                     form="<?= $formId ?>"
-                    name="isPinned">
+                    name="isPinned"
+                    <?= $post->isPinned ? 'checked' : null ?>
+                    >
                 Pinned
             </label>
             <label>
                 <input id="blog-edit__toggle-hidden"
                     type="checkbox"
                     form="<?= $formId ?>"
-                    name="isHidden">
+                    name="isHidden"
+                    <?= $post->isHidden ? 'checked' : null ?>
+                    >
                 Hidden
             </label>
         </options-group>
@@ -106,15 +110,17 @@ $formId = 'blog__edit__form';
                 Cancel
         </button>
         <buttons-save class="form-matching-buttons">
-            <button id="blog-edit__btn-publish"
-                type="submit"
-                form="<?= $formId ?>"
-                class="btn-primary"
-                data-content-publish="Publish"
-                data-content-schedule="Schedule"
-                disabled>
-                    Publish
-            </button>
+            <?php if (!$post->publishedOn): ?>
+                <button id="blog-edit__btn-publish"
+                    type="submit"
+                    form="<?= $formId ?>"
+                    class="btn-primary"
+                    data-content-publish="Publish"
+                    data-content-schedule="Schedule"
+                    disabled>
+                        Publish
+                </button>
+            <?php endif ?>
             <button id="blog-edit__btn-save"
                 class="btn-secondary"
                 disabled>
