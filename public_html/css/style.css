@@ -48,6 +48,14 @@ a[disabled] {
 
     &:hover {
         color: var(--clr-primary);
+
+        & .unhovered {
+            display: none;
+        }
+    }
+
+    &:not(:hover) .hovered {
+        display: none;
     }
 }
 

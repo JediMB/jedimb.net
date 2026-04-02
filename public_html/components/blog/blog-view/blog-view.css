@@ -24,13 +24,21 @@ article-header {
     padding-right: var(--size-l);
 }
 
-.article-pin {
+.article-pinned-icon,
+.article-hidden-icon {
     display: none;
 }
 
-.article-pinned .article-pin {
+article:not(.article-pinned) .action-unpin,
+.article-pinned .action-pin {
+    display: none;
+}
+
+.article-pinned .article-pinned-icon,
+.article-hidden .article-hidden-icon {
     display: inline;
 }
+
 
 article-byline {
     display: block flex;
@@ -47,6 +55,7 @@ article-toolbar {
     position: absolute;
     top: 0;
     right: 0;
+    margin-block: var(--size-m);
     display: block flex;
     flex-direction: row;
     gap: var(--size-xs);

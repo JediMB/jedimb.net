@@ -52,9 +52,13 @@ Component::renderOnce();
                     </a>
                 </h2>
                 <article-byline>
-                    <svg width="1em" height="1em" class="article-pin">
+                    <svg width="1em" height="1em" class="article-pinned-icon">
                         <title>Pinned</title>
                         <use xlink:href="#svg-pinned" href="#svg-pinned"></use>
+                    </svg>
+                    <svg width="1em" height="1em" class="article-hidden-icon">
+                        <title>Hidden</title>
+                        <use xlink:href="#svg-hidden" href="#svg-hidden"></use>
                     </svg>
                     <?php Component::include('created-modified-dates', [
                         'createdOn' => $post->publishedOn,
@@ -82,17 +86,33 @@ Component::renderOnce();
                             <use xlink:href="#svg-edit" href="#svg-edit"></use>
                         </svg>
                     </a>
-                    <button post-action="pin"
+                    <button post-action="hide"
                         data-id="<?= $post->id ?>"
                         class="link-svg"
-                        title="Pin post"
-                        data-title-pinned="Unpin post"
-                        data-title-unpinned="Pin post"
-                        data-href-pinned="#svg-pinned"
-                        data-href-unpinned="#svg-pin"
+                        title="Hide post"
                         >
                         <svg width="1.5em" height="1.5em">
-                            <use xlink:href="#svg-pin" href="#svg-pin"></use>
+                            <use xlink:href="#svg-visible" href="#svg-visible" class="unhovered"></use>
+                            <use xlink:href="#svg-hidden" href="#svg-hidden" class="hovered"></use>
+                        </svg>
+                    </button>
+                    <button post-action="pin"
+                        data-id="<?= $post->id ?>"
+                        class="link-svg action-pin"
+                        title="Pin post"
+                        >
+                        <svg width="1.5em" height="1.5em">
+                            <use xlink:href="#svg-unpinned" href="#svg-unpinned"class="unhovered"></use>
+                            <use xlink:href="#svg-pinned" href="#svg-pinned" class="hovered"></use>
+                        </svg>
+                    </button>
+                    <button post-action="unpin"
+                        class="link-svg action-unpin"
+                        title="Unpin post"
+                        >
+                        <svg width="1.5em" height="1.5em">
+                            <use xlink:href="#svg-pinned" href="#svg-pinned" class="unhovered"></use>
+                            <use xlink:href="#svg-unpinned" href="#svg-unpinned" class="hovered"></use>
                         </svg>
                     </button>
                 </article-toolbar>
