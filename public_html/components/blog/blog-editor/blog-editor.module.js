@@ -34,7 +34,7 @@ export default class BlogEditorComponent extends HTMLElement {
             inputs['mastolink']
         ];
 
-        if (!inputs['is-published']) {
+        if (!inputs['isPublished']) {
             inputs['permalink']?.addEventListener('change', () => inputs['permalink'].value = this.#formatPermalinkTitle(inputs['permalink'].value));
             this.querySelector(`#${formId}__reset-permalink`).addEventListener('click', () => inputs['permalink'].value = inputs['permalink'].defaultValue);
             this.#inputsToValidate.push(inputs['permalink']);

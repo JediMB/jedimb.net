@@ -46,6 +46,7 @@ Component::addJSModule();
         /<?= PATH_BLOG_PREFIX . $post->permalink ?>
         <input id="<?= $formId ?>__is-published"
             type="hidden"
+            form="<?= $formId ?>"
             name="isPublished"
             value="true">
     <?php else: ?>

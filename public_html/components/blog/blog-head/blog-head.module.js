@@ -127,6 +127,7 @@ class BlogHeadComponent extends HTMLElement {
             value => {
                 // TODO: Update form with returned data
                 // TODO: Draft saved notification
+                console.log(value);
                 this.#btnSaveDraft.removeAttribute('btn-loading');
             },
             errors => {
@@ -151,8 +152,8 @@ class BlogHeadComponent extends HTMLElement {
         const svgUse = button.querySelector('#blog-head__btn-add__use');
         const href = makeActive
             ? button.dataset.hrefClose
-            : button.dataset.hrefOpen
-        svgUse.setAttribute('xlink:href', href)
+            : button.dataset.hrefOpen;
+        svgUse.setAttribute('xlink:href', href);
         svgUse.setAttribute('href', href);
     }
 
