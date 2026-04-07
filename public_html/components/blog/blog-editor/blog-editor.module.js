@@ -49,10 +49,11 @@ export default class BlogEditorComponent extends HTMLElement {
     }
 
     #publish() {
-        
+        // Save changes and either publish or schedule publishing
     }
 
     #save() {
+        // Save changes but don't change its publishedOn value
     }
 }
 
