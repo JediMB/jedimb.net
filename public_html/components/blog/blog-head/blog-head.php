@@ -86,6 +86,15 @@ Component::addJSModule();
                 Cancel
         </button>
         <buttons-save class="form-matching-buttons">
+            <button id="blog-head__btn-save"
+                class="btn-secondary"
+                disabled
+                >
+                <svg is-loading width="1em" height="1em">
+                    <use xlink:href="#svg-loading" href="#svg-loading"></use>
+                </svg>
+                <span has-loaded>Save draft</span>
+            </button>
             <button id="blog-head__btn-publish"
                 type="submit"
                 form="<?= $formId ?>"
@@ -98,15 +107,6 @@ Component::addJSModule();
                     <use xlink:href="#svg-loading" href="#svg-loading"></use>
                 </svg>
                 <span has-loaded>Publish</span>
-            </button>
-            <button id="blog-head__btn-save"
-                class="btn-secondary"
-                disabled
-                >
-                <svg is-loading width="1em" height="1em">
-                    <use xlink:href="#svg-loading" href="#svg-loading"></use>
-                </svg>
-                <span has-loaded>Save draft</span>
             </button>
         </buttons-save>
     </blog-head-buttons>
