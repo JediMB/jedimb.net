@@ -12,7 +12,7 @@ use Utilities\Component;
 /** @var BlogPost $post */
 
 if (empty($formId) || gettype($formId) !== 'string')
-    throw new Exception('Form ID string data ($formId) not provided for BlogEditor component');
+    throw new Exception('Form ID string data ($formId) not provided for BlogForm component');
 $post ??= null;
 
 Component::addAttributes(['form-id' => $formId, 'role' => 'form']);
@@ -41,7 +41,7 @@ Component::addJSModule();
         required>
 </label>
 
-<blog-editor-permalink>
+<blog-form-permalink>
     <?php if ($post && $post->publishedOn): ?>
         /<?= PATH_BLOG_PREFIX . $post->permalink ?>
         <input id="<?= $formId ?>__is-published"
@@ -74,7 +74,7 @@ Component::addJSModule();
             </svg>
         </button>
     <?php endif ?>
-</blog-editor-permalink>
+</blog-form-permalink>
 
 <?php Component::include('text-editor', [
     'attributes' => [ 'id' => "{$formId}__text-editor" ],

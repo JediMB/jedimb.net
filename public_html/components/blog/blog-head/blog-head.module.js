@@ -1,4 +1,4 @@
-import BlogEditorComponent from "/js/components/blog/blog-editor/blog-editor.module.js";
+import BlogFormComponent from "/js/components/blog/blog-form/blog-form.module.js";
 import BlogPostDTO from "/js/models/blog/blog-post.dto.model.js";
 import blogPostService from "/js/services/blog-post.service.js";
 
@@ -11,7 +11,7 @@ class BlogHeadComponent extends HTMLElement {
     /** @type {HTMLButtonElement} */ #btnSaveDraft;
 
     /** @type {HTMLElement} */ #content;
-    /** @type {BlogEditorComponent} */ #blogEditor;
+    /** @type {BlogFormComponent} */ #blogForm;
 
     /** @type {HTMLInputElement} */ #tglScheduled;
     /** @type {HTMLInputElement} */ #scheduledDate;
@@ -24,8 +24,8 @@ class BlogHeadComponent extends HTMLElement {
 
         this.#content = this.querySelector('#blog-head__content');
 
-        this.#blogEditor = this.querySelector('#blog-head__editor');
-        const blogEditor = this.#blogEditor;
+        this.#blogForm = this.querySelector('#blog-head__editor');
+        const blogForm = this.#blogForm;
 
         const options = this.querySelector('blog-head-options');
         this.#tglScheduled = options.querySelector('#blog-head__toggle-schedule');
@@ -43,7 +43,7 @@ class BlogHeadComponent extends HTMLElement {
         });
 
         this.#btnCancelPost.addEventListener('click', () => {
-            blogEditor.reset();
+            blogForm.reset();
             this.#toggleFormView(false);
         });
 
@@ -59,9 +59,9 @@ class BlogHeadComponent extends HTMLElement {
             this.#updateDateTimeFields(isScheduled);
         });
 
-        this.#scheduledDate.addEventListener('change', () => blogEditor.setPermadate(this.#scheduledDate.value.replaceAll('-', '/')));
+        this.#scheduledDate.addEventListener('change', () => BlogForm.setPermadate(this.#scheduledDate.value.replaceAll('-', '/')));
 
-        blogEditor.onSubmit(event => {
+        blogForm.onSubmit(event => {
             event.preventDefault();
             this.#publishPost();
         });
@@ -71,12 +71,12 @@ class BlogHeadComponent extends HTMLElement {
             this.#saveDraft()
         });
 
-        blogEditor.isValid.subscribe(valid => {
+        blogForm.isValid.subscribe(valid => {
             this.#btnPublishPost.disabled = !valid;
             this.#btnSaveDraft.disabled = !valid;
         }, true);
 
-        blogEditor.onLoaded(() => {
+        blogForm.onLoaded(() => {
             this.#btnAddPost.title = this.#btnAddPost.dataset.titleOpen;
             this.#btnAddPost.disabled = false;
             this.#btnAddPost.removeAttribute('btn-loading');
@@ -92,11 +92,11 @@ class BlogHeadComponent extends HTMLElement {
         this.#btnSaveDraft.disabled = true;
         this.#btnPublishPost.toggleAttribute('btn-loading', true);
 
-        const post = new BlogPostDTO(this.#blogEditor.formData);
+        const post = new BlogPostDTO(this.#blogForm.formData);
 
         blogPostService.createBlogPost(post,
             value => {
-                this.#blogEditor.reset();
+                this.#blogForm.reset();
                 this.#toggleFormView(false);
                 this.#btnPublishPost.removeAttribute('btn-loading');
 
@@ -111,7 +111,7 @@ class BlogHeadComponent extends HTMLElement {
             errors => {
                 // TODO: Error notification
                 this.#btnPublishPost.removeAttribute('btn-loading');
-                this.#blogEditor.error(errors);
+                this.#blogForm.error(errors);
             }
         );
     }
@@ -121,7 +121,7 @@ class BlogHeadComponent extends HTMLElement {
         this.#btnPublishPost.disabled = true;
         this.#btnSaveDraft.toggleAttribute('btn-loading', true);
 
-        const draft = new BlogPostDTO(this.#blogEditor.formData);
+        const draft = new BlogPostDTO(this.#blogForm.formData);
 
         blogPostService.saveDraft(draft,
             value => {
@@ -132,7 +132,7 @@ class BlogHeadComponent extends HTMLElement {
             },
             errors => {
                 this.#btnSaveDraft.removeAttribute('btn-loading');
-                this.#blogEditor.error(errors);
+                this.#blogForm.error(errors);
             }
         );
     }
@@ -165,7 +165,7 @@ class BlogHeadComponent extends HTMLElement {
         const timeInput = this.#scheduledTime;
 
         if (!isScheduled) {
-            this.#blogEditor.setPermadate();
+            this.#blogForm.setPermadate();
             clearTimeout(this.#scheduledTimeout.id);
             return;
         }
@@ -192,7 +192,7 @@ class BlogHeadComponent extends HTMLElement {
             timeInput.defaultValue = defaultTimeValue;
             dateInput.defaultValue = targetDateValue;
 
-            this.#blogEditor.setPermadate(dateInput.value.replaceAll('-', '/'));
+            this.#blogForm.setPermadate(dateInput.value.replaceAll('-', '/'));
 
             scheduledTimeout.id = setTimeout(recursiveLogic, 60000, scheduledTimeout);
         }

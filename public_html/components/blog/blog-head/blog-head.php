@@ -45,7 +45,7 @@ Component::addJSModule();
     class="form-column"
     hidden
     >
-    <?php Component::include('blog/blog-editor', [
+    <?php Component::include('blog/blog-form', [
         'attributes' => [ 'id' => 'blog-head__editor' ],
         'formId' => $formId
     ]) ?>

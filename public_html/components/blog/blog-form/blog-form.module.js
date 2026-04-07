@@ -1,7 +1,7 @@
 import { TextEditorComponent } from "/js/components/text-editor/text-editor.module.js";
 import Emitter from "/js/utilities/emitter.js";
 
-export default class BlogEditorComponent extends HTMLElement {
+export default class BlogFormComponent extends HTMLElement {
     #isLoaded = Object.freeze(new Emitter(false));
     #isValid = Object.freeze(new Emitter(false));
 
@@ -152,4 +152,4 @@ export default class BlogEditorComponent extends HTMLElement {
     }
 }
 
-customElements.define('blog-editor-component', BlogEditorComponent);
+customElements.define('blog-form-component', BlogFormComponent);

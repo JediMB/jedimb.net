@@ -54,7 +54,7 @@ $formId = 'blog__edit__form';
 </div>
 
 <blog-edit-content class="form-column">
-    <?php Component::include('blog/blog-editor', [
+    <?php Component::include('blog/blog-form', [
         'formId' => $formId,
         'post' => $post
     ]) ?>
