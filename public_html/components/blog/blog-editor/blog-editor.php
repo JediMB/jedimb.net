@@ -7,12 +7,17 @@ require_once 'utilities/component.utility.php';
 
 use Exception;
 use Models\DB\BlogPost;
+use Services\BlogPostScheduleService;
 use Utilities\Component;
 
 /** @var BlogPost $post */
 
 if (empty($post))
     throw new Exception('Post data ($post) not provided in blog Editor component');
+
+$schedule = $post->publishedOn
+    ? false
+    : BlogPostScheduleService::getInstance()->getBlogPostSchedule($post->id);
 
 $formId = 'blog-editor__form';
 
@@ -66,22 +71,26 @@ Component::addJSModule();
         </options-group>
         <options-group class="form-row-group">
             <?php if (!$post->publishedOn): ?>
-                <input hidden
+                <input <?= $schedule ? null : 'hidden'  ?>
                     id="blog-editor__scheduled-date"
                     type="date"
                     form="<?= $formId ?>"
-                    name="scheduledDate">
-                <input hidden
+                    name="scheduledDate"
+                    value="<?= $schedule ? $schedule->publishOn->format('Y-m-d') : null ?>">
+                <input <?= $schedule ? null : 'hidden'  ?>
                     id="blog-editor__scheduled-time"
                     type="time"
                     form="<?= $formId ?>"
                     name="scheduledTime"
-                    step="60">
+                    step="60"
+                    value="<?= $schedule ? $schedule->publishOn->format('H:i') : null ?>">
                 <label>
                     <input id="blog-editor__toggle-schedule"
                         type="checkbox"
                         form="<?= $formId ?>"
-                        name="isScheduled">
+                        name="isScheduled"
+                        <?= $schedule ? 'checked' : null ?>
+                        >
                     Schedule
                 </label>
             <?php endif ?>

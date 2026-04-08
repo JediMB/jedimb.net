@@ -34,6 +34,22 @@ class BlogPostScheduleDbService extends BaseDBService {
         }
     }
 
+    public function getBlogPostSchedule(int $blogPostId) : BlogPostSchedule|false {
+        try {
+            $blogPostSchedule = $this->dbService->selectByColumnValues($this->table, [
+                'blog_post_id' => $blogPostId
+            ]);
+
+            if (!$blogPostSchedule)
+                return false;
+
+            return new BlogPostSchedule($blogPostSchedule);
+        }
+        catch (PDOException $e) {
+            throw new Exception('Database error: ' . $e->getMessage());
+        }
+    }
+
     /** @return BlogPostSchedule[] */
     public function getBlogPostSchedules() : array {
         try {
