@@ -75,7 +75,7 @@ export default class BlogEditorComponent extends HTMLElement {
 
 
     #cancel() {
-        const formData = new FormData(this.#form);
+        const formData = this.#blogForm.getFormData();
 
         if (formData.has('isPublished'))
             window.location.assign(formData.get('isPublished'));

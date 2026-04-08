@@ -92,7 +92,7 @@ class BlogHeadComponent extends HTMLElement {
         this.#btnSaveDraft.disabled = true;
         this.#btnPublishPost.toggleAttribute('btn-loading', true);
 
-        const post = new BlogPostDTO(this.#blogForm.formData);
+        const post = new BlogPostDTO(this.#blogForm.getFormData());
 
         blogPostService.createBlogPost(post,
             value => {
@@ -121,7 +121,7 @@ class BlogHeadComponent extends HTMLElement {
         this.#btnPublishPost.disabled = true;
         this.#btnSaveDraft.toggleAttribute('btn-loading', true);
 
-        const draft = new BlogPostDTO(this.#blogForm.formData);
+        const draft = new BlogPostDTO(this.#blogForm.getFormData());
 
         blogPostService.saveDraft(draft,
             value => {

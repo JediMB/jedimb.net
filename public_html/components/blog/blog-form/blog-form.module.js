@@ -75,7 +75,7 @@ export default class BlogFormComponent extends HTMLElement {
         }
     }
 
-    get formData() {
+    getFormData() {
         const content = this.#textEditor.content.html;
         this.#form.elements['contentShort'].value = content.short;
         this.#form.elements['contentRest'].value = content.rest;
