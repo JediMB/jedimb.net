@@ -21,6 +21,9 @@ $sessionService = SessionService::getInstance();
 if ( ($response = $sessionService->getInvalidSubmissionResponse($input, [ UserPermission::Editing ])) )
     return $response;
 
+if (isset($GLOBALS['api_params'][0]) && is_string($GLOBALS['api_params'][0]))
+    $action = $GLOBALS['api_params'][0];
+
 $userId = $sessionService->getUser()->id;
 
 $service = BlogPostService::getInstance();
@@ -35,11 +38,25 @@ try {
             return Response::Success($post);
 
         case 'PUT':
-            $draftDTO = new BlogPostDTO($input);
+            if (!isset($action)) {
+                $draftDTO = new BlogPostDTO($input);
 
-            $post = $service->updateDraft($draftDTO, $userId);
+                $post = $service->updateDraft($draftDTO, $userId);
 
-            return Response::Success($post);
+                return Response::Success($post);
+            }
+
+            switch ($action) {
+                case 'publish':
+                    return Response::Error(['Not an error: publish action request received.']);
+
+                case 'schedule':
+                    return Response::Error(['Not an error: schedule action request received.']);
+
+                default:
+                    return Response::InvalidRequest();
+            }
+
 
         default:
             return Response::InvalidRequest();

@@ -112,6 +112,42 @@ class BlogPostApiService {
      * @param {BlogPostDTO} blogPostDTO 
      * @returns {Promise<({success: boolean, errors: object|undefined, value: BlogPost|undefined})>}
      */
+    async publishDraft(blogPostDTO) {
+        const response = await this.#httpClient.put(this.#api.draft + '/publish', blogPostDTO);
+
+        if (!response.success)
+            return response;
+
+        if (!response.value.id)
+            throw new Error('Publish draft failed to return data');
+
+        response.value = new BlogPost(response.value);
+
+        return response;
+    }
+
+    /**
+     * @param {BlogPostDTO} blogPostDTO 
+     * @returns {Promise<({success: boolean, errors: object|undefined, value: BlogPostSchedule|undefined})>}
+     */
+    async scheduleDraft(blogPostDTO) {
+        const response = await this.#httpClient.put(this.#api.draft + '/schedule', blogPostDTO);
+
+        if (!response.success)
+            return response;
+
+        if (!response.value.id)
+            throw new Error('Schedule draft failed to return data');
+
+        response.value = new BlogPostSchedule(response.value);
+
+        return response;
+    }
+
+    /**
+     * @param {BlogPostDTO} blogPostDTO 
+     * @returns {Promise<({success: boolean, errors: object|undefined, value: BlogPost|undefined})>}
+     */
     async updateDraft(blogPostDTO) {
         const response = await this.#httpClient.put(this.#api.draft, blogPostDTO);
 

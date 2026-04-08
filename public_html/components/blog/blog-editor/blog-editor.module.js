@@ -1,4 +1,6 @@
 import BlogFormComponent from "/js/components/blog/blog-form/blog-form.module.js";
+import BlogPostDTO from "/js/models/blog/blog-post.dto.model.js";
+import blogPostService from "/js/services/blog-post.service.js";
 
 export default class BlogEditorComponent extends HTMLElement {
     #scheduledTimeout = { id: null };
@@ -55,7 +57,7 @@ export default class BlogEditorComponent extends HTMLElement {
 
         btnPublish?.addEventListener('click', event => {
             event.preventDefault();
-            this.#publish();
+            this.#publishOrSchedule();
         });
 
         this.#blogForm.onSubmit(event => {
@@ -91,8 +93,30 @@ export default class BlogEditorComponent extends HTMLElement {
             window.location.assign('/');
     }
 
-    #publish() {
+    #publishOrSchedule() {
         // Save changes and either publish or schedule publishing
+        const post = new BlogPostDTO(this.#blogForm.getFormData());
+
+        if (post.scheduledOn) {
+            blogPostService.scheduleDraft(post,
+                value => {
+                    console.log(value);
+                },
+                errors => {
+                    console.error(errors);
+                }
+            );
+            return;
+        }
+
+        blogPostService.publishDraft(post,
+            value => {
+                console.log(value);
+            },
+            errors => {
+                console.error(errors);
+            }
+        );
     }
 
     #save() {

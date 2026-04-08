@@ -66,6 +66,38 @@ class BlogPostService {
      * @param {(errors: object) => void} error 
      * @returns {Promise<void>}
      */
+    async publishDraft(blogPostDTO, next, error) {
+        const response = await this.#service.publishDraft(blogPostDTO);
+
+        if (!response.success)
+            return error?.call(this, response.errors);
+
+        next?.call(this, response.value);
+    }
+
+    /**
+     * 
+     * @param {BlogPostDTO} blogPostDTO 
+     * @param {(value: BlogPostSchedule) => void} next 
+     * @param {(errors: object) => void} error 
+     * @returns {Promise<void>}
+     */
+    async scheduleDraft(blogPostDTO, next, error) {
+        const response = await this.#service.scheduleDraft(blogPostDTO);
+
+        if (!response.success)
+            return error?.call(this, response.errors);
+
+        next?.call(this, response.value);
+    }
+
+    /**
+     * 
+     * @param {BlogPostDTO} blogPostDTO 
+     * @param {(value: BlogPost) => void} next 
+     * @param {(errors: object) => void} error 
+     * @returns {Promise<void>}
+     */
     async saveDraft(blogPostDTO, next, error) {
         const response = blogPostDTO.id
             ? await this.#service.updateDraft(blogPostDTO)
