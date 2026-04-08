@@ -44,11 +44,12 @@ Component::addJSModule();
 
 <blog-editor-content class="form-column">
     <?php Component::include('blog/blog-form', [
+        'attributes' => [ 'id' => 'blog-editor__editor' ],
         'formId' => $formId,
         'post' => $post
     ]) ?>
 
-    <edit-options class="form-spaced-row">
+    <blog-editor-options class="form-spaced-row">
         <options-group class="form-row-group">
             <label>
                 <input id="blog-editor__toggle-pinned"
@@ -71,13 +72,13 @@ Component::addJSModule();
         </options-group>
         <options-group class="form-row-group">
             <?php if (!$post->publishedOn): ?>
-                <input <?= $schedule ? null : 'hidden'  ?>
+                <input <?= $schedule ? 'required' : 'hidden'  ?>
                     id="blog-editor__scheduled-date"
                     type="date"
                     form="<?= $formId ?>"
                     name="scheduledDate"
                     value="<?= $schedule ? $schedule->publishOn->format('Y-m-d') : null ?>">
-                <input <?= $schedule ? null : 'hidden'  ?>
+                <input <?= $schedule ? 'required' : 'hidden'  ?>
                     id="blog-editor__scheduled-time"
                     type="time"
                     form="<?= $formId ?>"
@@ -95,7 +96,7 @@ Component::addJSModule();
                 </label>
             <?php endif ?>
         </options-group>
-    </edit-options>
+    </blog-editor-options>
 
     <edit-buttons class="form-spaced-row">
         <button id="blog-editor__btn-cancel"
