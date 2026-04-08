@@ -106,6 +106,7 @@ Component::addJSModule();
         </button>
         <buttons-save class="form-matching-buttons">
             <button id="blog-editor__btn-save"
+                type="submit"
                 form="<?= $formId ?>"
                 class="<?= $post->publishedOn ? 'btn-primary' : 'btn-secondary' ?>"
                 disabled>

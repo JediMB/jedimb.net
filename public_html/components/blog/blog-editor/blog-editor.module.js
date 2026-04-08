@@ -3,7 +3,6 @@ import BlogFormComponent from "/js/components/blog/blog-form/blog-form.module.js
 export default class BlogEditorComponent extends HTMLElement {
     #scheduledTimeout = { id: null };
 
-    /** @type {HTMLFormElement} */ #form;
     /** @type {BlogFormComponent} */ #blogForm;
     /** @type {BlogFormComponent} */
     /** @type {HTMLInputElement} */ #scheduledDate;
@@ -24,8 +23,6 @@ export default class BlogEditorComponent extends HTMLElement {
         const btnPublish = buttons.querySelector('#blog-editor__btn-publish');
         /** @type {HTMLButtonElement} */
         const btnSave = buttons.querySelector('#blog-editor__btn-save');
-
-        this.#form = btnSave.form;
 
         tglScheduled.addEventListener('change', event => {
             const isScheduled = tglScheduled.checked;
@@ -49,6 +46,8 @@ export default class BlogEditorComponent extends HTMLElement {
             this.#updateDateTimeFields(true);
         }
 
+        this.#scheduledDate.addEventListener('change', () => this.#blogForm.setPermadate(this.#scheduledDate.value.replaceAll('-', '/')));
+
         btnCancel.addEventListener('click', event => {
             event.preventDefault();
             this.#cancel();
@@ -59,14 +58,23 @@ export default class BlogEditorComponent extends HTMLElement {
             this.#publish();
         });
 
-        btnSave.addEventListener('click', event => {
+        this.#blogForm.onSubmit(event => {
             event.preventDefault();
             this.#save();
         });
 
-        btnCancel.disabled = false;
-        if (btnPublish)
-            btnPublish.disabled = false;
+        this.#blogForm.isValid.subscribe(valid => {
+            if (btnPublish)
+                btnPublish.disabled = !valid;
+
+            btnSave.disabled = !valid;
+        }, true);
+
+        this.#blogForm.onLoaded(() => {
+            btnCancel.disabled = false;
+            if (btnPublish)
+                btnPublish.disabled = false;
+        });
     }
 
     connectedMoveCallback() {}
