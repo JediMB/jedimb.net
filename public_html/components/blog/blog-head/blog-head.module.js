@@ -59,7 +59,7 @@ class BlogHeadComponent extends HTMLElement {
             this.#updateDateTimeFields(isScheduled);
         });
 
-        this.#scheduledDate.addEventListener('change', () => BlogForm.setPermadate(this.#scheduledDate.value.replaceAll('-', '/')));
+        this.#scheduledDate.addEventListener('change', () => blogForm.setPermadate(this.#scheduledDate.value.replaceAll('-', '/')));
 
         blogForm.onSubmit(event => {
             event.preventDefault();
