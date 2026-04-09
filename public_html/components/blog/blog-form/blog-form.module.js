@@ -44,6 +44,8 @@ export default class BlogFormComponent extends HTMLElement {
             field.addEventListener('input', () => this.#validation());
         }
         this.#textEditor.content.onChange = () => this.#validation();
+        
+        this.#validation();
 
         this.#isLoaded.setValue(true);
     }
