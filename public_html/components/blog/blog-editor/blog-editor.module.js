@@ -5,6 +5,8 @@ import blogPostService from "/js/services/blog-post.service.js";
 export default class BlogEditorComponent extends HTMLElement {
     #scheduledTimeout = { id: null };
 
+    #optionsChanged = false;
+
     /** @type {BlogFormComponent} */ #blogForm;
     /** @type {BlogFormComponent} */
     /** @type {HTMLInputElement} */ #scheduledDate;
@@ -15,8 +17,10 @@ export default class BlogEditorComponent extends HTMLElement {
     connectedCallback() {
         this.#blogForm = this.querySelector('#blog-editor__editor');
 
-        const options = this.querySelector('blog-editor-options');
-        const tglScheduled = options.querySelector('#blog-editor__toggle-schedule');
+        const optionsElement = this.querySelector('blog-editor-options');
+        /** @type {HTMLInputElement} */
+        const tglScheduled = optionsElement.querySelector('#blog-editor__toggle-schedule');
+        const options = Array.from(optionsElement.querySelectorAll('[type="checked"]'));
 
         const buttons = this.querySelector('edit-buttons');
         const btnCancel = buttons.querySelector('#blog-editor__btn-cancel');
@@ -24,9 +28,21 @@ export default class BlogEditorComponent extends HTMLElement {
         /** @type {HTMLButtonElement} */
         const btnSave = buttons.querySelector('#blog-editor__btn-save');
 
+        for (const option of options) {
+            option.addEventListener('change', () => {
+                this.#optionsChanged = options.some(t => t.checked !== t.defaultChecked || t.value !== t.defaultValue);
+                const formValid = this.#blogForm.isValid.getValue();
+
+                if (btnPublish)
+                    btnPublish.disabled = !formValid;
+
+                btnSave.disabled = !(formValid && this.#optionsChanged);
+            });
+        }
+
         if (tglScheduled) {
-            this.#scheduledDate = options.querySelector('#blog-editor__scheduled-date');
-            this.#scheduledTime = options.querySelector('#blog-editor__scheduled-time');
+            this.#scheduledDate = optionsElement.querySelector('#blog-editor__scheduled-date');
+            this.#scheduledTime = optionsElement.querySelector('#blog-editor__scheduled-time');
 
             tglScheduled.addEventListener('change', event => {
                 const isScheduled = tglScheduled.checked;
@@ -72,7 +88,7 @@ export default class BlogEditorComponent extends HTMLElement {
             if (btnPublish)
                 btnPublish.disabled = !valid;
 
-            btnSave.disabled = !valid;
+            btnSave.disabled = !(valid && this.#optionsChanged);
         }, true);
 
         this.#blogForm.onLoaded(() => {
@@ -86,7 +102,6 @@ export default class BlogEditorComponent extends HTMLElement {
     connectedMoveCallback() {}
 
     disconnectedCallback() {}
-
 
     #cancel() {
         const formData = this.#blogForm.getFormData();
