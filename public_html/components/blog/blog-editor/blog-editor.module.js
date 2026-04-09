@@ -17,8 +17,6 @@ export default class BlogEditorComponent extends HTMLElement {
 
         const options = this.querySelector('blog-editor-options');
         const tglScheduled = options.querySelector('#blog-editor__toggle-schedule');
-        this.#scheduledDate = options.querySelector('#blog-editor__scheduled-date');
-        this.#scheduledTime = options.querySelector('#blog-editor__scheduled-time');
 
         const buttons = this.querySelector('edit-buttons');
         const btnCancel = buttons.querySelector('#blog-editor__btn-cancel');
@@ -26,29 +24,34 @@ export default class BlogEditorComponent extends HTMLElement {
         /** @type {HTMLButtonElement} */
         const btnSave = buttons.querySelector('#blog-editor__btn-save');
 
-        tglScheduled.addEventListener('change', event => {
-            const isScheduled = tglScheduled.checked;
+        if (tglScheduled) {
+            this.#scheduledDate = options.querySelector('#blog-editor__scheduled-date');
+            this.#scheduledTime = options.querySelector('#blog-editor__scheduled-time');
 
-            this.#scheduledDate.toggleAttribute('required', isScheduled);
-            this.#scheduledDate.toggleAttribute('hidden', !isScheduled);
-            this.#scheduledTime.toggleAttribute('required', isScheduled);
-            this.#scheduledTime.toggleAttribute('hidden', !isScheduled);
-            btnPublish.textContent = isScheduled ? btnPublish.dataset.contentSchedule : btnPublish.dataset.contentPublish;
+            tglScheduled.addEventListener('change', event => {
+                const isScheduled = tglScheduled.checked;
 
-            this.#updateDateTimeFields(isScheduled);
-        });
-        
-        if (tglScheduled.checked) {
-            const dateTime = [ this.#scheduledDate.value, this.#scheduledTime.value ];
-            this.#scheduledDate.defaultValue = '';
-            this.#scheduledTime.defaultValue = '';
-            [ this.#scheduledDate.value, this.#scheduledTime.value ] = dateTime;
-            btnPublish.textContent = btnPublish.dataset.contentSchedule;
+                this.#scheduledDate.toggleAttribute('required', isScheduled);
+                this.#scheduledDate.toggleAttribute('hidden', !isScheduled);
+                this.#scheduledTime.toggleAttribute('required', isScheduled);
+                this.#scheduledTime.toggleAttribute('hidden', !isScheduled);
+                btnPublish.textContent = isScheduled ? btnPublish.dataset.contentSchedule : btnPublish.dataset.contentPublish;
 
-            this.#updateDateTimeFields(true);
+                this.#updateDateTimeFields(isScheduled);
+            });
+            
+            if (tglScheduled.checked) {
+                const dateTime = [ this.#scheduledDate.value, this.#scheduledTime.value ];
+                this.#scheduledDate.defaultValue = '';
+                this.#scheduledTime.defaultValue = '';
+                [ this.#scheduledDate.value, this.#scheduledTime.value ] = dateTime;
+                btnPublish.textContent = btnPublish.dataset.contentSchedule;
+
+                this.#updateDateTimeFields(true);
+            }
+
+            this.#scheduledDate.addEventListener('change', () => this.#blogForm.setPermadate(this.#scheduledDate.value.replaceAll('-', '/')));
         }
-
-        this.#scheduledDate.addEventListener('change', () => this.#blogForm.setPermadate(this.#scheduledDate.value.replaceAll('-', '/')));
 
         btnCancel.addEventListener('click', event => {
             event.preventDefault();
@@ -73,9 +76,10 @@ export default class BlogEditorComponent extends HTMLElement {
         }, true);
 
         this.#blogForm.onLoaded(() => {
-            btnCancel.disabled = false;
             if (btnPublish)
                 btnPublish.disabled = false;
+
+            btnCancel.disabled = false;
         });
     }
 
