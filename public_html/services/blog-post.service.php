@@ -92,6 +92,10 @@ class BlogPostService extends Singleton {
         ];
     }
 
+    function publishDraft(int $draftId) : BlogPost|false {
+        return $this->blogPostDbService->publishDraft($draftId);
+    }
+
     function scheduleBlogPost(BlogPostDTO $blogPostDTO, int $userId) : BlogPostSchedule {
         $post = $this->blogPostDbService->createBlogPost($blogPostDTO, $userId, false);
 
@@ -119,11 +123,29 @@ class BlogPostService extends Singleton {
         return $this->blogPostDbService->updateBlogPost($dbPost, true);
     }
 
-    function updateDraft(BlogPostDTO $draftDTO, int $userId) : BlogPost {
+    function updateAndPublishDraft(BlogPostDTO $draftDTO, int $userId) : BlogPost|false {
+        $updatedDraft = $this->updateDraft($draftDTO, $userId);
+
+        if (!$updatedDraft)
+            throw new Exception("Failed to update existing draft with id {$draftDTO->id}");
+
+        return $this->publishDraft($updatedDraft->id);
+    }
+
+    function updateAndScheduleDraft(BlogPostDTO $draftDTO, int $userId) : BlogPostSchedule|false {
+        $updatedDraft = $this->updateDraft($draftDTO, $userId);
+
+        if (!$updatedDraft)
+            throw new Exception("Failed to update existing draft with id {$draftDTO->id}");
+
+        return $this->blogPostScheduleService->createBlogPostSchedule($updatedDraft->id, $draftDTO->scheduledOn);
+    }
+
+    function updateDraft(BlogPostDTO $draftDTO, int $userId) : BlogPost|false {
         $dbPost = $this->getBlogPost($draftDTO->id);
 
         if (!$dbPost || $dbPost->publishedOn)
-            throw new Exception('Existing draft not found');
+            throw new Exception("Existing draft with id {$draftDTO->id} not found");
         
         BlogPostDTO::update($dbPost, $draftDTO, $userId);
 

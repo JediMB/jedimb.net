@@ -38,9 +38,9 @@ try {
             return Response::Success($post);
 
         case 'PUT':
-            if (!isset($action)) {
-                $draftDTO = new BlogPostDTO($input);
+            $draftDTO = new BlogPostDTO($input);
 
+            if (!isset($action)) {
                 $post = $service->updateDraft($draftDTO, $userId);
 
                 return Response::Success($post);
@@ -48,10 +48,26 @@ try {
 
             switch ($action) {
                 case 'publish':
-                    return Response::Error(['Not an error: publish action request received.']);
+                    if ( ($response = $sessionService->getInvalidSubmissionResponse($input, [ UserPermission::Publishing ])) )
+                        return $response;
+
+                    $post = $service->updateAndPublishDraft($draftDTO, $userId);
+
+                    if (!$post)
+                        return Response::Error(["Failed to publish draft with id {$draftDTO->id}"]);
+
+                    return Response::Success($post);
 
                 case 'schedule':
-                    return Response::Error(['Not an error: schedule action request received.']);
+                    if ( ($response = $sessionService->getInvalidSubmissionResponse($input, [ UserPermission::Publishing ])) )
+                        return $response;
+
+                    $schedule = $service->updateAndScheduleDraft($draftDTO, $userId);
+
+                    if (!$schedule)
+                        return Response::Error(["Failed to schedule draft with id {$draftDTO->id}"]);
+
+                    return Response::Success($schedule);
 
                 default:
                     return Response::InvalidRequest();
