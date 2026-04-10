@@ -30,6 +30,10 @@ class BlogPostScheduleService extends Singleton {
         return $this->blogPostScheduleDbService->getBlogPostSchedules();
     }
 
+    public function updateBlogPostSchedule(int $id, string $publishOn) : BlogPostSchedule|false {
+        return $this->blogPostScheduleDbService->updateBlogPostSchedule($id, $publishOn);
+    }
+
     /** @return BlogPostSchedule[] */
     public function publishPendingScheduledBlogPosts() : array {
         return $this->blogPostScheduleDbService->publishPendingScheduledBlogPost();

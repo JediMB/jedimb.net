@@ -34,6 +34,23 @@ class BlogPostScheduleDbService extends BaseDBService {
         }
     }
 
+    public function updateBlogPostSchedule(int $id, string $publishOn) : BlogPostSchedule|false {
+        try {
+            $blogPostSchedule = $this->dbService->selectFunction('update_blog_post_schedule', [
+                1 => [ 'value' => $id, 'type' => PDO::PARAM_INT ],
+                2 => [ 'value' => $publishOn, 'type' => PDO::PARAM_STR ]
+            ]);
+
+            if (!$blogPostSchedule)
+                return false;
+
+            return new BlogPostSchedule($blogPostSchedule);
+        }
+        catch (PDOException $e) {
+            throw new Exception('Database error: ' . $e->getMessage());
+        }
+    }
+
     public function getBlogPostSchedule(int $blogPostId) : BlogPostSchedule|false {
         try {
             $blogPostSchedule = $this->dbService->selectByColumnValues($this->table, [

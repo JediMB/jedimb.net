@@ -138,6 +138,11 @@ class BlogPostService extends Singleton {
         if (!$updatedDraft)
             throw new Exception("Failed to update existing draft with id {$draftDTO->id}");
 
+        $existingSchedule = $this->blogPostScheduleService->getBlogPostSchedule($draftDTO->id);
+
+        if ($existingSchedule)
+            return $this->blogPostScheduleService->updateBlogPostSchedule($existingSchedule->id, $draftDTO->scheduledOn);
+
         return $this->blogPostScheduleService->createBlogPostSchedule($updatedDraft->id, $draftDTO->scheduledOn);
     }
 
