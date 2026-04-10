@@ -3,9 +3,14 @@ import Emitter from "/js/utilities/emitter.js";
 
 export default class BlogFormComponent extends HTMLElement {
     #isLoaded = Object.freeze(new Emitter(false));
+
+    #isChanged = Object.freeze(new Emitter(false));
+    #isScheduled = Object.freeze(new Emitter(false));
     #isValid = Object.freeze(new Emitter(false));
+    #scheduledTimeout = { id: null };
 
     /** @type {HTMLInputElement[]} */ #inputsToValidate;
+    /** @type {HTMLInputElement[]} */ #nonScheduleOptions;
 
     /** @type {HTMLFormElement} */ #form;
     /** @type {HTMLElement} */ #permadate;
@@ -34,10 +39,47 @@ export default class BlogFormComponent extends HTMLElement {
             inputs['mastolink']
         ];
 
-        if (!inputs['isPublished']) {
-            inputs['permalink']?.addEventListener('change', () => inputs['permalink'].value = this.#formatPermalinkTitle(inputs['permalink'].value));
+        inputs['isPinned'].addEventListener('change', () => this.#isChanged.setValue(true));
+
+        if (inputs['isPublished']) {
+            inputs['isHidden'].addEventListener('change', () => this.#isChanged.setValue(true));
+        }
+        else {
+            inputs['permalink']?.addEventListener('change', () => 
+                inputs['permalink'].value = this.#formatPermalinkTitle(inputs['permalink'].value)
+            );
             this.querySelector(`#${formId}__reset-permalink`).addEventListener('click', () => inputs['permalink'].value = inputs['permalink'].defaultValue);
-            this.#inputsToValidate.push(inputs['permalink']);
+            
+            this.#inputsToValidate.push(
+                inputs['permalink'],
+                inputs['scheduledDate'],
+                inputs['scheduledTime']
+            );
+
+            inputs['isScheduled'].addEventListener('change', () => {
+                const isScheduled = inputs['isScheduled'].checked;
+
+                inputs['scheduledDate'].toggleAttribute('disabled', !isScheduled);
+                inputs['scheduledDate'].toggleAttribute('hidden', !isScheduled);
+                inputs['scheduledTime'].toggleAttribute('disabled', !isScheduled);
+                inputs['scheduledTime'].toggleAttribute('hidden', !isScheduled);
+                
+                this.#isChanged.setValue(true);
+                this.#isScheduled.setValue(isScheduled);
+                this.#updateDateTimeFields(isScheduled);
+            });
+
+            if (inputs['isScheduled'].checked) {
+                const dateTime = [ inputs['scheduledDate'].value, inputs['scheduledTime'].value ];
+                inputs['scheduledDate'].defaultValue = '';
+                inputs['scheduledTime'].defaultValue = '';
+                [ inputs['scheduledDate'].value, inputs['scheduledTime'].value ] = dateTime;
+                
+                this.#isScheduled.setValue(true);
+                this.#updateDateTimeFields(true);
+            }
+
+            inputs['scheduledDate'].addEventListener('change', () => this.#setPermadate(inputs['scheduledDate'].value.replaceAll('-', '/')));
         }
 
         for (const field of this.#inputsToValidate) {
@@ -85,6 +127,10 @@ export default class BlogFormComponent extends HTMLElement {
         return new FormData(this.#form);
     }
 
+    get isChanged() { return this.#isChanged; }
+
+    get isScheduled() { return this.#isScheduled; }
+
     get isValid() { return this.#isValid; }
 
     /** @param {() => void} func  */
@@ -122,16 +168,6 @@ export default class BlogFormComponent extends HTMLElement {
         }
     }
 
-    /** 
-     * Set the permadate text to a provided string, or its default value
-     * @param {string} value 
-     */
-    setPermadate(value = undefined) {
-        value ??= this.#permadate.dataset.default;
-
-        this.#permadate.textContent = value;
-    }
-
     /**
      * @param {string} input 
      * @returns {string}
@@ -142,6 +178,59 @@ export default class BlogFormComponent extends HTMLElement {
                 .replaceAll(/[^\-a-z0-9]+/g, '')
                 .replaceAll(/\-{2,}/g, '')
                 .replaceAll(/(^\-)|(\-$)/g, '');
+    }
+
+    /** 
+     * Set the permadate text to a provided string, or its default value
+     * @param {string} value 
+     */
+    #setPermadate(value = undefined) {
+        value ??= this.#permadate.dataset.default;
+
+        this.#permadate.textContent = value;
+    }
+
+    /**
+     * @param {boolean} isScheduled
+     */
+    #updateDateTimeFields(isScheduled) {
+        const dateInput = this.#form.elements['scheduledDate'];
+        const timeInput = this.#form.elements['scheduledTime'];
+
+        if (!isScheduled) {
+            this.#setPermadate();
+            clearTimeout(this.#scheduledTimeout.id);
+            return;
+        }
+
+        const recursiveLogic = (scheduledTimeout) => {
+            const now = new Date();
+            
+            const minTime = new Date(now.getTime() + 900000);
+            const followingHour = new Date(minTime.getTime() + 3600000);
+            const targetDateValue = `${followingHour.getFullYear()}-${`${followingHour.getMonth() + 1}`.padStart(2, '0')}-${`${followingHour.getDate()}`.padStart(2, '0')}`;
+
+            timeInput.min = `${minTime.getHours()}:${`${minTime.getMinutes()}`.padStart(2, '0')}`;
+            dateInput.min = targetDateValue;
+
+            const defaultTimeValue = `${followingHour.getHours()}:00`;
+
+            if (isScheduled
+                && timeInput.value
+                && timeInput.value === timeInput.defaultValue
+                && timeInput.defaultValue !== defaultTimeValue) {
+                    console.log('Ding!'); // TODO: Notification
+            }
+
+            timeInput.defaultValue = defaultTimeValue;
+            dateInput.defaultValue = targetDateValue;
+
+            this.#setPermadate(dateInput.value.replaceAll('-', '/'));
+
+            scheduledTimeout.id = setTimeout(recursiveLogic, 60000, scheduledTimeout);
+        }
+
+        recursiveLogic(this.#scheduledTimeout);
     }
 
     #validation() {

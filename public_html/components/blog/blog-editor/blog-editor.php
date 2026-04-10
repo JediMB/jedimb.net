@@ -49,55 +49,6 @@ Component::addJSModule();
         'post' => $post
     ]) ?>
 
-    <blog-editor-options class="form-spaced-row">
-        <options-group class="form-row-group">
-            <label>
-                <input id="blog-editor__toggle-pinned"
-                    type="checkbox"
-                    form="<?= $formId ?>"
-                    name="isPinned"
-                    <?= $post->isPinned ? 'checked' : null ?>
-                    >
-                Pinned
-            </label>
-            <label>
-                <input id="blog-editor__toggle-hidden"
-                    type="checkbox"
-                    form="<?= $formId ?>"
-                    name="isHidden"
-                    <?= $post->isHidden ? 'checked' : null ?>
-                    >
-                Hidden
-            </label>
-        </options-group>
-        <options-group class="form-row-group">
-            <?php if (!$post->publishedOn): ?>
-                <input <?= $schedule ? 'required' : 'hidden'  ?>
-                    id="blog-editor__scheduled-date"
-                    type="date"
-                    form="<?= $formId ?>"
-                    name="scheduledDate"
-                    value="<?= $schedule ? $schedule->publishOn->format('Y-m-d') : null ?>">
-                <input <?= $schedule ? 'required' : 'hidden'  ?>
-                    id="blog-editor__scheduled-time"
-                    type="time"
-                    form="<?= $formId ?>"
-                    name="scheduledTime"
-                    step="60"
-                    value="<?= $schedule ? $schedule->publishOn->format('H:i') : null ?>">
-                <label>
-                    <input id="blog-editor__toggle-schedule"
-                        type="checkbox"
-                        form="<?= $formId ?>"
-                        name="isScheduled"
-                        <?= $schedule ? 'checked' : null ?>
-                        >
-                    Schedule
-                </label>
-            <?php endif ?>
-        </options-group>
-    </blog-editor-options>
-
     <edit-buttons class="form-spaced-row">
         <button id="blog-editor__btn-cancel"
             class="btn-warn btn-hover-heavy"

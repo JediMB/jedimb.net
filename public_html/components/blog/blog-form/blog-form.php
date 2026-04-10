@@ -6,6 +6,7 @@ require_once 'utilities/component.utility.php';
 
 use Exception;
 use Models\DB\BlogPost;
+use Services\BlogPostScheduleService;
 use Utilities\Component;
 
 /** @var string $formId */
@@ -14,6 +15,10 @@ use Utilities\Component;
 if (empty($formId) || gettype($formId) !== 'string')
     throw new Exception('Form ID string data ($formId) not provided for BlogForm component');
 $post ??= null;
+
+$schedule = !$post || $post->publishedOn
+    ? false
+    : BlogPostScheduleService::getInstance()->getBlogPostSchedule($post->id);
 
 Component::addAttributes(['form-id' => $formId, 'role' => 'form']);
 Component::renderCSS();
@@ -42,7 +47,7 @@ Component::addJSModule();
 </label>
 
 <blog-form-permalink>
-    <?php if ($post && $post->publishedOn): ?>
+    <?php if ($post?->publishedOn): ?>
         <?php echo $permalink = '/' . PATH_BLOG_PREFIX . $post->permalink ?>
         <input id="<?= $formId ?>__is-published"
             type="hidden"
@@ -125,3 +130,56 @@ Component::addJSModule();
         placeholder="Social media link connected to this post"
         value="<?= $post?->mastolink ?>">
 </label>
+
+<blog-form-options class="form-spaced-row">
+    <options-group class="form-row-group">
+        <label>
+            <input id="<?= $formId ?>__toggle-pinned"
+                type="checkbox"
+                form="<?= $formId ?>"
+                name="isPinned"
+                <?= $post?->isPinned ? 'checked' : null ?>
+                >
+            Pinned
+        </label>
+        <?php if ($post?->publishedOn): ?>
+            <label>
+                <input id="<?= $formId ?>__toggle-hidden"
+                    type="checkbox"
+                    form="<?= $formId ?>"
+                    name="isHidden"
+                    <?= $post->isHidden ? 'checked' : null ?>
+                    >
+                Hidden
+            </label>
+        <?php endif ?>
+    </options-group>
+    <options-group class="form-row-group">
+        <?php if (!$post?->publishedOn): ?>
+            <input <?= $schedule ? null : 'disabled hidden'  ?>
+                id="<?= $formId ?>__scheduled-date"
+                type="date"
+                form="<?= $formId ?>"
+                name="scheduledDate"
+                value="<?= $schedule ? $schedule->publishOn->format('Y-m-d') : null ?>"
+                required>
+            <input <?= $schedule ? null : 'disabled hidden'  ?>
+                id="<?= $formId ?>__scheduled-time"
+                type="time"
+                form="<?= $formId ?>"
+                name="scheduledTime"
+                step="60"
+                value="<?= $schedule ? $schedule->publishOn->format('H:i') : null ?>"
+                required>
+            <label>
+                <input id="<?= $formId ?>__toggle-schedule"
+                    type="checkbox"
+                    form="<?= $formId ?>"
+                    name="isScheduled"
+                    <?= $schedule ? 'checked' : null ?>
+                    >
+                Schedule
+            </label>
+        <?php endif ?>
+    </options-group>
+</blog-form-options>

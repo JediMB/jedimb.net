@@ -3,8 +3,6 @@ import BlogPostDTO from "/js/models/blog/blog-post.dto.model.js";
 import blogPostService from "/js/services/blog-post.service.js";
 
 class BlogHeadComponent extends HTMLElement {
-    #scheduledTimeout = { id: null };
-
     /** @type {HTMLButtonElement} */ #btnAddPost;
     /** @type {HTMLButtonElement} */ #btnCancelPost;
     /** @type {HTMLButtonElement} */ #btnPublishPost;
@@ -12,10 +10,6 @@ class BlogHeadComponent extends HTMLElement {
 
     /** @type {HTMLElement} */ #content;
     /** @type {BlogFormComponent} */ #blogForm;
-
-    /** @type {HTMLInputElement} */ #tglScheduled;
-    /** @type {HTMLInputElement} */ #scheduledDate;
-    /** @type {HTMLInputElement} */ #scheduledTime;
 
     constructor() { super(); }
 
@@ -26,11 +20,6 @@ class BlogHeadComponent extends HTMLElement {
 
         this.#blogForm = this.querySelector('#blog-head__editor');
         const blogForm = this.#blogForm;
-
-        const options = this.querySelector('blog-head-options');
-        this.#tglScheduled = options.querySelector('#blog-head__toggle-schedule');
-        this.#scheduledDate = options.querySelector('#blog-head__scheduled-date');
-        this.#scheduledTime = options.querySelector('#blog-head__scheduled-time');
 
         const buttons = this.querySelector('blog-head-buttons');
         this.#btnCancelPost = buttons.querySelector('#blog-head__btn-cancel');
@@ -47,20 +36,6 @@ class BlogHeadComponent extends HTMLElement {
             this.#toggleFormView(false);
         });
 
-        this.#tglScheduled.addEventListener('change', event => {
-            const isScheduled = event.target.checked;
-
-            this.#scheduledDate.toggleAttribute('required', isScheduled);
-            this.#scheduledDate.toggleAttribute('hidden', !isScheduled);
-            this.#scheduledTime.toggleAttribute('required', isScheduled);
-            this.#scheduledTime.toggleAttribute('hidden', !isScheduled);
-            this.#btnPublishPost.textContent = isScheduled ? this.#btnPublishPost.dataset.contentSchedule : this.#btnPublishPost.dataset.contentPublish;
-
-            this.#updateDateTimeFields(isScheduled);
-        });
-
-        this.#scheduledDate.addEventListener('change', () => blogForm.setPermadate(this.#scheduledDate.value.replaceAll('-', '/')));
-
         blogForm.onSubmit(event => {
             event.preventDefault();
             this.#publishPost();
@@ -70,6 +45,12 @@ class BlogHeadComponent extends HTMLElement {
             event.preventDefault();
             this.#saveDraft()
         });
+
+        blogForm.isScheduled.subscribe(scheduled => {
+            this.#btnPublishPost.textContent = scheduled
+                ? this.#btnPublishPost.dataset.contentSchedule
+                : this.#btnPublishPost.dataset.contentPublish;
+        }, true);
 
         blogForm.isValid.subscribe(valid => {
             this.#btnPublishPost.disabled = !valid;
@@ -155,49 +136,6 @@ class BlogHeadComponent extends HTMLElement {
             : button.dataset.hrefOpen;
         svgUse.setAttribute('xlink:href', href);
         svgUse.setAttribute('href', href);
-    }
-
-    /**
-     * @param {boolean} isScheduled
-     */
-    #updateDateTimeFields(isScheduled) {
-        const dateInput = this.#scheduledDate;
-        const timeInput = this.#scheduledTime;
-
-        if (!isScheduled) {
-            this.#blogForm.setPermadate();
-            clearTimeout(this.#scheduledTimeout.id);
-            return;
-        }
-
-        const recursiveLogic = (scheduledTimeout) => {
-            const now = new Date();
-            
-            const minTime = new Date(now.getTime() + 900000);
-            const followingHour = new Date(minTime.getTime() + 3600000);
-            const targetDateValue = `${followingHour.getFullYear()}-${`${followingHour.getMonth() + 1}`.padStart(2, '0')}-${`${followingHour.getDate()}`.padStart(2, '0')}`;
-
-            timeInput.min = `${minTime.getHours()}:${`${minTime.getMinutes()}`.padStart(2, '0')}`;
-            dateInput.min = targetDateValue;
-
-            const defaultTimeValue = `${followingHour.getHours()}:00`;
-
-            if (isScheduled
-                && timeInput.value
-                && timeInput.value === timeInput.defaultValue
-                && timeInput.defaultValue !== defaultTimeValue) {
-                    console.log('Ding!'); // TODO: Notification
-            }
-
-            timeInput.defaultValue = defaultTimeValue;
-            dateInput.defaultValue = targetDateValue;
-
-            this.#blogForm.setPermadate(dateInput.value.replaceAll('-', '/'));
-
-            scheduledTimeout.id = setTimeout(recursiveLogic, 60000, scheduledTimeout);
-        }
-
-        recursiveLogic(this.#scheduledTimeout);
     }
 }
 

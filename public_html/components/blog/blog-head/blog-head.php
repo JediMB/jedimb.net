@@ -50,36 +50,6 @@ Component::addJSModule();
         'formId' => $formId
     ]) ?>
 
-    <blog-head-options class="form-spaced-row">
-        <label>
-            <input id="blog-head__toggle-pinned"
-                type="checkbox"
-                form="<?= $formId ?>"
-                name="isPinned">
-            Pinned
-        </label>
-        <options-group class="form-row-group">
-            <input hidden
-                id="blog-head__scheduled-date"
-                type="date"
-                form="<?= $formId ?>"
-                name="scheduledDate">
-            <input hidden
-                id="blog-head__scheduled-time"
-                type="time"
-                form="<?= $formId ?>"
-                name="scheduledTime"
-                step="60">
-            <label>
-                <input id="blog-head__toggle-schedule"
-                    type="checkbox"
-                    form="<?= $formId ?>"
-                    name="isScheduled">
-                Schedule
-            </label>
-        </options-group>
-    </blog-head-options>
-
     <blog-head-buttons class="form-spaced-row">
         <button id="blog-head__btn-cancel"
             class="btn-warn btn-hover-heavy">

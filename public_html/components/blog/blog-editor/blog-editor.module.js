@@ -3,71 +3,20 @@ import BlogPostDTO from "/js/models/blog/blog-post.dto.model.js";
 import blogPostService from "/js/services/blog-post.service.js";
 
 export default class BlogEditorComponent extends HTMLElement {
-    #scheduledTimeout = { id: null };
-
-    #optionsChanged = false;
-
     /** @type {BlogFormComponent} */ #blogForm;
-    /** @type {BlogFormComponent} */
-    /** @type {HTMLInputElement} */ #scheduledDate;
-    /** @type {HTMLInputElement} */ #scheduledTime;
+    #isChanged = false;
+    #isValid = false;
 
     constructor() { super(); }
 
     connectedCallback() {
         this.#blogForm = this.querySelector('#blog-editor__editor');
 
-        const optionsElement = this.querySelector('blog-editor-options');
-        /** @type {HTMLInputElement} */
-        const tglScheduled = optionsElement.querySelector('#blog-editor__toggle-schedule');
-        const options = Array.from(optionsElement.querySelectorAll('[type="checked"]'));
-
         const buttons = this.querySelector('edit-buttons');
         const btnCancel = buttons.querySelector('#blog-editor__btn-cancel');
         const btnPublish = buttons.querySelector('#blog-editor__btn-publish');
         /** @type {HTMLButtonElement} */
         const btnSave = buttons.querySelector('#blog-editor__btn-save');
-
-        for (const option of options) {
-            option.addEventListener('change', () => {
-                this.#optionsChanged = options.some(t => t.checked !== t.defaultChecked || t.value !== t.defaultValue);
-                const formValid = this.#blogForm.isValid.getValue();
-
-                if (btnPublish)
-                    btnPublish.disabled = !formValid;
-
-                btnSave.disabled = !(formValid && this.#optionsChanged);
-            });
-        }
-
-        if (tglScheduled) {
-            this.#scheduledDate = optionsElement.querySelector('#blog-editor__scheduled-date');
-            this.#scheduledTime = optionsElement.querySelector('#blog-editor__scheduled-time');
-
-            tglScheduled.addEventListener('change', event => {
-                const isScheduled = tglScheduled.checked;
-
-                this.#scheduledDate.toggleAttribute('required', isScheduled);
-                this.#scheduledDate.toggleAttribute('hidden', !isScheduled);
-                this.#scheduledTime.toggleAttribute('required', isScheduled);
-                this.#scheduledTime.toggleAttribute('hidden', !isScheduled);
-                btnPublish.textContent = isScheduled ? btnPublish.dataset.contentSchedule : btnPublish.dataset.contentPublish;
-
-                this.#updateDateTimeFields(isScheduled);
-            });
-            
-            if (tglScheduled.checked) {
-                const dateTime = [ this.#scheduledDate.value, this.#scheduledTime.value ];
-                this.#scheduledDate.defaultValue = '';
-                this.#scheduledTime.defaultValue = '';
-                [ this.#scheduledDate.value, this.#scheduledTime.value ] = dateTime;
-                btnPublish.textContent = btnPublish.dataset.contentSchedule;
-
-                this.#updateDateTimeFields(true);
-            }
-
-            this.#scheduledDate.addEventListener('change', () => this.#blogForm.setPermadate(this.#scheduledDate.value.replaceAll('-', '/')));
-        }
 
         btnCancel.addEventListener('click', event => {
             event.preventDefault();
@@ -84,12 +33,27 @@ export default class BlogEditorComponent extends HTMLElement {
             this.#save();
         });
 
+        this.#blogForm.isChanged.subscribe(changed => {
+            this.#isChanged = changed;
+            btnSave.disabled = !changed || !this.#isValid;
+        }, true);
+
         this.#blogForm.isValid.subscribe(valid => {
+            this.#isValid = valid;
+
             if (btnPublish)
                 btnPublish.disabled = !valid;
 
-            btnSave.disabled = !(valid && this.#optionsChanged);
+            btnSave.disabled = !valid || !this.#isChanged;
         }, true);
+
+        if (btnPublish) {
+            this.#blogForm.isScheduled.subscribe(scheduled => {
+                btnPublish.textContent = scheduled
+                    ? btnPublish.dataset.contentSchedule
+                    : btnPublish.dataset.contentPublish;
+            }, true);
+        }
 
         this.#blogForm.onLoaded(() => {
             if (btnPublish)
@@ -140,49 +104,6 @@ export default class BlogEditorComponent extends HTMLElement {
 
     #save() {
         // Save changes but don't change its publishedOn value
-    }
-
-    /**
-     * @param {boolean} isScheduled
-     */
-    #updateDateTimeFields(isScheduled) {
-        const dateInput = this.#scheduledDate;
-        const timeInput = this.#scheduledTime;
-
-        if (!isScheduled) {
-            this.#blogForm.setPermadate();
-            clearTimeout(this.#scheduledTimeout.id);
-            return;
-        }
-
-        const recursiveLogic = (scheduledTimeout) => {
-            const now = new Date();
-            
-            const minTime = new Date(now.getTime() + 900000);
-            const followingHour = new Date(minTime.getTime() + 3600000);
-            const targetDateValue = `${followingHour.getFullYear()}-${`${followingHour.getMonth() + 1}`.padStart(2, '0')}-${`${followingHour.getDate()}`.padStart(2, '0')}`;
-
-            timeInput.min = `${minTime.getHours()}:${`${minTime.getMinutes()}`.padStart(2, '0')}`;
-            dateInput.min = targetDateValue;
-
-            const defaultTimeValue = `${followingHour.getHours()}:00`;
-
-            if (isScheduled
-                && timeInput.value
-                && timeInput.value === timeInput.defaultValue
-                && timeInput.defaultValue !== defaultTimeValue) {
-                    console.log('Ding!'); // TODO: Notification
-            }
-
-            timeInput.defaultValue = defaultTimeValue;
-            dateInput.defaultValue = targetDateValue;
-
-            this.#blogForm.setPermadate(dateInput.value.replaceAll('-', '/'));
-
-            scheduledTimeout.id = setTimeout(recursiveLogic, 60000, scheduledTimeout);
-        }
-
-        recursiveLogic(this.#scheduledTimeout);
     }
 }
 
