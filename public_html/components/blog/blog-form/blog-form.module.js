@@ -143,7 +143,9 @@ export default class BlogFormComponent extends HTMLElement {
             return;
         }
 
-        this.#isLoaded.first(func);
+        this.#isLoaded.first({
+            next: func
+        });
     }
 
     /** @param {(event) => void} func  */

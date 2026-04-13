@@ -66,10 +66,11 @@ export class ImgWrapperElement extends HTMLElement {
     }
 
     connectedCallback() {
-        this.#listener = this.#service.images.subscribe(null, false,
-            (_, image) => {
+        this.#listener = this.#service.images.subscribe({
+            nextIndexed: (_, image) => {
                 if (image.id === this.#imageId)
                     this.#fillImageData(image);
+            }
         });
     }
 

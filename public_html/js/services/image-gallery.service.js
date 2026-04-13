@@ -153,7 +153,9 @@ class ImageGalleryService {
             return;
         }
 
-        this.#galleries.first(value => next.call(this, value.find(g => g.id === id)));
+        this.#galleries.first({
+            next: value => next.call(this, value.find(g => g.id === id))
+        });
     }
 
     /**
@@ -174,7 +176,9 @@ class ImageGalleryService {
             return;
         }
 
-        this.#images.first(value => next.call(this, value.find(i => i.id === id)));
+        this.#images.first({
+            next: value => next.call(this, value.find(i => i.id === id))
+        });
     }
 
     /** @param {(value: Image[]) => void} next */
@@ -184,7 +188,9 @@ class ImageGalleryService {
             return;
         }
         
-        this.#images.first(value => next.call(this, value));
+        this.#images.first({
+            next: value => next.call(this, value)
+        });
     }
     
     /** 

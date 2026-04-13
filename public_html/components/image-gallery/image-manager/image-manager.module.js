@@ -121,10 +121,10 @@ customElements.define('image-manager-component', class ImageManagerComponent ext
             this.#imageProperties.querySelector('[img-upload]')?.remove();
         });
 
-        this.#service.images.subscribe(
-            images => this.#renderImageList(images), true,
-            (_, image) => this.#updateImageListItem(image)
-        );
+        this.#service.images.subscribe({
+            next: images => this.#renderImageList(images),
+            nextIndexed: (_, image) => this.#updateImageListItem(image)
+        }, true);
 
         this.#filesFieldset.disabled = false;
     }

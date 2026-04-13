@@ -11,10 +11,11 @@ export default class Emitter {
     /**
      * Subscribes to the first change of the value/object, then automatically unsubscribes
      * 
-     * @param {((value: T) => void|undefined)} next
-     * @param {((index: Number, value: any) => void|undefined)} nextIndexed
+     * @param {Object} callbacks
+     * @param {( (value: T) => void )} callbacks.next
+     * @param {( (index: Number, value: any) => void )} callbacks.nextIndexed
      */
-    first(next = undefined, nextIndexed = undefined) {
+    first({next, nextIndexed}) {
         const listener = new Listener(this, next, nextIndexed, true);
         this.#listeners.push(listener);
     }
@@ -72,12 +73,13 @@ export default class Emitter {
     /**
      * Subscribes to changes of the whole value/object, to values within an array, or both
      * 
-     * @param {((value: T) => void|undefined)} next
+     * @param {Object} callbacks
+     * @param {((value: T) => void)} callbacks.next
+     * @param {((index: Number, value: any) => void)} callbacks.nextIndexed
      * @param {Boolean} getCurrentValue 
-     * @param {((index: Number, value: any) => void|undefined)} nextIndexed
      * @returns {Listener}
      */
-    subscribe(next = undefined /*{ next, error, complete }*/, getCurrentValue = false, nextIndexed = undefined) {
+    subscribe({next, nextIndexed} /*{ error, complete }*/, getCurrentValue = false) {
         const listener = new Listener(this, next, nextIndexed /*{ next, error, complete }*/);
         this.#listeners.push(listener);
 

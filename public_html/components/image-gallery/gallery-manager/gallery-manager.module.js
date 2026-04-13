@@ -184,7 +184,10 @@ customElements.define('gallery-manager-component', class GalleryManagerComponent
                 this.dataset.galleryDescription = this.#inputDescription.value;
         });
 
-        this.#service.galleries.subscribe(galleries => this.#updateGalleriesMarkup(galleries), true, (_, gallery) => this.#updateGalleryMarkup(gallery));
+        this.#service.galleries.subscribe({
+            next: galleries => this.#updateGalleriesMarkup(galleries),
+            nextIndexed: (_, gallery) => this.#updateGalleryMarkup(gallery)
+        }, true);
 
         this.#galleryListFieldset.disabled = false;
     }

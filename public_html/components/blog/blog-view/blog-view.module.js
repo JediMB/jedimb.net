@@ -51,12 +51,14 @@ customElements.define('blog-view-component', class BlogViewComponent extends HTM
     }
 
     connectedCallback() {
-        sessionService.user.subscribe(user => {
-            // TODO: Proper permission checks
-            const editingPermissions = user && (user.role === UserRole.Administrator || user.role === UserRole.Contributor);
-            this.#editingPermissions = editingPermissions;
+        sessionService.user.subscribe({
+            next: user => {
+                // TODO: Proper permission checks
+                const editingPermissions = user && (user.role === UserRole.Administrator || user.role === UserRole.Contributor);
+                this.#editingPermissions = editingPermissions;
 
-            this.querySelectorAll('article-toolbar').forEach(toolbar => toolbar.toggleAttribute('hidden', !editingPermissions));
+                this.querySelectorAll('article-toolbar').forEach(toolbar => toolbar.toggleAttribute('hidden', !editingPermissions));
+            }
         }, true);
 
         this.#start = this.querySelector('#blog__items-start');
@@ -110,32 +112,36 @@ customElements.define('blog-view-component', class BlogViewComponent extends HTM
             });
         }
 
-        this.#pagination.subscribe(value => {
-            this.#start.textContent = value.offset + 1;
-            this.#end.textContent = value.offset + Number(this.#blogPosts.childElementCount);
-            this.#total.textContent = value.itemCount;
+        this.#pagination.subscribe({
+            next: value => {
+                this.#start.textContent = value.offset + 1;
+                this.#end.textContent = value.offset + Number(this.#blogPosts.childElementCount);
+                this.#total.textContent = value.itemCount;
+            }
         });
 
-        blogPostService.subscription.subscribe(newBlogPost => {
-            const paginationData = new Pagination(this.#pagination.getValue());
-            paginationData.itemCount++;
+        blogPostService.subscription.subscribe({
+            next: newBlogPost => {
+                const paginationData = new Pagination(this.#pagination.getValue());
+                paginationData.itemCount++;
 
-            if (paginationData.page !== 1) {
-                paginationData.offset++;
+                if (paginationData.page !== 1) {
+                    paginationData.offset++;
+                    this.#pagination.setValue(paginationData);
+                    return;
+                }
+                
+                this.#blogPosts.prepend(
+                    this.#createBlogPostItem(newBlogPost)
+                );
+
+                if (this.#blogPosts.childElementCount > paginationData.pageSize) {
+                    this.#blogPosts.lastElementChild.remove();
+                    paginationData.pageCount = Math.ceil(paginationData.itemCount / paginationData.pageSize);
+                }
+
                 this.#pagination.setValue(paginationData);
-                return;
             }
-            
-            this.#blogPosts.prepend(
-                this.#createBlogPostItem(newBlogPost)
-            );
-
-            if (this.#blogPosts.childElementCount > paginationData.pageSize) {
-                this.#blogPosts.lastElementChild.remove();
-                paginationData.pageCount = Math.ceil(paginationData.itemCount / paginationData.pageSize);
-            }
-
-            this.#pagination.setValue(paginationData);
         });
 
         window.addEventListener('popstate', event => {

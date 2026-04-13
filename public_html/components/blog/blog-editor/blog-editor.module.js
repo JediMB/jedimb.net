@@ -33,25 +33,31 @@ export default class BlogEditorComponent extends HTMLElement {
             this.#save();
         });
 
-        this.#blogForm.isChanged.subscribe(changed => {
-            this.#isChanged = changed;
-            btnSave.disabled = !changed || !this.#isValid;
+        this.#blogForm.isChanged.subscribe({
+            next: changed => {
+                this.#isChanged = changed;
+                btnSave.disabled = !changed || !this.#isValid;
+            }
         }, true);
 
-        this.#blogForm.isValid.subscribe(valid => {
-            this.#isValid = valid;
+        this.#blogForm.isValid.subscribe({
+            next: valid => {
+                this.#isValid = valid;
 
-            if (btnPublish)
-                btnPublish.disabled = !valid;
+                if (btnPublish)
+                    btnPublish.disabled = !valid;
 
-            btnSave.disabled = !valid || !this.#isChanged;
+                btnSave.disabled = !valid || !this.#isChanged;
+            }
         }, true);
 
         if (btnPublish) {
-            this.#blogForm.isScheduled.subscribe(scheduled => {
-                btnPublish.textContent = scheduled
-                    ? btnPublish.dataset.contentSchedule
-                    : btnPublish.dataset.contentPublish;
+            this.#blogForm.isScheduled.subscribe({
+                next: scheduled => {
+                    btnPublish.textContent = scheduled
+                        ? btnPublish.dataset.contentSchedule
+                        : btnPublish.dataset.contentPublish;
+                }
             }, true);
         }
 

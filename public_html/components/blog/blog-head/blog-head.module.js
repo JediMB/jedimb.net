@@ -46,15 +46,19 @@ class BlogHeadComponent extends HTMLElement {
             this.#saveDraft()
         });
 
-        blogForm.isScheduled.subscribe(scheduled => {
-            this.#btnPublishPost.textContent = scheduled
-                ? this.#btnPublishPost.dataset.contentSchedule
-                : this.#btnPublishPost.dataset.contentPublish;
+        blogForm.isScheduled.subscribe({
+            next: scheduled => {
+                this.#btnPublishPost.textContent = scheduled
+                    ? this.#btnPublishPost.dataset.contentSchedule
+                    : this.#btnPublishPost.dataset.contentPublish;
+            }
         }, true);
 
-        blogForm.isValid.subscribe(valid => {
-            this.#btnPublishPost.disabled = !valid;
-            this.#btnSaveDraft.disabled = !valid;
+        blogForm.isValid.subscribe({
+            next: valid => {
+                this.#btnPublishPost.disabled = !valid;
+                this.#btnSaveDraft.disabled = !valid;
+            }
         }, true);
 
         blogForm.onLoaded(() => {

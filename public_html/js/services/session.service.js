@@ -14,11 +14,13 @@ class SessionService {
     constructor() {
         this.#sessionApiService = sessionApiService;
 
-        this.isLoggedIn.subscribe(value => {
-            if (value === true)
-                this.#fetchUser();
-            else
-                this.user.setValue(null);
+        this.isLoggedIn.subscribe({
+            next: value => {
+                if (value === true)
+                    this.#fetchUser();
+                else
+                    this.user.setValue(null);
+            }
         });
 
         this.#sessionApiService.getStatus().then(status => {

@@ -120,14 +120,15 @@ export class ImgGalleryElement extends HTMLElement {
         this.#processGalleryId(self.getAttribute('gallery-id'));
         this.setupDefaults();
 
-        this.#listener = this.#service.galleries.subscribe(null, false,
-            (_, gallery) => {
+        this.#listener = this.#service.galleries.subscribe({
+            nextIndexed: (_, gallery) => {
                 if (gallery.id !== this.#galleryId)
                     return;
 
                 this.#galleryContainer.ariaLabel = gallery.title;
                 this.#galleryContainer.ariaDescription = gallery.description;
                 this.#fillImages(gallery.imageIds);
+            }
         });
 
         this.#galleryContainer.addEventListener('mouseenter', () => {
