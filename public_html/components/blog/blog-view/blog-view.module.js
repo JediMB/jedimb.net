@@ -59,7 +59,7 @@ customElements.define('blog-view-component', class BlogViewComponent extends HTM
 
                 this.querySelectorAll('article-toolbar').forEach(toolbar => toolbar.toggleAttribute('hidden', !editingPermissions));
             }
-        }, true);
+        }, { getCurrent: true });
 
         this.#start = this.querySelector('#blog__items-start');
         this.#end = this.querySelector('#blog__items-end');

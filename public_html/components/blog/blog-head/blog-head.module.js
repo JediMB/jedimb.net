@@ -52,14 +52,14 @@ class BlogHeadComponent extends HTMLElement {
                     ? this.#btnPublishPost.dataset.contentSchedule
                     : this.#btnPublishPost.dataset.contentPublish;
             }
-        }, true);
+        }, { getCurrent: true });
 
         blogForm.isValid.subscribe({
             next: valid => {
                 this.#btnPublishPost.disabled = !valid;
                 this.#btnSaveDraft.disabled = !valid;
             }
-        }, true);
+        }, { getCurrent: true });
 
         blogForm.onLoaded(() => {
             this.#btnAddPost.title = this.#btnAddPost.dataset.titleOpen;

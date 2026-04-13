@@ -124,7 +124,7 @@ customElements.define('image-manager-component', class ImageManagerComponent ext
         this.#service.images.subscribe({
             next: images => this.#renderImageList(images),
             nextIndexed: (_, image) => this.#updateImageListItem(image)
-        }, true);
+        }, { getCurrent: true });
 
         this.#filesFieldset.disabled = false;
     }

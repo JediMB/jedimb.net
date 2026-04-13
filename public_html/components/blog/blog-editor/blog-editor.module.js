@@ -38,7 +38,7 @@ export default class BlogEditorComponent extends HTMLElement {
                 this.#isChanged = changed;
                 btnSave.disabled = !changed || !this.#isValid;
             }
-        }, true);
+        }, { getCurrent: true });
 
         this.#blogForm.isValid.subscribe({
             next: valid => {
@@ -49,7 +49,7 @@ export default class BlogEditorComponent extends HTMLElement {
 
                 btnSave.disabled = !valid || !this.#isChanged;
             }
-        }, true);
+        }, { getCurrent: true });
 
         if (btnPublish) {
             this.#blogForm.isScheduled.subscribe({
@@ -58,7 +58,7 @@ export default class BlogEditorComponent extends HTMLElement {
                         ? btnPublish.dataset.contentSchedule
                         : btnPublish.dataset.contentPublish;
                 }
-            }, true);
+            }, { getCurrent: true });
         }
 
         this.#blogForm.onLoaded(() => {

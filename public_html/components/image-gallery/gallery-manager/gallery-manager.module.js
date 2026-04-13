@@ -187,7 +187,7 @@ customElements.define('gallery-manager-component', class GalleryManagerComponent
         this.#service.galleries.subscribe({
             next: galleries => this.#updateGalleriesMarkup(galleries),
             nextIndexed: (_, gallery) => this.#updateGalleryMarkup(gallery)
-        }, true);
+        }, { getCurrent: true });
 
         this.#galleryListFieldset.disabled = false;
     }

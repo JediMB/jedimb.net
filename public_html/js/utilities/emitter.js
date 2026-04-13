@@ -1,6 +1,6 @@
 /** @template T */
 export default class Emitter {
-    #listeners = [];
+    /** @type {Listener[]} */ #listeners = [];
     /** @type {T} */ #value;
 
     /** @param {T} value  */
@@ -16,7 +16,7 @@ export default class Emitter {
      * @param {( (index: Number, value: any) => void )} callbacks.nextIndexed
      */
     first({next, nextIndexed}) {
-        const listener = new Listener(this, next, nextIndexed, true);
+        const listener = new Listener(this, {next, nextIndexed}, { getOnce: true });
         this.#listeners.push(listener);
     }
 
@@ -44,30 +44,39 @@ export default class Emitter {
      * @param {(Number|undefined)} arrayIndex 
      */
     setValue(value, arrayIndex = undefined) {
+        let isUnchanged = false;
+
         if (typeof arrayIndex === 'number') {
             if (!Array.isArray(this.#value))
                 throw new Error('Index provided for non-array');
 
             if (this.#value[arrayIndex] === value)
-                return;
+                isUnchanged = true;
 
             this.#value[arrayIndex] = value;
 
-            this.#listeners.forEach(listener => {
+
+            for (const listener of this.#listeners) {
+                if (isUnchanged && !listener.wantsUnchanged)
+                    continue;
+
                 listener.nextIndexed(arrayIndex, this.#value[arrayIndex]);
-            });
+            }
 
             return;
         }
 
         if (this.#value === value)
-            return;
+            isUnchanged = true;
 
         this.#value = value;
 
-        this.#listeners.forEach(listener => {
+        for (const listener of this.#listeners) {
+            if (isUnchanged && !listener.wantsUnchanged)
+                continue;
+
             listener.next(this.#value);
-        });
+        }
     }
 
     /**
@@ -76,14 +85,14 @@ export default class Emitter {
      * @param {Object} callbacks
      * @param {((value: T) => void)} callbacks.next
      * @param {((index: Number, value: any) => void)} callbacks.nextIndexed
-     * @param {Boolean} getCurrentValue 
+     * @param {{getCurrent: boolean, getUnchanged: boolean}} options
      * @returns {Listener}
      */
-    subscribe({next, nextIndexed} /*{ error, complete }*/, getCurrentValue = false) {
-        const listener = new Listener(this, next, nextIndexed /*{ next, error, complete }*/);
+    subscribe({next, nextIndexed} /*{ error, complete }*/, { getCurrent, getUnchanged } = {}) {
+        const listener = new Listener(this, { next, nextIndexed }, { getUnchanged });
         this.#listeners.push(listener);
 
-        if (getCurrentValue)
+        if (getCurrent)
             listener.next(this.#value);
 
         return listener;
@@ -96,22 +105,31 @@ export default class Emitter {
 }
 
 export class Listener {
-    #once = false;
     #emitter;
     #onNext;
     #onNextIndexed;
+    #wantsOnce = false;
+    #wantsUnchanged = false;
+
+    get wantsUnchanged() {
+        return this.#wantsUnchanged;
+    }
 
     /**
      * @param {Emitter} emitter 
-     * @param {(Function|undefined)} next 
-     * @param {(Function|undefined)} nextIndexed 
-     * @param {boolean} once
+     * @param {Object} callbacks
+     * @param {(Function|undefined)} callbacks.next 
+     * @param {(Function|undefined)} callbacks.nextIndexed 
+     * @param {{getOnce: boolean, getUnchanged: boolean}} options
      */
-    constructor(emitter, next = undefined, nextIndexed = undefined /*{ next, error, complete }*/, once = false) {
+    constructor(emitter, { next, nextIndexed }, { getOnce, getUnchanged } = {}) {
         this.#emitter = emitter;
 
-        if (typeof once === 'boolean')
-            this.#once = once;
+        if (getOnce && typeof getOnce === 'boolean')
+            this.#wantsOnce = getOnce;
+
+        if (getUnchanged && typeof getUnchanged === 'boolean')
+            this.#wantsUnchanged = getUnchanged;
 
         if (next && typeof next === 'function')
             this.#onNext = next;
@@ -127,7 +145,7 @@ export class Listener {
     /** @param {T} value  */
     next(value) {
         this.#onNext?.call(this, value);
-        this.#once && this.unsubscribe();
+        this.#wantsOnce && this.unsubscribe();
     }
 
     /**
@@ -136,6 +154,6 @@ export class Listener {
      */
     nextIndexed(index, value) {
         this.#onNextIndexed?.call(this, index, value);
-        this.#once && this.unsubscribe();
+        this.#wantsOnce && this.unsubscribe();
     }
 }
