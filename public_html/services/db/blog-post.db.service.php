@@ -35,7 +35,8 @@ class BlogPostDBService extends BaseDBService {
                     3 => [ 'value' => $blogPostDTO->title, 'type' => PDO::PARAM_STR ],
                     4 => [ 'value' => $blogPostDTO->description, 'type' => PDO::PARAM_STR ],
                     5 => [ 'value' => $blogPostDTO->contentShort, 'type' => PDO::PARAM_STR ],
-                    6 => [ 'value' => $blogPostDTO->contentRest, 'type' => PDO::PARAM_STR ]
+                    6 => [ 'value' => $blogPostDTO->contentRest, 'type' => PDO::PARAM_STR ],
+                    7 => [ 'value' => $blogPostDTO->isPinned, 'type' => PDO::PARAM_BOOL ]
                 ]
             );
 
