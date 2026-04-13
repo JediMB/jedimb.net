@@ -135,7 +135,7 @@ Component::renderOnce();
                 </a>
             </h2>
             <article-byline>
-                    <svg width="1em" height="1em" class="article-pin">
+                    <svg width="1em" height="1em" class="article-pinned-icon">
                         <title>Pinned</title>
                         <use xlink:href="#svg-pinned" href="#svg-pinned"></use>
                     </svg>
