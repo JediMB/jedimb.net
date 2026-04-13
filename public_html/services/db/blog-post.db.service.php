@@ -149,8 +149,9 @@ class BlogPostDBService extends BaseDBService {
                     5 => [ 'value' => $updatedBlogPost->description, 'type' => PDO::PARAM_STR ],
                     6 => [ 'value' => $updatedBlogPost->contentShort, 'type' => PDO::PARAM_STR ],
                     7 => [ 'value' => $updatedBlogPost->contentRest, 'type' => PDO::PARAM_STR ],
-                    8 => [ 'value' => $updatedBlogPost->isHidden, 'type' => PDO::PARAM_BOOL ],
-                    9 => [ 'value' => $updatedBlogPost->isPinned, 'type' => PDO::PARAM_BOOL]
+                    8 => [ 'value' => $updatedBlogPost->mastolink, 'type' => PDO::PARAM_STR ],
+                    9 => [ 'value' => $updatedBlogPost->isHidden, 'type' => PDO::PARAM_BOOL ],
+                    10 => [ 'value' => $updatedBlogPost->isPinned, 'type' => PDO::PARAM_BOOL]
                 ]
             );
 
