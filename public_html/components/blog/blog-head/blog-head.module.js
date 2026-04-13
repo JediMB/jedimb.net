@@ -87,7 +87,6 @@ class BlogHeadComponent extends HTMLElement {
                 else {
                     // TODO: Schedule notification
                 }
-                console.log(value.blogPost ?? value.schedule);
             },
             errors => {
                 // TODO: Error notification
@@ -108,7 +107,6 @@ class BlogHeadComponent extends HTMLElement {
             value => {
                 // TODO: Update form with returned data
                 // TODO: Draft saved notification
-                console.log(value);
                 this.#btnSaveDraft.removeAttribute('btn-loading');
             },
             errors => {

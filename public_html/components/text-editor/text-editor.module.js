@@ -302,8 +302,6 @@ export class TextEditorComponent extends HTMLElement {
                     firstFormInput.checked = ['', 'true', 'yes', '1'].includes(oldValue);
                     continue;
             }
-
-            console.log(attribute, editorElement.getAttribute(attribute), firstFormInput.type);
         }
     }
 
