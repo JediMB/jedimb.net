@@ -221,6 +221,12 @@ export class TextEditorComponent extends HTMLElement {
                     get short() { return self.#textBox.innerHTML.match(/^(.*<hr page-break(?:="")?>)/si)?.at(1) ?? self.#textBox.innerHTML ?? ''; }
                 };
             },
+            /** @param {string} htmlContent  */
+            set html(htmlContent) {
+                self.#textBox.innerHTML = htmlContent;
+                self.#htmlEditor.textContent = htmlContent;
+                self.#htmlEditor.value = htmlContent;
+            },
             get text() { return self.#textBox.textContent; },
             get media() {
                 return [
@@ -242,6 +248,7 @@ export class TextEditorComponent extends HTMLElement {
             reset() {
                 self.#textBox.textContent = '';
                 self.#htmlEditor.textContent = '';
+                self.#htmlEditor.value = '';
             }
         };
     }

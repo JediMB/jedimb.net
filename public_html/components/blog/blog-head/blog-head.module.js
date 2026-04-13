@@ -101,6 +101,7 @@ class BlogHeadComponent extends HTMLElement {
     }
 
     async #saveDraft() {
+        const publishDisabled = this.#btnSaveDraft.disabled;
         this.#btnSaveDraft.disabled = true;
         this.#btnPublishPost.disabled = true;
         this.#btnSaveDraft.toggleAttribute('btn-loading', true);
@@ -109,13 +110,16 @@ class BlogHeadComponent extends HTMLElement {
 
         blogPostService.saveDraft(draft,
             value => {
-                // TODO: Update form with returned data
+                this.#blogForm.updateForm(value);
                 // TODO: Draft saved notification
                 this.#btnSaveDraft.removeAttribute('btn-loading');
+                this.#btnPublishPost.disabled = publishDisabled;
             },
             errors => {
                 this.#btnSaveDraft.removeAttribute('btn-loading');
                 this.#blogForm.error(errors);
+                this.#btnSaveDraft.disabled = false;
+                this.#btnPublishPost.disabled = publishDisabled;
             }
         );
     }

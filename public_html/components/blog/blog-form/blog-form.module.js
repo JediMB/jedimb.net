@@ -1,4 +1,5 @@
 import { TextEditorComponent } from "/js/components/text-editor/text-editor.module.js";
+import BlogPost from "/js/models/blog/blog-post.model.js";
 import Emitter from "/js/utilities/emitter.js";
 
 export default class BlogFormComponent extends HTMLElement {
@@ -167,6 +168,47 @@ export default class BlogFormComponent extends HTMLElement {
             input.classList.remove('error-too-short');
             input.classList.remove('error-too-long');
             input.classList.remove('error-mismatch');
+        }
+    }
+
+    /** @param {BlogPost} blogPost  */
+    updateForm(blogPost) {
+        /** @type {Object.<string, HTMLInputElement>} */
+        const inputs = this.#form.elements;
+
+        const id = inputs['id'];
+        id.value = blogPost.id;
+        id.defaultValue = blogPost.id;
+
+        const title = inputs['title'];
+        title.value = blogPost.title;
+        title.defaultValue = blogPost.title;
+
+        const permalink = inputs['permalink'];
+        if (permalink) {
+            const permalinkTitle = blogPost.permalink.substring(12);
+            permalink.value = permalinkTitle;
+            permalink.defaultValue = permalinkTitle;
+        }
+
+        this.#textEditor.content.html = blogPost.contentShort + blogPost.contentRest ?? '';
+
+        const description = inputs['description'];
+        description.value = blogPost.description;
+        description.defaultValue = blogPost.description;
+
+        const mastolink = inputs['mastolink'];
+        mastolink.value = blogPost.mastolink;
+        mastolink.defaultValue = blogPost.mastolink;
+
+        const isPinned = inputs['isPinned'];
+        isPinned.checked = blogPost.isPinned;
+        isPinned.defaultChecked = blogPost.isPinned;
+
+        const isHidden = inputs['isHidden'];
+        if (isHidden) {
+            isHidden.checked = blogPost.isHidden;
+            isHidden.defaultChecked = blogPost.isHidden;
         }
     }
 
