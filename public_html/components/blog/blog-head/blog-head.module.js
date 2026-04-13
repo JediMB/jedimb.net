@@ -59,7 +59,7 @@ class BlogHeadComponent extends HTMLElement {
                 this.#btnPublishPost.disabled = !valid;
                 this.#btnSaveDraft.disabled = !valid;
             }
-        }, { getCurrent: true });
+        }, { getCurrent: true, getUnchanged: true });
 
         blogForm.onLoaded(() => {
             this.#btnAddPost.title = this.#btnAddPost.dataset.titleOpen;
