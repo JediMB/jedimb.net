@@ -191,7 +191,7 @@ export default class BlogFormComponent extends HTMLElement {
             permalink.defaultValue = permalinkTitle;
         }
 
-        this.#textEditor.content.html = blogPost.contentShort + blogPost.contentRest ?? '';
+        this.#textEditor.content.html = blogPost.contentShort + (blogPost.contentRest ?? '');
 
         const description = inputs['description'];
         description.value = blogPost.description;
