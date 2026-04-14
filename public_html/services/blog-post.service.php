@@ -120,7 +120,7 @@ class BlogPostService extends Singleton {
 
         BlogPostDTO::update($dbPost, $blogPostDTO);
 
-        return $this->blogPostDbService->updateBlogPost($dbPost, true);
+        return $this->blogPostDbService->updateBlogPost($dbPost);
     }
 
     function updateAndPublishDraft(BlogPostDTO $draftDTO, int $userId) : BlogPost|false {
@@ -154,7 +154,7 @@ class BlogPostService extends Singleton {
         
         BlogPostDTO::update($dbPost, $draftDTO, $userId);
 
-        return $this->blogPostDbService->updateBlogPost($dbPost, false);
+        return $this->blogPostDbService->updateBlogPost($dbPost);
     }
 }
 

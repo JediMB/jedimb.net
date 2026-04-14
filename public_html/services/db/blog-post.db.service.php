@@ -134,14 +134,10 @@ class BlogPostDBService extends BaseDBService {
         }
     }
 
-    public function updateBlogPost(BlogPost $updatedBlogPost, bool $isPublished) : BlogPost|false {
+    public function updateBlogPost(BlogPost $updatedBlogPost) : BlogPost|false {
         try {
-            $functionName = $isPublished
-                ? 'update_published_blog_post'
-                : 'update_unpublished_blog_post';
-
             $result = $this->dbService->selectFunction(
-                $functionName, [
+                'update_blog_post', [
                     1 => [ 'value' => $updatedBlogPost->id, 'type' => PDO::PARAM_INT ],
                     2 => [ 'value' => $updatedBlogPost->userId, 'type' => PDO::PARAM_INT ],
                     3 => [ 'value' => $updatedBlogPost->permalink, 'type' => PDO::PARAM_STR ],
