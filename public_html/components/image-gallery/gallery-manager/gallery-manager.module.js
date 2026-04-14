@@ -192,94 +192,9 @@ customElements.define('gallery-manager-component', class GalleryManagerComponent
         this.#galleryListFieldset.disabled = false;
     }
 
-    async #insertGallery() {
-        const checked = this.#galleryList.querySelector(':checked');
-
-        if (!checked)
-            throw new Error('Insert button clicked with no gallery selected');
-
-        if (!this.#insertTarget)
-            throw new Error('No place to insert gallery registered');
-
-        this.#service.getGallery(Number(checked.dataset.galleryId), gallery => {
-            if (!gallery)
-                throw new Error('Gallery not found');
-
-            const self = this.#self;
-            const finishEvent = self.getAttribute('finish-event');
-            
-            this.#insertTarget.dataset.galleryInsert = JSON.stringify(gallery);
-            if (finishEvent) {
-                const event = new CustomEvent(finishEvent, { bubbles: true });
-                self.dispatchEvent(event);
-            }
-        });
-    }
-
-    /** @param {Gallery[]} galleries */
-    #updateGalleriesMarkup(galleries) {
-        const localDate = new Date(this.#self.dataset.modifiedOn);
-
-        if (this.#service.galleryModified <= localDate)
-            return;
-        
-        const galleryId = this.#renderGalleryList(galleries)
-        this.#renderImageLists(galleryId);
-
-        this.dataset.modifiedOn = formatDate(this.#service.galleryModified, true);
-    }
-
-    /** @param {Gallery} gallery */
-    #updateGalleryMarkup(gallery) {
-        /** @type {HTMLInputElement} */
-        const galleryInput = this.#galleryListFieldset.querySelector(`[data-gallery-id="${gallery.id}"]`);
-
-        if (!galleryInput)
-            throw new Error('Updated gallery not found in list');
-
-        const data = galleryInput.dataset;
-        data.galleryTitle = gallery.title;
-        data.galleryDescription = gallery.description;
-        data.galleryCreatedOn = formatDate(gallery.createdOn);
-        data.galleryModifiedOn = formatDate(gallery.modifiedOn);
-
-        galleryInput.nextSibling.textContent = gallery.title;
-        galleryInput.parentElement.title = gallery.title;
-
-        this.dataset.modifiedOn = formatDate(this.#service.galleryModified, true);
-
-        const checked = this.#galleryListFieldset.querySelector(':checked');
-        if (galleryInput !== checked)
-            return;
-
-        this.#renderImageLists(gallery.id);
-    }
-
     disconnectedCallback() {}
 
     connectedMoveCallback() {}
-
-    async #saveGalleryProperties() {
-        this.#btnResetGalleryProperties.disabled = true;
-        this.#btnResetGalleryProperties.toggleAttribute('hidden', true);
-        this.#btnCancelGalleryProperties.disabled = true;
-        this.#btnSaveGalleryProperties.disabled = true;
-
-        const gallery = new GalleryDTO(new FormData(this.#galleryPropertiesForm));
-
-        if (Number(this.#inputId.value) === 0) {
-            if (await this.#service.createGallery(gallery)) {
-                this.#self.setAttribute('properties-mode', 'done');
-                this.#btnCancelGalleryProperties.disabled = false;
-            }
-            return;
-        }
-
-        if (await this.#service.updateGallery(gallery)) {
-            this.#self.setAttribute('properties-mode', 'done');
-            this.#btnCancelGalleryProperties.disabled = false;
-        }
-    }
 
     async #deleteGallery() {
         this.#btnDeleteGallery.disabled = true;
@@ -294,25 +209,6 @@ customElements.define('gallery-manager-component', class GalleryManagerComponent
 
         if (await this.#service.deleteGallery(galleryId)) {
             this.#galleryListFieldset.disabled = false;
-        }
-    }
-
-    async #saveGalleryImages() {
-        this.#btnSaveGalleryImages.disabled = true;
-        this.#btnDeleteGallery.disabled = true;
-        this.#galleryListFieldset.disabled = true;
-        this.#includedImagesFieldset.disabled = true;
-        this.#excludedImagesFieldset.disabled = true;
-
-        const galleryId = Number(this.#galleryListFieldset.querySelector(':checked').dataset.galleryId);
-
-        const imageIds = Array.from(this.#includedImagesFieldset.querySelectorAll('input'))
-            .map(input => Number(input.dataset.imageId));
-
-        if (await this.#service.updateGalleryImages(galleryId, imageIds)) {
-            this.#galleryListFieldset.disabled = false;
-            this.#includedImagesFieldset.disabled = false;
-            this.#excludedImagesFieldset.disabled = false;
         }
     }
 
@@ -336,77 +232,28 @@ customElements.define('gallery-manager-component', class GalleryManagerComponent
         this.#btnSaveGalleryImages.disabled = false;
     }
 
-    #setupDragTargets() {
-        for (const list of [ this.#includedImagesUL, this.#excludedImagesUL ]) {
-            list.addEventListener('dragstart', event => {
-                event.stopPropagation();
-                this.#dragItem = event.target;
-            });
-        }
+    async #insertGallery() {
+        const checked = this.#galleryList.querySelector(':checked');
 
-        for (const container of [ this.#includedImagesContainer, this.#excludedImagesContainer ]) {
-            container.addEventListener('dragenter', event => {
-                event.preventDefault();
+        if (!checked)
+            throw new Error('Insert button clicked with no gallery selected');
 
-                if (this.#dragItem.className !== 'manager-list-item')
-                    return;
+        if (!this.#insertTarget)
+            throw new Error('No place to insert gallery registered');
 
-                /** @type {HTMLElement} */
-                let target = event.originalTarget;
-                let append = false;
+        this.#service.getGallery(Number(checked.dataset.galleryId), gallery => {
+            if (!gallery)
+                throw new Error('Gallery not found');
 
-                switch (target.localName) {
-                    case 'images-included':
-                    case 'images-excluded':
-                        target = container.querySelector('ul').lastElementChild;
-                        append = true;
-                        break;
-
-                    case 'label':
-                        target = target.parentElement;
-                        break;
-
-                    default:
-                        target = container.querySelector('ul').firstElementChild;
-                        break;
-                }
-
-                this.#dragTarget?.style.removeProperty(this.#append ? 'border-bottom' : 'border-top');
-
-                this.#dragTarget = target;
-                this.#append = append;
-
-                if (target === this.#dragItem)
-                    return;
-
-                if (!append && target?.previousElementSibling === this.#dragItem)
-                    return;
-
-                this.#dragTarget?.style.setProperty(this.#append ? 'border-bottom' : 'border-top', '1px solid');
-            });
-
-            container.addEventListener('dragover', event => event.preventDefault());
-
-            container.addEventListener('dragleave', event => {
-                if (container.contains(event.relatedTarget))
-                    return;
-
-                this.#dragTarget?.style.removeProperty(this.#append ? 'border-bottom' : 'border-top');
-                this.#dragTarget = null;
-                this.#append = false;
-            });
-
-            container.addEventListener('drop', () => {
-                if (this.#dragItem?.className === 'manager-list-item')
-                    this.#dropItem(container.querySelector('ul'));
-
-                this.#dragItem = null;
-                this.#dragTarget = null;
-                this.#append = false;
-                this.#btnDeleteGallery.disabled = !!this.#includedImagesUL.firstElementChild;
-            });
-        }
-
+            const self = this.#self;
+            const finishEvent = self.getAttribute('finish-event');
+            
+            this.#insertTarget.dataset.galleryInsert = JSON.stringify(gallery);
+            if (finishEvent) {
+                const event = new CustomEvent(finishEvent, { bubbles: true });
+                self.dispatchEvent(event);
+            }
+        });
     }
 
     /** 
@@ -518,6 +365,47 @@ customElements.define('gallery-manager-component', class GalleryManagerComponent
         });
     }
 
+    async #saveGalleryImages() {
+        this.#btnSaveGalleryImages.disabled = true;
+        this.#btnDeleteGallery.disabled = true;
+        this.#galleryListFieldset.disabled = true;
+        this.#includedImagesFieldset.disabled = true;
+        this.#excludedImagesFieldset.disabled = true;
+
+        const galleryId = Number(this.#galleryListFieldset.querySelector(':checked').dataset.galleryId);
+
+        const imageIds = Array.from(this.#includedImagesFieldset.querySelectorAll('input'))
+            .map(input => Number(input.dataset.imageId));
+
+        if (await this.#service.updateGalleryImages(galleryId, imageIds)) {
+            this.#galleryListFieldset.disabled = false;
+            this.#includedImagesFieldset.disabled = false;
+            this.#excludedImagesFieldset.disabled = false;
+        }
+    }
+
+    async #saveGalleryProperties() {
+        this.#btnResetGalleryProperties.disabled = true;
+        this.#btnResetGalleryProperties.toggleAttribute('hidden', true);
+        this.#btnCancelGalleryProperties.disabled = true;
+        this.#btnSaveGalleryProperties.disabled = true;
+
+        const gallery = new GalleryDTO(new FormData(this.#galleryPropertiesForm));
+
+        if (Number(this.#inputId.value) === 0) {
+            if (await this.#service.createGallery(gallery)) {
+                this.#self.setAttribute('properties-mode', 'done');
+                this.#btnCancelGalleryProperties.disabled = false;
+            }
+            return;
+        }
+
+        if (await this.#service.updateGallery(gallery)) {
+            this.#self.setAttribute('properties-mode', 'done');
+            this.#btnCancelGalleryProperties.disabled = false;
+        }
+    }
+
     /**
      * @param {HTMLInputElement[]} fields 
      */
@@ -526,5 +414,116 @@ customElements.define('gallery-manager-component', class GalleryManagerComponent
         this.#btnResetGalleryProperties.disabled = noChanges;
         this.#btnResetGalleryProperties.toggleAttribute('hidden', noChanges);
         this.#btnSaveGalleryProperties.disabled = noChanges || !!fields.find(field => !field.checkValidity());
+    }
+
+    #setupDragTargets() {
+        for (const list of [ this.#includedImagesUL, this.#excludedImagesUL ]) {
+            list.addEventListener('dragstart', event => {
+                event.stopPropagation();
+                this.#dragItem = event.target;
+            });
+        }
+
+        for (const container of [ this.#includedImagesContainer, this.#excludedImagesContainer ]) {
+            container.addEventListener('dragenter', event => {
+                event.preventDefault();
+
+                if (this.#dragItem.className !== 'manager-list-item')
+                    return;
+
+                /** @type {HTMLElement} */
+                let target = event.originalTarget;
+                let append = false;
+
+                switch (target.localName) {
+                    case 'images-included':
+                    case 'images-excluded':
+                        target = container.querySelector('ul').lastElementChild;
+                        append = true;
+                        break;
+
+                    case 'label':
+                        target = target.parentElement;
+                        break;
+
+                    default:
+                        target = container.querySelector('ul').firstElementChild;
+                        break;
+                }
+
+                this.#dragTarget?.style.removeProperty(this.#append ? 'border-bottom' : 'border-top');
+
+                this.#dragTarget = target;
+                this.#append = append;
+
+                if (target === this.#dragItem)
+                    return;
+
+                if (!append && target?.previousElementSibling === this.#dragItem)
+                    return;
+
+                this.#dragTarget?.style.setProperty(this.#append ? 'border-bottom' : 'border-top', '1px solid');
+            });
+
+            container.addEventListener('dragover', event => event.preventDefault());
+
+            container.addEventListener('dragleave', event => {
+                if (container.contains(event.relatedTarget))
+                    return;
+
+                this.#dragTarget?.style.removeProperty(this.#append ? 'border-bottom' : 'border-top');
+                this.#dragTarget = null;
+                this.#append = false;
+            });
+
+            container.addEventListener('drop', () => {
+                if (this.#dragItem?.className === 'manager-list-item')
+                    this.#dropItem(container.querySelector('ul'));
+
+                this.#dragItem = null;
+                this.#dragTarget = null;
+                this.#append = false;
+                this.#btnDeleteGallery.disabled = !!this.#includedImagesUL.firstElementChild;
+            });
+        }
+    }
+
+    /** @param {Gallery[]} galleries */
+    #updateGalleriesMarkup(galleries) {
+        const localDate = new Date(this.#self.dataset.modifiedOn);
+
+        if (this.#service.galleryModified <= localDate)
+            return;
+        
+        const galleryId = this.#renderGalleryList(galleries)
+        this.#renderImageLists(galleryId);
+
+        this.dataset.modifiedOn = formatDate(this.#service.galleryModified, true);
+    }
+
+    /** @param {Gallery} gallery */
+    #updateGalleryMarkup(gallery) {
+        /** @type {HTMLInputElement} */
+        const galleryInput = this.#galleryListFieldset.querySelector(`[data-gallery-id="${gallery.id}"]`);
+
+        if (!galleryInput)
+            throw new Error('Updated gallery not found in list');
+
+        const data = galleryInput.dataset;
+        data.galleryTitle = gallery.title;
+        data.galleryDescription = gallery.description;
+        data.galleryCreatedOn = formatDate(gallery.createdOn);
+        data.galleryModifiedOn = formatDate(gallery.modifiedOn);
+
+        galleryInput.nextSibling.textContent = gallery.title;
+        galleryInput.parentElement.title = gallery.title;
+
+        this.dataset.modifiedOn = formatDate(this.#service.galleryModified, true);
+
+        const checked = this.#galleryListFieldset.querySelector(':checked');
+        if (galleryInput !== checked)
+            return;
+
+        this.#renderImageLists(gallery.id);
     }
 });
