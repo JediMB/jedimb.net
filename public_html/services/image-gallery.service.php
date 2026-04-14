@@ -176,6 +176,9 @@ class ImageGalleryService extends Singleton {
         $updatedGallery = $this->galleryDbService->updateGallery($gallery);
         $modifiedOn = $this->tableModifiedService->createOrUpdateTableModifiedDate('gallery');
 
+        $galleryImages = $this->galleryImageDbService->getGalleryImages($updatedGallery->id);
+        $updatedGallery->imageIds = array_map(fn($galleryImage) => $galleryImage->imageId, $galleryImages);
+
         return [
             'gallery' => $updatedGallery,
             'modifiedOn' => $modifiedOn
