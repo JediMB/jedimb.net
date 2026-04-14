@@ -55,29 +55,36 @@ Component::addJSModule();
             class="btn-warn btn-hover-heavy">
                 Cancel
         </button>
-        <buttons-save class="form-matching-buttons">
-            <button id="blog-head__btn-save"
-                class="btn-secondary"
-                disabled
-                >
-                <svg is-loading width="1em" height="1em">
-                    <use xlink:href="#svg-loading" href="#svg-loading"></use>
-                </svg>
-                <span has-loaded>Save draft</span>
-            </button>
-            <button id="blog-head__btn-publish"
-                type="submit"
-                form="<?= $formId ?>"
-                class="btn-primary"
-                data-content-publish="Publish"
-                data-content-schedule="Schedule"
-                disabled
-                >
-                <svg is-loading width="1em" height="1em">
-                    <use xlink:href="#svg-loading" href="#svg-loading"></use>
-                </svg>
-                <span has-loaded>Publish</span>
-            </button>
-        </buttons-save>
+
+        <div class="form-spaced-row">
+            <div class="form-save-time" hidden>
+                <span>Last saved:</span>
+                <span save-time></span>
+            </div>
+            <buttons-save class="form-matching-buttons">
+                <button id="blog-head__btn-save"
+                    class="btn-secondary"
+                    disabled
+                    >
+                    <svg is-loading width="1em" height="1em">
+                        <use xlink:href="#svg-loading" href="#svg-loading"></use>
+                    </svg>
+                    <span has-loaded>Save draft</span>
+                </button>
+                <button id="blog-head__btn-publish"
+                    type="submit"
+                    form="<?= $formId ?>"
+                    class="btn-primary"
+                    data-content-publish="Publish"
+                    data-content-schedule="Schedule"
+                    disabled
+                    >
+                    <svg is-loading width="1em" height="1em">
+                        <use xlink:href="#svg-loading" href="#svg-loading"></use>
+                    </svg>
+                    <span has-loaded>Publish</span>
+                </button>
+            </buttons-save>
+        </div>
     </blog-head-buttons>
 </blog-head-content>

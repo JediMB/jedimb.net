@@ -99,6 +99,10 @@ export default class BlogFormComponent extends HTMLElement {
 
     /** @param {{ required: boolean, tooShort: boolean, tooLong: boolean, mismatch: boolean }[]} errors  */
     error(errors) {
+        /*
+            TODO: If error is not a list of objects containing booleans,
+            check if it's strings, and use those for the error notification
+        */
         for (const input of this.#form.elements) {
             const error = errors[input.name];
 

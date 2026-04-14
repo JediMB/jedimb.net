@@ -11,6 +11,8 @@ class BlogHeadComponent extends HTMLElement {
     /** @type {HTMLElement} */ #content;
     /** @type {BlogFormComponent} */ #blogForm;
 
+    /** @type {HTMLDivElement} */ #saveTime;
+
     constructor() { super(); }
 
     connectedCallback() {
@@ -26,6 +28,8 @@ class BlogHeadComponent extends HTMLElement {
         this.#btnPublishPost = buttons.querySelector('#blog-head__btn-publish');
         this.#btnSaveDraft = buttons.querySelector('#blog-head__btn-save');
 
+        this.#saveTime = buttons.querySelector('[save-time]');
+
         this.#btnAddPost.addEventListener('click', () => {
             const wasActive = !this.#btnAddPost.ariaPressed || this.#btnAddPost.ariaPressed !== 'false';
             this.#toggleFormView(!wasActive);
@@ -38,12 +42,12 @@ class BlogHeadComponent extends HTMLElement {
 
         blogForm.onSubmit(event => {
             event.preventDefault();
-            this.#publishPost();
+            this.#onPublish();
         });
 
         this.#btnSaveDraft.addEventListener('click', event => {
             event.preventDefault();
-            this.#saveDraft()
+            this.#onSave()
         });
 
         blogForm.isScheduled.subscribe({
@@ -72,13 +76,8 @@ class BlogHeadComponent extends HTMLElement {
 
     disconnectedCallback() {}
 
-    async #publishPost() {
-        this.#btnPublishPost.disabled = true;
-        this.#btnSaveDraft.disabled = true;
-        this.#btnPublishPost.toggleAttribute('btn-loading', true);
-
-        const post = new BlogPostDTO(this.#blogForm.getFormData());
-
+    /** @param {BlogPostDTO} post  */
+    #createBlogPost(post) {
         blogPostService.createBlogPost(post,
             value => {
                 this.#blogForm.reset();
@@ -100,7 +99,22 @@ class BlogHeadComponent extends HTMLElement {
         );
     }
 
-    async #saveDraft() {
+    #onPublish() {
+        this.#btnPublishPost.disabled = true;
+        this.#btnSaveDraft.disabled = true;
+        this.#btnPublishPost.toggleAttribute('btn-loading', true);
+
+        const post = new BlogPostDTO(this.#blogForm.getFormData());
+
+        if (!post.id){
+            this.#createBlogPost(post);
+            return;
+        }
+
+        this.#publishDraft(post);
+    }
+
+    #onSave() {
         const publishDisabled = this.#btnSaveDraft.disabled;
         this.#btnSaveDraft.disabled = true;
         this.#btnPublishPost.disabled = true;
@@ -108,10 +122,40 @@ class BlogHeadComponent extends HTMLElement {
 
         const draft = new BlogPostDTO(this.#blogForm.getFormData());
 
+        this.#saveDraft(draft);
+    }
+
+    /** @param {BlogPostDTO} draft  */
+    #publishDraft(draft) {
+        blogPostService.publishDraft(post, 
+            value => {
+                this.#blogForm.reset();
+                this.#toggleFormView(false);
+                this.#btnPublishPost.removeAttribute('btn-loading');
+
+                // TODO: Blog Post notification
+            },
+            errors => {
+                // TODO: Error notification
+                this.#btnPublishPost.removeAttribute('btn-loading');
+                this.#blogForm.error(errors);
+            }
+        );
+    }
+
+    /** @param {BlogPostDTO} draft  */
+    #saveDraft(draft) {
         blogPostService.saveDraft(draft,
             value => {
                 this.#blogForm.updateForm(value);
+                this.#btnSaveDraft.disabled = true;
+
                 // TODO: Draft saved notification
+
+                const saveTime = value.modifiedOn ?? value.createdOn;
+                this.#updateSaveTime(saveTime);
+                this.#saveTime.parentElement.removeAttribute('hidden');
+
                 this.#btnSaveDraft.removeAttribute('btn-loading');
                 this.#btnPublishPost.disabled = publishDisabled;
             },
@@ -142,6 +186,19 @@ class BlogHeadComponent extends HTMLElement {
             : button.dataset.hrefOpen;
         svgUse.setAttribute('xlink:href', href);
         svgUse.setAttribute('href', href);
+    }
+
+    /** @param {Date} saveTime  */
+    #updateSaveTime(saveTime) {
+        const now = new Date();
+        const isSavedToday = saveTime.getDate() === now.getDate()
+            && saveTime.getMonth() === now.getMonth()
+            && saveTime.getFullYear() === now.getFullYear();
+
+        if (isSavedToday)
+            this.#saveTime.textContent = saveTime.toLocaleTimeString();
+        else
+            this.#saveTime.textContent = saveTime.toLocaleString();
     }
 }
 
