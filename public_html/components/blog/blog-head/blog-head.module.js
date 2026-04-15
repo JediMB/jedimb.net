@@ -11,7 +11,7 @@ class BlogHeadComponent extends HTMLElement {
     /** @type {HTMLElement} */ #content;
     /** @type {BlogFormComponent} */ #blogForm;
 
-    /** @type {HTMLDivElement} */ #saveTime;
+    /** @type {HTMLSpanElement} */ #saveTime;
 
     constructor() { super(); }
 
@@ -119,7 +119,6 @@ class BlogHeadComponent extends HTMLElement {
     }
 
     #onSave() {
-        const publishDisabled = this.#btnSaveDraft.disabled;
         this.#btnSaveDraft.disabled = true;
         this.#btnPublishPost.disabled = true;
         this.#btnSaveDraft.toggleAttribute('btn-loading', true);
@@ -165,7 +164,7 @@ class BlogHeadComponent extends HTMLElement {
                 this.#saveTime.parentElement.removeAttribute('hidden');
 
                 this.#btnSaveDraft.removeAttribute('btn-loading');
-                this.#btnPublishPost.disabled = publishDisabled;
+                this.#btnPublishPost.disabled = false;
             },
             errors => {
                 if (this.#blogForm.error(errors)) {
@@ -175,8 +174,6 @@ class BlogHeadComponent extends HTMLElement {
                     // TODO: Errors string content notification
                 }
                 this.#btnSaveDraft.removeAttribute('btn-loading');
-                this.#btnSaveDraft.disabled = false;
-                this.#btnPublishPost.disabled = publishDisabled;
             }
         );
     }
