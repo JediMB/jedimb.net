@@ -3,12 +3,14 @@ import BlogPost from "/js/models/blog/blog-post.model.js";
 import Emitter from "/js/utilities/emitter.js";
 
 export default class BlogFormComponent extends HTMLElement {
-    #isLoaded = Object.freeze(new Emitter(false));
+    #isPublished = false;
+    #publishedPath = ''
+    #scheduledTimeout = { id: null };
 
+    #isLoaded = Object.freeze(new Emitter(false));
     #isChanged = Object.freeze(new Emitter(false));
     #isScheduled = Object.freeze(new Emitter(false));
     #isValid = Object.freeze(new Emitter(false));
-    #scheduledTimeout = { id: null };
 
     /** @type {HTMLInputElement[]} */ #inputsToValidate;
     /** @type {HTMLInputElement[]} */ #nonScheduleOptions;
@@ -42,7 +44,10 @@ export default class BlogFormComponent extends HTMLElement {
 
         inputs['isPinned'].addEventListener('change', () => this.#isChanged.setValue(true));
 
-        if (inputs['isPublished']) {
+        this.#isPublished = !!inputs['isPublished'];
+
+        if (this.#isPublished) {
+            this.#publishedPath = inputs['isPublished'].value;
             inputs['isHidden'].addEventListener('change', () => this.#isChanged.setValue(true));
         }
         else {
@@ -141,9 +146,13 @@ export default class BlogFormComponent extends HTMLElement {
 
     get isChanged() { return this.#isChanged; }
 
+    get isPublished() { return this.#isPublished; }
+
     get isScheduled() { return this.#isScheduled; }
 
     get isValid() { return this.#isValid; }
+
+    get publishedPath() { return this.#publishedPath; }
 
     /** @param {() => void} func  */
     onLoaded(func) {
