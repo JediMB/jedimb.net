@@ -127,7 +127,7 @@ class BlogHeadComponent extends HTMLElement {
 
     /** @param {BlogPostDTO} draft  */
     #publishDraft(draft) {
-        blogPostService.publishDraft(post, 
+        blogPostService.publishDraft(draft, 
             value => {
                 this.#blogForm.reset();
                 this.#toggleFormView(false);
