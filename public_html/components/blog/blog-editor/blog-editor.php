@@ -9,6 +9,7 @@ use Exception;
 use Models\DB\BlogPost;
 use Services\BlogPostScheduleService;
 use Utilities\Component;
+use Utilities\DateTime;
 
 /** @var BlogPost $post */
 
@@ -55,23 +56,43 @@ Component::addJSModule();
             disabled>
                 Cancel
         </button>
-        <buttons-save class="form-matching-buttons">
-            <button id="blog-editor__btn-save"
-                type="submit"
-                form="<?= $formId ?>"
-                class="<?= $post->publishedOn ? 'btn-primary' : 'btn-secondary' ?>"
-                disabled>
-                    Save
-            </button>
-            <?php if (!$post->publishedOn): ?>
-                <button id="blog-editor__btn-publish"
-                    class="btn-primary"
-                    data-content-publish="Publish"
-                    data-content-schedule="Schedule"
-                    disabled>
-                        Publish
+
+        <div class="form-spaced-row">
+            <div class="form-save-time">
+                <span>Last saved:</span>
+                <span save-time>
+                    <?php $lastSaved = DateTime::toString($post->modifiedOn ?? $post->createdOn) ?>
+                    <date-time server-time="<?= $lastSaved ?>" relative-date="true">
+                        <?= $lastSaved ?>
+                    </date-time>
+                </span>
+            </div>
+            <buttons-save class="form-matching-buttons">
+                <button id="blog-editor__btn-save"
+                    type="submit"
+                    form="<?= $formId ?>"
+                    class="<?= $post->publishedOn ? 'btn-primary' : 'btn-secondary' ?>"
+                    disabled
+                    >
+                    <svg is-loading width="1em" height="1em">
+                        <use xlink:href="#svg-loading" href="#svg-loading"></use>
+                    </svg>
+                    <span has-loaded>Save</span>
                 </button>
-            <?php endif ?>
-        </buttons-save>
+                <?php if (!$post->publishedOn): ?>
+                    <button id="blog-editor__btn-publish"
+                        class="btn-primary"
+                        data-content-publish="Publish"
+                        data-content-schedule="Schedule"
+                        disabled
+                        >
+                        <svg is-loading width="1em" height="1em">
+                            <use xlink:href="#svg-loading" href="#svg-loading"></use>
+                        </svg>
+                        <span has-loaded>Publish</span>
+                    </button>
+                <?php endif ?>
+            </buttons-save>
+        </div>
     </edit-buttons>
 </blog-editor-content>
