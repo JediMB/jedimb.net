@@ -23,9 +23,9 @@ if (isset($GLOBALS['api_params'][0]) && is_numeric($GLOBALS['api_params'][0]))
 
 $input = json_decode(file_get_contents('php://input'), true);
 
-switch ( $_SERVER['REQUEST_METHOD'] ) {
-    case 'GET':
-        try {
+try {
+    switch ( $_SERVER['REQUEST_METHOD'] ) {
+        case 'GET':
             if (empty($id))
                 return Response::BadRequest('No id in blog post request');
 
@@ -38,13 +38,8 @@ switch ( $_SERVER['REQUEST_METHOD'] ) {
                 return Response::BadRequest('Invalid blog post id, or insufficient permissions');
 
             return Response::Success($post);
-        }
-        catch (Exception $e) {
-            return Response::Error([$e->getMessage()]);
-        }
 
-    case 'POST':
-        try {
+        case 'POST':
             if ( ($response = $sessionService->getInvalidSubmissionResponse($input, [ UserPermission::Publishing ])) )
                 return $response;
 
@@ -54,7 +49,7 @@ switch ( $_SERVER['REQUEST_METHOD'] ) {
             if (empty($post->scheduledOn)) {
                 $post = $service->publishBlogPost($post, $userId)['blogPost'];
 
-                return Response::Success($post);
+                return Response::Created($post);
             }
 
             if (!DateTime::parse($post->scheduledOn))
@@ -62,17 +57,31 @@ switch ( $_SERVER['REQUEST_METHOD'] ) {
 
             $schedule = $service->scheduleBlogPost($post, $userId);
             
-            return Response::Success($schedule);
-        }
-        catch (InputException $e) {
-            return Response::InputException($e->getErrors());
-        }
-        catch (Exception $e) {
-            return Response::Error([$e->getMessage()]);
-        }
+            return Response::Created($schedule);
+            
+        case 'PUT':
+            if ( ($response = $sessionService->getInvalidSubmissionResponse($input, [ UserPermission::Editing ])) )
+                return $response;
 
-    default:
-        return Response::InvalidRequest();
+            $postDTO = new BlogPostDTO($input);
+
+            $updatedPost = $service->updateBlogPost($postDTO);
+
+            if (!$updatedPost)
+                return Response::Error(["Failed to update blog post with id {$postDTO->id}"]);
+
+            return Response::Success($updatedPost);
+
+
+        default:
+            return Response::InvalidRequest();
+    }
+}
+catch (InputException $e) {
+    return Response::InputException($e->getErrors());
+}
+catch (Exception $e) {
+    return Response::Error([$e->getMessage()]);
 }
 
 ?>
