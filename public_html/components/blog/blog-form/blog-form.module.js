@@ -97,12 +97,17 @@ export default class BlogFormComponent extends HTMLElement {
 
     disconnectedCallback() {}
 
-    /** @param {{ required: boolean, tooShort: boolean, tooLong: boolean, mismatch: boolean }[]} errors  */
+    /**
+     * @param {{ required: boolean, tooShort: boolean, tooLong: boolean, mismatch: boolean }[]} errors 
+     * @returns {boolean} Whether there were any valid error objects to handle
+     */
     error(errors) {
-        /*
-            TODO: If error is not a list of objects containing booleans,
-            check if it's strings, and use those for the error notification
-        */
+        if (!errors)
+            console.error('Errors parameter empty');
+
+        if (!Object.hasOwn(errors[0], 'required'))
+            return false;
+        
         for (const input of this.#form.elements) {
             const error = errors[input.name];
 
@@ -122,6 +127,8 @@ export default class BlogFormComponent extends HTMLElement {
             input.classList.toggle('error-too-long', !!error.tooLong);
             input.classList.toggle('error-mismatch', !!error.mismatch);
         }
+
+        return true;
     }
 
     getFormData() {

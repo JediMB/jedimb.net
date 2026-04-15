@@ -92,9 +92,13 @@ class BlogHeadComponent extends HTMLElement {
                 }
             },
             errors => {
-                // TODO: Error notification
+                if (this.#blogForm.error(errors)) {
+                    // TODO: Incorrect input notification
+                }
+                else {
+                    // TODO: Errors string content notification
+                }
                 this.#btnPublishPost.removeAttribute('btn-loading');
-                this.#blogForm.error(errors);
             }
         );
     }
@@ -136,9 +140,13 @@ class BlogHeadComponent extends HTMLElement {
                 // TODO: Blog Post notification
             },
             errors => {
-                // TODO: Error notification
+                if (this.#blogForm.error(errors)) {
+                    // TODO: Incorrect input notification
+                }
+                else {
+                    // TODO: Errors string content notification
+                }
                 this.#btnPublishPost.removeAttribute('btn-loading');
-                this.#blogForm.error(errors);
             }
         );
     }
@@ -160,8 +168,13 @@ class BlogHeadComponent extends HTMLElement {
                 this.#btnPublishPost.disabled = publishDisabled;
             },
             errors => {
+                if (this.#blogForm.error(errors)) {
+                    // TODO: Incorrect input notification
+                }
+                else {
+                    // TODO: Errors string content notification
+                }
                 this.#btnSaveDraft.removeAttribute('btn-loading');
-                this.#blogForm.error(errors);
                 this.#btnSaveDraft.disabled = false;
                 this.#btnPublishPost.disabled = publishDisabled;
             }
