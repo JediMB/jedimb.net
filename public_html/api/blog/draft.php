@@ -41,9 +41,12 @@ try {
             $draftDTO = new BlogPostDTO($input);
 
             if (!isset($action)) {
-                $post = $service->updateDraft($draftDTO, $userId);
+                $updatedDraft = $service->updateDraft($draftDTO, $userId);
 
-                return Response::Success($post);
+                if (!$updatedDraft)
+                    return Response::Error(["Failed to update draft with id {$draftDTO->id}"]);
+
+                return Response::Success($updatedDraft);
             }
 
             switch ($action) {
@@ -51,12 +54,12 @@ try {
                     if ( ($response = $sessionService->getInvalidSubmissionResponse($input, [ UserPermission::Publishing ])) )
                         return $response;
 
-                    $post = $service->updateAndPublishDraft($draftDTO, $userId);
+                    $publishedPost = $service->updateAndPublishDraft($draftDTO, $userId);
 
-                    if (!$post)
+                    if (!$publishedPost)
                         return Response::Error(["Failed to publish draft with id {$draftDTO->id}"]);
 
-                    return Response::Success($post);
+                    return Response::Success($publishedPost);
 
                 case 'schedule':
                     if ( ($response = $sessionService->getInvalidSubmissionResponse($input, [ UserPermission::Publishing ])) )
@@ -67,12 +70,11 @@ try {
                     if (!$schedule)
                         return Response::Error(["Failed to schedule draft with id {$draftDTO->id}"]);
 
-                    return Response::Success($schedule);
+                    return Response::Created($schedule);
 
                 default:
                     return Response::InvalidRequest();
             }
-
 
         default:
             return Response::InvalidRequest();
