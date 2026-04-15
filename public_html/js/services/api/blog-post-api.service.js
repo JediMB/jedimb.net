@@ -92,7 +92,7 @@ class BlogPostApiService {
 
     /**
      * @param {BlogPostDTO} blogPostDTO 
-     * @returns {Promise<({success: boolean, errors: object|undefined, value: BlogPost|undefined})>}
+     * @returns {Promise<({success: boolean, errors: string[]|object[]|undefined, value: BlogPost|undefined})>}
      */
     async postDraft(blogPostDTO) {
         const response = await this.#httpClient.post(this.#api.draft, blogPostDTO);
@@ -110,7 +110,7 @@ class BlogPostApiService {
 
     /**
      * @param {BlogPostDTO} blogPostDTO 
-     * @returns {Promise<({success: boolean, errors: object|undefined, value: BlogPost|undefined})>}
+     * @returns {Promise<({success: boolean, errors: string[]|object[]|undefined, value: BlogPost|undefined})>}
      */
     async publishDraft(blogPostDTO) {
         const response = await this.#httpClient.put(this.#api.draft + '/publish', blogPostDTO);
@@ -128,7 +128,7 @@ class BlogPostApiService {
 
     /**
      * @param {BlogPostDTO} blogPostDTO 
-     * @returns {Promise<({success: boolean, errors: object|undefined, value: BlogPostSchedule|undefined})>}
+     * @returns {Promise<({success: boolean, errors: string[]|object[]|undefined, value: BlogPostSchedule|undefined})>}
      */
     async scheduleDraft(blogPostDTO) {
         const response = await this.#httpClient.put(this.#api.draft + '/schedule', blogPostDTO);
@@ -146,7 +146,7 @@ class BlogPostApiService {
 
     /**
      * @param {BlogPostDTO} blogPostDTO 
-     * @returns {Promise<({success: boolean, errors: object|undefined, value: BlogPost|undefined})>}
+     * @returns {Promise<({success: boolean, errors: string[]|object[]|undefined, value: BlogPost|undefined})>}
      */
     async updateDraft(blogPostDTO) {
         const response = await this.#httpClient.put(this.#api.draft, blogPostDTO);
@@ -156,6 +156,24 @@ class BlogPostApiService {
 
         if (!response.value.id)
             throw new Error('Update draft failed to return data');
+
+        response.value = new BlogPost(response.value);
+
+        return response;
+    }
+
+    /** 
+     * @param {BlogPostDTO} blogPostDTO 
+     * @returns {Promise<({success: boolean, errors: string[]|object[]|undefined, value: BlogPost|undefined})>}
+     */
+    async updateBlogPost(blogPostDTO) {
+        const response = await this.#httpClient.put(this.#api.post, blogPostDTO);
+
+        if (!response.success)
+            return response;
+
+        if (!response.value.id)
+            throw new Error('Update blog post failed to return data');
 
         response.value = new BlogPost(response.value);
 
