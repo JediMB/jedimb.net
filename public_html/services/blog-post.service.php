@@ -112,7 +112,7 @@ class BlogPostService extends Singleton {
         return $schedule;
     }
 
-    function updateBlogPost(BlogPostDTO $blogPostDTO) : BlogPost {
+    function updateBlogPost(BlogPostDTO $blogPostDTO) : BlogPost|false {
         $dbPost = $this->getBlogPost($blogPostDTO->id);
 
         if (!$dbPost || !$dbPost->publishedOn)
