@@ -27,14 +27,6 @@ Component::addJSModule();
 
 ?>
 
-<?php if ($post->publishedOn): ?>
-    <div>
-        Published on 
-        <?php Component::include('created-modified-dates', [
-            'createdOn' => $post->publishedOn
-        ]) ?>
-    </div>
-<?php endif ?>
 <div>
     Created on 
     <?php Component::include('created-modified-dates', [
@@ -42,6 +34,12 @@ Component::addJSModule();
         'modifiedOn' => $post->modifiedOn
     ]) ?>
 </div>
+<?php if ($post->publishedOn): ?>
+    <div>
+        Published on 
+        <?php Component::include('created-modified-dates', [ 'createdOn' => $post->publishedOn ]) ?>
+    </div>
+<?php endif ?>
 
 <blog-editor-content class="form-column">
     <?php Component::include('blog/blog-form', [
@@ -58,14 +56,12 @@ Component::addJSModule();
         </button>
 
         <div class="form-spaced-row">
-            <div class="form-save-time">
+            <div class="form-save-time" hidden>
                 <span>Last saved:</span>
-                <span save-time>
-                    <?php $lastSaved = DateTime::toString($post->modifiedOn ?? $post->createdOn) ?>
+                <?php $lastSaved = DateTime::toString($post->modifiedOn ?? $post->createdOn) ?>
                 <date-time save-time date-string="<?= $lastSaved ?>" relative-date="true">
-                        <?= $lastSaved ?>
-                    </date-time>
-                </span>
+                    <?= $lastSaved ?>
+                </date-time>
             </div>
             <buttons-save class="form-matching-buttons">
                 <button id="blog-editor__btn-save"

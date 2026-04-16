@@ -1,14 +1,18 @@
 import BlogFormComponent from "/js/components/blog/blog-form/blog-form.module.js";
 import BlogPostDTO from "/js/models/blog/blog-post.dto.model.js";
 import blogPostService from "/js/services/blog-post.service.js";
+import DateTimeElement from "/js/custom-elements/date-time.element.js";
+import { Listener } from "/js/utilities/emitter.js";
 
 export default class BlogEditorComponent extends HTMLElement {
     #isChanged = false;
     #isValid = false;
 
-    /** @type {BlogFormComponent} */ #blogForm;
-    /** @type {HTMLSpanElement} */ #saveTime;
+    /** @type {DateTimeElement} */ #modifiedOn;
+    /** @type {DateTimeElement} */ #saveTime;
 
+    /** @type {BlogFormComponent} */ #blogForm;
+    
     /** @type {HTMLButtonElement} */ #btnCancel;
     /** @type {HTMLButtonElement} */ #btnSave;
     /** @type {HTMLButtonElement} */ #btnPublish;
@@ -23,6 +27,7 @@ export default class BlogEditorComponent extends HTMLElement {
         this.#btnPublish = buttons.querySelector('#blog-editor__btn-publish');
         this.#btnSave = buttons.querySelector('#blog-editor__btn-save');
 
+        this.#modifiedOn = this.querySelector('.modified-on');
         this.#saveTime = buttons.querySelector('[save-time]');
 
         this.#btnCancel.addEventListener('click', event => {
@@ -148,15 +153,8 @@ export default class BlogEditorComponent extends HTMLElement {
 
     /** @param {Date} saveTime  */
     #updateSaveTime(saveTime) {
-        const now = new Date();
-        const isSavedToday = saveTime.getDate() === now.getDate()
-            && saveTime.getMonth() === now.getMonth()
-            && saveTime.getFullYear() === now.getFullYear();
-
-        if (isSavedToday)
-            this.#saveTime.textContent = saveTime.toLocaleTimeString();
-        else
-            this.#saveTime.textContent = saveTime.toLocaleString();
+        this.#modifiedOn?.setDateTime(saveTime);
+this.#saveTime.setDateTime(saveTime);
     }
 }
 
