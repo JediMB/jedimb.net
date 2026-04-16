@@ -5,6 +5,8 @@ import DateTimeElement from "/js/custom-elements/date-time.element.js";
 import { Listener } from "/js/utilities/emitter.js";
 
 export default class BlogEditorComponent extends HTMLElement {
+    /** @type {Listener} */ #changeListener;
+    /** @type {Listener} */ #validationListener;
     #isChanged = false;
     #isValid = false;
 
@@ -12,7 +14,7 @@ export default class BlogEditorComponent extends HTMLElement {
     /** @type {DateTimeElement} */ #saveTime;
 
     /** @type {BlogFormComponent} */ #blogForm;
-    
+
     /** @type {HTMLButtonElement} */ #btnCancel;
     /** @type {HTMLButtonElement} */ #btnSave;
     /** @type {HTMLButtonElement} */ #btnPublish;
@@ -32,7 +34,7 @@ export default class BlogEditorComponent extends HTMLElement {
 
         this.#btnCancel.addEventListener('click', event => {
             event.preventDefault();
-            this.#cancel();
+            this.#onCancel();
         });
 
         this.#btnPublish?.addEventListener('click', event => {
@@ -45,14 +47,14 @@ export default class BlogEditorComponent extends HTMLElement {
             this.#onSave();
         });
 
-        this.#blogForm.isChanged.subscribe({
+        this.#changeListener = this.#blogForm.isChanged.subscribe({
             next: changed => {
                 this.#isChanged = changed;
                 this.#btnSave.disabled = !changed || !this.#isValid;
             }
-        }, { getCurrent: true });
+        }, { getCurrent: true, getUnchanged: true });
 
-        this.#blogForm.isValid.subscribe({
+        this.#validationListener = this.#blogForm.isValid.subscribe({
             next: valid => {
                 this.#isValid = valid;
 
@@ -61,7 +63,7 @@ export default class BlogEditorComponent extends HTMLElement {
 
                 this.#btnSave.disabled = !valid || !this.#isChanged;
             }
-        }, { getCurrent: true });
+        }, { getCurrent: true, getUnchanged: true });
 
         if (this.#btnPublish) {
             this.#blogForm.isScheduled.subscribe({
@@ -85,7 +87,7 @@ export default class BlogEditorComponent extends HTMLElement {
 
     disconnectedCallback() {}
 
-    #cancel() {
+    #onCancel() {
         if (this.#blogForm.isPublished)
             window.location.assign(this.#blogForm.publishedPath);
         else
@@ -93,68 +95,151 @@ export default class BlogEditorComponent extends HTMLElement {
     }
 
     #onPublish() {
-        // Save changes and either publish or schedule publishing
-        const post = new BlogPostDTO(this.#blogForm.getFormData());
+        this.#btnPublish.disabled = true;
+        this.#btnPublish.toggleAttribute('btn-loading', true);
+        this.#btnSave.disabled = true;
 
-        if (post.scheduledOn) {
-            blogPostService.scheduleDraft(post,
-                value => {
-                    console.log(value);
-                },
-                errors => {
-                    console.error(errors);
-                }
-            );
-            return;
-        }
+        const draftDTO = new BlogPostDTO(this.#blogForm.getFormData());
 
-        blogPostService.publishDraft(post,
-            value => {
-                console.log(value);
-            },
-            errors => {
-                console.error(errors);
-            }
-        );
+        if (draftDTO.scheduledOn)
+            this.#schedulePost(draftDTO);
+        else
+            this.#publishPost(draftDTO);
     }
 
     #onSave() {
-        // Save changes but don't change its publishedOn value
         this.#btnSave.disabled = true;
         this.#btnSave.toggleAttribute('btn-loading', true);
 
         if (this.#btnPublish)
             this.#btnPublish.disabled = true;
 
-        const post = new BlogPostDTO(this.#blogForm.getFormData());
+        const postDTO = new BlogPostDTO(this.#blogForm.getFormData());
 
-        if (this.#blogForm.isPublished) {
-            blogPostService.updateBlogPost(post,
-                value => {
+        if (this.#blogForm.isPublished)
+            this.#updateBlogPost(postDTO);
+        else
+            this.#updateDraft(postDTO);
+    }
 
-                },
-                errors => {
-
-                }
-            );
-
-            return;
-        }
-
-        blogPostService.saveDraft(post,
+    /** @param {BlogPostDTO} draftDTO  */
+    #publishPost(draftDTO) {
+        blogPostService.publishDraft(draftDTO,
             value => {
+                this.#btnPublish.removeAttribute('btn-loading');
+                
+                // TODO: Post published notification
 
+                setTimeout(() => window.location.assign('/'), 2000);
             },
             errors => {
-
+                if (this.#blogForm.error(errors)) {
+                    // TODO: Incorrect input notification
+                }
+                else {
+                    // TODO: Errors string content notification
+                }
+                this.#btnPublish.removeAttribute('btn-loading');
             }
         );
+    }
+
+    /** @param {BlogPostDTO} draftDTO  */
+    #schedulePost(draftDTO) {
+        blogPostService.scheduleDraft(draftDTO,
+            value => {
+                this.#btnPublish.removeAttribute('btn-loading');
+                
+                // TODO: Post scheduled notification
+
+                setTimeout(() => window.location.assign('/'), 2000);
+            },
+            errors => {
+                if (this.#blogForm.error(errors)) {
+                    // TODO: Incorrect input notification
+                }
+                else {
+                    // TODO: Errors string content notification
+                }
+                this.#btnPublish.removeAttribute('btn-loading');
+            }
+        );
+    }
+
+    /** @param {BlogPostDTO} blogPostDTO  */
+    #updateBlogPost(blogPostDTO) {
+        blogPostService.updateBlogPost(blogPostDTO,
+            value => {
+                this.#changeListener.pause();
+                this.#validationListener.pause();
+                this.#blogForm.updateForm(value);
+
+                // TODO: Post updated notification
+
+                const saveTime = value.modifiedOn ?? value.createdOn;
+                this.#updateSaveTime(saveTime);
+                this.#saveTime.parentElement.removeAttribute('hidden');
+
+                this.#btnSave.removeAttribute('btn-loading');
+                if (this.#btnPublish)
+                    this.#btnPublish.disabled = false;
+                setTimeout(() => {
+                    this.#changeListener.unpause();
+                    this.#validationListener.unpause();
+                }, 500);
+            },
+            errors => {
+                if (this.#blogForm.error(errors)) {
+                    // TODO: Incorrect input notification
+                }
+                else {
+                    // TODO: Errors string content notification
+                }
+                this.#btnSave.removeAttribute('btn-loading');
+            }
+        );
+
+    }
+
+    /** @param {BlogPostDTO} draftDTO  */
+    #updateDraft(draftDTO) {
+        blogPostService.saveDraft(draftDTO,
+            value => {
+                this.#changeListener.pause();
+                this.#validationListener.pause();
+                this.#blogForm.updateForm(value);
+
+                // TODO: Draft updated notification
+
+                const saveTime = value.modifiedOn ?? value.createdOn;
+                this.#updateSaveTime(saveTime);
+                this.#saveTime.parentElement.removeAttribute('hidden');
+
+                this.#btnSave.removeAttribute('btn-loading');
+                if (this.#btnPublish)
+                    this.#btnPublish.disabled = false;
+                setTimeout(() => {
+                    this.#changeListener.unpause();
+                    this.#validationListener.unpause();
+                }, 500);
+            },
+            errors => {
+                if (this.#blogForm.error(errors)) {
+                    // TODO: Incorrect input notification
+                }
+                else {
+                    // TODO: Errors string content notification
+                }
+                this.#btnSave.removeAttribute('btn-loading');
+            }
+        );
+        
     }
 
     /** @param {Date} saveTime  */
     #updateSaveTime(saveTime) {
         this.#modifiedOn?.setDateTime(saveTime);
-this.#saveTime.setDateTime(saveTime);
+        this.#saveTime.setDateTime(saveTime);
     }
 }
 

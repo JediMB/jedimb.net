@@ -12,7 +12,7 @@ export default class BlogFormComponent extends HTMLElement {
     #isScheduled = Object.freeze(new Emitter(false));
     #isValid = Object.freeze(new Emitter(false));
 
-    /** @type {HTMLInputElement[]} */ #inputsToValidate;
+    /** @type {HTMLInputElement[]} */ #textInputs;
     /** @type {HTMLInputElement[]} */ #nonScheduleOptions;
 
     /** @type {HTMLFormElement} */ #form;
@@ -36,7 +36,7 @@ export default class BlogFormComponent extends HTMLElement {
         inputs['title'].addEventListener('input', () => inputs['permalink'].defaultValue = this.#formatPermalinkTitle(inputs['title'].value));
         inputs['title'].addEventListener('change', () => inputs['title'].value = inputs['title'].value.trim());
 
-        this.#inputsToValidate = [
+        this.#textInputs = [
             inputs['title'],
             inputs['description'],
             inputs['mastolink']
@@ -56,7 +56,7 @@ export default class BlogFormComponent extends HTMLElement {
             );
             this.querySelector(`#${formId}__reset-permalink`).addEventListener('click', () => inputs['permalink'].value = inputs['permalink'].defaultValue);
             
-            this.#inputsToValidate.push(
+            this.#textInputs.push(
                 inputs['permalink'],
                 inputs['scheduledDate'],
                 inputs['scheduledTime']
@@ -88,10 +88,16 @@ export default class BlogFormComponent extends HTMLElement {
             inputs['scheduledDate'].addEventListener('change', () => this.#setPermadate(inputs['scheduledDate'].value.replaceAll('-', '/')));
         }
 
-        for (const field of this.#inputsToValidate) {
-            field.addEventListener('input', () => this.#validation());
+        for (const field of this.#textInputs) {
+            field.addEventListener('input', () => {
+                this.#isChanged.setValue(true);
+                this.#validation();
+            });
         }
-        this.#textEditor.content.onChange = () => this.#validation();
+        this.#textEditor.content.onChange = () => {
+            this.#isChanged.setValue(true);
+            this.#validation();
+        };
         
         this.#validation();
 
@@ -301,7 +307,7 @@ export default class BlogFormComponent extends HTMLElement {
         const textEditorValid = this.#textEditor.content.text.length || this.#textEditor.content.media.length;
 
         const isValid = textEditorValid
-            && this.#inputsToValidate.every(input => input.checkValidity());
+            && this.#textInputs.every(input => input.checkValidity());
 
         this.#isValid.setValue(isValid);
     }

@@ -1,8 +1,11 @@
 import BlogFormComponent from "/js/components/blog/blog-form/blog-form.module.js";
 import BlogPostDTO from "/js/models/blog/blog-post.dto.model.js";
 import blogPostService from "/js/services/blog-post.service.js";
+import { Listener } from "/js/utilities/emitter.js";
 
 class BlogHeadComponent extends HTMLElement {
+    /** @type {Listener} */ #validationListener;
+
     /** @type {HTMLButtonElement} */ #btnAddPost;
     /** @type {HTMLButtonElement} */ #btnCancelPost;
     /** @type {HTMLButtonElement} */ #btnPublishPost;
@@ -58,7 +61,7 @@ class BlogHeadComponent extends HTMLElement {
             }
         }, { getCurrent: true });
 
-        blogForm.isValid.subscribe({
+        this.#validationListener = blogForm.isValid.subscribe({
             next: valid => {
                 this.#btnPublishPost.disabled = !valid;
                 this.#btnSaveDraft.disabled = !valid;
@@ -154,8 +157,8 @@ class BlogHeadComponent extends HTMLElement {
     #saveDraft(draft) {
         blogPostService.saveDraft(draft,
             value => {
+                this.#validationListener.pause();
                 this.#blogForm.updateForm(value);
-                this.#btnSaveDraft.disabled = true;
 
                 // TODO: Draft saved notification
 
@@ -165,6 +168,8 @@ class BlogHeadComponent extends HTMLElement {
 
                 this.#btnSaveDraft.removeAttribute('btn-loading');
                 this.#btnPublishPost.disabled = false;
+                setTimeout(() => this.#validationListener.unpause(), 500);
+                
             },
             errors => {
                 if (this.#blogForm.error(errors)) {
