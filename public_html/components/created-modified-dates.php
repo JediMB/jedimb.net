@@ -8,20 +8,26 @@ use Exception;
 use Utilities\Component;
 use Utilities\DateTime;
 
+/** @var bool $relativeDate */
+
 if (empty($createdOn))
     throw new Exception('Created/Modified Dates component requires createdOn variable');
+
+$relativeDate ??= false;
+if (!is_bool($relativeDate))
+    throw new Exception('Non-boolean value provided for relativeDate variable');
 
 Component::noContainer();
 
 $createdString = DateTime::toString($createdOn);
-$relativeDate = empty($relativeDate) ? 'false' : 'true';
- 
+$relativeDateString = $relativeDate ? 'true' : 'false';
+
 ?>
 
 <span>
     <date-time class="created-on"
-        server-time="<?= $createdString ?>"
-        relative-date="<?= $relativeDate ?>"
+        date-string="<?= $createdString ?>"
+        relative-date="<?= $relativeDateString ?>"
         >
         <?=  $createdString ?>
     </date-time>
@@ -32,8 +38,8 @@ $relativeDate = empty($relativeDate) ? 'false' : 'true';
     <span class="weak">
         &ndash; Last modified 
         <date-time class="modified-on"
-            server-time="<?= $modifiedString ?>"
-            relative-date="<?= $relativeDate ?>"
+            date-string="<?= $modifiedString ?>"
+            relative-date="<?= $relativeDateString ?>"
             >
             <?= $modifiedString ?>
         </date-time>.
