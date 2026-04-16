@@ -111,6 +111,8 @@ export class Listener {
     #wantsOnce = false;
     #wantsUnchanged = false;
 
+    #paused = false;
+
     get wantsUnchanged() {
         return this.#wantsUnchanged;
     }
@@ -138,12 +140,11 @@ export class Listener {
             this.#onNextIndexed = nextIndexed;
     }
 
-    unsubscribe() {
-        this.#emitter.unsubscribe(this);
-    }
-
     /** @param {T} value  */
     next(value) {
+        if (this.#paused)
+            return;
+
         this.#onNext?.call(this, value);
         this.#wantsOnce && this.unsubscribe();
     }
@@ -153,7 +154,22 @@ export class Listener {
      * @param {any} value 
      */
     nextIndexed(index, value) {
+        if (this.#paused)
+            return;
+
         this.#onNextIndexed?.call(this, index, value);
         this.#wantsOnce && this.unsubscribe();
+    }
+
+    pause() {
+        this.#paused = true;
+    }
+
+    unpause() {
+        this.#paused = false;
+    }
+
+    unsubscribe() {
+        this.#emitter.unsubscribe(this);
     }
 }
