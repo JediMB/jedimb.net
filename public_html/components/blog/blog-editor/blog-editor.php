@@ -62,7 +62,7 @@ Component::addJSModule();
                 <span>Last saved:</span>
                 <span save-time>
                     <?php $lastSaved = DateTime::toString($post->modifiedOn ?? $post->createdOn) ?>
-                    <date-time server-time="<?= $lastSaved ?>" relative-date="true">
+                <date-time save-time date-string="<?= $lastSaved ?>" relative-date="true">
                         <?= $lastSaved ?>
                     </date-time>
                 </span>

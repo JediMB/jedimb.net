@@ -194,7 +194,7 @@ customElements.define('blog-view-component', class BlogViewComponent extends HTM
         const createdOn = clone.querySelector('.created-on');
         let dateString = formatDate(newBlogPost.createdOn)
         createdOn.textContent = dateString;
-        createdOn.setAttribute('server-time', dateString);
+        createdOn.setAttribute('date-string', dateString);
         createdOn.title = dateString;
 
         /** @type {HTMLElement} */
@@ -202,7 +202,7 @@ customElements.define('blog-view-component', class BlogViewComponent extends HTM
         if (newBlogPost.modifiedOn) {
             dateString = formatDate(newBlogPost.modifiedOn);
             modifiedOn.textContent = dateString;
-            modifiedOn.setAttribute('server-time', dateString);
+            modifiedOn.setAttribute('date-string', dateString);
             modifiedOn.title = dateString;
         }
         else

@@ -1,38 +1,44 @@
 import { formatDate } from "/js/utilities/format-date.utility.js";
 
-export class DateTimeElement extends HTMLElement {
-    #self;
-
-    constructor() {
-        const component = super();
-        this.#self = component;
-    }
+export default class DateTimeElement extends HTMLElement {
+    constructor() { super(); }
 
     connectedCallback() {
-        /** @type DateTimeElement */
-        const self = this.#self;
-
-        if (!self.hasAttribute('server-time'))
+        if (!this.hasAttribute('date-string'))
             return;
 
+        this.#formatDateTime();
+    }
+
+    disconnectedCallback() {}
+
+    connectedMoveCallback() {}
+
+    /** @param {Date} date  */
+    setDateTime(date) {
+        this.setAttribute('date-string', formatDate(date));
+        this.#formatDateTime();
+    }
+
+    #formatDateTime() {
         try {
             const today = new Date();
-            const parsedDate = new Date(self.getAttribute('server-time'));
+            const parsedDate = new Date(this.getAttribute('date-string'));
 
-            self.title = formatDate(parsedDate);
+            this.title = formatDate(parsedDate);
 
-            const useRelativeDate = self.hasAttribute('relative-date') && self.getAttribute('relative-date') !== 'false';
+            const useRelativeDate = this.hasAttribute('relative-date') && this.getAttribute('relative-date') !== 'false';
             
             if(useRelativeDate) {
                 const hourDifference = (today - parsedDate) / (1000 * 60 * 60);
 
                 if (hourDifference < 1) {
-                    self.textContent = Math.floor(hourDifference * 60) + 'm ago';
+                    this.textContent = Math.floor(hourDifference * 60) + 'm ago';
                     return;
                 }
 
                 if (hourDifference < 24) {
-                    self.textContent = Math.floor(hourDifference) + 'h ago';
+                    this.textContent = Math.floor(hourDifference) + 'h ago';
                     return;
                 }
 
@@ -41,21 +47,17 @@ export class DateTimeElement extends HTMLElement {
                 const dayDifference = Math.round((today - startOfDate) / (1000 * 60 * 60 * 24));
 
                 if (dayDifference === 1) {
-                    self.textContent = 'Yesterday, ' + parsedDate.toLocaleTimeString();
+                    this.textContent = 'Yesterday, ' + parsedDate.toLocaleTimeString();
                     return;
                 }
             }
 
-            self.textContent = parsedDate.toLocaleString();
+            this.textContent = parsedDate.toLocaleString();
         }
         catch (e) {
-            self.textContent = 'Error parsing date';
+            this.textContent = 'Error parsing date';
         }
     }
-
-    disconnectedCallback() {}
-
-    connectedMoveCallback() {}
 }
 
 customElements.define('date-time', DateTimeElement);
