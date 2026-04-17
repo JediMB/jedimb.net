@@ -54,8 +54,6 @@ class BlogPost extends DBBase {
     public static function update(\Models\DB\BlogPost &$object, BlogPost $source, ?int $userId = null) {
         if ($object->id !== $source->id)
             throw new InvalidArgumentException('Incorrect Blog Post id in update call');
-        if ($object->publishedOn && ($object->permalink !== $source->permalink) )
-            throw new InvalidArgumentException('Incorrect permalink for published Blog Post');
 
         $object->title = $source->title;
         $object->description = $source->description;
@@ -64,6 +62,9 @@ class BlogPost extends DBBase {
         $object->mastolink = $source->mastolink;
         $object->isPinned = $source->isPinned;
         $object->isHidden = $source->isHidden;
+
+        if (!$object->publishedOn)
+            $object->permalink = $source->permalink;
 
         if ($userId)
             $object->userId = $userId;
