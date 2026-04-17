@@ -54,10 +54,10 @@ class BlogPostDBService extends BaseDBService {
             $nullChecks = [];
 
             if ($visibility !== Visibility::Any)
-                $columnValues = [ 'is_hidden' => $visibility === Visibility::Hidden ];
+                $columnValues['is_hidden'] = $visibility === Visibility::Hidden;
 
             if ($publishedStatus !== PublishedStatus::Any)
-                $nullChecks = [ 'published_on' => $publishedStatus === PublishedStatus::Unpublished ];
+                $nullChecks['published_on'] = $publishedStatus === PublishedStatus::Unpublished;
 
             $posts = $this->dbService->selectView('blog_posts_short', $columnValues, $nullChecks, limit: $limit, offset: $offset);
             
@@ -77,18 +77,19 @@ class BlogPostDBService extends BaseDBService {
      */
     public function getBlogPost(int|string $identifier, PublishedStatus $publishedStatus = PublishedStatus::Published, Visibility $visibility = Visibility::Visible): BlogPost|false {
         try {
+            $columnValues = [];
+            $nullChecks = [];
+
             if (is_int($identifier))
-                $columnValues = [ 'id' => $identifier ];
+                $columnValues['id'] = $identifier;
             else
-                $columnValues = [ 'permalink' => $identifier ];
+                $columnValues['permalink'] = $identifier;
 
             if ($visibility !== Visibility::Any)
-                $columnValues += [ 'is_hidden' => $visibility === Visibility::Hidden ];
+                $columnValues['is_hidden'] = $visibility === Visibility::Hidden;
 
-            if ($publishedStatus === PublishedStatus::Any)
-                $nullChecks = [];
-            else
-                $nullChecks = [ 'published_on' => $publishedStatus === PublishedStatus::Unpublished ];
+            if ($publishedStatus !== PublishedStatus::Any)
+                $nullChecks['published_on'] = $publishedStatus === PublishedStatus::Unpublished;
 
             $post = $this->dbService->selectByColumnValues('blog_post', $columnValues, $nullChecks);
 
@@ -102,16 +103,18 @@ class BlogPostDBService extends BaseDBService {
         }
     }
 
-    public function getCount(PublishedStatus $publishedStatus = PublishedStatus::Published) : int {
+    public function getCount(PublishedStatus $publishedStatus = PublishedStatus::Published, Visibility $visibility = Visibility::Visible) : int {
         try {
-            if ($publishedStatus === PublishedStatus::Published)
-                $nullChecks = [ 'published_on' => false];
-            else if ($publishedStatus === PublishedStatus::Unpublished)
-                $nullChecks = [ 'is_published' => true ];
-            else
-                $nullChecks = [];
+            $columnValues = [];
+            $nullChecks = [];
 
-            return $this->dbService->selectCount('blog_post', [], $nullChecks);
+            if ($columnValues !== Visibility::Any)
+                $columnValues['is_hidden'] = $visibility === Visibility::Hidden;
+
+            if ($publishedStatus !== PublishedStatus::Any)
+                $nullChecks['published_on'] = $publishedStatus === PublishedStatus::Unpublished;
+
+            return $this->dbService->selectCount('blog_post', $columnValues, $nullChecks);
         }
         catch (PDOException $e) {
             throw new Exception('Database error: ' . $e->getMessage());

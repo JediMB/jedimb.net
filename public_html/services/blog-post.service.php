@@ -52,7 +52,7 @@ class BlogPostService extends Singleton {
 
         if ($pageSize < 1) $pageSize = 1;
 
-        $postCount = $this->getCount($publishedStatus);
+        $postCount = $this->getCount($publishedStatus, $visibility);
         $pageCount = (int)ceil($postCount / $pageSize);
 
         $offset = ($page - 1) * $pageSize;
@@ -68,8 +68,8 @@ class BlogPostService extends Singleton {
         ];
     }
 
-    function getCount(PublishedStatus $publishedStatus = PublishedStatus::Published) : int {
-        return $this->blogPostDbService->getCount($publishedStatus);
+    function getCount(PublishedStatus $publishedStatus = PublishedStatus::Published, Visibility $visibility = Visibility::Visible) : int {
+        return $this->blogPostDbService->getCount($publishedStatus, $visibility);
     }
 
     /** @return (array{'blogPosts': BlogPost[], 'pagination': Pagination}) */
