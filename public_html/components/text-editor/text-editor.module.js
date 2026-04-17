@@ -258,6 +258,7 @@ export class TextEditorComponent extends HTMLElement {
      * @param {string[]} options 
     */
     #adaptOptionsPanel(editorElement, options) {
+        console.log('adapting options panel:', editorElement, options);
         this.#optionsElement = editorElement;
 
         for (const form of this.#optionForms) {
@@ -1015,6 +1016,9 @@ export class TextEditorComponent extends HTMLElement {
 
         const buttons = this.#optionsButtons;
         for (const btnName in buttons) {
+            if (btnName === 'delete')
+                continue;
+
             buttons[btnName].parentElement.hidden = true;
             buttons[btnName].disabled = true;
         }
