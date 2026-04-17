@@ -77,7 +77,8 @@ define('REGEX_PHP', [
     'permalink-title' => '/^[a-z\d\-]*$/',
     'permalink-date-title' => '/^\/(\d{4}\/\d{2}\/\d{2})\/([a-z\d\-]*)$/',
     'email' => '/(?!.*\.{2,})^(mailto:)?[\w\-\.\%\/\+]{1,64}\@[\w\.]{1,64}\.[a-zA-Z0-9\-]{1,32}$/',
-    'url' => '/^(((ftp|http|https):\/\/)|(\/)|(..\/))(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-\/]))?$/'
+    'url' => '/^(((ftp|http|https):\/\/)|(\/)|(..\/))(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-\/]))?$/',
+    'pagebreak-tag' => '/<hr page-break(?:="")?>/'
 ]);
 
 // Copied and pasted with the front-slashes removed to avoid frequent trimming
@@ -90,12 +91,14 @@ define('REGEX_HTML', [
     'permalink-title' => '^[a-z\d\-]*$',
     'permalink-date-title' => '^\/(\d{4}\/\d{2}\/\d{2})\/([a-z\d\-]*)$',
     'email' => '(?!.*\.{2,})^(mailto:)?[\w\-\.\%\/\+]{1,64}\@[\w\.]{1,64}\.[a-zA-Z0-9\-]{1,32}$',
-    'url' => '^(((ftp|http|https):\/\/)|(\/)|(..\/))(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-\/]))?$'
+    'url' => '^(((ftp|http|https):\/\/)|(\/)|(..\/))(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-\/]))?$',
+    'pagebreak-tag' => '<hr page-break(?:="")?>'
 ]);
 
 define('META_DESCRIPTION', "JediMB's indie website");
 define('META_KEYWORDS', 'indie, programming, games, blog, webdev');
 
+define('TEXT_BLOG_POST_READ_MORE', 'Read more...');
 define('TEXT_INVALID_REQUEST', 'Invalid request method');
 define('TEXT_MALFORMED_REQUEST', 'Malformed request body');
 define('TEXT_IMAGE_SIZE_LIMIT', 'Uploaded image exceeds size limit');

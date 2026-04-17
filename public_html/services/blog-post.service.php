@@ -74,11 +74,33 @@ class BlogPostService extends Singleton {
 
     /** @return (array{'blogPosts': BlogPost[], 'pagination': Pagination}) */
     function getPublicBlogPosts(int $page = 1, ?int $pageSize = null) : array {
-        return $this->getBlogPosts($page,$pageSize, PublishedStatus::Published, Visibility::Visible);
+        $result = $this->getBlogPosts($page,$pageSize, PublishedStatus::Published, Visibility::Visible);
+
+        $blogPosts = $result['blogPosts'];
+
+        $text = TEXT_BLOG_POST_READ_MORE;
+        foreach ($blogPosts as $blogPost) {
+            $link = '/' . PATH_BLOG_PREFIX . $blogPost->permalink;
+            $html = <<<HTML
+                <div>
+                    <a href="$link#page-break">$text</a>
+                </div>
+                HTML;
+            $blogPost->contentShort = preg_replace(REGEX_PHP['pagebreak-tag'], $html, $blogPost->contentShort, 1);
+        }
+
+        return $result;
     }
 
     function getPublicBlogPost(int|string $identifier) : BlogPost|false {
-        return $this->blogPostDbService->getBlogPost($identifier, PublishedStatus::Published, Visibility::Visible);
+        $blogPost = $this->blogPostDbService->getBlogPost($identifier, PublishedStatus::Published, Visibility::Visible);
+
+        if (!$blogPost)
+            return false;
+
+        $blogPost->contentShort = preg_replace(REGEX_PHP['pagebreak-tag'], '<div id="page-break"></div>', $blogPost->contentShort, 1);
+
+        return $blogPost;
     }
 
     /** @return (array{'blogPost': BlogPost, 'modifiedOn': \DateTime}) */
