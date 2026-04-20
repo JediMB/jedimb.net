@@ -63,9 +63,11 @@ try {
         case 'PATCH':
             $action ??= '';
 
+            $response = $sessionService->getInvalidSubmissionResponse($id, [ UserPermission::Editing ]);
+
             switch ($action) {
                 case 'hide':
-                    if ( ($response = $sessionService->getInvalidSubmissionResponse($id, [ UserPermission::Editing ])) )
+                    if ($response)
                         return $response;
 
                     $success = $service->toggleHidden($id, true);
@@ -76,7 +78,7 @@ try {
                     return Response::Success($success);
 
                 case 'pin':
-                    if ( ($response = $sessionService->getInvalidSubmissionResponse($id, [ UserPermission::Editing ])) )
+                    if ($response)
                         return $response;
 
                     $success = $service->togglePinned($id, true);
@@ -87,7 +89,7 @@ try {
                     return Response::Success($success);
 
                 case 'unhide':
-                    if ( ($response = $sessionService->getInvalidSubmissionResponse($id, [ UserPermission::Editing ])) )
+                    if ($response)
                         return $response;
 
                     $success = $service->toggleHidden($id, false);
@@ -98,7 +100,7 @@ try {
                     return Response::Success($success);
 
                 case 'unpin':
-                    if ( ($response = $sessionService->getInvalidSubmissionResponse($id, [ UserPermission::Editing ])) )
+                    if ($response)
                         return $response;
 
                     $success = $service->togglePinned($id, false);
