@@ -9,7 +9,7 @@ class HttpClient {
     /**
      * @param {Response} response 
      * @param {string} httpMethod 
-     * @returns {Promise<{success: boolean, errors: any[]|string[], value: any}>}
+     * @returns {Promise<{success: boolean, errors?: string[]|object[], value?: any}>}
      */
     async #responseHandling(response, api, httpMethod) {
         if (!response.ok) {
@@ -37,7 +37,7 @@ class HttpClient {
      * Requests data from the API
      * @param {string} api 
      * @param {(number|string)[]} args 
-     * @returns {Promise<{success: boolean, errors: any[]|string[], value: any}>}
+     * @returns {Promise<{success: boolean, errors?: string[]|object[], value?: any}>}
      */
     async get(api, ...args) {
         const queryString = args ? `/${args.join('/')}` : '';
@@ -56,7 +56,7 @@ class HttpClient {
      * Submits new data to the API
      * @param {string} api 
      * @param {any} body 
-     * @returns {Promise<{success: boolean, errors: any[]|string[], value: any}>}
+     * @returns {Promise<{success: boolean, errors?: string[]|object[], value?: any}>}
      */
     async post(api, body = null) {
         const response = await fetch(this.#baseApiUrl + api, {
@@ -76,7 +76,7 @@ class HttpClient {
      * Sends a full object update to the API
      * @param {string} api 
      * @param {any} body 
-     * @returns {Promise<{success: boolean, errors: any[]|string[], value: any}>}
+     * @returns {Promise<{success: boolean, errors?: string[]|object[], value?: any}>}
      */
     async put(api, body) {
         const response = await fetch(this.#baseApiUrl + api, {
@@ -96,7 +96,7 @@ class HttpClient {
      * Sends a partial object update to the API
      * @param {string} api 
      * @param {any} body 
-     * @returns {Promise<{success: boolean, errors: any[]|string[], value: any}>}
+     * @returns {Promise<{success: boolean, errors?: string[]|object[], value?: any}>}
      */
     async patch(api, body) {
         const response = await fetch(this.#baseApiUrl + api, {
@@ -116,7 +116,7 @@ class HttpClient {
      * Requests the deletion of data from the API
      * @param {string} api 
      * @param {number|string} identifier
-     * @returns {Promise<{success: boolean, errors: any[]|string[], value: any}>}
+     * @returns {Promise<({success: boolean, errors?: string[]|object[], value?: any})>}
      */
     async delete(api, identifier) {
         if (!identifier)
