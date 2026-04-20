@@ -162,9 +162,21 @@ customElements.define('blog-view-component', class BlogViewComponent extends HTM
      */
     #assignButtonActions(buttons, id = null) {
         for (const button of buttons) {
+            const postId = id ?? Number(button.dataset.id);
+
             switch (button.getAttribute('post-action')) {
                 case 'delete':
-                    button.addEventListener('click', () => window.alert(`delete: ${id ?? button.dataset.id}`));
+                    button.addEventListener('click', () => {
+                        blogPostService.deleteBlogPost(postId,
+                            next => {
+                                // TODO: Success notification
+                                this.#loadPageContent();
+                            },
+                            error => {
+                                // TODO: Error notification
+                            }
+                        );
+                    });
                     continue;
                 case 'pin':
                     button.addEventListener('click', () => window.alert(`pin: ${id ?? button.dataset.id}`));
@@ -335,7 +347,7 @@ customElements.define('blog-view-component', class BlogViewComponent extends HTM
      * @param {boolean} isHistory
      * @param {() =>  void} next 
      */
-    #loadPageContent(page, isHistory = false, next = undefined) {
+    #loadPageContent(page = this.#pagination.getValue().page, isHistory = false, next = undefined) {
         blogPostService.getBlogPosts(page, this.#pagination.getValue().pageSize,
             (blogPosts, pagination) => {
                 if (!isHistory)
