@@ -98,7 +98,7 @@ class HttpClient {
      * @param {any} body 
      * @returns {Promise<{success: boolean, errors?: string[]|object[], value?: any}>}
      */
-    async patch(api, body) {
+    async patch(api, body = null) {
         const response = await fetch(this.#baseApiUrl + api, {
             method: 'PATCH',
             body: JSON.stringify(body)
