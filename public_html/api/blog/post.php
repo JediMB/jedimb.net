@@ -18,16 +18,37 @@ use Utilities\Response;
 $service = BlogPostService::getInstance(); /** @var BlogPostService $service */
 $sessionService = SessionService::getInstance(); /** @var SessionService $sessionService */
 
-if (isset($GLOBALS['api_params'][0]) && is_numeric($GLOBALS['api_params'][0]))
-    $id = (int)($GLOBALS['api_params'][0]);
+if ( isset($GLOBALS['api_params']) && ($paramCount = count($GLOBALS['api_params'])) ) {
+    if (is_numeric($GLOBALS['api_params'][0])) {
+        $id = (int)($GLOBALS['api_params'][0]);
+
+        if ($paramCount === 2)
+            $action = (string)($GLOBALS['api_params'][1]);
+    }
+}
 
 $input = json_decode(file_get_contents('php://input'), true);
 
 try {
     switch ( $_SERVER['REQUEST_METHOD'] ) {
+        case 'DELETE':
+            if (empty($id))
+                return Response::BadRequest('No id in blog post DELETE request');
+
+            if ( ($response = $sessionService->getInvalidSubmissionResponse($id, [ UserPermission::Deleting ])) )
+                return $response;
+
+            $post = $service->deleteBlogPost($id);
+
+            if (!$post)
+                return Response::Error(['Invalid blog post id, or blog post already deleted']);
+
+            return Response::Success($post);
+
+
         case 'GET':
             if (empty($id))
-                return Response::BadRequest('No id in blog post request');
+                return Response::BadRequest('No id in blog post GET request');
 
             if ($sessionService->hasPermissions([ UserPermission::Editing ]))
                 $post = $service->getBlogPost($id);
@@ -38,6 +59,59 @@ try {
                 return Response::BadRequest('Invalid blog post id, or insufficient permissions');
 
             return Response::Success($post);
+
+        case 'PATCH':
+            $action ??= '';
+
+            switch ($action) {
+                case 'hide':
+                    if ( ($response = $sessionService->getInvalidSubmissionResponse($id, [ UserPermission::Editing ])) )
+                        return $response;
+
+                    $success = $service->toggleHidden($id, true);
+
+                    if (!$success)
+                        return Response::Error(['Invalid blog post id']);
+
+                    return Response::Success($success);
+
+                case 'pin':
+                    if ( ($response = $sessionService->getInvalidSubmissionResponse($id, [ UserPermission::Editing ])) )
+                        return $response;
+
+                    $success = $service->togglePinned($id, true);
+
+                    if (!$success)
+                        return Response::Error(['Invalid blog post id']);
+
+                    return Response::Success($success);
+
+                case 'unhide':
+                    if ( ($response = $sessionService->getInvalidSubmissionResponse($id, [ UserPermission::Editing ])) )
+                        return $response;
+
+                    $success = $service->toggleHidden($id, false);
+
+                    if (!$success)
+                        return Response::Error(['Invalid blog post id']);
+
+                    return Response::Success($success);
+
+                case 'unpin':
+                    if ( ($response = $sessionService->getInvalidSubmissionResponse($id, [ UserPermission::Editing ])) )
+                        return $response;
+
+                    $success = $service->togglePinned($id, false);
+
+                    if (!$success)
+                        return Response::Error(['Invalid blog post id']);
+
+                    return Response::Success($success);
+                
+                default:
+                    return Response::BadRequest('Malformed patch request');
+                    
+            }
 
         case 'POST':
             if ( ($response = $sessionService->getInvalidSubmissionResponse($input, [ UserPermission::Publishing ])) )

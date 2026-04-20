@@ -36,11 +36,15 @@ class BlogPostService extends Singleton {
         $this->tableModifiedService = TableModifiedService::getInstance();
     }
 
-    function createDraft(BlogPostDTO $draftDTO, int $userId) : BlogPost {
+    public function createDraft(BlogPostDTO $draftDTO, int $userId) : BlogPost {
         return $this->blogPostDbService->createBlogPost($draftDTO, $userId, false);
     }
 
-    function getBlogPost(int $id) : BlogPost|false {
+    public function deleteBlogPost(int $id) : BlogPost|false {
+        return $this->blogPostDbService->deleteBlogPost($id);
+    }
+
+    public function getBlogPost(int $id) : BlogPost|false {
         return $this->blogPostDbService->getBlogPost($id, PublishedStatus::Any);
     }
 
@@ -68,12 +72,12 @@ class BlogPostService extends Singleton {
         ];
     }
 
-    function getCount(PublishedStatus $publishedStatus = PublishedStatus::Published, Visibility $visibility = Visibility::Visible) : int {
+    public function getCount(PublishedStatus $publishedStatus = PublishedStatus::Published, Visibility $visibility = Visibility::Visible) : int {
         return $this->blogPostDbService->getCount($publishedStatus, $visibility);
     }
 
     /** @return (array{'blogPosts': BlogPost[], 'pagination': Pagination}) */
-    function getPublicBlogPosts(int $page = 1, ?int $pageSize = null) : array {
+    public function getPublicBlogPosts(int $page = 1, ?int $pageSize = null) : array {
         $result = $this->getBlogPosts($page,$pageSize, PublishedStatus::Published, Visibility::Visible);
 
         $blogPosts = $result['blogPosts'];
@@ -92,7 +96,7 @@ class BlogPostService extends Singleton {
         return $result;
     }
 
-    function getPublicBlogPost(int|string $identifier) : BlogPost|false {
+    public function getPublicBlogPost(int|string $identifier) : BlogPost|false {
         $blogPost = $this->blogPostDbService->getBlogPost($identifier, PublishedStatus::Published, Visibility::Visible);
 
         if (!$blogPost)
@@ -104,7 +108,7 @@ class BlogPostService extends Singleton {
     }
 
     /** @return (array{'blogPost': BlogPost, 'modifiedOn': \DateTime}) */
-    function publishBlogPost(BlogPostDTO $blogPostDTO, int $userId) : array {
+    public function publishBlogPost(BlogPostDTO $blogPostDTO, int $userId) : array {
         $post = $this->blogPostDbService->createBlogPost($blogPostDTO, $userId, true);
         $modifiedOn = $this->tableModifiedService->createOrUpdateTableModifiedDate('blog_post');
 
@@ -114,11 +118,11 @@ class BlogPostService extends Singleton {
         ];
     }
 
-    function publishDraft(int $draftId) : BlogPost|false {
+    public function publishDraft(int $draftId) : BlogPost|false {
         return $this->blogPostDbService->publishDraft($draftId);
     }
 
-    function scheduleBlogPost(BlogPostDTO $blogPostDTO, int $userId) : BlogPostSchedule {
+    public function scheduleBlogPost(BlogPostDTO $blogPostDTO, int $userId) : BlogPostSchedule {
         $post = $this->blogPostDbService->createBlogPost($blogPostDTO, $userId, false);
 
         if (!$post)
@@ -134,7 +138,15 @@ class BlogPostService extends Singleton {
         return $schedule;
     }
 
-    function updateBlogPost(BlogPostDTO $blogPostDTO) : BlogPost|false {
+    public function toggleHidden(int $id, bool $status) : bool {
+        return $this->blogPostDbService->toggleHidden($id, $status);
+    }
+
+    public function togglePinned(int $id, bool $status) : bool {
+        return $this->blogPostDbService->togglePinned($id, $status);
+    }
+
+    public function updateBlogPost(BlogPostDTO $blogPostDTO) : BlogPost|false {
         $dbPost = $this->getBlogPost($blogPostDTO->id);
 
         if (!$dbPost || !$dbPost->publishedOn)
@@ -145,7 +157,7 @@ class BlogPostService extends Singleton {
         return $this->blogPostDbService->updateBlogPost($dbPost);
     }
 
-    function updateAndPublishDraft(BlogPostDTO $draftDTO, int $userId) : BlogPost|false {
+    public function updateAndPublishDraft(BlogPostDTO $draftDTO, int $userId) : BlogPost|false {
         $updatedDraft = $this->updateDraft($draftDTO, $userId);
 
         if (!$updatedDraft)
@@ -154,7 +166,7 @@ class BlogPostService extends Singleton {
         return $this->publishDraft($updatedDraft->id);
     }
 
-    function updateAndScheduleDraft(BlogPostDTO $draftDTO, int $userId) : BlogPostSchedule|false {
+    public function updateAndScheduleDraft(BlogPostDTO $draftDTO, int $userId) : BlogPostSchedule|false {
         $updatedDraft = $this->updateDraft($draftDTO, $userId);
 
         if (!$updatedDraft)
@@ -168,7 +180,7 @@ class BlogPostService extends Singleton {
         return $this->blogPostScheduleService->createBlogPostSchedule($updatedDraft->id, $draftDTO->scheduledOn);
     }
 
-    function updateDraft(BlogPostDTO $draftDTO, int $userId) : BlogPost|false {
+    public function updateDraft(BlogPostDTO $draftDTO, int $userId) : BlogPost|false {
         $dbPost = $this->getBlogPost($draftDTO->id);
 
         if (!$dbPost || $dbPost->publishedOn)

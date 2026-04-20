@@ -47,6 +47,20 @@ class BlogPostDBService extends BaseDBService {
         }
     }
 
+    public function deleteBlogPost(int $id) : BlogPost|false {
+        try {
+            $post = $this->dbService->deleteById('blog_post', $id);
+
+            if (!$post)
+                return false;
+
+            return new BlogPost($post);
+        }
+        catch (PDOException $e) {
+            throw new Exception('Database error: ' . $e->getMessage());
+        }
+    }
+
     /** @return BlogPost[] */
     public function getBlogPosts(int $limit, int $offset, PublishedStatus $publishedStatus = PublishedStatus::Published, Visibility $visibility = Visibility::Visible) : array {
         try {
@@ -131,6 +145,48 @@ class BlogPostDBService extends BaseDBService {
                 return false;
 
             return new BlogPost($result);
+        }
+        catch (PDOException $e) {
+            throw new Exception('Database error: ' . $e->getMessage());
+        }
+    }
+
+    public function toggleHidden(int $id, bool $status) : bool {
+        try {
+            $result = $this->dbService->selectFunction('update_blog_post__is_hidden', [
+                1 => [ 'value' => $id, 'type' => PDO::PARAM_INT ],
+                2 => [ 'value' => $status, 'type' => PDO::PARAM_BOOL ]
+            ]);
+
+            if (!is_int($result))
+                throw new Exception('Database error: unexpected return type!');
+
+            if ($result > 1)
+                throw new Exception('Warning: more than one post affected!');
+
+            return !!$result;
+
+        }
+        catch (PDOException $e) {
+            throw new Exception('Database error: ' . $e->getMessage());
+        }
+    }
+
+    public function togglePinned(int $id, bool $status) : bool {
+        try {
+            $result = $this->dbService->selectFunction('update_blog_post__is_pinned', [
+                1 => [ 'value' => $id, 'type' => PDO::PARAM_INT ],
+                2 => [ 'value' => $status, 'type' => PDO::PARAM_BOOL ]
+            ]);
+
+            if (!is_int($result))
+                throw new Exception('Database error: unexpected return type!');
+
+            if ($result > 1)
+                throw new Exception('Warning: more than one post affected!');
+
+            return !!$result;
+
         }
         catch (PDOException $e) {
             throw new Exception('Database error: ' . $e->getMessage());
