@@ -34,6 +34,21 @@ class BlogPostService {
     }
 
     /**
+     * @param {number} id 
+     * @param {(value: BlogPost) => void} next 
+     * @param {(errors: string[]) => void} error
+     * @returns {Promise<void>}
+     */
+    async deleteBlogPost(id, next, error) {
+        const response = await this.#service.deleteBlogPost(id);
+
+        if (!response.success)
+            return error?.call(this, response.errors);
+
+        next?.call(this, response.value);
+    }
+
+    /**
      * @param {number} id
      * @param {(value: BlogPost|undefined) => void} next 
      * @returns {Promise<void>}
@@ -60,10 +75,40 @@ class BlogPostService {
     }
 
     /**
+     * @param {number} id 
+     * @param {() => void} next 
+     * @param {(errors: string[]) => void} error 
+     * @returns {Promise<void>}
+     */
+    async hideBlogPost(id, next, error) {
+        const result = await this.#service.hideBlogPost(id);
+
+        if (!result.success)
+            error?.call(this, result.errors);
+
+        next?.call(this);
+    }
+
+    /**
+     * @param {number} id 
+     * @param {() => void} next 
+     * @param {(errors: string[]) => void} error 
+     * @returns {Promise<void>}
+     */
+    async pinBlogPost(id, next, error) {
+        const result = await this.#service.pinBlogPost(id);
+
+        if (!result.success)
+            error?.call(this, result.errors);
+
+        next?.call(this);
+    }
+
+    /**
      * 
      * @param {BlogPostDTO} blogPostDTO 
      * @param {(value: BlogPost) => void} next 
-     * @param {(errors: object) => void} error 
+     * @param {(errors: string[]|object[]) => void} error 
      * @returns {Promise<void>}
      */
     async publishDraft(blogPostDTO, next, error) {
@@ -79,7 +124,7 @@ class BlogPostService {
      * 
      * @param {BlogPostDTO} blogPostDTO 
      * @param {(value: BlogPostSchedule) => void} next 
-     * @param {(errors: object) => void} error 
+     * @param {(errors: string[]|object[]) => void} error 
      * @returns {Promise<void>}
      */
     async scheduleDraft(blogPostDTO, next, error) {
@@ -92,10 +137,40 @@ class BlogPostService {
     }
 
     /**
+     * @param {number} id 
+     * @param {() => void} next 
+     * @param {(errors: string[]) => void} error 
+     * @returns {Promise<void>}
+     */
+    async unhideBlogPost(id, next, error) {
+        const result = await this.#service.unhideBlogPost(id);
+
+        if (!result.success)
+            error?.call(this, result.errors);
+
+        next?.call(this);
+    }
+
+    /**
+     * @param {number} id 
+     * @param {() => void} next 
+     * @param {(errors: string[]) => void} error 
+     * @returns {Promise<void>}
+     */
+    async unpinBlogPost(id, next, error) {
+        const result = await this.#service.unpinBlogPost(id);
+
+        if (!result.success)
+            error?.call(this, result.errors);
+
+        next?.call(this);
+    }
+
+    /**
      * 
      * @param {BlogPostDTO} blogPostDTO 
      * @param {(value: BlogPost) => void} next 
-     * @param {(errors: object) => void} error 
+     * @param {(errors: string[]|object[]) => void} error 
      * @returns {Promise<void>}
      */
     async updateBlogPost(blogPostDTO, next, error) {
@@ -111,7 +186,7 @@ class BlogPostService {
      * 
      * @param {BlogPostDTO} blogPostDTO 
      * @param {(value: BlogPost) => void} next 
-     * @param {(errors: object) => void} error 
+     * @param {(errors: string[]|object[]) => void} error 
      * @returns {Promise<void>}
      */
     async saveDraft(blogPostDTO, next, error) {

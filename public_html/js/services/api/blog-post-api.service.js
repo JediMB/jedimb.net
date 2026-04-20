@@ -20,21 +20,20 @@ class BlogPostApiService {
 
     /**
      * @param {number} id 
-     * @returns {Promise<([number, Date]|false)>}
+     * @returns {Promise<({success: boolean, errors?: string[], value?: BlogPost})>}
      */
     async deleteBlogPost(id) {
         const response = await this.#httpClient.delete(this.#api.post, id);
-
+        
         if (!response.success)
             return false;
 
         if (!response.value)
             throw new Error('Delete failed to return blog post data');
 
-        return [
-            Number(response.value.id),
-            new Date(response.value.modifiedOn.date + response.value.modifiedOn.timezone)
-        ];
+        response.value = new BlogPost(response.value);
+
+        return response;
     }
 
     /**
@@ -70,8 +69,34 @@ class BlogPostApiService {
     }
 
     /**
+     * @param {number} id 
+     * @returns {Promise<({success: boolean, errors?: string[]|object[]})>}
+     */
+    async hideBlogPost(id) {
+        const response = await this.#httpClient.patch(this.#api.post + `/${id}/hide`);
+
+        if (!response.success)
+            return { success: false, errors: response.errors };
+
+        return { success: true };
+    }
+
+    /**
+     * @param {number} id 
+     * @returns {Promise<({success: boolean, errors?: string[]|object[]})>}
+     */
+    async pinBlogPost(id) {
+        const response = await this.#httpClient.patch(this.#api.post + `/${id}/pin`);
+
+        if (!response.success)
+            return { success: false, errors: response.errors };
+
+        return { success: true };
+    }
+
+    /**
      * @param {BlogPostDTO} blogPostDTO
-     * @returns {Promise<({errors: object, value: { blogPost: BlogPost, schedule: BlogPostSchedule }})>} 
+     * @returns {Promise<({success: boolean, errors?: string[]|object[], value?: { blogPost: BlogPost, schedule: BlogPostSchedule }})>} 
      */
     async postBlogPost(blogPostDTO) {
         const response = await this.#httpClient.post(this.#api.post, blogPostDTO);
@@ -92,7 +117,7 @@ class BlogPostApiService {
 
     /**
      * @param {BlogPostDTO} blogPostDTO 
-     * @returns {Promise<({success: boolean, errors: string[]|object[]|undefined, value: BlogPost|undefined})>}
+     * @returns {Promise<({success: boolean, errors?: string[]|object[], value?: BlogPost})>}
      */
     async postDraft(blogPostDTO) {
         const response = await this.#httpClient.post(this.#api.draft, blogPostDTO);
@@ -110,7 +135,7 @@ class BlogPostApiService {
 
     /**
      * @param {BlogPostDTO} blogPostDTO 
-     * @returns {Promise<({success: boolean, errors: string[]|object[]|undefined, value: BlogPost|undefined})>}
+     * @returns {Promise<({success: boolean, errors?: string[]|object[], value?: BlogPost})>}
      */
     async publishDraft(blogPostDTO) {
         const response = await this.#httpClient.put(this.#api.draft + '/publish', blogPostDTO);
@@ -128,7 +153,7 @@ class BlogPostApiService {
 
     /**
      * @param {BlogPostDTO} blogPostDTO 
-     * @returns {Promise<({success: boolean, errors: string[]|object[]|undefined, value: BlogPostSchedule|undefined})>}
+     * @returns {Promise<({success: boolean, errors?: string[]|object[], value?: BlogPostSchedule})>}
      */
     async scheduleDraft(blogPostDTO) {
         const response = await this.#httpClient.put(this.#api.draft + '/schedule', blogPostDTO);
@@ -145,8 +170,34 @@ class BlogPostApiService {
     }
 
     /**
+     * @param {number} id 
+     * @returns {Promise<({success: boolean, errors?: string[]|object[]})>}
+     */
+    async unhideBlogPost(id) {
+        const response = await this.#httpClient.patch(this.#api.post + `/${id}/unhide`);
+
+        if (!response.success)
+            return { success: false, errors: response.errors };
+
+        return { success: true };
+    }
+
+    /**
+     * @param {number} id 
+     * @returns {Promise<({success: boolean, errors?: string[]|object[]})>}
+     */
+    async unpinBlogPost(id) {
+        const response = await this.#httpClient.patch(this.#api.post + `/${id}/unpin`);
+
+        if (!response.success)
+            return { success: false, errors: response.errors };
+
+        return { success: true };
+    }
+
+    /**
      * @param {BlogPostDTO} blogPostDTO 
-     * @returns {Promise<({success: boolean, errors: string[]|object[]|undefined, value: BlogPost|undefined})>}
+     * @returns {Promise<({success: boolean, errors?: string[]|object[], value?: BlogPost})>}
      */
     async updateDraft(blogPostDTO) {
         const response = await this.#httpClient.put(this.#api.draft, blogPostDTO);
@@ -164,7 +215,7 @@ class BlogPostApiService {
 
     /** 
      * @param {BlogPostDTO} blogPostDTO 
-     * @returns {Promise<({success: boolean, errors: string[]|object[]|undefined, value: BlogPost|undefined})>}
+     * @returns {Promise<({success: boolean, errors?: string[]|object[], value?: BlogPost})>}
      */
     async updateBlogPost(blogPostDTO) {
         const response = await this.#httpClient.put(this.#api.post, blogPostDTO);
