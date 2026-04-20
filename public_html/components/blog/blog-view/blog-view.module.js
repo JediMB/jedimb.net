@@ -178,8 +178,47 @@ customElements.define('blog-view-component', class BlogViewComponent extends HTM
                         );
                     });
                     continue;
+
+                case 'hide':
+                    button.addEventListener('click', () => {
+                        blogPostService.hideBlogPost(postId,
+                            () => {
+                                // TODO: Success notification
+                                this.#loadPageContent();
+                            },
+                            error => {
+                                // TODO: Error notification
+                            }
+                        );
+                    });
+                    continue;
+
                 case 'pin':
-                    button.addEventListener('click', () => window.alert(`pin: ${id ?? button.dataset.id}`));
+                    button.addEventListener('click', () => {
+                        blogPostService.pinBlogPost(postId,
+                            () => {
+                                // TODO: Success notification
+                                this.#loadPageContent();
+                            },
+                            error => {
+                                // TODO: Error notification
+                            }
+                        );
+                    });
+                    continue;
+
+                case 'unpin':
+                    button.addEventListener('click', () => {
+                        blogPostService.unpinBlogPost(postId,
+                            () => {
+                                // TODO: Success notification
+                                this.#loadPageContent();
+                            },
+                            error => {
+                                // TODO: Error notification
+                            }
+                        );
+                    });
                     continue;
             }
         }

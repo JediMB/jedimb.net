@@ -156,7 +156,7 @@ class BlogPostDBService extends BaseDBService {
             $result = $this->dbService->selectFunction('update_blog_post__is_hidden', [
                 1 => [ 'value' => $id, 'type' => PDO::PARAM_INT ],
                 2 => [ 'value' => $status, 'type' => PDO::PARAM_BOOL ]
-            ]);
+            ])[0];
 
             if (!is_int($result))
                 throw new Exception('Database error: unexpected return type!');
@@ -177,10 +177,10 @@ class BlogPostDBService extends BaseDBService {
             $result = $this->dbService->selectFunction('update_blog_post__is_pinned', [
                 1 => [ 'value' => $id, 'type' => PDO::PARAM_INT ],
                 2 => [ 'value' => $status, 'type' => PDO::PARAM_BOOL ]
-            ]);
+            ])[0];
 
             if (!is_int($result))
-                throw new Exception('Database error: unexpected return type!');
+                throw new Exception("Database error: unexpected return type!");
 
             if ($result > 1)
                 throw new Exception('Warning: more than one post affected!');

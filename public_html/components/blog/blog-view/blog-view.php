@@ -107,6 +107,7 @@ Component::renderOnce();
                         </svg>
                     </button>
                     <button post-action="unpin"
+                        data-id="<?= $post->id ?>"
                         class="link-svg action-unpin"
                         title="Unpin post"
                         >
