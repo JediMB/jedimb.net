@@ -163,24 +163,37 @@ customElements.define('blog-view-component', class BlogViewComponent extends HTM
     #assignButtonActions(buttons, id = null) {
         for (const button of buttons) {
             const postId = id ?? Number(button.dataset.id);
+            
+            if (isNaN(postId)) {
+                console.error('Post ID for button is not a number', button);
+                continue;
+            }
 
             switch (button.getAttribute('post-action')) {
                 case 'delete':
+                    // TODO: Use a modal web component instead of confirm()
                     button.addEventListener('click', () => {
-                        blogPostService.deleteBlogPost(postId,
-                            next => {
-                                // TODO: Success notification
-                                this.#loadPageContent();
-                            },
-                            error => {
-                                // TODO: Error notification
-                            }
-                        );
+                        const message = button.dataset.prompt ?? 'Permanently delete this post?';
+
+                        if (confirm(message)) {
+                            button.parentElement.toggleAttribute('hidden', true);
+                            blogPostService.deleteBlogPost(postId,
+                                next => {
+                                    // TODO: Success notification
+                                    this.#loadPageContent();
+                                },
+                                error => {
+                                    // TODO: Error notification
+                                    button.parentElement.removeAttribute('hidden');
+                                }
+                            );
+                        }
                     });
                     continue;
 
                 case 'hide':
                     button.addEventListener('click', () => {
+                        button.parentElement.toggleAttribute('hidden', true);
                         blogPostService.hideBlogPost(postId,
                             () => {
                                 // TODO: Success notification
@@ -188,6 +201,7 @@ customElements.define('blog-view-component', class BlogViewComponent extends HTM
                             },
                             error => {
                                 // TODO: Error notification
+                                button.parentElement.removeAttribute('hidden');
                             }
                         );
                     });
@@ -195,6 +209,7 @@ customElements.define('blog-view-component', class BlogViewComponent extends HTM
 
                 case 'pin':
                     button.addEventListener('click', () => {
+                        button.parentElement.toggleAttribute('hidden', true);
                         blogPostService.pinBlogPost(postId,
                             () => {
                                 // TODO: Success notification
@@ -202,6 +217,7 @@ customElements.define('blog-view-component', class BlogViewComponent extends HTM
                             },
                             error => {
                                 // TODO: Error notification
+                                button.parentElement.removeAttribute('hidden');
                             }
                         );
                     });
@@ -209,6 +225,7 @@ customElements.define('blog-view-component', class BlogViewComponent extends HTM
 
                 case 'unpin':
                     button.addEventListener('click', () => {
+                        button.parentElement.toggleAttribute('hidden', true);
                         blogPostService.unpinBlogPost(postId,
                             () => {
                                 // TODO: Success notification
@@ -216,6 +233,7 @@ customElements.define('blog-view-component', class BlogViewComponent extends HTM
                             },
                             error => {
                                 // TODO: Error notification
+                                button.parentElement.removeAttribute('hidden');
                             }
                         );
                     });
