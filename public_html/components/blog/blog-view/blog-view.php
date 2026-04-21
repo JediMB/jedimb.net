@@ -70,6 +70,7 @@ Component::renderOnce();
                     >
                     <button post-action="delete"
                         data-id="<?= $post->id ?>"
+                        data-prompt="Permanently delete this post?"
                         class="link-svg"
                         title="Delete post"
                         >
@@ -147,6 +148,7 @@ Component::renderOnce();
             </article-byline>
             <article-toolbar hidden>
                 <button post-action="delete"
+                    data-prompt="Permanently delete this post?"
                     class="link-svg"
                     title="Delete post"
                     >
@@ -163,16 +165,31 @@ Component::renderOnce();
                         <use xlink:href="#svg-edit" href="#svg-edit"></use>
                     </svg>
                 </a>
-                <button post-action="pin"
+                <button post-action="hide"
                     class="link-svg"
-                    title="Pin post"
-                    data-title-pinned="Unpin post"
-                    data-title-unpinned="Pin post"
-                    data-href-pinned="#svg-pinned"
-                    data-href-unpinned="#svg-pin"
+                    title="Hide post"
                     >
                     <svg width="1.5em" height="1.5em">
-                        <use xlink:href="#svg-pin" href="#svg-pin"></use>
+                        <use xlink:href="#svg-visible" href="#svg-visible" class="unhovered"></use>
+                        <use xlink:href="#svg-hidden" href="#svg-hidden" class="hovered"></use>
+                    </svg>
+                </button>
+                <button post-action="pin"
+                    class="link-svg action-pin"
+                    title="Pin post"
+                    >
+                    <svg width="1.5em" height="1.5em">
+                        <use xlink:href="#svg-unpinned" href="#svg-unpinned"class="unhovered"></use>
+                        <use xlink:href="#svg-pinned" href="#svg-pinned" class="hovered"></use>
+                    </svg>
+                </button>
+                <button post-action="unpin"
+                    class="link-svg action-unpin"
+                    title="Unpin post"
+                    >
+                    <svg width="1.5em" height="1.5em">
+                        <use xlink:href="#svg-pinned" href="#svg-pinned" class="unhovered"></use>
+                        <use xlink:href="#svg-unpinned" href="#svg-unpinned" class="hovered"></use>
                     </svg>
                 </button>
             </article-toolbar>
