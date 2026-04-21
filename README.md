@@ -12,12 +12,13 @@
 - <s>Sanitize input</s> ✅
 - <s>Admin pages</s> ✅
   - More configuration options
-- Blog post composition/publishing
+- <s>Blog post composition/publishing</s> ✅
   - Mastodon integration: automatic toot composition, and linking the resulting toot to the blog entry as it is saved
   - Option to add other social media links to the entry
-- Switch to httpOnly cookies via Set-Cookie header (cookie names start with __Http-)
-- Implement spl_autoload_register()
-- Blog post editing/deletion
+- <s>Blog post editing/deletion</s> ✅
 - Virtual Page composition/publishing
 - Virtual Page editing/deletion
+- Tracking of what images/galleries are used on what posts/pages
 - Support for adding manual page links to menu
+- Switch to httpOnly cookies via Set-Cookie header (cookie names start with __Http-)
+- Implement spl_autoload_register()
