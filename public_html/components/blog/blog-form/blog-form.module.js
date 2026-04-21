@@ -34,7 +34,19 @@ export default class BlogFormComponent extends HTMLElement {
         this.#form.onreset = () => this.#textEditor.content.reset();
 
         inputs['title'].addEventListener('input', () => inputs['permalink'].defaultValue = this.#formatPermalinkTitle(inputs['title'].value));
-        inputs['title'].addEventListener('change', () => inputs['title'].value = inputs['title'].value.trim());
+        inputs['title'].addEventListener('change', () => {
+            const title = inputs['title'].value.trim();
+
+            if (title.length >= inputs['title'].minLength)
+                inputs['title'].value = title.charAt(0).toUpperCase() + title.slice(1);
+        });
+
+        inputs['description'].addEventListener('change', () => {
+            const description = inputs['description'].value.trim();
+
+            if (description.length >= inputs['description'].minLength)
+                inputs['description'].value = description.charAt(0).toUpperCase() + description.slice(1);
+        });
 
         this.#textInputs = [
             inputs['title'],
