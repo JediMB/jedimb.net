@@ -37,6 +37,7 @@ a[disabled] {
 
 [is-loading] {
     animation: is-loading 1s steps(15, end) infinite;
+    margin-inline: auto;
 }
 
 @keyframes is-loading {
