@@ -13,9 +13,7 @@ use Services\Base\BaseDBService;
 class PageDBService extends BaseDBService {
     public function getPage(int $id) : Page|false {
         try {
-            $page = $this->dbService->selectById(
-                'page', $id
-            );
+            $page = $this->dbService->selectById('page', $id);
 
             if ($page)
                 return new Page($page);

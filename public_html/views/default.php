@@ -28,22 +28,17 @@ $links = !empty($links);
     <meta name="author" content="<?= $site_author ?>">
     <meta name="description" content="<?= $meta_description ?>">
     <meta name="keywords" content="<?= $meta_keywords ?>">
+    
+    <meta name="constants" content="<?= htmlspecialchars(json_encode(META_CONSTANTS)) ?>">
 
-    <title><?= empty($title) ? $site_title : "$title – ". $site_title ?></title>
+    <title><?= empty($title) ? $site_title : "$title &ndash; ". $site_title ?></title>
     
     <?php Component::include('css-revision-link', [ 'cssPath' => PATH_CSS_DEFAULT ]) ?>
 
     <link rel="icon" type="image/x-icon" href="/favicon.svg" />
     
     <script type="text/javascript" src="/js/purify.min.js"></script>
-    <?php if ($pageType === PageType::BlogPost): ?>
-        <script type="text/javascript" defer src="/js/local-time.js"></script>
-    <?php endif ?>
-
-    <meta name="cookie-user-key" content="<?= COOKIE_USER_KEY ?>">
-    <meta name="cookie-token-key" content="<?= COOKIE_TOKEN_KEY ?>">
-    <meta name="cookie-validator-key" content="<?= COOKIE_VALIDATOR_KEY ?>">
-    <meta>
+    <script type="module" src="/js/default.js"></script>
 </head>
 <body>
     <header>
@@ -104,12 +99,12 @@ $links = !empty($links);
         </main>
         <?php if ($links): ?>
             <aside class="links max-md:bg-hotpink-950 max-md:p-2 max-md:rounded-lg">
-            <?php Component::include('button-links') ?>
-        </aside>
+                <?php Component::include('button-links') ?>
+            </aside>
         <?php endif ?>
     </content-container>
 
-    <?php if ($pageType === PageType::BlogPost): ?>
+    <?php if ($pageType === PageType::BlogPost && isset($mastolink)): ?>
         <?php Component::include('mastodon-comments', [ 'mastolink' => $mastolink ]) ?>
     <?php endif ?>
 
@@ -124,5 +119,8 @@ $links = !empty($links);
     </footer>
 
     <?php Component::renderQueuedJS() ?>
+    
+    <?php Component::include('svg-library') ?>
+    </svg>
 </body>
 </html>

@@ -4,21 +4,23 @@ namespace Models\Base;
 
 require_once 'models/base/db-created-modified.model.php';
 
-use DateTime;
-
 class DBPageContent extends DBCreatedModified {
+    public ?int $userId;
     public string $title;
     public ?string $description; 
-    public string $content;
-    public bool $isVisible;
+    public string $contentShort;
+    public ?string $contentRest;
+    public bool $isHidden;
 
     public function __construct(array $dbRow) {
         parent::__construct($dbRow);
 
+        $this->userId = $dbRow['user_id'] ?? null;
         $this->title = $dbRow['title'];
         $this->description = $dbRow['description'] ?? null;
-        $this->content = $dbRow['content'];
-        $this->isVisible = $dbRow['is_visible'];
+        $this->contentShort = $dbRow['content_short'];
+        $this->contentRest = $dbRow['content_rest'] ?? null;
+        $this->isHidden = $dbRow['is_hidden'];
     }
 }
 

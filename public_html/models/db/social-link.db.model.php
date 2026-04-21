@@ -13,7 +13,7 @@ class SocialLink extends DBBase {
     public string $svgViewBox;
     public string $svgContent;
     public int $order;
-    public bool $isVisible;
+    public bool $isHidden;
 
     public function __construct(array $dbRow) {
         parent::__construct($dbRow);
@@ -24,7 +24,7 @@ class SocialLink extends DBBase {
         $this->svgViewBox = $dbRow['svg_viewbox'];
         $this->svgContent = $dbRow['svg_content'];
         $this->order = $dbRow['order'];
-        $this->isVisible = $dbRow['is_visible'];
+        $this->isHidden = $dbRow['is_hidden'];
     }
 }
 

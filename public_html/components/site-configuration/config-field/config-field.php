@@ -25,33 +25,44 @@ if (empty($config)) {
 }
 else { /** @var \Models\DB\Configuration $config */
     $dbId = $config->id;
-    $value = $config->value;
+    $value = $config->valueInt ?? $config->valueString;
     $isDefault = !$config->isActive;
 }
 
+$isInt = is_int($value);
+
 Component::hide();
-Component::renderCSS(__FILE__);
-Component::addJSModule(__FILE__);
+Component::renderCSS();
+Component::addJSModule();
 
 ?>
 
 <input type="hidden" name="<?= $id ?>-id" id="<?= $id ?>-id" value="<?= $dbId ?>">
 <label for="<?= $id ?>"><?= $label ?></label>
 <input-container>
-    <input type="text" name="<?= $id ?>" id="<?= $id ?>" placeholder="<?= $label ?>"
+    <input type="<?= $isInt ? 'number' : 'text' ?>"
+        config-field
+        id="<?= $id ?>"
+        name="<?= $id ?>"
+        placeholder="<?= $label ?>"
         value="<?= $isDefault ? $default : $value ?>"
         data-constant="<?= $name ?>"
         data-input-value="<?= $value ?>"
         data-original-value="<?= $isDefault ? '' : $value ?>"
         data-default-value="<?= $default ?>"
-        pattern="<?= trim(REGEX_INPUT['config-text'], '/') ?>" required
+        <?php if ($isInt): ?>
+            min="1"
+        <?php else: ?>
+            pattern="<?= REGEX_HTML['default-text'] ?>"
+            data-error-pattern-mismatch="<?= TEXT_CONFIG_CHARS ?>"
+        <?php endif ?>
         data-error-value-missing="Field can't be empty"
-        data-error-pattern-mismatch="<?= TEXT_CONFIG_CHARS ?>"
         title="<?= TEXT_CONFIG_CHARS ?>"
-        <?= $isDefault ? 'disabled' : null ?>>
+        <?= $isDefault ? 'disabled' : null ?>
+        required>
     <button type="button" restore-input class="hidden">
         <svg width="100%" height="100%">
-            <use xlink:href="#svg-config-restore" href="#svg-config-restore"></use>
+            <use xlink:href="#svg-restore" href="#svg-restore"></use>
         </svg>
     </button>
 </input-container>

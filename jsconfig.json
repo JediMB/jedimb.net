@@ -1,12 +1,13 @@
 {
     "compilerOptions": {
         "module": "CommonJS",
-        "target": "ES6",
+        "target": "ES2022",
         "baseUrl": ".",
         "paths": {
             "/js/*": ["./public_html/js/*"],
             "/js/components/*": ["./public_html/components/*"]
-        }
+        },
+        "noImplicitAny": true
     },
     "include": ["public_html/**/*"]
 }

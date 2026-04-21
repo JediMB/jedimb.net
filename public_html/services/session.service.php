@@ -17,6 +17,7 @@ use Models\User\User;
 use Services\Base\Singleton;
 use Services\UserService;
 use Services\DB\UserTokenDBService;
+use Utilities\Response;
 
 class SessionService extends Singleton {
     private UserTokenDBService $tokenDBService;
@@ -52,6 +53,19 @@ class SessionService extends Singleton {
             ]);
     }
 
+    public function getInvalidSubmissionResponse(mixed $requestBody, array $permissions) : array|false {
+        if (!$this->isLoggedIn())
+            return Response::Forbidden(TEXT_NOT_LOGGED_IN);
+
+        if (!$this->hasPermissions($permissions))
+            return Response::Forbidden(TEXT_INSUFFICIENT_PERMISSIONS);
+
+        if (empty($requestBody))
+            return Response::BadRequest('Request body is empty');
+
+        return false;
+    }
+
     public function getUser() : User|false {
         return $_SESSION[SESSION_USER_KEY] ?? false;
     }
@@ -60,10 +74,7 @@ class SessionService extends Singleton {
         $user = $this->getUser();
 
         if (!$user)
-            servePHP([
-                'header' => 'HTTP/1.1 403 Forbidden',
-                'pagePath' => PATH_ERROR403
-            ]);
+            return false;
 
         if (empty($this->userRolePermissions[$user->role->value]))
             throw new Exception('No permissions defined for user role');

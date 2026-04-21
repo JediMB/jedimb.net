@@ -4,7 +4,7 @@ $input = json_decode(file_get_contents('php://input'), true);
 
 $curl = curl_init();
 
-switch( $_SERVER['REQUEST_METHOD'] ) {
+switch ( $_SERVER['REQUEST_METHOD'] ) {
     case 'POST':
         $params = $GLOBALS['api_params'];
         

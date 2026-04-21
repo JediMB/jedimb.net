@@ -1,12 +1,14 @@
 <?php
 
 require_once 'enums/page-type.enum.php';
-require_once 'services/db/blog-post.db.service.php';
+require_once 'services/blog-post-schedule.service.php';
+require_once 'services/blog-post.service.php';
 require_once 'services/db/page.db.service.php';
 
 use Enums\PageType;
 use Services\NavigationService;
-use Services\DB\BlogPostDBService;
+use Services\BlogPostScheduleService;
+use Services\BlogPostService;
 use Services\DB\PageDBService;
 
 function getRealPath(string $path, bool &$isForbidden) : string|false {
@@ -35,7 +37,7 @@ function getRealPath(string $path, bool &$isForbidden) : string|false {
         as $pathSuffix
         ) {
 
-        if ( ( $realPath = realpath(PATH_REALPAGES_DIR . DIRECTORY_SEPARATOR . $path . $pathSuffix) ) === false )
+        if ( ( $realPath = realpath(PATH_REALPAGES_DIR . "/$path" . $pathSuffix) ) === false )
             continue;
 
         if ( is_dir($realPath) ) {
@@ -63,50 +65,45 @@ function handleApiRequests(string $path) {
     $pathComponents = explode('/', $path, 10);
     $pathComponents = array_splice($pathComponents, 1);
 
-    header('Content-Type: application/json');
-    
     foreach ($pathComponents as $index => $component) {
         $apiPath = "$apiPath/$component";
         
         if ( ($filePath = realpath("$apiPath.php")) ) {
             $GLOBALS['api_params'] = array_slice($pathComponents, $index + 1);
-
-            if ( !($result = include $filePath) ) {
-                header('HTTP/1.1 500 Internal Server Error');
-                echo json_encode([ 'success' => false, 'errors' => [ 'No data from API' ] ]);
-                exit;
-            }
-
-            if (isset($result['header'])) {
-                header($result['header']);
-                unset($result['header']);
-            }
-
-            echo json_encode($result);
-            exit;
+            serveApiData($filePath);
         }
     }
 
+    header('Content-Type: application/json');
     header('HTTP/1.1 404 Not Found');
     echo json_encode([ 'success' => false, 'errors' => [ 'Invalid API address' ] ]);
     exit;
 }
 
 // If it's trying to access a blog entry, serve a match
-function handleBlogRequests(string $path) {
+function handleBlogRequests(string $path, int|null $pageNumber) {
     $matches = [];
     if (preg_match(REGEX_BLOG_PATH, $path, $matches)) {
-        $service = BlogPostDBService::getInstance(); /** @var BlogPostDBService $service */
+        $service = BlogPostService::getInstance(); /** @var BlogPostService $service */
+        
+        $blogPost = $service->getPublicBlogPost($matches[1]);
 
-        $blogPost = $service->getBlogPost($matches[1]);
+        if (!$blogPost)
+            servePHP([
+                'header' => 'HTTP/1.1 404 Not Found',
+                'pagePath' => PATH_ERROR404,
+                'baseRoute' => $path
+            ]);
 
         servePHP([
             'pageType' => PageType::BlogPost,
+            'baseRoute' => $path,
             'title' => $blogPost->title,
-            'content' => $blogPost->content,
-            'createdOn' => $blogPost->createdOn,
+            'content' => $blogPost->contentShort . $blogPost->contentRest,
+            'createdOn' => $blogPost->publishedOn,
             'modifiedOn' => $blogPost->modifiedOn,
-            'mastolink' => $blogPost->mastolink
+            'mastolink' => $blogPost->mastolink,
+            'page' => $pageNumber
         ]);
     }
 }
@@ -139,28 +136,42 @@ function handleComponentModules(string $path) {
     exit;
 }
 
-function handleVirtualPages(string $requestPath) {
+function handleHome(string $path, int|null $pageNumber) {
+    if (!empty($path))
+        return;
+
+    servePHP([
+        'pagePath' => PATH_HOMEPAGE,
+        'links' => true,
+        'baseRoute' => '',
+        'page' => $pageNumber
+    ]);
+}
+
+function handleVirtualPages(string $path, int|null $pageNumber) {
     $nav = NavigationService::getInstance(); /** @var NavigationService $nav */
 
     foreach ($nav->virtualPageRoutes as $id => $route) {
-        if (ltrim($route, '/') === $requestPath) {
+        if (ltrim($route, '/') === $path) {
             $service = PageDBService::getInstance(); /** @var PageDBService $service */
 
             $page = $service->getPage($id);
 
             servePHP([
                 'pageType' => PageType::Virtual,
+                'baseRoute' => $route,
                 'title' => $page->title,
-                'content' => $page->content,
+                'content' => $page->contentShort . $page->contentRest,
                 'createdOn' => $page->createdOn,
-                'modifiedOn' => $page->modifiedOn
+                'modifiedOn' => $page->modifiedOn,
+                'page' => $pageNumber
             ]);
         }
     }
 }
 
 function isPHP(string $path) : bool {
-    return ( strtolower(substr($path, -4)) === '.php' );
+    return !!preg_match('/.+\.php$/', $path);
 }
 
 function isUnsafe(string $realPath) : bool {
@@ -168,7 +179,44 @@ function isUnsafe(string $realPath) : bool {
         || substr(basename($realPath), 0, 1) === '.'; 
 }
 
+function separatePageNumber(string &$requestPath) : int|null {
+    $matches = [];
+
+    if (!preg_match(REGEX_PATH_WITH_PAGE, $requestPath, $matches))
+        return null;
+
+    $requestPath = $matches[1];
+    $page = (int)$matches[2];
+
+    if ($page < 1)
+        return null;
+
+    return $page;
+}
+
+function serveApiData(string $filePath) {
+    BlogPostScheduleService::getInstance()->publishPendingScheduledBlogPosts();
+
+    header('Content-Type: application/json');
+
+    if ( !($result = include $filePath) ) {
+        header('HTTP/1.1 500 Internal Server Error');
+        echo json_encode([ 'success' => false, 'errors' => [ 'No data from API' ] ]);
+        exit;
+    }
+
+    if (isset($result['header'])) {
+        header($result['header']);
+        unset($result['header']);
+    }
+
+    echo json_encode($result);
+    exit;
+}
+
 function servePHP(array $variables = [ 'header' => false ]) {
+    BlogPostScheduleService::getInstance()->publishPendingScheduledBlogPosts();
+    
     extract($variables);
 
     if (!isset($pageType))
@@ -177,10 +225,13 @@ function servePHP(array $variables = [ 'header' => false ]) {
     if (!empty($header))
         header($header);
 
+    if (empty($baseRoute))
+        $baseRoute = '';
+    else
+        $baseRoute = '/' . trim($baseRoute, '/');
+
     if (empty($template))
         $template = SITE_VIEW;
-
-    $pageService = PageDBService::getInstance(); /** @var PageDBService $pageService */
 
     if ($pageType === PageType::PHP && isset($pagePath)) {
         ob_start();

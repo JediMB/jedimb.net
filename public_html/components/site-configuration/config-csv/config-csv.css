@@ -6,10 +6,6 @@ config-csv-component input-container {
 }
 
 config-csv-component label {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    gap: 0.5em;
     padding-inline-start: 1.25em;
     font-size: 0.8em;
 }

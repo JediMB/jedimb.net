@@ -18,12 +18,12 @@ account-menu-container account-menu {
     z-index: 4;
     min-width: 10rem;
     border-radius: 1rem;
-    background-color: var(--color-hotpink-700);
+    background-color: hsl(var(--hsl-hotpink-700));
     padding: 0.5rem;
 }
 
 account-menu-container h2 {
-    margin-block: 0 var(--spacing-inner);
+    margin-block: 0 var(--size-m);
     font-size: 1.25rem;
 }
 

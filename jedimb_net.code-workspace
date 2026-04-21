@@ -4,5 +4,53 @@
 			"path": "."
 		}
 	],
-	"settings": {}
+	"settings": {
+		"cssVariables.languages": [
+			"css",
+			"html",
+			"javascript",
+		],
+		"cssVariables.lookupFiles": [
+			"**/css/default/*.css"
+		],
+		"intelephense.codeLens.references.enable": true,
+		"intelephense.codeLens.usages.enable": true,
+		"intelephense.completion.parameterCase": "camel",
+		"intelephense.completion.propertyCase": "camel",
+		"intelephense.completion.suggestObjectOperatorStaticMethods": false,
+		"intelephense.environment.documentRoot": "./public_html",
+		"intelephense.environment.phpVersion": "8.4.11",
+		"intelephense.files.exclude": [
+			"**/.git/**",
+			"**/.svn/**",
+			"**/.hg/**",
+			"**/CVS/**",
+			"**/.DS_Store/**",
+			"**/node_modules/**",
+			"**/bower_components/**",
+			"**/vendor/**/{Tests,tests}/**",
+			"**/.history/**",
+			"**/vendor/**/vendor/**",
+			"**/*/*.template"
+		],
+		"intelephense.format.braces": "k&r",
+		"intelephense.format.enable": true,
+		"javascript.format.semicolons": "insert",
+		"js/ts.format.semicolons": "insert",
+		"javascript.preferences.importModuleSpecifier": "non-relative",
+		"js/ts.preferences.importModuleSpecifier": "non-relative",
+		"javascript.preferences.importModuleSpecifierEnding": "js",
+		"js/ts.preferences.importModuleSpecifierEnding": "js",
+		"javascript.suggest.enabled": true,
+		"js/ts.suggest.enabled": true,
+		"liveServer.settings.port": 5500,
+		"liveServer.settings.root": "/public_html",
+		"liveServer.settings.AdvanceCustomBrowserCmdLine": "firefox --new-window",
+		"liveServer.settings.NoBrowser": false,
+		"liveServer.settings.fullReload": false,
+		"liveServer.settings.ignoreFiles" : [
+			"**/images",
+			"**/tmp"
+		]
+	}
 }

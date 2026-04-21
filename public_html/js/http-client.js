@@ -1,12 +1,17 @@
 export { httpClient as default };
 
-export class HttpClient {
+class HttpClient {
     #baseApiUrl = '/api/';
     #requestTypeCss = 'background-color: red; color: white;';
 
     constructor() { }
 
-    async #responseHandling(response, httpMethod) {
+    /**
+     * @param {Response} response 
+     * @param {string} httpMethod 
+     * @returns {Promise<{success: boolean, errors?: string[]|object[], value?: any}>}
+     */
+    async #responseHandling(response, api, httpMethod) {
         if (!response.ok) {
             console.error(`Error ${response.status}: %c ${httpMethod} %c '${this.#baseApiUrl + api}' failed.`, this.#requestTypeCss);
 
@@ -28,17 +33,31 @@ export class HttpClient {
         return data;
     }
 
-    async get(api) {
-        const response = await fetch(this.#baseApiUrl + api).catch(
+    /**
+     * Requests data from the API
+     * @param {string} api 
+     * @param {(number|string)[]} args 
+     * @returns {Promise<{success: boolean, errors?: string[]|object[], value?: any}>}
+     */
+    async get(api, ...args) {
+        const queryString = args ? `/${args.join('/')}` : '';
+
+        const response = await fetch(this.#baseApiUrl + api + queryString).catch(
             error => ({
                 ok: false,
                 errors: [ error.message ]
             })
         );
 
-        return await this.#responseHandling(response, 'GET');
+        return await this.#responseHandling(response, api, 'GET');
     }
 
+    /**
+     * Submits new data to the API
+     * @param {string} api 
+     * @param {any} body 
+     * @returns {Promise<{success: boolean, errors?: string[]|object[], value?: any}>}
+     */
     async post(api, body = null) {
         const response = await fetch(this.#baseApiUrl + api, {
             method: 'POST',
@@ -50,10 +69,15 @@ export class HttpClient {
             })
         );
 
-        return await this.#responseHandling(response, 'POST');
+        return await this.#responseHandling(response, api, 'POST');
     }
 
-    // Full replacement
+    /**
+     * Sends a full object update to the API
+     * @param {string} api 
+     * @param {any} body 
+     * @returns {Promise<{success: boolean, errors?: string[]|object[], value?: any}>}
+     */
     async put(api, body) {
         const response = await fetch(this.#baseApiUrl + api, {
             method: 'PUT',
@@ -65,11 +89,16 @@ export class HttpClient {
             })
         );
 
-        return await this.#responseHandling(response, 'PUT');
+        return await this.#responseHandling(response, api, 'PUT');
     }
 
-    // Partial replacement
-    async patch(api, body) {
+    /**
+     * Sends a partial object update to the API
+     * @param {string} api 
+     * @param {any} body 
+     * @returns {Promise<{success: boolean, errors?: string[]|object[], value?: any}>}
+     */
+    async patch(api, body = null) {
         const response = await fetch(this.#baseApiUrl + api, {
             method: 'PATCH',
             body: JSON.stringify(body)
@@ -80,11 +109,29 @@ export class HttpClient {
             })
         );
 
-        return await this.#responseHandling(response, 'PATCH');
+        return await this.#responseHandling(response, api, 'PATCH');
     }
 
-    async delete(api) {
-        
+    /**
+     * Requests the deletion of data from the API
+     * @param {string} api 
+     * @param {number|string} identifier
+     * @returns {Promise<({success: boolean, errors?: string[]|object[], value?: any})>}
+     */
+    async delete(api, identifier) {
+        if (!identifier)
+            throw new Error('Identifier missing in delete call');
+
+        const response = await fetch(this.#baseApiUrl + `${api}/${identifier}`, {
+            method: 'DELETE'
+        }).catch(
+            error => ({
+                ok: false,
+                errors: [ error.message ]
+            })
+        );
+
+        return await this.#responseHandling(response, api, 'DELETE');
     }
 }
 const httpClient = new HttpClient();

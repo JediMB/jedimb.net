@@ -11,7 +11,7 @@ use Services\NavigationService;
 use Utilities\Component;
 use Utilities\MenuLink;
 
-Component::renderCSS(__FILE__);
+Component::renderCSS();
 
 ?>
 

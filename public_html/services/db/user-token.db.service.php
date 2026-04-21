@@ -88,12 +88,12 @@ class UserTokenDBService extends BaseDBService {
                 'delete_user_token', [
                     1 => [ 'value' => $tokenSelector, 'type' => PDO::PARAM_STR ]
                 ]
-            );
+            )[0];
 
-            if ($result[0] === 0)
+            if ($result === 0)
                 return false;
 
-            return $result[0];
+            return $result;
         }
         catch (PDOException $e) {
             return false;

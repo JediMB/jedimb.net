@@ -1,0 +1,529 @@
+import GalleryDTO from "/js/models/image-gallery/gallery.dto.model.js";
+import Gallery from "/js/models/image-gallery/gallery.model.js";
+import imageGalleryService from "/js/services/image-gallery.service.js";
+import { formatDate } from "/js/utilities/format-date.utility.js";
+
+customElements.define('gallery-manager-component', class GalleryManagerComponent extends HTMLElement {
+    static observedAttributes = [ 'properties-mode' ];
+
+    /** @type {GalleryManagerComponent} */ #self;
+    #service;
+    /** @type {HTMLElement} */ #insertTarget;
+
+    /** @type {HTMLFieldSetElement} */ #galleryListFieldset;
+    /** @type {HTMLElement} */ #galleryList;
+    /** @type {HTMLButtonElement} */ #btnInsertGallery;
+    /** @type {HTMLButtonElement} */ #btnEditGalleryProperties;
+
+    #managerSelectedGallery;
+    /** @type {HTMLElement} */ #includedImagesContainer;
+    /** @type {HTMLElement} */ #excludedImagesContainer;
+    /** @type {HTMLFieldSetElement} */ #includedImagesFieldset;
+    /** @type {HTMLFieldSetElement} */ #excludedImagesFieldset;
+    /** @type {HTMLUListElement} */ #includedImagesUL;
+    /** @type {HTMLUListElement} */ #excludedImagesUL;
+    /** @type {HTMLButtonElement} */ #btnDeleteGallery;
+    /** @type {HTMLButtonElement} */ #btnSaveGalleryImages;
+
+    #managerCreateGallery;
+    /** @type {HTMLFormElement} */ #galleryPropertiesForm;
+    /** @type {HTMLInputElement} */ #inputId;
+    /** @type {HTMLInputElement} */ #inputTitle;
+    /** @type {HTMLTextAreaElement} */ #inputDescription;
+    /** @type {HTMLButtonElement} */ #btnResetGalleryProperties;
+    /** @type {HTMLButtonElement} */ #btnCancelGalleryProperties;
+    /** @type {HTMLButtonElement} */ #btnSaveGalleryProperties;
+
+    /** @type {HTMLInputElement} */ #currentGallery = null;
+
+    /** @type {HTMLLIElement} */ #dragItem;
+    /** @type {HTMLElement} */ #dragTarget;
+    #append = false;
+
+    constructor() {
+        const component = super();
+        this.#self = component;
+        this.#service = imageGalleryService;
+    }
+
+    /**
+     * 
+     * @param {string} name 
+     * @param {string} _ 
+     * @param {string} newValue 
+     * @returns 
+     */
+    attributeChangedCallback(name, _, newValue) {
+        if (name !== 'properties-mode')
+            return;
+
+        if (!this.#self.hasAttribute(name))
+            return;
+
+        switch (newValue) {
+            case 'active':
+                this.#galleryListFieldset.disabled = true;
+
+                this.#btnInsertGallery.disabled = true;
+                this.#btnEditGalleryProperties.disabled = true;
+
+                if (this.#currentGallery) {
+                    const data = this.#currentGallery.dataset;
+                    this.#inputId.defaultValue = data.galleryId;
+                    this.#inputTitle.defaultValue = data.galleryTitle;
+                    this.#inputDescription.defaultValue = data.galleryDescription;
+                }
+
+                this.#galleryPropertiesForm.reset();
+
+                this.#managerSelectedGallery.toggleAttribute('hidden', true);
+                this.#managerCreateGallery.removeAttribute('hidden');
+                break;
+            
+            case 'done':
+                this.#currentGallery = null;
+                this.#inputId.defaultValue = 0;
+                this.#inputTitle.defaultValue = '';
+                this.#inputDescription.defaultValue = '';
+
+                this.#managerSelectedGallery.removeAttribute('hidden');
+                this.#managerCreateGallery.toggleAttribute('hidden', true);
+
+                this.#galleryListFieldset.disabled = false;
+                
+                this.#self.removeAttribute('properties-mode');
+                break;
+        }
+    }
+
+    connectedCallback() {
+        const self = this.#self;
+
+        if (self.hasAttribute('insert-target'))
+            this.#insertTarget = document.querySelector(`#${self.getAttribute('insert-target')}`);
+
+        const galleryListElement = self.querySelector('gallery-list');
+        this.#galleryListFieldset = galleryListElement.querySelector('fieldset');
+        this.#galleryList = this.#galleryListFieldset.querySelector('ul');
+        this.#btnInsertGallery = self.querySelector('[btn-insert-gallery]');
+        this.#btnEditGalleryProperties = self.querySelector('[btn-edit]');
+
+        this.#managerSelectedGallery = self.querySelector('manager-selected-gallery');
+        this.#includedImagesContainer = this.#managerSelectedGallery.querySelector('images-included');
+        this.#excludedImagesContainer = this.#managerSelectedGallery.querySelector('images-excluded');
+        this.#includedImagesFieldset = this.#includedImagesContainer.querySelector('fieldset');
+        this.#excludedImagesFieldset = this.#excludedImagesContainer.querySelector('fieldset');
+        this.#includedImagesUL = this.#includedImagesFieldset.querySelector('ul');
+        this.#excludedImagesUL = this.#excludedImagesFieldset.querySelector('ul');
+        this.#btnDeleteGallery = this.#managerSelectedGallery.querySelector('[btn-delete-gallery]');
+        this.#btnSaveGalleryImages = this.#managerSelectedGallery.querySelector('[btn-save-gallery');
+
+        this.#managerCreateGallery = self.querySelector('manager-create-gallery');
+        this.#galleryPropertiesForm = this.#managerCreateGallery.querySelector('form');
+        this.#inputId = this.#galleryPropertiesForm.querySelector('[name="id"]');
+        this.#inputTitle = this.#galleryPropertiesForm.querySelector(['[name="title"]']);
+        this.#inputDescription = this.#galleryPropertiesForm.querySelector('[name="description"]');
+        this.#btnResetGalleryProperties = this.#galleryPropertiesForm.querySelector('[type="reset"]');
+        this.#btnCancelGalleryProperties = this.#galleryPropertiesForm.querySelector('[btn-cancel-gallery]');
+        this.#btnSaveGalleryProperties = this.#galleryPropertiesForm.querySelector('[type="submit"]');
+
+        if (this.#insertTarget)
+            this.#btnInsertGallery.removeAttribute('hidden');
+
+        galleryListElement.addEventListener('change', event => {
+            if (!event.target.checked)
+                return;
+
+            event.stopPropagation();
+
+            this.#btnInsertGallery.disabled = false;
+            this.#btnEditGalleryProperties.disabled = false;
+            
+            const galleryId = Number(event.target.dataset.galleryId);
+            this.#renderImageLists(galleryId);
+        });
+
+        this.#btnInsertGallery.addEventListener('click', () => this.#insertGallery());
+
+        this.#btnEditGalleryProperties.addEventListener('click', () => {
+            this.#currentGallery = this.#galleryList.querySelector(':checked');
+            this.#self.setAttribute('properties-mode', 'active');
+        });
+
+        this.#btnCancelGalleryProperties.addEventListener('click', () => {
+            this.#self.setAttribute('properties-mode', 'done');
+        });
+
+        this.#setupDragTargets();
+
+        this.#btnDeleteGallery.addEventListener('click', () => this.#deleteGallery());
+        this.#btnSaveGalleryImages.addEventListener('click', () => this.#saveGalleryImages());
+        
+        this.#galleryPropertiesForm.addEventListener('submit', event => {
+            event.preventDefault();
+
+            this.#saveGalleryProperties();
+        });
+
+        const inputs = [this.#inputTitle, this.#inputDescription];
+        this.#galleryPropertiesForm.addEventListener('reset', () => {
+            this.#btnResetGalleryProperties.disabled = true;
+            this.#btnResetGalleryProperties.toggleAttribute('hidden', true);
+            this.#btnSaveGalleryProperties.disabled = true;
+        });
+        this.#inputTitle.addEventListener('input', () => {
+            this.#setGalleryPropertiesButtonsStatus(inputs);
+
+            if (this.#currentGallery)
+                this.#currentGallery.dataset.galleryTitle = this.#inputTitle.value;
+        });
+        this.#inputDescription.addEventListener('input', () => {
+            this.#setGalleryPropertiesButtonsStatus(inputs);
+
+            if (this.#currentGallery)
+                this.dataset.galleryDescription = this.#inputDescription.value;
+        });
+
+        this.#service.galleries.subscribe({
+            next: galleries => this.#updateGalleriesMarkup(galleries),
+            nextIndexed: (_, gallery) => this.#updateGalleryMarkup(gallery)
+        }, { getCurrent: true });
+
+        this.#galleryListFieldset.disabled = false;
+    }
+
+    disconnectedCallback() {}
+
+    connectedMoveCallback() {}
+
+    async #deleteGallery() {
+        this.#btnDeleteGallery.disabled = true;
+        this.#btnSaveGalleryImages.disabled = true;
+        this.#galleryListFieldset.disabled = true;
+        this.#btnInsertGallery.disabled = true;
+        this.#btnEditGalleryProperties.disabled = true;
+
+        const galleryId = Number(this.#galleryListFieldset.querySelector(':checked').dataset.galleryId);
+
+        if (!galleryId) throw new Error("Can't find gallery id to delete");
+
+        if (await this.#service.deleteGallery(galleryId)) {
+            this.#galleryListFieldset.disabled = false;
+        }
+    }
+
+    /** @param {HTMLUListElement} list */
+    #dropItem(list) {
+        this.#dragTarget?.style.removeProperty(this.#append ? 'border-bottom' : 'border-top');
+
+        if (this.#dragItem === this.#dragTarget)
+            return;
+
+        if (!this.#append && this.#dragItem === this.#dragTarget?.previousElementSibling)
+            return;
+
+        if (this.#append || !this.#dragTarget) {
+            list.appendChild(this.#dragItem);
+        }
+        else {
+            list.insertBefore(this.#dragItem, this.#dragTarget);
+        }
+
+        this.#btnSaveGalleryImages.disabled = false;
+    }
+
+    async #insertGallery() {
+        const checked = this.#galleryList.querySelector(':checked');
+
+        if (!checked)
+            throw new Error('Insert button clicked with no gallery selected');
+
+        if (!this.#insertTarget)
+            throw new Error('No place to insert gallery registered');
+
+        this.#service.getGallery(Number(checked.dataset.galleryId), gallery => {
+            if (!gallery)
+                throw new Error('Gallery not found');
+
+            const self = this.#self;
+            const finishEvent = self.getAttribute('finish-event');
+            
+            this.#insertTarget.dataset.galleryInsert = JSON.stringify(gallery);
+            if (finishEvent) {
+                const event = new CustomEvent(finishEvent, { bubbles: true });
+                self.dispatchEvent(event);
+            }
+        });
+    }
+
+    /** 
+     * @param {Gallery[]} galleries
+     * @returns {number|null}
+     */
+    #renderGalleryList(galleries) {
+        const selectedId = this.#galleryList.querySelector(':checked')?.dataset.galleryId;
+
+        this.#btnInsertGallery.disabled = true;
+        this.#btnEditGalleryProperties.disabled = true;
+        this.#galleryList.textContent = ''; // TODO: Loading spinner animation
+        
+        const listItems = [];
+        let selectedIdExists = false;
+        for (const gallery of galleries) {
+            const listItem = document.createElement('li');
+            listItem.classList.add('manager-list-item');
+            listItems.push(listItem);
+
+            const label = document.createElement('label');
+            label.classList.add('gallery-title');
+            label.title = gallery.title;
+            listItem.appendChild(label);
+
+            const input = document.createElement('input');
+            input.toggleAttribute('hidden', true);
+            input.type = 'radio';
+            input.name = 'galleries';
+            const data = input.dataset;
+            data.galleryId = gallery.id;
+            data.galleryTitle = gallery.title;
+            data.galleryDescription = gallery.description;
+            data.galleryCreatedOn = formatDate(gallery.createdOn);
+            data.galleryModifiedOn = formatDate(gallery.modifiedOn);
+            label.appendChild(input);
+
+            label.appendChild(document.createTextNode(gallery.title));
+
+            if (selectedId && selectedId === gallery.id) {
+                input.checked = true;
+                selectedIdExists = true;
+                this.#btnInsertGallery.disabled = false;
+                this.#btnEditGalleryProperties.disabled = false;
+            }
+        }
+
+        this.#galleryList.replaceChildren(...listItems);
+
+        if (selectedIdExists)
+            return selectedId;
+
+        return null;
+    }
+
+    /** @param {number|null} galleryId */
+    #renderImageLists(galleryId = null) {
+        this.#includedImagesFieldset.disabled = true;
+        this.#excludedImagesFieldset.disabled = true;
+        this.#btnDeleteGallery.disabled = true;
+        this.#btnSaveGalleryImages.disabled = true;
+
+        this.#service.getImages(images => {
+            const includedImages = [];
+            const excludedImages = new Map();
+
+            for (const image of images) {
+                const listItem = document.createElement('li');
+                listItem.classList = 'manager-list-item';
+                listItem.draggable = !!galleryId;
+
+                const label = document.createElement('label');
+                label.classList = 'image-title';
+                label.title = image.title;
+                listItem.appendChild(label);
+
+                const input = document.createElement('input');
+                input.type = 'hidden';
+                input.dataset.imageId = image.id;
+                label.appendChild(input);
+                
+                label.appendChild(document.createTextNode(image.title));
+
+                excludedImages.set(image.id, listItem);
+            }
+
+            if (!galleryId) {
+                this.#includedImagesUL.replaceChildren(...includedImages);
+                this.#excludedImagesUL.replaceChildren(...excludedImages.values());
+                this.#btnDeleteGallery.disabled = true;
+                return;
+            }
+
+            this.#service.getGallery(galleryId, gallery => {
+                for (const id of gallery.imageIds) {
+                    includedImages.push(excludedImages.get(id));
+                    excludedImages.delete(id);
+                }
+
+                this.#includedImagesUL.replaceChildren(...includedImages);
+                this.#excludedImagesUL.replaceChildren(...excludedImages.values());
+
+                this.#includedImagesFieldset.disabled = false;
+                this.#excludedImagesFieldset.disabled = false;
+                this.#btnDeleteGallery.disabled = !!this.#includedImagesUL.firstElementChild;
+            });
+
+            
+        });
+    }
+
+    async #saveGalleryImages() {
+        this.#btnSaveGalleryImages.disabled = true;
+        this.#btnDeleteGallery.disabled = true;
+        this.#galleryListFieldset.disabled = true;
+        this.#includedImagesFieldset.disabled = true;
+        this.#excludedImagesFieldset.disabled = true;
+
+        const galleryId = Number(this.#galleryListFieldset.querySelector(':checked').dataset.galleryId);
+
+        const imageIds = Array.from(this.#includedImagesFieldset.querySelectorAll('input'))
+            .map(input => Number(input.dataset.imageId));
+
+        if (await this.#service.updateGalleryImages(galleryId, imageIds)) {
+            this.#galleryListFieldset.disabled = false;
+            this.#includedImagesFieldset.disabled = false;
+            this.#excludedImagesFieldset.disabled = false;
+        }
+    }
+
+    async #saveGalleryProperties() {
+        this.#btnResetGalleryProperties.disabled = true;
+        this.#btnResetGalleryProperties.toggleAttribute('hidden', true);
+        this.#btnCancelGalleryProperties.disabled = true;
+        this.#btnSaveGalleryProperties.disabled = true;
+
+        const gallery = new GalleryDTO(new FormData(this.#galleryPropertiesForm));
+
+        if (Number(this.#inputId.value) === 0) {
+            if (await this.#service.createGallery(gallery)) {
+                this.#self.setAttribute('properties-mode', 'done');
+                this.#btnCancelGalleryProperties.disabled = false;
+            }
+            return;
+        }
+
+        if (await this.#service.updateGallery(gallery)) {
+            this.#self.setAttribute('properties-mode', 'done');
+            this.#btnCancelGalleryProperties.disabled = false;
+        }
+    }
+
+    /**
+     * @param {HTMLInputElement[]} fields 
+     */
+    #setGalleryPropertiesButtonsStatus(fields) {
+        const noChanges = fields.every(field => field.value === field.defaultValue);
+        this.#btnResetGalleryProperties.disabled = noChanges;
+        this.#btnResetGalleryProperties.toggleAttribute('hidden', noChanges);
+        this.#btnSaveGalleryProperties.disabled = noChanges || !!fields.find(field => !field.checkValidity());
+    }
+
+    #setupDragTargets() {
+        for (const list of [ this.#includedImagesUL, this.#excludedImagesUL ]) {
+            list.addEventListener('dragstart', event => {
+                event.stopPropagation();
+                this.#dragItem = event.target;
+            });
+        }
+
+        for (const container of [ this.#includedImagesContainer, this.#excludedImagesContainer ]) {
+            container.addEventListener('dragenter', event => {
+                event.preventDefault();
+
+                if (this.#dragItem.className !== 'manager-list-item')
+                    return;
+
+                /** @type {HTMLElement} */
+                let target = event.originalTarget;
+                let append = false;
+
+                switch (target.localName) {
+                    case 'images-included':
+                    case 'images-excluded':
+                        target = container.querySelector('ul').lastElementChild;
+                        append = true;
+                        break;
+
+                    case 'label':
+                        target = target.parentElement;
+                        break;
+
+                    default:
+                        target = container.querySelector('ul').firstElementChild;
+                        break;
+                }
+
+                this.#dragTarget?.style.removeProperty(this.#append ? 'border-bottom' : 'border-top');
+
+                this.#dragTarget = target;
+                this.#append = append;
+
+                if (target === this.#dragItem)
+                    return;
+
+                if (!append && target?.previousElementSibling === this.#dragItem)
+                    return;
+
+                this.#dragTarget?.style.setProperty(this.#append ? 'border-bottom' : 'border-top', '1px solid');
+            });
+
+            container.addEventListener('dragover', event => event.preventDefault());
+
+            container.addEventListener('dragleave', event => {
+                if (container.contains(event.relatedTarget))
+                    return;
+
+                this.#dragTarget?.style.removeProperty(this.#append ? 'border-bottom' : 'border-top');
+                this.#dragTarget = null;
+                this.#append = false;
+            });
+
+            container.addEventListener('drop', () => {
+                if (this.#dragItem?.className === 'manager-list-item')
+                    this.#dropItem(container.querySelector('ul'));
+
+                this.#dragItem = null;
+                this.#dragTarget = null;
+                this.#append = false;
+                this.#btnDeleteGallery.disabled = !!this.#includedImagesUL.firstElementChild;
+            });
+        }
+    }
+
+    /** @param {Gallery[]} galleries */
+    #updateGalleriesMarkup(galleries) {
+        const localDate = new Date(this.#self.dataset.modifiedOn);
+
+        if (this.#service.galleryModified <= localDate)
+            return;
+        
+        const galleryId = this.#renderGalleryList(galleries)
+        this.#renderImageLists(galleryId);
+
+        this.dataset.modifiedOn = formatDate(this.#service.galleryModified, true);
+    }
+
+    /** @param {Gallery} gallery */
+    #updateGalleryMarkup(gallery) {
+        /** @type {HTMLInputElement} */
+        const galleryInput = this.#galleryListFieldset.querySelector(`[data-gallery-id="${gallery.id}"]`);
+
+        if (!galleryInput)
+            throw new Error('Updated gallery not found in list');
+
+        const data = galleryInput.dataset;
+        data.galleryTitle = gallery.title;
+        data.galleryDescription = gallery.description;
+        data.galleryCreatedOn = formatDate(gallery.createdOn);
+        data.galleryModifiedOn = formatDate(gallery.modifiedOn);
+
+        galleryInput.nextSibling.textContent = gallery.title;
+        galleryInput.parentElement.title = gallery.title;
+
+        this.dataset.modifiedOn = formatDate(this.#service.galleryModified, true);
+
+        const checked = this.#galleryListFieldset.querySelector(':checked');
+        if (galleryInput !== checked)
+            return;
+
+        this.#renderImageLists(gallery.id);
+    }
+});

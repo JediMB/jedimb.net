@@ -1,64 +1,37 @@
-<?php declare(strict_types=1); ?>
+<?php declare(strict_types=1);
 
-<!-- Implement pagination and include the first page as part of the document -->
-<template>
-    <article class="flex flex-col">
-        <h2><a href="/blog/{id}">Title</a></h2>
-        <article-byline>
-            <date-created>6h ago</date-created>
-            <date-modified class="weak">last modified 4h ago</date-modified>
-        </article-byline>
-        <article-content>Content</article-content>
-    </article>
-</template>
+namespace Pages;
 
-<script type="module">
-    import blogPostApiService from "/js/services/api/blog-post-api.service.js";
+require_once 'services/blog-post.service.php';
+require_once 'utilities/component.utility.php';
 
-    const output = document.querySelector('main');
-    const template = output.querySelector('template');
+use Enums\UserPermission;
+use Services\BlogPostService;
+use Services\SessionService;
+use Utilities\Component;
 
-    const response = await blogPostApiService.getBlogPosts();
+/** @var string $baseRoute */
 
-    if (response.success)
-        renderBlogPosts(response.value);
-    else
-        renderErrors(response.errors);
+$sessionService = SessionService::getInstance();
+$blogPostService = BlogPostService::getInstance();
 
-    
-    function renderBlogPosts(data) {
-        if (!data || data.length < 1) {
-            renderErrors(['No blog posts found']);
-            return;
-        }
+$page ??= 1;
+$result = $blogPostService->getPublicBlogPosts($page);
 
-        data.forEach(post => {
-            const cloneNode = template.content.cloneNode(true);
-            cloneNode.querySelector('article > h2').innerHTML = `<a href="/blog${post.permalink}">` + post.title + '</a>';
-            const byline = cloneNode.querySelector('article-byline');
-            byline.querySelector('date-created').textContent = post.createdOn.toLocaleString();
-            
-            if (post.modifiedOn)
-                byline.querySelector('date-modified').textContent = '– Last modified ' + post.modifiedOn.toLocaleString();
-            else
-                byline.querySelector('date-modified').remove();
+$posts = $result['blogPosts'];
+$pagination = $result['pagination'];
 
-            cloneNode.querySelector('article-content').innerHTML = post.content +
-                (post.content.match('(.*(?<=<!--[ ]*SPLIT[ ]*-->))')
-                    ? `<a href="/blog${post.permalink}">Read more...</a>`
-                    : '');
+$editPermissions = $sessionService->hasPermissions([ UserPermission::Editing ]);
 
-            output.appendChild(cloneNode);
-        });
-    }
+?>
 
-    function renderErrors(errors) {
-        errors?.forEach(error => {
-            const errorNode = document.createElement('div');
-            errorNode.classList.add('error');
-            errorNode.textContent = error;
+<?php if ($sessionService->hasPermissions([ UserPermission::Publishing ])): ?>
+    <?php Component::include('blog/blog-head') ?>
+<?php endif ?>
 
-            output.appendChild(errorNode);
-        });
-    }
-</script>
+<?php Component::include('blog/blog-view', [
+    'posts' => $posts,
+    'pagination' => $pagination,
+    'baseRoute' => $baseRoute,
+    'editPermissions' => $editPermissions
+]) ?>

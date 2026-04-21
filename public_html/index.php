@@ -26,12 +26,12 @@ $requestPath = strtolower(
     // Remove query string from end
     parse_url(
         // Remove slashes and dots from start
-        ltrim($_SERVER['REQUEST_URI'], '/.'),
+        trim($_SERVER['REQUEST_URI'], '/.'),
         PHP_URL_PATH
     )
 );
 
-$sessionService = SessionService::getInstance(); /** @var SessionService $sessionService */
+$sessionService = SessionService::getInstance();
 
 handleBots();
 
@@ -45,20 +45,18 @@ if (!$sessionService->isLoggedIn())
 $navService = NavigationService::getInstance();
 $navService->menu[] = new MenuItem('About me', '/about');
 
-if ($requestPath === '')
-    servePHP([
-        'pagePath' => PATH_HOMEPAGE,
-        'links' => true
-    ]);
+$pageNumber = separatePageNumber($requestPath);
+
+handleHome($requestPath, $pageNumber);
 
 foreach (SPECIAL_PATHS as $request => $path) {
     if ($requestPath === $request)
         servePHP([ 'pagePath' => $path ]);
 }
 
-handleVirtualPages($requestPath);
+handleVirtualPages($requestPath, $pageNumber);
 
-handleBlogRequests($requestPath);
+handleBlogRequests($requestPath, $pageNumber);
 
 $isForbidden = false;
 $realPath = getRealPath($requestPath, $isForbidden);
@@ -66,17 +64,23 @@ $realPath = getRealPath($requestPath, $isForbidden);
 if (!$realPath)
     servePHP([
         'header' => 'HTTP/1.1 404 Not Found',
-        'pagePath' => PATH_ERROR404
+        'pagePath' => PATH_ERROR404,
+        'baseRoute' => $requestPath
     ]);
 
 if ($isForbidden)
     servePHP([
         'header' => 'HTTP/1.1 403 Forbidden',
-        'pagePath' => PATH_ERROR403
+        'pagePath' => PATH_ERROR403,
+        'baseRoute' => $requestPath
     ]);
 
 if (isPHP($realPath))
-    servePHP([ 'pagePath' => $realPath ]);
+    servePHP([
+        'pagePath' => $realPath,
+        'baseRoute' => $requestPath,
+        'page' => $pageNumber
+    ]);
 
 // Serve asset file from filesystem
 return false;

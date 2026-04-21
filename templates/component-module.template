@@ -1,0 +1,11 @@
+export default class {pascal_name}Component extends HTMLElement {
+    constructor() { super(); }
+
+    connectedCallback() {}
+
+    connectedMoveCallback() {}
+
+    disconnectedCallback() {}
+}
+
+customElements.define('{base_name}-component', {pascal_name}Component);

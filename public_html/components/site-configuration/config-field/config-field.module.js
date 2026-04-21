@@ -11,13 +11,13 @@ class ConfigField {
         const components = Array.from(document.querySelectorAll('config-field-component'));
         this.#components = components;
 
-        const textFields = components.map(c => c.querySelector('input[type="text"]'));
+        const configFields = components.map(c => c.querySelector('input[config-field]'));
         const toggles = components.map(c => c.querySelector('input[type="checkbox"]'));
         const errorContainers = components.map(c => c.querySelector('[input-errors]'));
         const restoreButtons = components.map(c => c.querySelector('button[restore-input]'));
         
         components.forEach((component, key) => {
-            const textField = textFields[key];
+            const textField = configFields[key];
             const restoreButton = restoreButtons[key];
             const toggle = toggles[key];
             const errorContainer = errorContainers[key];
@@ -46,7 +46,7 @@ class ConfigField {
 
                 this.#emitChanges(
                     components.some(c => c.hasAttribute('has-changes')),
-                    textFields.every(t => t.checkValidity())
+                    configFields.every(t => t.checkValidity())
                 );
             });
 
@@ -60,7 +60,7 @@ class ConfigField {
                 
                 this.#emitChanges(
                     components.some(c => c.hasAttribute('has-changes')),
-                    textFields.every(t => t.checkValidity())
+                    configFields.every(t => t.checkValidity())
                 );
             });
 
@@ -85,11 +85,11 @@ class ConfigField {
                 component.toggleAttribute('has-changes', hasChanges);
                 this.#emitChanges(
                     components.some(c => c.hasAttribute('has-changes')),
-                    textFields.every(t => t.checkValidity())
+                    configFields.every(t => t.checkValidity())
                 );
             });
 
-            component.removeAttribute('style');
+            component.removeAttribute('hidden');
         });
     }
 
@@ -102,25 +102,30 @@ class ConfigField {
             .filter(c => c.hasAttribute('has-changes'))
             .map(c => {
                 const id = Number(c.querySelector('input[type="hidden"]').value.trim());
-                const textBox = c.querySelector('input[type="text"]');
+                /** @type {HTMLInputElement} */
+                const configInput = c.querySelector('input[config-field]');
+
+                const value = configInput.type === 'number'
+                    ? Number(configInput.value)
+                    : configInput.value.trim();
 
                 if (id < 1)
                     return new Configuration({
                         id: 0,
-                        name: textBox.dataset.constant.trim(),
-                        value: textBox.value.trim(),
+                        name: configInput.dataset.constant.trim(),
+                        value: value,
                         isActive: true
                     });
 
                 const toggle = c.querySelector('input[type="checkbox"]');
 
-                const data = { id: id, name: textBox.dataset.constant.trim() };
+                const data = { id: id, name: configInput.dataset.constant.trim() };
 
                 if (toggle.checked !== Boolean(toggle.dataset.originalValue))
                     data.isActive = !toggle.checked;
 
-                if (!toggle.checked && this.#hasNewValue(textBox))
-                    data.value = textBox.value.trim();
+                if (!toggle.checked && this.#hasNewValue(configInput))
+                    data.value = value;
                 
                 return new Configuration(data);
             });
@@ -132,6 +137,8 @@ class ConfigField {
         switch (inputElement.getAttribute('type')) {
             case 'text':
                 return inputElement.value.trim() !== originalValue.trim();
+            case 'number':
+                return inputElement.value !== originalValue;
             case 'checkbox':
                 return inputElement.checked !== Boolean(originalValue.trim());
             default:

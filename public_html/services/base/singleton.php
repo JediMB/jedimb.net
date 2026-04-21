@@ -13,7 +13,8 @@ class Singleton {
         throw new Exception('Cannot serialize a singleton.');
     }
 
-    public static function getInstance() {
+
+    public static function getInstance() : static {
         $subclass = static::class;
 
         if (isset(self::$instances[$subclass]))

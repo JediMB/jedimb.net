@@ -1,29 +1,26 @@
-import Emitter from '../utilities/emitter.js';
-import sessionApiService from './api/session-api.service.js';
-import { cookieUserKey, cookieTokenKey, cookieValidatorKey } from '../constants.js';
+import Emitter from '/js/utilities/emitter.js';
+import User from '/js/models/user/user.model.js';
+import sessionApiService from '/js/services/api/session-api.service.js';
+import { cookieUserKey, cookieTokenKey, cookieValidatorKey } from '/js/constants/meta-constants.js';
 
 export { sessionService as default };
 
 class SessionService {
     #sessionApiService;
 
-    isLoggedIn = new Emitter(undefined);
-    user = new Emitter(undefined);
-
-    #cookieKeys = [
-        document.querySelector(`meta[name="${cookieUserKey}"]`).content,
-        document.querySelector(`meta[name="${cookieTokenKey}"]`).content,
-        document.querySelector(`meta[name="${cookieValidatorKey}"]`).content
-    ];
+    /** @type {Emitter<boolean>} */ isLoggedIn = new Emitter(undefined);
+    /** @type {Emitter<User>} */ user = new Emitter(undefined);
 
     constructor() {
         this.#sessionApiService = sessionApiService;
 
-        this.isLoggedIn.subscribe(value => {
-            if (value === true)
-                this.#fetchUser();
-            else
-                this.user.setValue(null);
+        this.isLoggedIn.subscribe({
+            next: value => {
+                if (value === true)
+                    this.#fetchUser();
+                else
+                    this.user.setValue(null);
+            }
         });
 
         this.#sessionApiService.getStatus().then(status => {
@@ -59,9 +56,9 @@ class SessionService {
 
     #setCookies({ userId = '', token = '', validator = '', expiresOn = new Date(0) }) {
         const expires = expiresOn.toUTCString();
-        document.cookie = `${this.#cookieKeys[0]}=${userId}; expires=${expires};`;
-        document.cookie = `${this.#cookieKeys[1]}=${token}; expires=${expires};`;
-        document.cookie = `${this.#cookieKeys[2]}=${validator}; expires=${expires};`;
+        document.cookie = `${cookieUserKey}=${userId}; expires=${expires}; sameSite=strict; secure;`;
+        document.cookie = `${cookieTokenKey}=${token}; expires=${expires}; sameSite=strict; secure;`;
+        document.cookie = `${cookieValidatorKey}=${validator}; expires=${expires}; sameSite=strict; secure;`;
     }
 
     async #fetchUser() {

@@ -7,13 +7,15 @@ require_once 'services/db/configuration.db.service.php';
 
 use Exception;
 use Models\DB\Configuration;
-use Models\DTO\Configuration as DTOConfiguration;
+use Models\DTO\Configuration as ConfigurationDTO;
 use Services\Base\Singleton;
 use Services\DB\ConfigurationDBService;
 
 class ConfigurationService extends Singleton {
     private readonly ConfigurationDBService $configDbService;
+    /** @var (array<string, Configuration>) $configuration */
     private readonly array $configuration;
+    /** @var (array<string, string|int>) */
     private readonly array $constants;
 
     protected function __construct() {
@@ -24,6 +26,8 @@ class ConfigurationService extends Singleton {
         $this->constants = get_defined_constants(true)['user'] ?? [];
     }
 
+
+    /** @return (array{'default': int|string, 'config': ?Configuration}) */
     public function getConfiguration(string $name) : array {
         if (empty($this->constants[$name]))
             throw new Exception('Trying to access nonexistent constant');
@@ -36,16 +40,27 @@ class ConfigurationService extends Singleton {
         ];
     }
 
-    public function getUserConstant(string $name) : Configuration|string {
+    public function getUserConstant(string $name) : Configuration|string|int {
         if (empty($this->constants[$name]))
             throw new Exception('Trying to access nonexistent constant');
 
         if ($this->noActiveConfiguration($name))
             return $this->constants[$name];
 
-        return $this->configuration[$name]->value;
+        $configItem = $this->configuration[$name];
+
+        $value = $configItem->valueInt ?? $configItem->valueString;
+
+        if (gettype($value) !== gettype($this->constants[$name]))
+            throw new Exception("Retreieved configuration value type does not match constant value type for $name");
+
+        return $value;
     }
 
+    /**
+     * @param string[] $names
+     * @return (array<string, Configuration|string|int>)
+     */
     public function getUserConstants(array $names) : array {
         $constants = [];
 
@@ -61,11 +76,25 @@ class ConfigurationService extends Singleton {
             || $this->configuration[$name]->isActive === false;
     }
 
-    public function createConfiguration(DTOConfiguration $object) : Configuration {
+    public function createConfiguration(ConfigurationDTO $object) : Configuration {
+        if (!isset($this->constants[$object->name]))
+            throw new Exception("Trying to create a configuration for a non-eligible constant name {$object->name}");
+
+        if (gettype($object->value) !== gettype($this->constants[$object->name]))
+            throw new Exception("Submitted configuration value type does not match constant value type for {$object->name}");
+
         return $this->configDbService->createConfiguration($object);
     }
 
     public function updateConfiguration(Configuration $object) : Configuration {
+        if (!isset($this->constants[$object->name]))
+            throw new Exception("Trying to update a configuration for non-eligible constant name {$object->name}");
+
+        $value = $object->valueInt ?? $object->valueString;
+
+        if (gettype($value) !== gettype($this->constants[$object->name]))
+            throw new Exception("Submitted configuration value type does not match constant value type for {$object->name}");
+
         return $this->configDbService->updateConfiguration($object);
     }
 }

@@ -17,7 +17,7 @@ else
     $year = date('Y', filectime($pagePath));
 
 if ($year !== $siteYear)
-    $year = $siteYear . '–' . $year;
+    $year = $siteYear . '&ndash;' . $year;
 
 ?>
 

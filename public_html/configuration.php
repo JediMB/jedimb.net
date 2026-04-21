@@ -5,10 +5,12 @@ define('CONFIGURABLE_CONSTANTS', [
     'SITE_TAGLINE',
     'SITE_AUTHOR',
     'META_DESCRIPTION',
-    'META_KEYWORDS'
+    'META_KEYWORDS',
+    'PAGINATION_PAGE_SIZE'
 ]);
 
 define('PATH_HOMEPAGE', 'pages/blog.php');
+define('PATH_BLOG_PREFIX', 'blog');
 define('PATH_API_DIR', 'api');
 define('PATH_COMPONENT_MODULE_DIR_ALIAS', 'js/components');
 define('PATH_COMPONENTS_DIR', 'components');
@@ -16,6 +18,8 @@ define('PATH_REALPAGES_DIR', 'pages');
 define('PATH_ERROR403', 'errors/403.php');
 define('PATH_ERROR404', 'errors/404.php');
 define('PATH_CSS_DEFAULT', 'css/style.css');
+define('PATH_IMAGE_GALLERY', 'images/gallery');
+define('PATH_TEMP_DIR', 'tmp');
 
 define('SPECIAL_PATHS', [
     'login' => PATH_REALPAGES_DIR . '/account/login.php'
@@ -36,25 +40,70 @@ define('SESSION_STATUS_KEY', 'account_loggedin');
 define('SESSION_TOKEN_KEY', 'account_token');
 define('SESSION_USER_KEY', 'account_user');
 
-define('INPUT_LENGTH', [
-    'username' => ['min' => 5, 'max' => 50],
-    'password' => ['min' => 10, 'max' => 100]
+define('UPLOAD_IMAGE_SIZE_LIMIT', 2097152);
+define('UPLOAD_IMAGE_MIME_TYPES', [
+    "image/png" => "png",
+    "image/jpeg" => "jpg"
 ]);
 
-define('REGEX_BLOG_PATH', '/^blog(\/[0-9]{4}\/[0-9]{2}\/[0-9]{2}\/[-a-z0-9]*)$/');
-define('REGEX_MASTOLINK', '/^http[s]?:\/\/([-.a-z0-9]+)\/@([-.a-z0-9]+)\/([0-9]+)$/');
+define('INPUT_LENGTH', [
+    'username' => [ 'min' => 5, 'max' => 50 ],
+    'password' => [ 'min' => 10, 'max' => 100 ],
+    'gallery_title' => [ 'min' => 1, 'max' => 50 ],
+    'gallery_description' => [ 'min' => 10, 'max' => 250 ],
+    'image_title' => [ 'min' => 1, 'max' => 50 ],
+    'image_description' => [ 'min' => 10, 'max' => 500 ],
+    'page_title' => [ 'min' => 1, 'max' => 50 ],
+    'page_description' => [ 'min' => 10, 'max' => 250 ],
+    'page_sociallink' => [ 'min' => 1, 'max' => 100 ],
+    'blog_permalink_title' => [ 'min' => 0, 'max' => 50 ]
+]);
 
-define('REGEX_INPUT', [
+define('INPUT_ALLOWED_TAGS', [
+    'div', 'p', 'h3', 'h4', 'h5',
+    'a', 'b', 'i', 'u',
+    'br', 'hr', 'img-gallery', 'img-wrapper'
+]);
+
+define('REGEX_PATH_WITH_PAGE', '/^(?:(.+)\/)?(\d{1,7})\/?$/');
+define('REGEX_BLOG_PATH', '/^'. PATH_BLOG_PREFIX .'(\/\d{4}\/\d{2}\/\d{2}\/[a-z\d\-]*)$/');
+
+define('REGEX_PHP', [
+    'default-text' => '/^(?!\s)[\w@.,!?\-\' à-æÀ-Æè-ïÈ-Ïò-öÒ-Öø-ýØ-Ýÿ]+$/',
     'username' => '/^(?!\s)[\w@.!?\-\' à-æÀ-Æè-ïÈ-Ïò-öÒ-Öø-ýØ-Ýÿ]+(?<!\s)$/',
     'password' => '/^(?=.*[a-z])(?=.*[A-Z])[\w@.!#$&?*+\-\$£€à-æÀ-Æè-ïÈ-Ïò-öÒ-Öø-ýØ-Ýÿ]+$/',
-    'config-text' => '/^(?!\s)[\w@.,!?\-\' à-æÀ-Æè-ïÈ-Ïò-öÒ-Öø-ýØ-Ýÿ]+$/',
-    'config-item' => '/^(?!\s)[a-z0-9\-\' à-æè-ïò-öø-ýÿ]+$/'
+    'config-item' => '/^(?!\s)[a-z0-9\-\' à-æè-ïò-öø-ýÿ]+$/',
+    'mastolink' => '/^http[s]?:\/\/([-.a-z0-9]+)\/@([-.a-z0-9]+)\/([0-9]+)$/',
+    'permalink-title' => '/^[a-z\d\-]*$/',
+    'permalink-date-title' => '/^\/(\d{4}\/\d{2}\/\d{2})\/([a-z\d\-]*)$/',
+    'email' => '/(?!.*\.{2,})^(mailto:)?[\w\-\.\%\/\+]{1,64}\@[\w\.]{1,64}\.[a-zA-Z0-9\-]{1,32}$/',
+    'url' => '/^(((ftp|http|https):\/\/)|(\/)|(..\/))(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-\/]))?$/',
+    'pagebreak-tag' => '/<hr page-break(?:="")?>/'
+]);
+
+// Copied and pasted with the front-slashes removed to avoid frequent trimming
+define('REGEX_HTML', [
+    'default-text' => '^(?!\s)[\w@.,!?\-\' à-æÀ-Æè-ïÈ-Ïò-öÒ-Öø-ýØ-Ýÿ]+$',
+    'username' => '^(?!\s)[\w@.!?\-\' à-æÀ-Æè-ïÈ-Ïò-öÒ-Öø-ýØ-Ýÿ]+(?<!\s)$',
+    'password' => '^(?=.*[a-z])(?=.*[A-Z])[\w@.!#$&?*+\-\$£€à-æÀ-Æè-ïÈ-Ïò-öÒ-Öø-ýØ-Ýÿ]+$',
+    'config-item' => '^(?!\s)[a-z0-9\-\' à-æè-ïò-öø-ýÿ]+$',
+    'mastolink' => '^http[s]?:\/\/([-.a-z0-9]+)\/@([-.a-z0-9]+)\/([0-9]+)$',
+    'permalink-title' => '^[a-z\d\-]*$',
+    'permalink-date-title' => '^\/(\d{4}\/\d{2}\/\d{2})\/([a-z\d\-]*)$',
+    'email' => '(?!.*\.{2,})^(mailto:)?[\w\-\.\%\/\+]{1,64}\@[\w\.]{1,64}\.[a-zA-Z0-9\-]{1,32}$',
+    'url' => '^(((ftp|http|https):\/\/)|(\/)|(..\/))(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-\/]))?$',
+    'pagebreak-tag' => '<hr page-break(?:="")?>'
 ]);
 
 define('META_DESCRIPTION', "JediMB's indie website");
 define('META_KEYWORDS', 'indie, programming, games, blog, webdev');
 
+define('TEXT_BLOG_POST_READ_MORE', 'Read more...');
 define('TEXT_INVALID_REQUEST', 'Invalid request method');
+define('TEXT_MALFORMED_REQUEST', 'Malformed request body');
+define('TEXT_IMAGE_SIZE_LIMIT', 'Uploaded image exceeds size limit');
+define('TEXT_IMAGE_COULD_NOT_BE_CREATED', 'Failed to create file');
+define('TEXT_IMAGE_DISALLOWED_TYPE', 'Disallowed image content type: ');
 define('TEXT_NOT_LOGGED_IN', 'User not logged in');
 define('TEXT_INSUFFICIENT_PERMISSIONS', 'Insufficient user permissions');
 define('TEXT_USERNAME', 'username');
@@ -63,8 +112,8 @@ define('TEXT_INPUT_MISSING', ' required');
 define('TEXT_INPUT_TOOSHORT', ' too short');
 define('TEXT_INPUT_TOOLONG', ' too long');
 define('TEXT_INPUT_MISMATCH', ' format invalid');
-define('TEXT_USERNAME_LENGTH', INPUT_LENGTH['username']['min'] . '–' . INPUT_LENGTH['username']['max'] . ' characters.');
-define('TEXT_PASSWORD_LENGTH', INPUT_LENGTH['password']['min'] . '–' . INPUT_LENGTH['password']['max'] . ' characters.');
+define('TEXT_USERNAME_LENGTH', INPUT_LENGTH['username']['min'] . '&ndash;' . INPUT_LENGTH['username']['max'] . ' characters.');
+define('TEXT_PASSWORD_LENGTH', INPUT_LENGTH['password']['min'] . '&ndash;' . INPUT_LENGTH['password']['max'] . ' characters.');
 define('TEXT_USERNAME_CHARS', 'A-Z, ÅÄÖÆØ, accented vowels, numbers, apostrophes, spaces between words, and @.!?-.');
 define('TEXT_PASSWORD_CHARS', 'Uppercase and lowercase characters required. A-Z, ÅÄÖÆØ, accented vowels, numbers, and @.!#$&?*+-$£€.');
 define('TEXT_INCORRECT_LOGIN', 'Incorrect username or password');
@@ -74,6 +123,8 @@ define('TEXT_CONFIG_ITEM_CHARS', 'Lowercase characters, numbers, apostrophes, an
 define('PAGE_ADMIN_TITLE', 'Administration');
 define('PAGE_ADMIN_SECTION_SITE', 'Site settings');
 define('PAGE_ADMIN_USEDEFAULT', 'Use default');
+
+define('PAGINATION_PAGE_SIZE', 10);
 
 define('DB_OPTIONS', [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]);
 define('DB_DATETIME_FORMAT', 'Y-m-d H:i:s.u e');
@@ -118,6 +169,13 @@ define('MENU_MAIN', [
         'title' => 'About me',
         'url' => '/about'
     ]
+]);
+
+define('META_CONSTANTS', [
+    'cookieUserKey' => COOKIE_USER_KEY,
+    'cookieTokenKey' => COOKIE_TOKEN_KEY,
+    'cookieValidatorKey' => COOKIE_VALIDATOR_KEY,
+    'imageGalleryPath' => '/' . PATH_IMAGE_GALLERY . '/'
 ]);
 
 ?>

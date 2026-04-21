@@ -2,26 +2,45 @@
 
 namespace Components;
 
+require_once 'utilities/datetime.utility.php';
+
 use Exception;
+use Utilities\Component;
+use Utilities\DateTime;
 
-if (!isset($createdOn) || !isset($modifiedOn))
-    throw new Exception('Created/Modified Dates component requires createdOn and modifiedOn and variables');
+/** @var bool $relativeDate */
 
-$createdString = $createdOn->format('Y-m-d H:i:s');
- 
+if (empty($createdOn))
+    throw new Exception('Created/Modified Dates component requires createdOn variable');
+
+$relativeDate ??= false;
+if (!is_bool($relativeDate))
+    throw new Exception('Non-boolean value provided for relativeDate variable');
+
+Component::noContainer();
+
+$createdString = DateTime::toString($createdOn);
+$relativeDateString = $relativeDate ? 'true' : 'false';
+
 ?>
 
 <span>
-    <date-time server-time="<?= $createdString ?>" class="capitalize">
-        <?= $createdString ?>
+    <date-time class="created-on"
+        date-string="<?= $createdString ?>"
+        relative-date="<?= $relativeDateString ?>"
+        >
+        <?=  $createdString ?>
     </date-time>
 </span>
 
 <?php if (!empty($modifiedOn)): ?>
-    <?php $modifiedString = $modifiedOn->format('Y-m-d H:i:s') ?>
+    <?php $modifiedString = DateTime::toString($modifiedOn) ?>
     <span class="weak">
-        – Last modified 
-        <date-time server-time="<?= $modifiedString ?>">
+        &ndash; Last modified 
+        <date-time class="modified-on"
+            date-string="<?= $modifiedString ?>"
+            relative-date="<?= $relativeDateString ?>"
+            >
             <?= $modifiedString ?>
         </date-time>.
     </span>

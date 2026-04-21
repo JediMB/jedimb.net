@@ -6,9 +6,9 @@ require_once 'utilities/component.utility.php';
 
 use Utilities\Component;
 
-Component::renderOnce(__FILE__);
-Component::renderCSS(__FILE__);
-Component::queueJS(__FILE__);
+Component::renderOnce();
+Component::renderCSS();
+Component::queueJS(__FILE__, 'module');
 
 ?>
 
@@ -17,7 +17,7 @@ Component::queueJS(__FILE__);
         <div>
             <label for="username">Username</label>
             <input type="text" name="username" id="username" placeholder="Username"
-                pattern="<?= trim(REGEX_INPUT['username'], '/') ?>" required
+                pattern="<?= REGEX_HTML['username'] ?>" required
                 data-too-short="Username too short: <?= TEXT_USERNAME_LENGTH ?>"
                 data-too-long="Username too long: <?= TEXT_USERNAME_LENGTH ?>"
                 data-mismatch="<?= TEXT_USERNAME_CHARS ?>"
@@ -30,7 +30,7 @@ Component::queueJS(__FILE__);
         <div>
             <label for="password">Password</label>
             <input type="password" name="password" id="password" placeholder="Password"
-                pattern="<?= trim(REGEX_INPUT['password'], '/') ?>" required
+                pattern="<?= REGEX_HTML['password'] ?>" required
                 data-too-short="Password too short: <?= TEXT_PASSWORD_LENGTH ?>"
                 data-too-long="Password too long: <?= TEXT_PASSWORD_LENGTH ?>"
                 data-mismatch="<?= TEXT_PASSWORD_CHARS ?>"
@@ -41,8 +41,10 @@ Component::queueJS(__FILE__);
             <div input-errors></div>
         </div>
         <div>
-            <input type="checkbox" name="rememberme" id="rememberme">
-            <label for="rememberme">Remember me</label>
+            <label>
+                <input type="checkbox" name="rememberme" id="rememberme">
+                Remember me
+            </label>
         </div>
         <button type="submit" class="btn btn-login" disabled="">Login</button>
     </form>

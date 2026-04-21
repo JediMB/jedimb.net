@@ -18,9 +18,11 @@ class AccountMenu {
                 this.#sessionService.logout();
         });
 
-        this.#sessionService.isLoggedIn.subscribe(value => {
-            this.#menuLoggedIn.classList.toggle('hidden', !value);
-            this.#menuLoggedOut.classList.toggle('hidden', !!value);
+        this.#sessionService.isLoggedIn.subscribe({
+            next: value => {
+                this.#menuLoggedIn.classList.toggle('hidden', !value);
+                this.#menuLoggedOut.classList.toggle('hidden', !!value);
+            }
         });
     }
 

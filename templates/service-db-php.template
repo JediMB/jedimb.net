@@ -1,0 +1,33 @@
+<?php declare(strict_types=1);
+
+namespace Services{namespace};
+
+require_once 'services/base/base.db.service.php';
+
+use Exception;
+use PDO;
+use PDOException;
+use Services\Base\BaseDBService;
+
+class {pascal_name}DbService extends BaseDBService {
+    protected function __construct() {
+        parent::__construct();
+    }
+
+    public function get{pascal_name}(int $id) : mixed {
+        try {
+            ${camel_name} = $this->dbService->selectById('{snake_name}', $id);
+
+            if (!${camel_name})
+                throw new Exception('Invalid {snake_name} ID');
+
+            return ${camel_name}; // new ModelName(${camel_name})
+
+        }
+        catch (PDOException $e) {
+            throw new Exception('Database error: ' . $e->getMessage());
+        }
+    }
+}
+
+?>

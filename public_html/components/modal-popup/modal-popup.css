@@ -1,0 +1,27 @@
+modal-popup-component {
+    position: fixed;
+    z-index: 999;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: hsl(0 0% 25% / 0.5);
+
+    & modal-popup {
+        display: block;
+        width: 700px;
+        max-width: 95dvw;
+        max-height: 95dvh;
+        --container-max-height: calc(95dvh - (var(--size-m, 1rem) * 2));
+        border-radius: var(--size-m, 1rem);
+        padding: var(--size-m, 1rem);
+        background-color: var(--clr-bg, black);
+        color: var(--clr-text, white);
+    }
+
+    & modal-popup-content {
+        display: block;
+        width: 100%;
+        height: 100%;
+    }
+}

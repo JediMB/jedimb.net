@@ -18,7 +18,7 @@ $title = 'About me';
             <label for="input-pc-and-me">PC and Me</label>
             <template id="about-pc-and-me">
                 <section>
-                    <h3>PC and Me</h3>
+                    <h3 class="h3-about-me">PC and Me</h3>
                     <p>
                         Online or off, I've always been a <i>"computer wiz"</i> who's been quick to adapt to and learn new things. I've used <i>MS-DOS</i>
                         and every major Microsoft Windows home release from <i>Windows 3.1</i> through <i>Windows 10</i>, and assembled or upgraded
@@ -49,7 +49,7 @@ $title = 'About me';
             <label for="input-coding-pt-1">Coding, Pt. 1</label>
             <template id="about-coding-pt-1">
                 <section>
-                    <h3>Coding, Pt. 1</h3>
+                    <h3 class="h3-about-me">Coding, Pt. 1</h3>
                     <p>
                         While not programming per se, I had my first encounter with HTML and CSS as a child in 1997, when a fresh, new computer magazine called
                         <i><a href="https://sv.wikipedia.org/wiki/PC_f%C3%B6r_alla" target="_blank">PC för alla</a></i> (lit. "PC for everyone") included tutorials
@@ -84,7 +84,7 @@ $title = 'About me';
             <label for="input-coding-pt-2">Coding, Pt. 2</label>
             <template id="about-coding-pt-2">
                 <section>
-                    <h3>Coding, Pt. 2</h3>
+                    <h3 class="h3-about-me">Coding, Pt. 2</h3>
                     <p>
                         A few years and some misadventures in Ireland later, I ended up getting a programming internship at a company in Stockholm. It started out
                         with some quick courses covering C#, web applications, ASP.NET and SQL. In hindsight, I realize many of my problems back then stemmed from
@@ -149,7 +149,7 @@ $title = 'About me';
             <label for="input-coding-supplemental">Coding, Supplemental</label>
             <template id="about-coding-supplemental">
                 <section>
-                    <h3>Coding, Supplemental</h3>
+                    <h3 class="h3-about-me">Coding, Supplemental</h3>
                     <p>
                         So, what's next? Well, I'm applying for jobs, of course.
                     </p>

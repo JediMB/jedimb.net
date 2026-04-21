@@ -1,0 +1,7 @@
+blog-head-component {
+    margin-bottom: var(--size-l);
+}
+
+#blog-head__btn-add {
+    border-radius: 9999px;
+}

@@ -1,0 +1,229 @@
+image-gallery-component {
+    display: block flex;
+    flex-direction: column;
+    gap: var(--size-s);
+    height: 100%;
+}
+
+image-gallery-header {
+    display: block flex;
+    flex-direction: row;
+    gap: var(--size-m);
+    align-items: center;
+}
+
+manager-tabs {
+    display: block;
+    margin-bottom: -1px;
+    user-select: none;
+}
+
+.tab-list {
+    display: block flex;
+    border-bottom: 1px solid var(--clr-disabled-background);
+    margin-bottom: var(--size-m);
+}
+
+.tab-item {
+    margin-bottom: -1.5px;
+
+    &:has(button.active) {
+        border-bottom: 3px solid var(--clr-primary);
+    }
+}
+
+.tab-images,
+.tab-galleries {
+    display: inline-block;
+    padding: var(--size-s);
+}
+
+image-manager-component,
+gallery-manager-component,
+gallery-list,
+manager-gallery-images {
+    display: block flex;
+    height: clamp(2ch, 36ch, calc(var(--container-max-height, 100%) - 12rem));
+    gap: var(--size-m);
+}
+
+gallery-properties {
+    height: clamp(2ch, 36ch, calc(var(--container-max-height, 100%) - 12rem));
+}
+
+.gallery-properties-form {
+    height: 100%;
+}
+
+manager-gallery-properties {
+    display: block flex;
+    flex-direction: column;
+    justify-content: space-between;
+    width: 100%;
+    height: 100%;
+}
+
+manager-files,
+image-properties,
+gallery-list,
+manager-gallery-images,
+gallery-properties {
+    min-height: 2ch;
+    overflow-y: scroll;
+    margin-bottom: var(--size-m);
+}
+
+images-included,
+images-excluded {
+    display: block;
+    min-height: 2ch;
+    overflow-y: scroll;
+}
+
+manager-images,
+manager-properties,
+manager-galleries,
+manager-selected-gallery {
+    display: block flex;
+    flex-direction: column;
+    justify-content: space-between;
+    width: 100%;
+}
+
+manager-images {
+    flex-basis: 40%;
+    user-select: none;
+}
+
+manager-properties {
+    flex-basis: 60%;
+
+    & form {
+        display: contents;
+    }
+}
+
+manager-galleries {
+    flex-basis: 33%;
+}
+
+manager-selected-gallery,
+manager-create-gallery {
+    flex-basis: 100%;
+}
+
+images-included,
+images-excluded,
+.buttons-add-remove {
+    flex-basis: 50%;
+}
+
+images-included fieldset,
+images-excluded fieldset {
+    padding-block-start: var(--size-s);
+}
+
+image-properties,
+gallery-properties {
+    display: block flex;
+    flex-direction: column;
+    gap: var(--size-xs);
+    font-size: 1rem;
+}
+
+image-properties,
+manager-gallery-images,
+gallery-properties {
+    border-left: 1px solid;
+    padding-inline: var(--size-m) var(--size-s);
+}
+
+manager-buttons {
+    display: block flex;
+    justify-content: space-between;
+    gap: var(--size-m);
+    padding: var(--size-s);
+}
+
+manager-properties manager-buttons,
+manager-selected-gallery manager-buttons {
+    padding-inline: var(--size-m) var(--size-s);
+}
+
+manager-gallery-images manager-buttons {
+    flex-direction: column;
+}
+
+[btn-reset]:disabled {
+    display: none;
+}
+
+.gallery-images-header {
+    border-bottom: 1px solid;
+    padding-block-end: var(--size-xs);
+}
+
+.image-title,
+.gallery-title {
+    display: block;
+    overflow-x: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+manager-images .image-title {
+    width: 24ch;
+}
+
+.gallery-title,
+manager-gallery-images .image-title {
+    width: 18ch;
+}
+
+manager-gallery-images .image-title {
+    cursor: move;
+    cursor: grab;
+
+    &:active {
+        cursor: grabbing;
+    }
+}
+
+.manager-list-item {
+    user-select: none;
+}
+
+.manager-list-item:has(input:disabled) {
+    background-color: var(--clr-disabled-background);
+    color: var(--clr-disabled-text);
+}
+
+.manager-list-item:has(input:enabled):hover {
+    background-color: var(--clr-primary-dark);
+}
+
+.manager-list-item:has(input:enabled:checked) {
+    background-color: var(--clr-text);
+    color: var(--clr-bg);
+}
+
+.image-header {
+    text-align: center;
+}
+
+.image-preview {
+    margin-inline: 2rem;
+    border: 1px dashed white;
+
+    & img {
+        width: 100%;
+        height: auto;
+        aspect-ratio: 16/9;
+        object-fit: contain;
+    }
+}
+
+.image-dates {
+    font-size: 0.8em;
+    line-height: 1.5em;
+}

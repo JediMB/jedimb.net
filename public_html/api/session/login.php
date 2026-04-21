@@ -44,7 +44,7 @@ switch ( $_SERVER['REQUEST_METHOD'] ) {
             return [ 'success' => true, 'value' => $response ];
         }
         catch (InputException $e) {
-            return [ 'success' => false, 'errors' => $e->getMessages() ];
+            return [ 'success' => false, 'errors' => $e->getErrors() ];
         }
         catch (Exception $e) {
             return [ 'success' => false, 'errors' => [$e->getMessage()] ];
