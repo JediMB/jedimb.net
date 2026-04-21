@@ -23,6 +23,10 @@ $configService = ConfigurationService::getInstance(); /** @var ConfigurationServ
             <button type="submit" class="btn" disabled>Save</button>
         </div>
 
+        <svg is-loading width="2em" height="2em">
+            <use xlink:href="#svg-loading" href="#svg-loading"></use>
+        </svg>
+
         <?php foreach (CONFIGURABLE_CONSTANTS as $constantName): ?>
             <?php
             $id = strtolower(str_replace('_', '-', $constantName));

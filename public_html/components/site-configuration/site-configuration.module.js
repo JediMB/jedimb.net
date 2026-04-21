@@ -13,7 +13,8 @@ class SiteConfiguration {
 
         const form = component.querySelector('form');
         const fieldset = form.querySelector('fieldset');
-        const saveButton = form.querySelector('button[type="submit"]');
+        const saveButton = fieldset.querySelector('button[type="submit"]');
+        const isLoading = fieldset.querySelector('[is-loading]');
 
         configField.onChanges((hasChanges, isValid) => {
             this.#fieldsUnchanged = !hasChanges;
@@ -29,6 +30,8 @@ class SiteConfiguration {
             event.preventDefault();
             this.#save(fieldset);
         });
+
+        isLoading.remove();
     }
 
     async #save(fieldset) {
