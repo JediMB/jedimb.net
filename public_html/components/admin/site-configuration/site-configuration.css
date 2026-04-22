@@ -1,3 +1,7 @@
+site-configuration-component {
+    display: block;
+}
+
 site-configuration-component form,
 site-configuration-component fieldset {
     display: flex;
