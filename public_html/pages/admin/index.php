@@ -17,7 +17,7 @@ $title = PAGE_ADMIN_TITLE;
 <?php Component::include('tabs', [
     'containerId' => 'admin__content',
     'tabs' => [
-        [ 'title' => 'Site settings', 'targetId' => 'admin-site' ],
+        [ 'title' => 'Site settings', 'targetId' => 'admin-site', 'active' => '' ],
         [ 'title' => 'Posts', 'targetId' => 'admin-posts' ]
     ]
 ]) ?>
