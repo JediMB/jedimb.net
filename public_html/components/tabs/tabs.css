@@ -1,0 +1,9 @@
+tabs-component {
+    font-size: inherit;
+}
+
+.tabs__list {
+    display: block flex;
+    flex-direction: row;
+    gap: var(--size-s);
+}
