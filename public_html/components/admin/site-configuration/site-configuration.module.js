@@ -1,6 +1,6 @@
 import configurationApiService from "/js/services/api/configuration-api.service.js";
-import configField from "/js/components/site-configuration/config-field/config-field.module.js";
-import configCSV from "/js/components/site-configuration/config-csv/config-csv.module.js";
+import configField from "/js/components/admin/site-configuration/config-field/config-field.module.js";
+import configCSV from "/js/components/admin/site-configuration/config-csv/config-csv.module.js";
 
 class SiteConfiguration {
     #configApiService;

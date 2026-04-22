@@ -10,9 +10,8 @@ use Utilities\Component;
 $sessionService = SessionService::getInstance(); /** @var SessionService $sessionService */
 $sessionService->enforcePermissions([ UserPermission::Configuration ]);
 
-
 $title = PAGE_ADMIN_TITLE;
 
 ?>
 
-<?php Component::include('site-configuration') ?>
+<?php Component::include('admin/site-configuration') ?>

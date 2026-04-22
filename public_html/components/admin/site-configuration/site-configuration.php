@@ -33,11 +33,11 @@ $configService = ConfigurationService::getInstance(); /** @var ConfigurationServ
             $label =  ucwords(str_replace('-', ' ', $id));
 
             if ($constantName === 'META_KEYWORDS')
-                Component::include('site-configuration/config-csv', [
+                Component::include('admin/site-configuration/config-csv', [
                     'id' => $id, 'label' => $label, 'name' => $constantName
                 ] + $configService->getConfiguration($constantName));
             else
-                Component::include('site-configuration/config-field', [
+                Component::include('admin/site-configuration/config-field', [
                     'id' => $id, 'label' => $label, 'name' => $constantName
                 ] + $configService->getConfiguration($constantName));
             ?>
