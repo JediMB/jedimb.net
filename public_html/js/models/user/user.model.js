@@ -1,4 +1,12 @@
 export default class User {
+    /**
+    * @param {Object} user 
+    * @param {string} user.username 
+    * @param {string} user.email 
+    * @param {number} user.role 
+    * @param {{date: string, timezone: string}} user.passwordTimestamp 
+    * @param {{date: string, timezone: string}} user.registeredOn 
+    * @param {{date: string, timezone: string}} [user.lastLogin] */
     constructor({
         username, email, role, passwordTimestamp, registeredOn, lastLogin
     }) {
