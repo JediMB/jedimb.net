@@ -17,16 +17,16 @@ $title = PAGE_ADMIN_TITLE;
 <?php Component::include('tabs', [
     'containerId' => 'admin__content',
     'tabs' => [
-        [ 'title' => 'Site settings', 'targetId' => 'admin-site', 'active' => '' ],
-        [ 'title' => 'Posts', 'targetId' => 'admin-posts' ]
+        [ 'title' => 'Site settings', 'targetId' => 'admin-site' ],
+        [ 'title' => 'Posts', 'targetId' => 'admin-posts', 'active' => '' ]
     ]
 ]) ?>
 
 <div id="admin__content">
     <?php Component::include('admin/site-configuration', [
-        'attributes' => [ 'id' => 'admin-site' ]
+        'attributes' => [ 'id' => 'admin-site', 'hidden' => '' ]
     ]) ?>
     <?php Component::include('admin/blog-post-administration', [
-        'attributes' => ['id' => 'admin-posts', 'hidden' => '' ]
+        'attributes' => ['id' => 'admin-posts' ]
     ]) ?>
 </div>
