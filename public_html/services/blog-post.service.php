@@ -11,6 +11,7 @@ require_once 'services/base/singleton.php';
 require_once 'services/db/blog-post.db.service.php';
 
 use Exception;
+use Enums\Content;
 use Enums\PublishedStatus;
 use Enums\Visibility;
 use Models\Pagination;
@@ -49,7 +50,7 @@ class BlogPostService extends Singleton {
     }
 
     /** @return (array{'blogPosts': BlogPost[], 'pagination': Pagination}) */
-    private function getBlogPosts(int $page, ?int $pageSize, PublishedStatus $publishedStatus, Visibility $visibility) : array {
+    private function getBlogPosts(int $page, ?int $pageSize, PublishedStatus $publishedStatus, Visibility $visibility, Content $content) : array {
         if ($page < 1) $page = 1;
 
         $pageSize ??= $this->configurationService->getUserConstant('PAGINATION_PAGE_SIZE');
@@ -67,9 +68,14 @@ class BlogPostService extends Singleton {
         }
 
         return [
-            'blogPosts' => $this->blogPostDbService->getBlogPosts($pageSize, $offset, $publishedStatus, $visibility),
+            'blogPosts' => $this->blogPostDbService->getBlogPosts($pageSize, $offset, $publishedStatus, $visibility, $content),
             'pagination' => new Pagination($page, $pageSize, $offset, $postCount, $pageCount)
         ];
+    }
+
+    /** @return (array{'blogPosts': BlogPost[], 'pagination': Pagination}) */
+    public function getBlogPostsAdminData(int $page, ?int $pageSize = null, PublishedStatus $publishedStatus = PublishedStatus::Any, Visibility $visibility = Visibility::Any) : array {
+        return $this->getBlogPosts($page, $pageSize, $publishedStatus, $visibility, Content::None);
     }
 
     public function getCount(PublishedStatus $publishedStatus = PublishedStatus::Published, Visibility $visibility = Visibility::Visible) : int {
@@ -78,7 +84,7 @@ class BlogPostService extends Singleton {
 
     /** @return (array{'blogPosts': BlogPost[], 'pagination': Pagination}) */
     public function getPublicBlogPosts(int $page = 1, ?int $pageSize = null) : array {
-        $result = $this->getBlogPosts($page,$pageSize, PublishedStatus::Published, Visibility::Visible);
+        $result = $this->getBlogPosts($page, $pageSize, PublishedStatus::Published, Visibility::Visible, Content::Short);
 
         $blogPosts = $result['blogPosts'];
 
