@@ -78,3 +78,8 @@ Component::addJSModule();
         </li>
     <?php endforeach  ?>
 </ul>
+
+<?php Component::include('pagination', [
+    'attributes' => [ 'id' => 'admin__blog-post__pagination'],
+    'data' => $pagination
+]);
