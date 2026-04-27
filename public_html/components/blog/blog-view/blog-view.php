@@ -13,19 +13,16 @@ use Utilities\Component;
 
 /** @var Pagination $pagination */
 /** @var BlogPost[] $posts */
-/** @var string $baseRoute */
 /** @var bool $editPermissions */
 
 if (!isset($posts) || !is_array($posts))
     throw new Exception('BlogPost array data ($posts) not provided for BlogView component');
 if (!isset($pagination) || get_class($pagination) !== Pagination::class)
     throw new Exception('Pagination data ($pagination) not provided for BlogView component');
-if (!isset($baseRoute) || !is_string($baseRoute))
-    throw new Exception('Base path string data ($basePath) not provided for BlogView component');
 $editPermissions ??= false;
 
 Component::addAttributes([
-    'base-route' => $baseRoute,
+    'base-route' => CURRENT_PAGE_ROUTE,
     'data-pagination' => $pagination
 ]);
 
@@ -202,6 +199,5 @@ Component::renderOnce();
 
 <?php Component::include('pagination', [
     'attributes' => [ 'id' => 'blog__pagination' ],
-    'data' => $pagination,
-    'baseRoute' => $baseRoute
+    'data' => $pagination
 ]) ?>

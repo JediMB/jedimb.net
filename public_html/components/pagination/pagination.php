@@ -10,15 +10,12 @@ use Models\Pagination;
 use Utilities\Component;
 
 /** @var Pagination $data */
-/** @var string $baseRoute */
 
 if (empty($data) || get_class($data) !== Pagination::class)
     throw new Exception('Pagination data ($data) not provided for Pagination component');
-if (!isset($baseRoute) || !is_string($baseRoute))
-    throw new Exception('Base path string data ($basePath) not provided for BlogView component');
 
 Component::addAttributes([
-    'base-route' => $baseRoute,
+    'base-route' => CURRENT_PAGE_ROUTE,
     'data-csv' => $data
 ]);
 
@@ -54,7 +51,7 @@ $nextPage = min($totalPages, $currentPage + 1);
 <nav>
     <ul class="pagination__list">
         <li>
-            <a href="<?= $baseRoute ?>/1"
+            <a href="<?= CURRENT_PAGE_ROUTE ?>/1"
                 onclick="return false;"
                 id="pagination__first"
                 title="First page"
@@ -67,7 +64,7 @@ $nextPage = min($totalPages, $currentPage + 1);
             </a>
         </li>
         <li>
-            <a href="<?= $baseRoute ?>/<?= max(1, $currentPage - 1) ?>"
+            <a href="<?= CURRENT_PAGE_ROUTE ?>/<?= max(1, $currentPage - 1) ?>"
                 onclick="return false;"
                 id="pagination__previous"
                 title="Previous page"
@@ -83,7 +80,7 @@ $nextPage = min($totalPages, $currentPage + 1);
             <ul id="pagination__pages" class="pagination__list">
                 <?php foreach ($pageNumbers as $pageNumber): ?>
                     <li>
-                        <a href="<?= $baseRoute ?>/<?= $pageNumber ?>"
+                        <a href="<?= CURRENT_PAGE_ROUTE ?>/<?= $pageNumber ?>"
                             onclick="return false;"
                             title="Page <?= $pageNumber ?>"
                             target-page="<?= $pageNumber ?>"
@@ -96,7 +93,7 @@ $nextPage = min($totalPages, $currentPage + 1);
             </ul>
         </li>
         <li>
-            <a href="<?= $baseRoute ?>/<?= $nextPage ?>"
+            <a href="<?= CURRENT_PAGE_ROUTE ?>/<?= $nextPage ?>"
                 onclick="return false;"
                 id="pagination__next"
                 title="Next page"
@@ -109,7 +106,7 @@ $nextPage = min($totalPages, $currentPage + 1);
             </a>
         </li>
         <li>
-            <a href="<?= $baseRoute ?>/<?= $totalPages ?>"
+            <a href="<?= CURRENT_PAGE_ROUTE ?>/<?= $totalPages ?>"
                 onclick="return false;"
                 id="pagination__last"
                 title="Last page"

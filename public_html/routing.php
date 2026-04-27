@@ -226,9 +226,9 @@ function servePHP(array $variables = [ 'header' => false ]) {
         header($header);
 
     if (empty($baseRoute))
-        $baseRoute = '';
+        define('CURRENT_PAGE_ROUTE', '');
     else
-        $baseRoute = '/' . trim($baseRoute, '/');
+        define('CURRENT_PAGE_ROUTE', '/' . trim($baseRoute, '/'));
 
     if (empty($template))
         $template = SITE_VIEW;
