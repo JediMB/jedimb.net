@@ -9,6 +9,7 @@ use Exception;
 use Models\Pagination;
 use Utilities\Component;
 
+/** @var int $cId */
 /** @var Pagination $data */
 
 if (empty($data) || get_class($data) !== Pagination::class)
@@ -16,7 +17,8 @@ if (empty($data) || get_class($data) !== Pagination::class)
 
 Component::addAttributes([
     'base-route' => CURRENT_PAGE_ROUTE,
-    'data-csv' => $data
+    'data-csv' => $data,
+    'data-id' => $cId
 ]);
 
 Component::renderCSS();
@@ -53,7 +55,7 @@ $nextPage = min($totalPages, $currentPage + 1);
         <li>
             <a href="<?= CURRENT_PAGE_ROUTE ?>/1"
                 onclick="return false;"
-                id="pagination__first"
+                id="pagination__first-<?= $cId ?>"
                 title="First page"
                 target-page="1"
                 <?= $currentPage < 3 ? 'disabled' : null ?>
@@ -66,7 +68,7 @@ $nextPage = min($totalPages, $currentPage + 1);
         <li>
             <a href="<?= CURRENT_PAGE_ROUTE ?>/<?= max(1, $currentPage - 1) ?>"
                 onclick="return false;"
-                id="pagination__previous"
+                id="pagination__previous-<?= $cId ?>"
                 title="Previous page"
                 target-page="<?= max(1, $currentPage - 1) ?>"
                 <?= $currentPage === 1 ? 'disabled' : null ?>
@@ -77,7 +79,7 @@ $nextPage = min($totalPages, $currentPage + 1);
             </a>
         </li>
         <li>
-            <ul id="pagination__pages" class="pagination__list">
+            <ul id="pagination__pages-<?= $cId ?>" class="pagination__list">
                 <?php foreach ($pageNumbers as $pageNumber): ?>
                     <li>
                         <a href="<?= CURRENT_PAGE_ROUTE ?>/<?= $pageNumber ?>"
@@ -95,7 +97,7 @@ $nextPage = min($totalPages, $currentPage + 1);
         <li>
             <a href="<?= CURRENT_PAGE_ROUTE ?>/<?= $nextPage ?>"
                 onclick="return false;"
-                id="pagination__next"
+                id="pagination__next-<?= $cId ?>"
                 title="Next page"
                 target-page="<?= $nextPage ?>"
                 <?= $currentPage === $totalPages ? 'disabled' : null ?>
@@ -108,7 +110,7 @@ $nextPage = min($totalPages, $currentPage + 1);
         <li>
             <a href="<?= CURRENT_PAGE_ROUTE ?>/<?= $totalPages ?>"
                 onclick="return false;"
-                id="pagination__last"
+                id="pagination__last-<?= $cId ?>"
                 title="Last page"
                 target-page="<?= $totalPages ?>"
                 <?= $currentPage > $totalPages - 2 ? 'disabled' : null ?>

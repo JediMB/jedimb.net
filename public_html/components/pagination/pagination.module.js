@@ -34,14 +34,15 @@ export default class PaginationComponent extends HTMLElement {
     }
 
     connectedCallback() {
+        const cId = Number(this.dataset.id);
         const navList = this.querySelector('ul');
         this.#lists.nav = navList;
-        this.#lists.pages = navList.querySelector('#pagination__pages');
+        this.#lists.pages = navList.querySelector(`#pagination__pages-${cId}`);
 
-        this.#links.first = navList.querySelector('#pagination__first');
-        this.#links.prev = navList.querySelector('#pagination__previous');
-        this.#links.next = navList.querySelector('#pagination__next');
-        this.#links.last = navList.querySelector('#pagination__last');
+        this.#links.first = navList.querySelector(`#pagination__first-${cId}`);
+        this.#links.prev = navList.querySelector(`#pagination__previous-${cId}`);
+        this.#links.next = navList.querySelector(`#pagination__next-${cId}`);
+        this.#links.last = navList.querySelector(`#pagination__last-${cId}`);
         this.#links.active = navList.querySelector('.active');
 
         this.#links.first.addEventListener('click', event => {
