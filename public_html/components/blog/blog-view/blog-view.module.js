@@ -6,7 +6,6 @@ import { UserRole } from "/js/enums/user-role.enum.js";
 import { formatDate } from "/js/utilities/format-date.utility.js";
 
 customElements.define('blog-view-component', class BlogViewComponent extends HTMLElement {
-    #baseRoute;
     #editingPermissions = false;
 
     /**@type {PaginationComponent} */ #pagination;
@@ -20,7 +19,6 @@ customElements.define('blog-view-component', class BlogViewComponent extends HTM
 
     constructor() {
         super();
-        this.#baseRoute = this.getAttribute('base-route');
     }
 
     connectedCallback() {
@@ -52,22 +50,22 @@ customElements.define('blog-view-component', class BlogViewComponent extends HTM
             this.#total.textContent = data.itemCount;
         };
 
-        this.#pagination.onPageChange = (page, isHistory = false, next = undefined) => {
+        this.#pagination.onPageChange = (page, updateHistory = true, next = undefined) => {
             this.#blogPosts.innerHTML = `<svg is-loading width="2em" height="2em">
                 <use xlink:href="#svg-loading" href="#svg-loading"></use>
             </svg>`;
 
-            this.#loadPageContent(page, isHistory, next);
+            this.#loadPageContent(page, updateHistory, next);
         };
 
         blogPostService.subscription.subscribe({
             next: newBlogPost => {
-                const paginationData = this.#pagination.data;
+                const paginationData = this.#pagination.getData();
                 paginationData.itemCount++;
 
                 if (paginationData.page !== 1) {
                     paginationData.offset++;
-                    this.#pagination.data = paginationData;
+                    this.#pagination.setData(paginationData, false);
                     return;
                 }
                 
@@ -80,7 +78,7 @@ customElements.define('blog-view-component', class BlogViewComponent extends HTM
                     paginationData.pageCount = Math.ceil(paginationData.itemCount / paginationData.pageSize);
                 }
 
-                this.#pagination.data = paginationData;
+                this.#pagination.setData(paginationData, false);
             }
         });
     }
@@ -227,15 +225,12 @@ customElements.define('blog-view-component', class BlogViewComponent extends HTM
 
     /**
      * @param {number} page 
-     * @param {boolean} isHistory
+     * @param {boolean} updateHistory
      * @param {() =>  void} next 
      */
-    #loadPageContent(page = this.#pagination.data.page, isHistory = false, next = undefined) {
-        blogPostService.getBlogPosts(page, this.#pagination.data.pageSize,
+    #loadPageContent(page = this.#pagination.getData().page, updateHistory = true, next = undefined) {
+        blogPostService.getBlogPosts(page, this.#pagination.getData().pageSize,
             (blogPosts, paginationData) => {
-                if (!isHistory)
-                    history.pushState(paginationData.page, null, `${this.#baseRoute}/${page}`);
-
                 this.#blogPosts.innerText = '';
 
                 for (const post of blogPosts) {
@@ -244,7 +239,7 @@ customElements.define('blog-view-component', class BlogViewComponent extends HTM
                     );
                 }
 
-                this.#pagination.data = paginationData;
+                this.#pagination.setData(paginationData, updateHistory);
 
                 next?.call(this);
             }

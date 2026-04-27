@@ -21,11 +21,6 @@ if (!isset($pagination) || get_class($pagination) !== Pagination::class)
     throw new Exception('Pagination data ($pagination) not provided for BlogView component');
 $editPermissions ??= false;
 
-Component::addAttributes([
-    'base-route' => CURRENT_PAGE_ROUTE,
-    'data-pagination' => $pagination
-]);
-
 Component::renderCSS();
 Component::addJSModule();
 Component::renderOnce();

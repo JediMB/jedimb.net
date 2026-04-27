@@ -12,7 +12,7 @@ export default class PaginationComponent extends HTMLElement {
     /** @type {{active: HTMLAnchorElement, first: HTMLAnchorElement, prev: HTMLAnchorElement, next: HTMLAnchorElement, last: HTMLAnchorElement}} */ #links = {};
 
     /** @type {(data: Pagination) => void} */ #onDataUpdate;
-    /** @type {(page: number, isHistory: boolean, next: () => void) => void} */ #onPageChange;
+    /** @type {(page: number, updateHistory: boolean, next: () => void) => void} */ #onPageChange;
 
     constructor() {
         super();
@@ -80,7 +80,7 @@ export default class PaginationComponent extends HTMLElement {
             const page = event.state ?? this.#startPage;
 
             if (page !== this.#data.page)
-                this.#gotoPage(page, true);
+                this.#gotoPage(page, false);
         });
     }
 
@@ -88,14 +88,19 @@ export default class PaginationComponent extends HTMLElement {
 
     disconnectedCallback() {}
 
-    get data() {
+    getData() {
         return new Pagination(this.#data);
     }
 
-    /** @param {Pagination} value  */
-    set data(value) {
+    /**
+     * @param {Pagination} value 
+     * @param {boolean} [updateHistory=true]  */
+    setData(value, updateHistory = true) {
+        if (updateHistory)
+            history.pushState(value.page, null, `${this.#baseRoute}/${value.page}`);
+
         this.#data = new Pagination(value);
-        this.#onDataUpdate?.call(this, this.data);
+        this.#onDataUpdate?.call(this, this.getData());
     }
 
     /** @param {(data: Pagination) => void} callbackFn  */
@@ -188,9 +193,9 @@ export default class PaginationComponent extends HTMLElement {
 
     /**
      * @param {number} targetPage 
-     * @param {boolean} isHistory 
+     * @param {boolean} updateHistory 
      */
-    async #gotoPage(targetPage, isHistory = false) {
+    async #gotoPage(targetPage, updateHistory = true) {
         clearTimeout(this.#pageChangeId);
 
         this.#lists.nav.toggleAttribute('disabled', true);
@@ -206,7 +211,7 @@ export default class PaginationComponent extends HTMLElement {
         this.#links.next.toggleAttribute('disabled', targetPage === pageCount);
         this.#links.last.toggleAttribute('disabled', targetPage > pageCount - 2);
 
-        this.#onPageChange?.call(this, targetPage, isHistory,
+        this.#onPageChange?.call(this, targetPage, updateHistory,
             () => this.#lists.nav.removeAttribute('disabled')
         );
     }
