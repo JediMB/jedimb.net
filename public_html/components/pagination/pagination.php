@@ -17,6 +17,11 @@ if (empty($data) || get_class($data) !== Pagination::class)
 if (!isset($baseRoute) || !is_string($baseRoute))
     throw new Exception('Base path string data ($basePath) not provided for BlogView component');
 
+Component::addAttributes([
+    'base-route' => $baseRoute,
+    'data-csv' => $data
+]);
+
 Component::renderCSS();
 Component::addJSModule();
 
@@ -46,12 +51,12 @@ $nextPage = min($totalPages, $currentPage + 1);
 
 ?>
 
-<nav id="blog__pagination">
-    <ul class="nav-pagination">
+<nav>
+    <ul class="pagination__list">
         <li>
             <a href="<?= $baseRoute ?>/1"
                 onclick="return false;"
-                id="blog__pagination-first"
+                id="pagination__first"
                 title="First page"
                 target-page="1"
                 <?= $currentPage < 3 ? 'disabled' : null ?>
@@ -64,7 +69,7 @@ $nextPage = min($totalPages, $currentPage + 1);
         <li>
             <a href="<?= $baseRoute ?>/<?= max(1, $currentPage - 1) ?>"
                 onclick="return false;"
-                id="blog__pagination-previous"
+                id="pagination__previous"
                 title="Previous page"
                 target-page="<?= max(1, $currentPage - 1) ?>"
                 <?= $currentPage === 1 ? 'disabled' : null ?>
@@ -75,7 +80,7 @@ $nextPage = min($totalPages, $currentPage + 1);
             </a>
         </li>
         <li>
-            <ul id="blog__pagination-pages" class="nav-pagination">
+            <ul id="pagination__pages" class="pagination__list">
                 <?php foreach ($pageNumbers as $pageNumber): ?>
                     <li>
                         <a href="<?= $baseRoute ?>/<?= $pageNumber ?>"
@@ -93,7 +98,7 @@ $nextPage = min($totalPages, $currentPage + 1);
         <li>
             <a href="<?= $baseRoute ?>/<?= $nextPage ?>"
                 onclick="return false;"
-                id="blog__pagination-next"
+                id="pagination__next"
                 title="Next page"
                 target-page="<?= $nextPage ?>"
                 <?= $currentPage === $totalPages ? 'disabled' : null ?>
@@ -106,7 +111,7 @@ $nextPage = min($totalPages, $currentPage + 1);
         <li>
             <a href="<?= $baseRoute ?>/<?= $totalPages ?>"
                 onclick="return false;"
-                id="blog__pagination-last"
+                id="pagination__last"
                 title="Last page"
                 target-page="<?= $totalPages ?>"
                 <?= $currentPage > $totalPages - 2 ? 'disabled' : null ?>

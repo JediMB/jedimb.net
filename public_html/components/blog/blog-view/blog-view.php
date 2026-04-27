@@ -201,6 +201,7 @@ Component::renderOnce();
 </template>
 
 <?php Component::include('pagination', [
+    'attributes' => [ 'id' => 'blog__pagination' ],
     'data' => $pagination,
     'baseRoute' => $baseRoute
 ]) ?>
