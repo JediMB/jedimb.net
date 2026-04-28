@@ -1,5 +1,4 @@
 import Pagination from "/js/models/blog/pagination.model.js";
-import Emitter from "/js/utilities/emitter.js";
 
 export default class PaginationComponent extends HTMLElement {
     #baseRoute;
