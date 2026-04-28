@@ -21,13 +21,13 @@ Component::addJSModule();
 
 <h3 class="h3">Posts</h3>
 
-<ul>
+<ul id="admin__blog-post__list">
     <?php foreach ($posts as $post): ?>
         <?php Component::include('admin/blog-post', [ 'post' => $post ]) ?>
     <?php endforeach  ?>
 </ul>
 
-<template template-post>
+<template id="admin__blog-post__template">
     <?php Component::include('admin/blog-post', [ 'template' => true ]) ?>
 </template>
 
