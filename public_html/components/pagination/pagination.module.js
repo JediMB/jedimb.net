@@ -109,7 +109,7 @@ export default class PaginationComponent extends HTMLElement {
             this.#onDataUpdate = callbackFn;
     }
 
-    /** @param {(page: number, isHistory: boolean, next: () => void) => void} callbackFn  */
+    /** @param {(page: number, updateHistory: boolean, next: () => void) => void} callbackFn  */
     set onPageChange(callbackFn) {
         if (typeof callbackFn === 'function')
             this.#onPageChange = callbackFn;
