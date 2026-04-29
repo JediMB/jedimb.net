@@ -56,9 +56,10 @@ class BlogPostApiService {
     /**
      * @param {number} page 
      * @param {number} pageSize 
+     * @param {...string} adminArgs Additional arguments for getting admin page data
      * @returns {Promise<{blogPosts: BlogPost[], pagination: Pagination}>}  */
-    async getBlogPosts(page, pageSize) {
-        const response = await this.#httpClient.get(this.#api.posts, page, pageSize);
+    async getBlogPosts(page, pageSize, ...adminArgs) {
+        const response = await this.#httpClient.get(this.#api.posts, page, pageSize, ...adminArgs);
 
         if (!response.success)
             return response;

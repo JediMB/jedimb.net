@@ -3,6 +3,7 @@ import BlogPostDTO from "/js/models/blog/blog-post.dto.model.js";
 import BlogPostSchedule from "/js/models/blog/blog-post-schedule.model.js";
 import Emitter from "/js/utilities/emitter.js";
 import Pagination from "/js/models/blog/pagination.model.js";
+
 import blogPostApiService from "/js/services/api/blog-post-api.service.js";
 
 export { blogPostService as default };
@@ -70,6 +71,19 @@ class BlogPostService {
      */
     async getBlogPosts(page, pageSize, next) {
         const { blogPosts, pagination } = await this.#service.getBlogPosts(page, pageSize);
+
+        next?.call(this, blogPosts, pagination);
+    }
+
+    /**
+     * @param {number} page 
+     * @param {number} pageSize 
+     * @param {(blogPosts: BlogPost[], pagination: Pagination) => void} next
+     * @param {...string} statuses BlogPostStatus enum values
+     * @returns {Promise<void>}
+     */
+    async getBlogPostsAdminData(page, pageSize, next, ...statuses) {
+        const { blogPosts, pagination } = await this.#service.getBlogPosts(page, pageSize, 'admin', ...statuses);
 
         next?.call(this, blogPosts, pagination);
     }
