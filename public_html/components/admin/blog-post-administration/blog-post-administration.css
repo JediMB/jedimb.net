@@ -2,6 +2,10 @@ blog-post-administration-component {
     display: block;
 }
 
+#admin__blog-post__list {
+    margin-block: var(--size-l);
+}
+
 .admin__blog-post {
     display: block grid;
     grid-template-columns: 1fr auto auto auto;

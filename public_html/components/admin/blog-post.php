@@ -36,7 +36,9 @@ Component::noContainer();
                 </svg>
             </a>
         </div>
-        <div><?= $post?->description ?></div>
+        <div class="admin__blog-post__description">
+            <?= $post?->description ?>
+        </div>
     </div>
     <div>
         <button post-action="hide"
