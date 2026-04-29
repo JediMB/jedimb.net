@@ -4,6 +4,7 @@ import blogPostService from "/js/services/blog-post.service.js";
 import sessionService from "/js/services/session.service.js";
 import { UserRole } from "/js/enums/user-role.enum.js";
 import { formatDate } from "/js/utilities/format-date.utility.js";
+import MarkupConstants from "/js/constants/markup-constants.js";
 
 customElements.define('blog-view-component', class BlogViewComponent extends HTMLElement {
     #editingPermissions = false;
@@ -51,9 +52,7 @@ customElements.define('blog-view-component', class BlogViewComponent extends HTM
         };
 
         this.#pagination.onPageChange = (page, updateHistory = true, next = undefined) => {
-            this.#blogPosts.innerHTML = `<svg is-loading width="2em" height="2em">
-                <use xlink:href="#svg-loading" href="#svg-loading"></use>
-            </svg>`;
+            this.#blogPosts.innerHTML = MarkupConstants.loadingSpinner;
 
             this.#loadPageContent(page, updateHistory, next);
         };
