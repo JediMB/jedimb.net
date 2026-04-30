@@ -2,6 +2,12 @@ blog-post-administration-component {
     display: block;
 }
 
+.admin__blog-post__status-row {
+    display: block flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
 #admin__blog-post__list {
     margin-block: var(--size-l);
 }

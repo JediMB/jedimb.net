@@ -12,7 +12,7 @@ require_once 'services/db/blog-post.db.service.php';
 
 use Exception;
 use Enums\Content;
-use Enums\PublishedStatus;
+use Enums\Published;
 use Enums\Visibility;
 use Models\Pagination;
 use Models\DB\BlogPost;
@@ -46,18 +46,18 @@ class BlogPostService extends Singleton {
     }
 
     public function getBlogPost(int $id) : BlogPost|false {
-        return $this->blogPostDbService->getBlogPost($id, PublishedStatus::Any);
+        return $this->blogPostDbService->getBlogPost($id, Published::Any);
     }
 
     /** @return (array{'blogPosts': BlogPost[], 'pagination': Pagination}) */
-    private function getBlogPosts(int $page, ?int $pageSize, PublishedStatus $publishedStatus, Visibility $visibility, Content $content) : array {
+    private function getBlogPosts(int $page, ?int $pageSize, Published $published, Visibility $visibility, Content $content) : array {
         if ($page < 1) $page = 1;
 
         $pageSize ??= $this->configurationService->getUserConstant('PAGINATION_PAGE_SIZE');
 
         if ($pageSize < 1) $pageSize = 1;
 
-        $postCount = $this->getCount($publishedStatus, $visibility);
+        $postCount = $this->getCount($published, $visibility);
         $pageCount = (int)ceil($postCount / $pageSize);
 
         $offset = ($page - 1) * $pageSize;
@@ -68,23 +68,23 @@ class BlogPostService extends Singleton {
         }
 
         return [
-            'blogPosts' => $this->blogPostDbService->getBlogPosts($pageSize, $offset, $publishedStatus, $visibility, $content),
+            'blogPosts' => $this->blogPostDbService->getBlogPosts($pageSize, $offset, $published, $visibility, $content),
             'pagination' => new Pagination($page, $pageSize, $offset, $postCount, $pageCount)
         ];
     }
 
     /** @return (array{'blogPosts': BlogPost[], 'pagination': Pagination}) */
-    public function getBlogPostsAdminData(int $page, ?int $pageSize = null, PublishedStatus $publishedStatus = PublishedStatus::Any, Visibility $visibility = Visibility::Any) : array {
-        return $this->getBlogPosts($page, $pageSize, $publishedStatus, $visibility, Content::None);
+    public function getBlogPostsAdminData(int $page, ?int $pageSize = null, Published $published = Published::Any, Visibility $visibility = Visibility::Any) : array {
+        return $this->getBlogPosts($page, $pageSize, $published, $visibility, Content::None);
     }
 
-    public function getCount(PublishedStatus $publishedStatus = PublishedStatus::Published, Visibility $visibility = Visibility::Visible) : int {
-        return $this->blogPostDbService->getCount($publishedStatus, $visibility);
+    public function getCount(Published $published = Published::Published, Visibility $visibility = Visibility::Visible) : int {
+        return $this->blogPostDbService->getCount($published, $visibility);
     }
 
     /** @return (array{'blogPosts': BlogPost[], 'pagination': Pagination}) */
     public function getPublicBlogPosts(int $page = 1, ?int $pageSize = null) : array {
-        $result = $this->getBlogPosts($page, $pageSize, PublishedStatus::Published, Visibility::Visible, Content::Short);
+        $result = $this->getBlogPosts($page, $pageSize, Published::Published, Visibility::Visible, Content::Short);
 
         $blogPosts = $result['blogPosts'];
 
@@ -103,7 +103,7 @@ class BlogPostService extends Singleton {
     }
 
     public function getPublicBlogPost(int|string $identifier) : BlogPost|false {
-        $blogPost = $this->blogPostDbService->getBlogPost($identifier, PublishedStatus::Published, Visibility::Visible);
+        $blogPost = $this->blogPostDbService->getBlogPost($identifier, Published::Published, Visibility::Visible);
 
         if (!$blogPost)
             return false;

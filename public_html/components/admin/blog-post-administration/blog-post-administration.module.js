@@ -4,6 +4,8 @@ import BlogPost from "/js/models/blog/blog-post.model.js";
 import blogPostService from "/js/services/blog-post.service.js";
 
 export default class BlogPostAdministrationComponent extends HTMLElement {
+    /** @type {HTMLFormElement} */ #statusForm;
+    /** @type {{start: HTMLSpanElement, end: HTMLSpanElement, total: HTMLSpanElement}} */ #itemCounters = {};
     /** @type {HTMLUListElement} */ #list;
     /** @type {HTMLTemplateElement} */ #template;
     /** @type {PaginationComponent} */ #pagination;
@@ -11,6 +13,12 @@ export default class BlogPostAdministrationComponent extends HTMLElement {
     constructor() { super(); }
 
     connectedCallback() {
+        const statusRow = this.querySelector('#admin__blog-post__status-row');
+        this.#statusForm = statusRow.querySelector('#admin__blog-post__status-form');
+        this.#itemCounters.start = statusRow.querySelector('#admin__blog-post__items-start');
+        this.#itemCounters.end = statusRow.querySelector('#admin__blog-post__items-end');
+        this.#itemCounters.total = statusRow.querySelector('#admin__blog-post__items-total');
+
         this.#list = this.querySelector('#admin__blog-post__list');
         this.#template = this.querySelector('#admin__blog-post__template');
         this.#pagination = this.querySelector('#admin__blog-post__pagination');

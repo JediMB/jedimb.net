@@ -1,13 +1,11 @@
 <?php declare(strict_types=1);
 
-require_once 'enums/blog-post-status.enum.php';
-require_once 'enums/published-status.enum.php';
+require_once 'enums/published.enum.php';
 require_once 'enums/visibility.enum.php';
 require_once 'services/blog-post.service.php';
 require_once 'utilities/response.utility.php';
 
-use Enums\BlogPostStatus;
-use Enums\PublishedStatus;
+use Enums\Published;
 use Enums\UserPermission;
 use Enums\Visibility;
 use Services\BlogPostService;
@@ -18,17 +16,15 @@ $service = BlogPostService::getInstance(); /** @var BlogPostService $service */
 $sessionService = SessionService::getInstance(); /** @var SessionService $sessionService */
 
 $apiParams = $GLOBALS['api_params'];
-//$paramCount = count($apiParams);
+
 $page = isset($apiParams[0]) && is_numeric($apiParams[0]) ? (int)$apiParams[0] : 1;
 $pageSize = isset($apiParams[1]) && is_numeric($apiParams[1]) ? (int)$apiParams[1] : null;
-
-$adminKey = array_find_key($apiParams, fn($value) => $value === 'admin');
-
-$input = json_decode(file_get_contents('php://input'), true);
 
 switch ( $_SERVER['REQUEST_METHOD'] ) {
     case 'GET':
         try {
+            $adminKey = array_find_key($apiParams, fn($value) => $value === 'admin');
+
             if (!is_int($adminKey) || !$sessionService->hasPermissions([ UserPermission::Configuration ])) {
                 $result = $service->getPublicBlogPosts($page, $pageSize);
 
@@ -37,27 +33,24 @@ switch ( $_SERVER['REQUEST_METHOD'] ) {
 
             $adminParams = array_slice($apiParams, $adminKey);
 
-            $publishedStatus = PublishedStatus::Published;
+            $publishedKey = array_find_key($adminParams, fn($value) => $value === strtolower(Published::class));
+            $visibilityKey = array_find_key($adminParams, fn($value) => $value === strtolower(Visibility::class));
 
-            if (in_array(BlogPostStatus::Unpublished->value, $adminParams))
-                $publishedStatus = PublishedStatus::Unpublished;
+            $published = Published::Any;
 
-            if (in_array(BlogPostStatus::Published->value, $adminParams))
-                $publishedStatus = ($publishedStatus === PublishedStatus::Unpublished)
-                    ? PublishedStatus::Any
-                    : PublishedStatus::Published;
+            if (is_int($publishedKey) && isset($adminParams[$publishedKey + 1])) {
+                $published = Published::tryFrom($adminParams[$publishedKey + 1])
+                    ?? Published::Published;
+            }
 
-            $visibility = Visibility::Visible;
+            $visibility = Visibility::Any;
 
-            if (in_array(BlogPostStatus::Hidden->value, $adminParams))
-                $visibility = Visibility::Hidden;
-            
-            if (in_array(BlogPostStatus::Visible->value, $adminParams))
-                $visibility = ($visibility === Visibility::Hidden)
-                    ? Visibility::Any
-                    : Visibility::Visible;
+            if (is_int($visibilityKey) && isset($adminParams[$visibilityKey + 1])) {
+                $visibility = Visibility::tryFrom($adminParams[$visibilityKey + 1])
+                    ?? Visibility::Visible;
+            }
 
-            $result = $service->getBlogPostsAdminData($page, $pageSize, $publishedStatus, $visibility);
+            $result = $service->getBlogPostsAdminData($page, $pageSize, $published, $visibility);
 
             return Response::Success($result);
         }

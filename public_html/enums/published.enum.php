@@ -2,9 +2,9 @@
 
 namespace Enums;
 
-enum Visibility : int {
-    case Hidden = 0;
-    case Visible = 1;
+enum Published : int {
+    case Unpublished = 0;
+    case Published = 1;
     case Any = 2;
 }
 
