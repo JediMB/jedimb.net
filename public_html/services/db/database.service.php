@@ -259,7 +259,7 @@ class DatabaseService extends Singleton {
         return $result;
     }
 
-    private function getPDOParamType($value) : int {
+    private function getPDOParamType(mixed $value) : int {
         switch (gettype($value)) {
             case 'integer':
                 return PDO::PARAM_INT;
