@@ -10,6 +10,8 @@ export default class BlogPostAdministrationComponent extends HTMLElement {
     /** @type {HTMLTemplateElement} */ #template;
     /** @type {PaginationComponent} */ #pagination;
 
+    /** @type {{published: '0'|'1'|'2', visibility: '0'|'1'|'2'}} */ #statuses = {};
+
     constructor() { super(); }
 
     connectedCallback() {
@@ -22,6 +24,12 @@ export default class BlogPostAdministrationComponent extends HTMLElement {
         this.#list = this.querySelector('#admin__blog-post__list');
         this.#template = this.querySelector('#admin__blog-post__template');
         this.#pagination = this.querySelector('#admin__blog-post__pagination');
+
+        this.#statusForm.addEventListener('change', event => {
+            this.#statuses[event.target.name] = event.target.value;
+
+            this.#loadPageContent();
+        });
 
         this.#pagination.onPageChange = (page, updateHistory = true, next = undefined) => {
             this.#list.innerHTML = `<li>${MarkupConstants.loadingSpinner}</li>`;
@@ -66,12 +74,13 @@ export default class BlogPostAdministrationComponent extends HTMLElement {
      * @param {() =>  void} next 
      */
     #loadPageContent(page = this.#pagination.getData().page, updateHistory = true, next = undefined) {
-        blogPostService.getBlogPostsAdminData(page, this.#pagination.getData().pageSize,
+        blogPostService.getBlogPostsAdminData(page, this.#pagination.getData().pageSize, this.#statuses,
             (blogPosts, paginationData) => {
                 const templateItems = blogPosts.map(post => this.#createBlogPostItem(post));
                 this.#list.replaceChildren(...templateItems);
                 this.#pagination.setData(paginationData, updateHistory);
-            } // TODO: statuses
+                next?.call(this);
+            }
         );
     }
 }

@@ -78,12 +78,19 @@ class BlogPostService {
     /**
      * @param {number} page 
      * @param {number} pageSize 
+     * @param {{published?: number, visibility?: number}} statuses 
      * @param {(blogPosts: BlogPost[], pagination: Pagination) => void} next
-     * @param {...string} statuses BlogPostStatus enum values
      * @returns {Promise<void>}
      */
-    async getBlogPostsAdminData(page, pageSize, next, ...statuses) {
-        const { blogPosts, pagination } = await this.#service.getBlogPosts(page, pageSize, 'admin', ...statuses);
+    async getBlogPostsAdminData(page, pageSize, statuses = {}, next = undefined) {
+        const adminArgs = [];
+
+        for (const status in statuses) {
+            adminArgs.push(status);
+            adminArgs.push(statuses[status]);
+        }
+
+        const { blogPosts, pagination } = await this.#service.getBlogPosts(page, pageSize, 'admin', ...adminArgs);
 
         next?.call(this, blogPosts, pagination);
     }
