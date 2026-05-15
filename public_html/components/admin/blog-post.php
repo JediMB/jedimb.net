@@ -55,11 +55,11 @@ Component::noContainer();
     <div>
         <button post-action="pin"
             data-id="<?= $post?->id ?>"
-            class="link-svg action-pin"
+            class="link-svg"
             title="Pin post"
             >
             <svg width="1.5em" height="1.5em">
-                <use xlink:href="#svg-unpinned" href="#svg-unpinned"class="unhovered"></use>
+                <use xlink:href="#svg-unpinned" href="#svg-unpinned" class="unhovered"></use>
                 <use xlink:href="#svg-pinned" href="#svg-pinned" class="hovered"></use>
             </svg>
         </button>

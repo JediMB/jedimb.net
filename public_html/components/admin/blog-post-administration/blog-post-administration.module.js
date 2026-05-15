@@ -13,7 +13,7 @@ export default class BlogPostAdministrationComponent extends HTMLElement {
     constructor() { super(); }
 
     connectedCallback() {
-        const statusRow = this.querySelector('#admin__blog-post__status-row');
+        const statusRow = this.querySelector('.admin__blog-post__status-row');
         this.#statusForm = statusRow.querySelector('#admin__blog-post__status-form');
         this.#itemCounters.start = statusRow.querySelector('#admin__blog-post__items-start');
         this.#itemCounters.end = statusRow.querySelector('#admin__blog-post__items-end');
