@@ -31,6 +31,13 @@ export default class BlogPostAdministrationComponent extends HTMLElement {
             this.#loadPageContent();
         });
 
+        this.#pagination.onDataUpdate = data => {
+            const counters = this.#itemCounters;
+            counters.start.textContent = data.offset + 1;
+            counters.end.textContent = data.offset + Number(this.#list.childElementCount);
+            counters.total.textContent = data.itemCount;
+        };
+
         this.#pagination.onPageChange = (page, updateHistory = true, next = undefined) => {
             this.#list.innerHTML = `<li>${MarkupConstants.loadingSpinner}</li>`;
 
