@@ -33,20 +33,20 @@ switch ( $_SERVER['REQUEST_METHOD'] ) {
 
             $adminParams = array_slice($apiParams, $adminKey);
 
-            $publishedKey = array_find_key($adminParams, fn($value) => $value === strtolower(Published::class));
-            $visibilityKey = array_find_key($adminParams, fn($value) => $value === strtolower(Visibility::class));
+            $publishedKey = array_find_key($adminParams, fn($value) => $value === 'published');
+            $visibilityKey = array_find_key($adminParams, fn($value) => $value === 'visibility');
 
             $published = Published::Any;
 
             if (is_int($publishedKey) && isset($adminParams[$publishedKey + 1])) {
-                $published = Published::tryFrom($adminParams[$publishedKey + 1])
+                $published = Published::tryFrom((int)($adminParams[$publishedKey + 1]))
                     ?? Published::Published;
             }
 
             $visibility = Visibility::Any;
 
             if (is_int($visibilityKey) && isset($adminParams[$visibilityKey + 1])) {
-                $visibility = Visibility::tryFrom($adminParams[$visibilityKey + 1])
+                $visibility = Visibility::tryFrom((int)($adminParams[$visibilityKey + 1]))
                     ?? Visibility::Visible;
             }
 

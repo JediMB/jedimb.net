@@ -28,7 +28,7 @@ Component::addJSModule();
     <form id="admin__blog-post__status-form">
         <label>
             Published status:
-            <select name="<?= strtolower(Published::class) ?>">
+            <select name="published">
                 <option value="<?= Published::Any->value ?>">Either</option>
                 <option value="<?= Published::Published->value ?>">Published</option>
                 <option value="<?= Published::Unpublished->value ?>">Unpublished</option>
@@ -36,7 +36,7 @@ Component::addJSModule();
         </label>
         <label>
             Visibility:
-            <select name="<?= strtolower(Visibility::class) ?>">
+            <select name="visibility">
                 <option value="<?= Visibility::Any->value ?>">Either</option>
                 <option value="<?= Visibility::Visible->value ?>">Visible</option>
                 <option value="<?= Visibility::Hidden->value ?>">Hidden</option>
