@@ -99,11 +99,19 @@ export default class PaginationComponent extends HTMLElement {
         if (updateHistory)
             history.pushState(value.page, null, `${this.#baseRoute}/${value.page}`);
 
+        const isNewPage = value.page !== this.#data.page;
+        const hasNewPageCount = value.pageCount !== this.#data.pageCount;
+
         this.#data = new Pagination(value);
+
+        if (isNewPage || hasNewPageCount)
+            this.#refreshPagination();
+
         this.#onDataUpdate?.call(this, this.getData());
     }
 
-    /** @param {(data: Pagination) => void} callbackFn  */
+    /** Lets the page using the pagination module update itself in response to a pagination data update
+     * @param {(data: Pagination) => void} callbackFn  */
     set onDataUpdate(callbackFn) {
         if (typeof callbackFn === 'function')
             this.#onDataUpdate = callbackFn;
@@ -216,6 +224,45 @@ export default class PaginationComponent extends HTMLElement {
         );
     }
 
+    async #refreshPagination() {
+        const currentPage = this.#data.page;
+        const pageCount = this.#data.pageCount;
+        const pageSet = new Set([ currentPage ]);
+
+        for (let pageSteps = 1; pageSteps < 5; pageSteps++) {
+            let oldSize = pageSet.size;
+
+            let previousPage = Math.max(currentPage - pageSteps, 1);
+            pageSet.add(previousPage);
+
+            let nextPage = Math.min(currentPage + pageSteps, pageCount);
+            pageSet.add(nextPage);
+
+            const newSize = pageSet.size;
+
+            if (newSize === oldSize || newSize >= 5)
+                break;
+        }
+
+        const pages = Array.from(pageSet);
+        pages.sort();
+
+        const paginationItems = [];
+        for (const page of pages) {
+            const newItem = this.#createPaginationItem(page);
+            paginationItems.push(newItem);
+
+            if (page === currentPage) {
+                this.#links.active = newItem.firstElementChild;
+                this.#links.active.classList.add('active');
+            }
+        }
+
+        this.#lists.pages.replaceChildren(...paginationItems);
+
+        console.log(this.#data.itemCount);
+    }
+
     /**
      * @param {number} targetPage 
      * @param {number} startPage 
@@ -225,8 +272,8 @@ export default class PaginationComponent extends HTMLElement {
         if (targetPage === startPage)
             return;
 
-        const delay = (ms) => new Promise(res => setTimeout(res, ms));
-        const ms = Math.ceil(1000 / Math.abs(targetPage - startPage));
+        const delayFor = (ms) => new Promise(res => setTimeout(res, ms));
+        const time = Math.ceil(1000 / Math.abs(targetPage - startPage));
 
         const pageList = this.#lists.pages;
 
@@ -240,7 +287,7 @@ export default class PaginationComponent extends HTMLElement {
             ( !scrollForward && currentPage > targetPage )
         ) {
             if (currentPage !== startPage)
-                await delay(ms);
+                await delayFor(time);
 
             this.#links.active.classList.remove('active');
 
