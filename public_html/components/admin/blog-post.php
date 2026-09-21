@@ -40,38 +40,90 @@ Component::noContainer();
             <?= $post?->description ?>
         </div>
     </div>
-    <div>
-        <button post-action="hide"
-            data-id="<?= $post?->id ?>"
-            class="link-svg"
-            title="Hide post"
-            >
-            <svg width="1.5em" height="1.5em">
-                <use xlink:href="#svg-visible" href="#svg-visible" class="unhovered"></use>
-                <use xlink:href="#svg-hidden" href="#svg-hidden" class="hovered"></use>
-            </svg>
-        </button>
-    </div>
-    <div>
-        <button post-action="pin"
-            data-id="<?= $post?->id ?>"
-            class="link-svg"
-            title="Pin post"
-            >
-            <svg width="1.5em" height="1.5em">
-                <use xlink:href="#svg-unpinned" href="#svg-unpinned" class="unhovered"></use>
-                <use xlink:href="#svg-pinned" href="#svg-pinned" class="hovered"></use>
-            </svg>
-        </button>
-    </div>
+    <?php if (!$post || !$post->isHidden): ?>
+        <div>
+            <button post-action="hide"
+                data-id="<?= $post?->id ?>"
+                btn-loading
+                class="link-svg"
+                title="Hide post"
+                >
+                <svg is-loading width="1.5em" height="1.5em">
+                    <use xlink:href="#svg-loading" href="#svg-loading"></use>
+                </svg>
+                <svg has-loaded width="1.5em" height="1.5em">
+                    <use xlink:href="#svg-visible" href="#svg-visible" class="unhovered"></use>
+                    <use xlink:href="#svg-hidden" href="#svg-hidden" class="hovered"></use>
+                </svg>
+            </button>
+        </div>
+    <?php endif ?>
+    <?php if (!$post || $post->isHidden): ?>
+        <div>
+            <button post-action="unhide"
+                data-id="<?= $post?->id ?>"
+                btn-loading
+                class="link-svg"
+                title="Unhide post"
+                >
+                <svg is-loading width="1.5em" height="1.5em">
+                    <use xlink:href="#svg-loading" href="#svg-loading"></use>
+                </svg>
+                <svg has-loaded width="1.5em" height="1.5em">
+                    <use xlink:href="#svg-hidden" href="#svg-hidden" class="unhovered"></use>
+                    <use xlink:href="#svg-visible" href="#svg-visible" class="hovered"></use>
+                </svg>
+            </button>
+        </div>
+    <?php endif ?>
+    <?php if (!$post || !$post->isPinned): ?>
+        <div>
+            <button post-action="pin"
+                data-id="<?= $post?->id ?>"
+                btn-loading
+                class="link-svg"
+                title="Pin post"
+                >
+                <svg is-loading width="1.5em" height="1.5em">
+                    <use xlink:href="#svg-loading" href="#svg-loading"></use>
+                </svg>
+                <svg has-loaded width="1.5em" height="1.5em">
+                    <use xlink:href="#svg-unpinned" href="#svg-unpinned" class="unhovered"></use>
+                    <use xlink:href="#svg-pinned" href="#svg-pinned" class="hovered"></use>
+                </svg>
+            </button>
+        </div>
+    <?php endif ?>
+    <?php if (!$post || $post->isPinned): ?>
+        <div>
+            <button post-action="unpin"
+                data-id="<?= $post?->id ?>"
+                btn-loading
+                class="link-svg"
+                title="Unpin post"
+                >
+                <svg is-loading width="1.5em" height="1.5em">
+                    <use xlink:href="#svg-loading" href="#svg-loading"></use>
+                </svg>
+                <svg has-loaded width="1.5em" height="1.5em">
+                    <use xlink:href="#svg-pinned" href="#svg-pinned" class="unhovered"></use>
+                    <use xlink:href="#svg-unpinned" href="#svg-unpinned" class="hovered"></use>
+                </svg>
+            </button>
+        </div>
+    <?php endif ?>
     <div>
         <button post-action="delete"
             data-id="<?= $post?->id ?>"
+            btn-loading
             data-prompt="Permanently delete this post?"
             class="link-svg"
             title="Delete post"
             >
-            <svg width="1.5em" height="1.5em">
+            <svg is-loading width="1.5em" height="1.5em">
+                <use xlink:href="#svg-loading" href="#svg-loading"></use>
+            </svg>
+            <svg has-loaded width="1.5em" height="1.5em">
                 <use xlink:href="#svg-delete" href="#svg-delete"></use>
             </svg>
         </button>
