@@ -82,9 +82,9 @@ customElements.define('blog-view-component', class BlogViewComponent extends HTM
         });
     }
 
-    disconnectedCallback() {}
-
     connectedMoveCallback() {}
+
+    disconnectedCallback() {}
 
     /**
      * @param {HTMLButtonElement[]} buttons 
