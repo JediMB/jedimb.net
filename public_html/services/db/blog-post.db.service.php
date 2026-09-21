@@ -138,7 +138,7 @@ class BlogPostDBService extends BaseDBService {
             $columnValues = [];
             $nullChecks = [];
 
-            if ($columnValues !== Visibility::Any)
+            if ($visibility !== Visibility::Any)
                 $columnValues['is_hidden'] = $visibility === Visibility::Hidden;
 
             if ($published !== Published::Any)
