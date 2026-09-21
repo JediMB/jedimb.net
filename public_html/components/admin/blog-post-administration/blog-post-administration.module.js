@@ -31,6 +31,9 @@ export default class BlogPostAdministrationComponent extends HTMLElement {
             this.#loadPageContent();
         });
 
+        const actionButtons = this.#list.querySelectorAll('[post-action]');
+        this.#assignButtonActions(actionButtons);
+
         this.#pagination.onDataUpdate = data => {
             const counters = this.#itemCounters;
             counters.start.textContent = data.offset + 1;
@@ -48,6 +51,110 @@ export default class BlogPostAdministrationComponent extends HTMLElement {
     connectedMoveCallback() {}
 
     disconnectedCallback() {}
+
+    /**
+     * @param {HTMLButtonElement[]} buttons 
+     * @param {number} [id=null] 
+     */
+    #assignButtonActions(buttons, id = null) {
+        for (const button of buttons) {
+            const postId = id ?? Number(button.dataset.id);
+            
+            if (isNaN(postId)) {
+                console.error('Post ID for button is not a number', button);
+                continue;
+            }
+
+            switch (button.getAttribute('post-action')) {
+                case 'delete':
+                    // TODO: Use a modal web component instead of confirm()
+                    button.addEventListener('click', () => {
+                        const message = button.dataset.prompt ?? 'Permanently delete this post?';
+
+                        if (confirm(message)) {
+                            button.toggleAttribute('btn-loading', true);
+                            blogPostService.deleteBlogPost(postId,
+                                next => {
+                                    // TODO: Success notification
+                                    this.#loadPageContent();
+                                },
+                                error => {
+                                    // TODO: Error notification
+                                    button.toggleAttribute('btn-loading', false);
+                                }
+                            );
+                        }
+                    });
+                    break;
+
+                case 'hide':
+                    button.addEventListener('click', () => {
+                        button.toggleAttribute('btn-loading', true);
+                        blogPostService.hideBlogPost(postId,
+                            () => {
+                                // TODO: Success notification
+                                this.#loadPageContent();
+                            },
+                            error => {
+                                // TODO: Error notification
+                                button.toggleAttribute('btn-loading', false);
+                            }
+                        );
+                    });
+                    break;
+
+                case 'pin':
+                    button.addEventListener('click', () => {
+                        button.toggleAttribute('btn-loading', true);
+                        blogPostService.pinBlogPost(postId,
+                            () => {
+                                // TODO: Success notification
+                                this.#loadPageContent();
+                            },
+                            error => {
+                                // TODO: Error notification
+                                button.toggleAttribute('btn-loading', false);
+                            }
+                        );
+                    });
+                    break;
+
+                case 'unhide':
+                    button.addEventListener('click', () => {
+                        button.toggleAttribute('btn-loading', true);
+                        blogPostService.unhideBlogPost(postId,
+                            () => {
+                                // TODO: Success notification
+                                this.#loadPageContent();
+                            },
+                            error => {
+                                // TODO: Error notification
+                                button.toggleAttribute('btn-loading', false);
+                            }
+                        );
+                    });
+                    break;
+
+                case 'unpin':
+                    button.addEventListener('click', () => {
+                        button.toggleAttribute('btn-loading', true);
+                        blogPostService.unpinBlogPost(postId,
+                            () => {
+                                // TODO: Success notification
+                                this.#loadPageContent();
+                            },
+                            error => {
+                                // TODO: Error notification
+                                button.toggleAttribute('btn-loading', false);
+                            }
+                        );
+                    });
+                    break;
+            }
+
+            button.removeAttribute('btn-loading');
+        }
+    }
 
     /**
      * @param {BlogPost} newBlogPost 
@@ -69,8 +176,31 @@ export default class BlogPostAdministrationComponent extends HTMLElement {
 
         const buttons = clone.querySelectorAll('button');
         for (const button of buttons) {
+            const postAction = button.getAttribute('post-action');
+
+            if (postAction === 'hide' && newBlogPost.isHidden) {
+                button.parentElement.remove();
+                continue;
+            }
+
+            if (postAction === 'unhide' && !newBlogPost.isHidden) {
+                button.parentElement.remove();
+                continue;
+            }
+
+            if (postAction === 'pin' && newBlogPost.isPinned) {
+                button.parentElement.remove();
+                continue;
+            }
+
+            if (postAction === 'unpin' && !newBlogPost.isPinned) {
+                button.parentElement.remove();
+                continue;
+            }
+
             button.dataset.id = id;
         }
+        this.#assignButtonActions(buttons, id);
 
         return clone;
     }
