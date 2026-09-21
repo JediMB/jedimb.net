@@ -259,8 +259,6 @@ export default class PaginationComponent extends HTMLElement {
         }
 
         this.#lists.pages.replaceChildren(...paginationItems);
-
-        console.log(this.#data.itemCount);
     }
 
     /**

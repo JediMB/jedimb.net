@@ -99,6 +99,8 @@ class BlogPostDBService extends BaseDBService {
     /** @return BlogPost[] */
     public function getBlogPosts(int $limit, int $offset, Published $published = Published::Published, Visibility $visibility = Visibility::Visible, Content $content = Content::Short) : array {
         try {
+            $view = '';
+
             switch ($content) {
                 case Content::All:
                     $view = 'blog_posts';
