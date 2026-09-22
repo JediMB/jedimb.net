@@ -63,7 +63,7 @@ Component::noContainer();
             <button post-action="unhide"
                 data-id="<?= $post?->id ?>"
                 btn-loading
-                class="link-svg"
+                class="link-svg active"
                 title="Unhide post"
                 >
                 <svg is-loading width="1.5em" height="1.5em">
@@ -99,7 +99,7 @@ Component::noContainer();
             <button post-action="unpin"
                 data-id="<?= $post?->id ?>"
                 btn-loading
-                class="link-svg"
+                class="link-svg active"
                 title="Unpin post"
                 >
                 <svg is-loading width="1.5em" height="1.5em">

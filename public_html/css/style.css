@@ -47,7 +47,14 @@ a[disabled] {
 .link-svg {
     color: inherit;
 
+    &.active:not([btn-loading]) {
+        border-radius: var(--size-xs);
+        background-color: var(--clr-safe-light);
+        color: var(--clr-dark);
+    }
+
     &:hover {
+        background-color: transparent;
         color: var(--clr-primary);
 
         & .unhovered {
