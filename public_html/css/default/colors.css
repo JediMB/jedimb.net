@@ -64,6 +64,9 @@
 }
 
 body {
+    --clr-light: white;
+    --clr-dark: black;
+
     --clr-primary-light: hsl(var(--hsl-hotpink-300));
     --clr-primary: hsl(var(--hsl-hotpink-500));
     --clr-primary-50: hsl(var(--hsl-hotpink-500) / 50%);
