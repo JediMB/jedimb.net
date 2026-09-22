@@ -178,6 +178,15 @@ export default class BlogPostAdministrationComponent extends HTMLElement {
         for (const button of buttons) {
             const postAction = button.getAttribute('post-action');
 
+            if (postAction === 'publish') {
+                if (newBlogPost.publishedOn) {
+                    button.remove();
+                    continue;
+                }
+
+                button.nextElementSibling?.remove();
+            }
+
             if (postAction === 'hide' && newBlogPost.isHidden) {
                 button.parentElement.remove();
                 continue;
