@@ -27,6 +27,7 @@ $title = PAGE_ADMIN_TITLE;
         'attributes' => [ 'id' => 'admin-site', 'hidden' => '' ]
     ]) ?>
     <?php Component::include('admin/blog-post-administration', [
+        'page' => $page,
         'attributes' => ['id' => 'admin-posts' ]
     ]) ?>
 </div>

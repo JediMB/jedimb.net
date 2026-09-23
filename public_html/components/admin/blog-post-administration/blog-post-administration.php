@@ -12,7 +12,7 @@ use Services\BlogPostService;
 use Utilities\Component;
 
 $blogPostService = BlogPostService::getInstance();
-$data = $blogPostService->getBlogPostsAdminData(1, 10);
+$data = $blogPostService->getBlogPostsAdminData($page);
 $posts = $data['blogPosts'];
 $pagination = $data['pagination'];
 

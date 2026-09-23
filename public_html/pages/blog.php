@@ -13,7 +13,6 @@ use Utilities\Component;
 $sessionService = SessionService::getInstance();
 $blogPostService = BlogPostService::getInstance();
 
-$page ??= 1;
 $result = $blogPostService->getPublicBlogPosts($page);
 
 $posts = $result['blogPosts'];
