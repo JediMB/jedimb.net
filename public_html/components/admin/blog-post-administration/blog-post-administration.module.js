@@ -119,6 +119,27 @@ export default class BlogPostAdministrationComponent extends HTMLElement {
                     });
                     break;
 
+                case 'publish':
+                    // TODO: Use a modal web component instead of confirm()
+                    button.addEventListener('click', () => {
+                        const message = button.dataset.prompt ?? 'Publish this post?';
+                        
+                        if (confirm(message)) {
+                            button.toggleAttribute('btn-loading', true);
+                            blogPostService.publishBlogPost(postId,
+                                () => {
+                                    // TODO: Success notification
+                                    this.#loadPageContent();
+                                },
+                                error => {
+                                    // TODO: Error notification
+                                    button.toggleAttribute('btn-loading', false);
+                                }
+                            );
+                        }
+                    });
+                    break;
+
                 case 'unhide':
                     button.addEventListener('click', () => {
                         button.toggleAttribute('btn-loading', true);
@@ -178,6 +199,16 @@ export default class BlogPostAdministrationComponent extends HTMLElement {
         for (const button of buttons) {
             const postAction = button.getAttribute('post-action');
 
+            if (postAction === 'hide' && newBlogPost.isHidden) {
+                button.parentElement.remove();
+                continue;
+            }
+
+            if (postAction === 'pin' && newBlogPost.isPinned) {
+                button.parentElement.remove();
+                continue;
+            }
+
             if (postAction === 'publish') {
                 if (newBlogPost.publishedOn) {
                     button.remove();
@@ -187,17 +218,7 @@ export default class BlogPostAdministrationComponent extends HTMLElement {
                 button.nextElementSibling?.remove();
             }
 
-            if (postAction === 'hide' && newBlogPost.isHidden) {
-                button.parentElement.remove();
-                continue;
-            }
-
             if (postAction === 'unhide' && !newBlogPost.isHidden) {
-                button.parentElement.remove();
-                continue;
-            }
-
-            if (postAction === 'pin' && newBlogPost.isPinned) {
                 button.parentElement.remove();
                 continue;
             }

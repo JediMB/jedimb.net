@@ -126,6 +126,21 @@ class BlogPostService {
     }
 
     /**
+     * @param {number} id 
+     * @param {() => void} next 
+     * @param {(errors: string[]) => void} error 
+     * @returns {Promise<void>}
+     */
+    async publishBlogPost(id, next, error) {
+        const result = await this.#service.publishBlogPost(id);
+
+        if (!result.success)
+            error?.call(this, result.errors);
+
+        next?.call(this);
+    }
+
+    /**
      * 
      * @param {BlogPostDTO} blogPostDTO 
      * @param {(value: BlogPost) => void} next 

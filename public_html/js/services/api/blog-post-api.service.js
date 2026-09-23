@@ -135,6 +135,19 @@ class BlogPostApiService {
     }
 
     /**
+     * @param {number} id 
+     * @returns {Promise<({success: boolean, errors?: string[]|object[]})>}
+     */
+    async publishBlogPost(id) {
+        const response = await this.#httpClient.patch(this.#api.post + `/${id}/publish`);
+
+        if (!response.success)
+            return { success: false, errors: response.errors };
+
+        return { success: true };
+    }
+
+    /**
      * @param {BlogPostDTO} blogPostDTO 
      * @returns {Promise<({success: boolean, errors?: string[]|object[], value?: BlogPost})>}
      */
