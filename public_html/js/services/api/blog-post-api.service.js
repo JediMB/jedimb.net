@@ -55,9 +55,10 @@ class BlogPostApiService {
     /**
      * @param {number} page 
      * @param {number} pageSize 
+     * @param {...string} adminArgs Additional arguments for getting admin page data
      * @returns {Promise<{blogPosts: BlogPost[], pagination: Pagination}>}  */
-    async getBlogPosts(page, pageSize) {
-        const response = await this.#httpClient.get(this.#api.posts, page, pageSize);
+    async getBlogPosts(page, pageSize, ...adminArgs) {
+        const response = await this.#httpClient.get(this.#api.posts, page, pageSize, ...adminArgs);
 
         if (!response.success)
             return response;
@@ -131,6 +132,19 @@ class BlogPostApiService {
         response.value = new BlogPost(response.value);
 
         return response;
+    }
+
+    /**
+     * @param {number} id 
+     * @returns {Promise<({success: boolean, errors?: string[]|object[]})>}
+     */
+    async publishBlogPost(id) {
+        const response = await this.#httpClient.patch(this.#api.post + `/${id}/publish`);
+
+        if (!response.success)
+            return { success: false, errors: response.errors };
+
+        return { success: true };
     }
 
     /**

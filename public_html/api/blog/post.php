@@ -88,6 +88,17 @@ try {
 
                     return Response::Success($success);
 
+                case 'publish':
+                    if ($response)
+                        return $response;
+
+                    $success = $service->publishDraft($id);
+
+                    if (!$success)
+                        return Response::Error(['Invalid blog post id']);
+
+                    return Response::Success($success);
+
                 case 'unhide':
                     if ($response)
                         return $response;

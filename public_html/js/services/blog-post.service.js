@@ -3,6 +3,7 @@ import BlogPostDTO from "/js/models/blog/blog-post.dto.model.js";
 import BlogPostSchedule from "/js/models/blog/blog-post-schedule.model.js";
 import Emitter from "/js/utilities/emitter.js";
 import Pagination from "/js/models/blog/pagination.model.js";
+
 import blogPostApiService from "/js/services/api/blog-post-api.service.js";
 
 export { blogPostService as default };
@@ -75,6 +76,26 @@ class BlogPostService {
     }
 
     /**
+     * @param {number} page 
+     * @param {number} pageSize 
+     * @param {{published?: number, visibility?: number}} statuses 
+     * @param {(blogPosts: BlogPost[], pagination: Pagination) => void} next
+     * @returns {Promise<void>}
+     */
+    async getBlogPostsAdminData(page, pageSize, statuses = {}, next = undefined) {
+        const adminArgs = [];
+
+        for (const status in statuses) {
+            adminArgs.push(status);
+            adminArgs.push(statuses[status]);
+        }
+
+        const { blogPosts, pagination } = await this.#service.getBlogPosts(page, pageSize, 'admin', ...adminArgs);
+
+        next?.call(this, blogPosts, pagination);
+    }
+
+    /**
      * @param {number} id 
      * @param {() => void} next 
      * @param {(errors: string[]) => void} error 
@@ -97,6 +118,21 @@ class BlogPostService {
      */
     async pinBlogPost(id, next, error) {
         const result = await this.#service.pinBlogPost(id);
+
+        if (!result.success)
+            error?.call(this, result.errors);
+
+        next?.call(this);
+    }
+
+    /**
+     * @param {number} id 
+     * @param {() => void} next 
+     * @param {(errors: string[]) => void} error 
+     * @returns {Promise<void>}
+     */
+    async publishBlogPost(id, next, error) {
+        const result = await this.#service.publishBlogPost(id);
 
         if (!result.success)
             error?.call(this, result.errors);

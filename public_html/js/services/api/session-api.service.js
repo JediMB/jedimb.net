@@ -21,7 +21,7 @@ class SessionApiService {
         return response.value;
     }
 
-    /** @returns {{success: boolean, value: User}} */
+    /** @returns {Promise<{success: boolean, value: User}>} */
     async getUser() {
         const response = await this.#httpClient.get('session/user');
 

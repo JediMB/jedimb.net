@@ -12,9 +12,13 @@ export const containerTagsAndLabels = Object.freeze([
  * @type {string[]} */
 export const containerTags = Object.freeze(containerTagsAndLabels.map(([k]) => k));
 
+/** Array of list element tags
+ * @type {string[]} */
+export const listTypeTags = Object.freeze(['ol', 'ul']);
+
 /** Array of allowed lowercase text content element tags
  * @type {string[]} */
-export const textContentTags = Object.freeze([ 'a', 'b', 'i', 'u' ]);
+export const textContentTags = Object.freeze([ 'a', 'b', 'i', 'li', 'u' ]);
 
 /** Array of allowed uppsercase non-text content element tags
  * @type {string[]} */
@@ -22,7 +26,7 @@ export const nonTextContentTags = Object.freeze([ 'br', 'img-gallery', 'img-wrap
 
 /** Complete array of allowed lowercase element tags
  * @type {string[]} */
-export const tagWhiteList = Object.freeze([...containerTags, ...textContentTags, ...nonTextContentTags]);
+export const tagWhiteList = Object.freeze([...containerTags, ...listTypeTags, ...textContentTags, ...nonTextContentTags]);
 
 /** @type {string[]} */
 export const textAlignAttributes = Object.freeze([ 'text-left', 'text-center', 'text-right', 'text-justify' ]);

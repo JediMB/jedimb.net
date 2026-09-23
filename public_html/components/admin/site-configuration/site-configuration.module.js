@@ -1,6 +1,6 @@
 import configurationApiService from "/js/services/api/configuration-api.service.js";
-import configField from "/js/components/site-configuration/config-field/config-field.module.js";
-import configCSV from "/js/components/site-configuration/config-csv/config-csv.module.js";
+import configField from "/js/components/admin/site-configuration/config-field/config-field.module.js";
+import configCSV from "/js/components/admin/site-configuration/config-csv/config-csv.module.js";
 
 class SiteConfiguration {
     #configApiService;
@@ -13,7 +13,8 @@ class SiteConfiguration {
 
         const form = component.querySelector('form');
         const fieldset = form.querySelector('fieldset');
-        const saveButton = form.querySelector('button[type="submit"]');
+        const saveButton = fieldset.querySelector('button[type="submit"]');
+        const isLoading = fieldset.querySelector('[is-loading]');
 
         configField.onChanges((hasChanges, isValid) => {
             this.#fieldsUnchanged = !hasChanges;
@@ -29,6 +30,8 @@ class SiteConfiguration {
             event.preventDefault();
             this.#save(fieldset);
         });
+
+        isLoading.remove();
     }
 
     async #save(fieldset) {

@@ -2,7 +2,8 @@
 
 namespace Services\DB;
 
-require_once 'enums/published-status.enum.php';
+require_once 'enums/content.enum.php';
+require_once 'enums/published.enum.php';
 require_once 'enums/visibility.enum.php';
 require_once 'models/db/blog-post.db.model.php';
 require_once 'models/dto/blog-post.dto.model.php';
@@ -10,7 +11,8 @@ require_once 'services/base/base.db.service.php';
 
 use PDO;
 use PDOException;
-use Enums\PublishedStatus;
+use Enums\Content;
+use Enums\Published;
 use Enums\Visibility;
 use Exception;
 use Models\DB\BlogPost;
@@ -61,35 +63,12 @@ class BlogPostDBService extends BaseDBService {
         }
     }
 
-    /** @return BlogPost[] */
-    public function getBlogPosts(int $limit, int $offset, PublishedStatus $publishedStatus = PublishedStatus::Published, Visibility $visibility = Visibility::Visible) : array {
-        try {
-            $columnValues = [];
-            $nullChecks = [];
-
-            if ($visibility !== Visibility::Any)
-                $columnValues['is_hidden'] = $visibility === Visibility::Hidden;
-
-            if ($publishedStatus !== PublishedStatus::Any)
-                $nullChecks['published_on'] = $publishedStatus === PublishedStatus::Unpublished;
-
-            $posts = $this->dbService->selectView('blog_posts_short', $columnValues, $nullChecks, limit: $limit, offset: $offset);
-            
-            return array_map(function($post) {
-                return new BlogPost($post);
-            }, $posts);
-        }
-        catch (PDOException $e) {
-            throw new Exception('Database error: ' . $e->getMessage());
-        }
-    }
-
     /**
      * @param int|string $identifier Blog post id (integer) or permalink (string)
-     * @param PublishedStatus $publishedStatus 
+     * @param Published $published 
      * @return BlogPost|false
      */
-    public function getBlogPost(int|string $identifier, PublishedStatus $publishedStatus = PublishedStatus::Published, Visibility $visibility = Visibility::Visible): BlogPost|false {
+    public function getBlogPost(int|string $identifier, Published $published = Published::Published, Visibility $visibility = Visibility::Visible): BlogPost|false {
         try {
             $columnValues = [];
             $nullChecks = [];
@@ -102,8 +81,8 @@ class BlogPostDBService extends BaseDBService {
             if ($visibility !== Visibility::Any)
                 $columnValues['is_hidden'] = $visibility === Visibility::Hidden;
 
-            if ($publishedStatus !== PublishedStatus::Any)
-                $nullChecks['published_on'] = $publishedStatus === PublishedStatus::Unpublished;
+            if ($published !== Published::Any)
+                $nullChecks['published_on'] = $published === Published::Unpublished;
 
             $post = $this->dbService->selectByColumnValues('blog_post', $columnValues, $nullChecks);
 
@@ -117,16 +96,55 @@ class BlogPostDBService extends BaseDBService {
         }
     }
 
-    public function getCount(PublishedStatus $publishedStatus = PublishedStatus::Published, Visibility $visibility = Visibility::Visible) : int {
+    /** @return BlogPost[] */
+    public function getBlogPosts(int $limit, int $offset, Published $published = Published::Published, Visibility $visibility = Visibility::Visible, Content $content = Content::Short) : array {
+        try {
+            $view = '';
+
+            switch ($content) {
+                case Content::All:
+                    $view = 'blog_posts';
+                    break;
+
+                case Content::Short:
+                    $view = 'blog_posts__content_short';
+                    break;
+
+                case Content::None:
+                    $view = 'blog_posts__content_none';
+                    break;
+            }
+
+            $columnValues = [];
+            $nullChecks = [];
+
+            if ($visibility !== Visibility::Any)
+                $columnValues['is_hidden'] = $visibility === Visibility::Hidden;
+
+            if ($published !== Published::Any)
+                $nullChecks['published_on'] = $published === Published::Unpublished;
+
+            $posts = $this->dbService->selectView($view, $columnValues, $nullChecks, limit: $limit, offset: $offset);
+            
+            return array_map(function($post) {
+                return new BlogPost($post);
+            }, $posts);
+        }
+        catch (PDOException $e) {
+            throw new Exception('Database error: ' . $e->getMessage());
+        }
+    }
+
+    public function getCount(Published $published = Published::Published, Visibility $visibility = Visibility::Visible) : int {
         try {
             $columnValues = [];
             $nullChecks = [];
 
-            if ($columnValues !== Visibility::Any)
+            if ($visibility !== Visibility::Any)
                 $columnValues['is_hidden'] = $visibility === Visibility::Hidden;
 
-            if ($publishedStatus !== PublishedStatus::Any)
-                $nullChecks['published_on'] = $publishedStatus === PublishedStatus::Unpublished;
+            if ($published !== Published::Any)
+                $nullChecks['published_on'] = $published === Published::Unpublished;
 
             return $this->dbService->selectCount('blog_post', $columnValues, $nullChecks);
         }

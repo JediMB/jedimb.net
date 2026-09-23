@@ -2,17 +2,27 @@ import Emitter from '/js/utilities/emitter.js';
 import User from '/js/models/user/user.model.js';
 import sessionApiService from '/js/services/api/session-api.service.js';
 import { cookieUserKey, cookieTokenKey, cookieValidatorKey } from '/js/constants/meta-constants.js';
+import { UserRole } from '/js/enums/user-role.enum.js';
+import { UserPermission } from '/js/enums/user-permission.enum.js';
 
 export { sessionService as default };
 
 class SessionService {
     #sessionApiService;
+    /** @type {Map<number, number[]>} */ #userRolePermissions = new Map();
 
     /** @type {Emitter<boolean>} */ isLoggedIn = new Emitter(undefined);
     /** @type {Emitter<User>} */ user = new Emitter(undefined);
 
     constructor() {
         this.#sessionApiService = sessionApiService;
+
+        this.#userRolePermissions.set(UserRole.Administrator, [
+            UserPermission.Configuration, UserPermission.Publishing, UserPermission.Editing, UserPermission.Deleting
+        ]);
+        this.#userRolePermissions.set(UserRole.Contributor, [
+            UserPermission.Publishing, UserPermission.Editing, UserPermission.Deleting
+        ]);
 
         this.isLoggedIn.subscribe({
             next: value => {
@@ -26,6 +36,26 @@ class SessionService {
         this.#sessionApiService.getStatus().then(status => {
             this.isLoggedIn.setValue(status);
         });
+    }
+
+    /**
+     * @param {...number} permissionRequirements 
+     * @returns {Promise<boolean>}
+     */
+    async hasPermissions(...permissionRequirements) {
+        const user = this.user.getValue() ?? await this.#fetchUser();
+
+        if (!user)
+            return false;
+        
+        const userPermissions = this.#userRolePermissions.get(user.role);
+
+        if (!userPermissions)
+            throw new Error('No permissions defined for user role');
+
+        return permissionRequirements.every(
+            requirement => userPermissions.includes(requirement)
+        );
     }
 
     async login(formData) {
@@ -61,13 +91,16 @@ class SessionService {
         document.cookie = `${cookieValidatorKey}=${validator}; expires=${expires}; sameSite=strict; secure;`;
     }
 
+    /** @returns {Promise<User>} */
     async #fetchUser() {
         const response = await this.#sessionApiService.getUser();
 
         if (!response.success || !response.value)
-            return;
+            return null;
 
         this.user.setValue(response.value);
+
+        return response.value;
     }
 }
 const sessionService = new SessionService();

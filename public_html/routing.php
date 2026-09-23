@@ -18,6 +18,7 @@ function getRealPath(string $path, bool &$isForbidden) : string|false {
     3) Directory with index.php in the pages directory
     */
     $isForbidden = false;
+    $realPath = false;
 
     if ( isPHP($path) === false
         && ($realPath = realpath($path))
@@ -226,12 +227,14 @@ function servePHP(array $variables = [ 'header' => false ]) {
         header($header);
 
     if (empty($baseRoute))
-        $baseRoute = '';
+        define('CURRENT_PAGE_ROUTE', '');
     else
-        $baseRoute = '/' . trim($baseRoute, '/');
+        define('CURRENT_PAGE_ROUTE', '/' . trim($baseRoute, '/'));
 
     if (empty($template))
         $template = SITE_VIEW;
+
+    $page ??= 1;
 
     if ($pageType === PageType::PHP && isset($pagePath)) {
         ob_start();

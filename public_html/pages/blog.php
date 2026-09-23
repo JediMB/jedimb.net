@@ -10,12 +10,9 @@ use Services\BlogPostService;
 use Services\SessionService;
 use Utilities\Component;
 
-/** @var string $baseRoute */
-
 $sessionService = SessionService::getInstance();
 $blogPostService = BlogPostService::getInstance();
 
-$page ??= 1;
 $result = $blogPostService->getPublicBlogPosts($page);
 
 $posts = $result['blogPosts'];
@@ -32,6 +29,5 @@ $editPermissions = $sessionService->hasPermissions([ UserPermission::Editing ]);
 <?php Component::include('blog/blog-view', [
     'posts' => $posts,
     'pagination' => $pagination,
-    'baseRoute' => $baseRoute,
     'editPermissions' => $editPermissions
 ]) ?>

@@ -1,0 +1,14 @@
+tabs-component {
+    font-size: inherit;
+}
+
+.tabs__list {
+    display: block flex;
+    flex-direction: row;
+    gap: var(--size-s);
+}
+
+.tabs__button:disabled {
+    background-color: var(--clr-primary);
+    color: var(--clr-disabled-text);
+}

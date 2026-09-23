@@ -4,10 +4,12 @@ export default class DateTimeElement extends HTMLElement {
     constructor() { super(); }
 
     connectedCallback() {
-        if (!this.hasAttribute('date-string'))
+        const dateString = this.getAttribute('date-string')?.trim();
+
+        if (!dateString)
             return;
 
-        this.#formatDateTime();
+        this.#formatDateTime(dateString);
     }
 
     disconnectedCallback() {}
@@ -20,14 +22,17 @@ export default class DateTimeElement extends HTMLElement {
         this.#formatDateTime();
     }
 
-    #formatDateTime() {
+    /**
+     * @param {string} dateString 
+     */
+    #formatDateTime(dateString) {
         try {
             const today = new Date();
-            const parsedDate = new Date(this.getAttribute('date-string'));
+            const parsedDate = new Date(dateString);
 
             this.title = formatDate(parsedDate);
 
-            const useRelativeDate = this.hasAttribute('relative-date') && this.getAttribute('relative-date') !== 'false';
+            const useRelativeDate = this.hasAttribute('relative-date') && this.getAttribute('relative-date')?.trim() !== 'false';
             
             if(useRelativeDate) {
                 const hourDifference = (today - parsedDate) / (1000 * 60 * 60);

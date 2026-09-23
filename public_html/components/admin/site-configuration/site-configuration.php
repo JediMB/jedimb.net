@@ -23,17 +23,21 @@ $configService = ConfigurationService::getInstance(); /** @var ConfigurationServ
             <button type="submit" class="btn" disabled>Save</button>
         </div>
 
+        <svg is-loading width="2em" height="2em">
+            <use xlink:href="#svg-loading" href="#svg-loading"></use>
+        </svg>
+
         <?php foreach (CONFIGURABLE_CONSTANTS as $constantName): ?>
             <?php
             $id = strtolower(str_replace('_', '-', $constantName));
             $label =  ucwords(str_replace('-', ' ', $id));
 
             if ($constantName === 'META_KEYWORDS')
-                Component::include('site-configuration/config-csv', [
+                Component::include('admin/site-configuration/config-csv', [
                     'id' => $id, 'label' => $label, 'name' => $constantName
                 ] + $configService->getConfiguration($constantName));
             else
-                Component::include('site-configuration/config-field', [
+                Component::include('admin/site-configuration/config-field', [
                     'id' => $id, 'label' => $label, 'name' => $constantName
                 ] + $configService->getConfiguration($constantName));
             ?>
