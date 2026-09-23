@@ -21,13 +21,6 @@ blog-post-administration-component {
     display: contents;
 }
 
-.admin__blog-post-tmp {
-    display: block grid;
-    grid-template-columns: 1fr auto auto;
-    gap: var(--size-s);
-    margin-block: var(--size-m);
-}
-
 .admin__blog-post__buttons {
     display: inline flex;
     flex-direction: row;
