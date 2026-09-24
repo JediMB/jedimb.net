@@ -2,12 +2,10 @@
 
 namespace Database;
 
-require_once 'services/base/base.db.service.php';
-
 use Exception;
 use PDO;
 use PDOException;
-use Services\Base\BaseDbService;
+use Abstract\BaseDbService;
 use Utils\DateTime;
 
 class TableModifiedDbService extends BaseDbService {

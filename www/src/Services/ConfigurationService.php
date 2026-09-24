@@ -2,13 +2,11 @@
 
 namespace Services;
 
-require_once 'services/base/singleton.php';
-
 use Exception;
+use Abstract\Singleton;
+use Database\ConfigurationDbService;
 use Models\DB\Configuration;
 use Models\DTO\Configuration as ConfigurationDTO;
-use Services\Base\Singleton;
-use Database\ConfigurationDbService;
 
 class ConfigurationService extends Singleton {
     private readonly ConfigurationDbService $configDbService;

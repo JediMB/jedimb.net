@@ -3,12 +3,11 @@
 namespace Database;
 
 require_once 'models/db/social-link.db.model.php';
-require_once 'services/base/base.db.service.php';
 
-use PDOException;
 use Exception;
+use PDOException;
+use Abstract\BaseDbService;
 use Models\DB\SocialLink;
-use Services\Base\BaseDbService;
 
 class SocialLinkDbService extends BaseDbService {
     protected function __construct() {

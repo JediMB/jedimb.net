@@ -2,9 +2,9 @@
 
 namespace Services{namespace};
 
+use Abstract\Singleton;
 use Database\{pascal_name}DbService;
 use Services\TableModifiedService;
-use Services\Base\Singleton;
 
 class {pascal_name}Service extends Singleton {
     private {pascal_name}DbService ${camel_name}DbService;

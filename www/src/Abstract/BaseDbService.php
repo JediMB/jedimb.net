@@ -1,13 +1,11 @@
 <?php declare(strict_types=1);
 
-namespace Services\Base;
+namespace Abstract;
 
-require_once 'services/base/singleton.php';
-
-use Services\Base\Singleton;
+use Abstract\Singleton;
 use Database\DatabaseService;
 
-class BaseDbService extends Singleton {
+abstract class BaseDbService extends Singleton {
     protected DatabaseService $dbService;
     protected string $table;
 
@@ -15,5 +13,3 @@ class BaseDbService extends Singleton {
         $this->dbService = DatabaseService::getInstance();
     }
 }
-
-?>

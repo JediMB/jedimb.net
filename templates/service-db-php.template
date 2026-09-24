@@ -2,12 +2,10 @@
 
 namespace Services{namespace};
 
-require_once 'services/base/base.db.service.php';
-
 use Exception;
 use PDO;
 use PDOException;
-use Services\Base\BaseDbService;
+use Abstract\BaseDbService;
 
 class {pascal_name}DbService extends BaseDbService {
     protected function __construct() {

@@ -2,11 +2,9 @@
 
 namespace Services;
 
-require_once 'services/base/singleton.php';
-
+use Abstract\Singleton;
 use Database\BlogPostScheduleDbService;
 use Models\DB\BlogPostSchedule;
-use Services\Base\Singleton;
 
 class BlogPostScheduleService extends Singleton {
     private BlogPostScheduleDbService $blogPostScheduleDbService;

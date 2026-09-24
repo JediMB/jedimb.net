@@ -2,13 +2,11 @@
 
 namespace Database;
 
-require_once 'services/base/base.db.service.php';
-
 use Exception;
 use PDO;
-use Models\DB\GalleryImage;
 use PDOException;
-use Services\Base\BaseDbService;
+use Abstract\BaseDbService;
+use Models\DB\GalleryImage;
 
 class GalleryImageDbService extends BaseDbService {
     protected function __construct() {

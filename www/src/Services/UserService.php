@@ -4,16 +4,15 @@ namespace Services;
 
 require_once 'models/user/user.model.php';
 require_once 'models/user/user-login-response.model.php';
-require_once 'services/base/singleton.php';
 
 use DateTime;
 use SensitiveParameter;
+use Abstract\Singleton;
 use Database\UserDbService;
 use Database\UserTokenDbService;
 use Models\User\User;
 use Models\User\UserLoginResponse;
 use Services\ConfigurationService;
-use Services\Base\Singleton;
 
 class UserService extends Singleton {
     private readonly UserDbService $userDbService;

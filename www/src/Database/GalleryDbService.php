@@ -4,14 +4,13 @@ namespace Database;
 
 require_once 'models/db/gallery.db.model.php';
 require_once 'models/dto/gallery.dto.model.php';
-require_once 'services/base/base.db.service.php';
 
 use Exception;
 use PDO;
 use PDOException;
+use Abstract\BaseDbService;
 use Models\DB\Gallery;
 use Models\DTO\Gallery as GalleryDTO;
-use Services\Base\BaseDbService;
 
 class GalleryDbService extends BaseDbService {
     protected function __construct() {

@@ -1,18 +1,18 @@
 <?php declare(strict_types=1);
 
-namespace Services\Base;
+namespace Abstract;
 
 use Exception;
 
-class Singleton {
+abstract class Singleton {
     protected static array $instances = [];
 
     protected function __construct() { }
     protected function __clone() { }
+
     public function __wakeup() {
         throw new Exception('Cannot serialize a singleton.');
     }
-
 
     public static function getInstance() : static {
         $subclass = static::class;
@@ -23,5 +23,3 @@ class Singleton {
         return (self::$instances[$subclass] = new static());
     }
 }
-
-?>

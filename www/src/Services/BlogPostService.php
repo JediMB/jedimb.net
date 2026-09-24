@@ -4,9 +4,9 @@ namespace Services;
 
 require_once 'models/pagination.model.php';
 require_once 'models/db/blog-post-schedule.db.model.php';
-require_once 'services/base/singleton.php';
 
 use Exception;
+use Abstract\Singleton;
 use Database\BlogPostDbService;
 use Enums\Content;
 use Enums\Published;
@@ -18,7 +18,6 @@ use Models\DTO\BlogPost as BlogPostDTO;
 use Services\BlogPostScheduleService;
 use Services\ConfigurationService;
 use Services\TableModifiedService;
-use Services\Base\Singleton;
 
 class BlogPostService extends Singleton {
     private BlogPostDbService $blogPostDbService;

@@ -3,13 +3,12 @@
 namespace Database;
 
 require_once 'enums/db-fetch.enum.php';
-require_once 'services/base/singleton.php';
 
 use Exception;
 use InvalidArgumentException;
 use PDO;
+use Abstract\Singleton;
 use Enums\DBFetch;
-use Services\Base\Singleton;
 
 class DatabaseService extends Singleton {
     private PDO|null $service;

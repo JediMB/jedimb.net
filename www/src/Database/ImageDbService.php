@@ -3,14 +3,13 @@
 namespace Database;
 
 require_once 'models/db/image.db.model.php';
-require_once 'services/base/base.db.service.php';
 
 use Exception;
 use PDO;
+use PDOException;
+use Abstract\BaseDbService;
 use Models\DB\Image;
 use Models\DTO\Image as ImageDTO;
-use PDOException;
-use Services\Base\BaseDbService;
 
 class ImageDbService extends BaseDbService {
     protected function __construct() {

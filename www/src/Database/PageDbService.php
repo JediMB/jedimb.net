@@ -3,12 +3,11 @@
 namespace Database;
 
 require_once 'models/db/page.db.model.php';
-require_once 'services/base/base.db.service.php';
 
 use Exception;
 use PDOException;
 use Models\DB\Page;
-use Services\Base\BaseDbService;
+use Abstract\BaseDbService;
 
 class PageDbService extends BaseDbService {
     public function getPage(int $id) : Page|false {

@@ -6,10 +6,13 @@ require_once 'models/db/gallery-image.db.model.php';
 require_once 'models/dto/gallery-images.dto.model.php';
 require_once 'models/dto/gallery.dto.model.php';
 require_once 'models/dto/image.dto.model.php';
-require_once 'services/base/singleton.php';
 
 use Error;
 use Exception;
+use Abstract\Singleton;
+use Database\GalleryImageDbService;
+use Database\GalleryDbService;
+use Database\ImageDbService;
 use Models\DB\Gallery;
 use Models\DB\GalleryImage;
 use Models\DB\Image;
@@ -17,10 +20,6 @@ use Models\DTO\Gallery as GalleryDTO;
 use Models\DTO\GalleryImages;
 use Models\DTO\Image as ImageDTO;
 use Services\TableModifiedService;
-use Services\Base\Singleton;
-use Database\GalleryImageDbService;
-use Database\GalleryDbService;
-use Database\ImageDbService;
 
 class ImageGalleryService extends Singleton {
     private GalleryImageDbService $galleryImageDbService;

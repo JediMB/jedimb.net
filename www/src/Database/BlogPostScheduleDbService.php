@@ -2,14 +2,12 @@
 
 namespace Database;
 
-require_once 'services/base/base.db.service.php';
-
 use Exception;
 use PDO;
 use PDOException;
+use Abstract\BaseDbService;
 use Enums\DBFetch;
 use Models\DB\BlogPostSchedule;
-use Services\Base\BaseDbService;
 
 class BlogPostScheduleDbService extends BaseDbService {
     protected function __construct() {

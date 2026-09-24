@@ -4,16 +4,15 @@ namespace Services;
 
 require_once 'enums/user-permission.enum.php';
 require_once 'models/user/user.model.php';
-require_once 'services/base/singleton.php';
 
 use DateTime;
 use Exception;
+use Abstract\Singleton;
 use Database\UserTokenDbService;
 use Enums\UserRole;
 use Enums\UserPermission;
 use Models\DB\UserToken;
 use Models\User\User;
-use Services\Base\Singleton;
 use Services\UserService;
 use Utils\Response;
 

@@ -3,14 +3,13 @@
 namespace Database;
 
 require_once 'models/db/configuration.db.model.php';
-require_once 'services/base/base.db.service.php';
 
 use Exception;
 use PDO;
 use PDOException;
+use Abstract\BaseDbService;
 use Models\DB\Configuration;
 use Models\DTO\Configuration as ConfigurationDTO;
-use Services\Base\BaseDbService;
 
 class ConfigurationDbService extends BaseDbService {
     protected function __construct() {

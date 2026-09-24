@@ -4,14 +4,13 @@ namespace Services;
 
 require_once 'models/menu-item.model.php';
 require_once 'models/page-navigation-data.model.php';
-require_once 'services/base/singleton.php';
 
 use Exception;
 use PDOException;
+use Abstract\Singleton;
+use Database\DatabaseService;
 use Models\MenuItem;
 use Models\PageNavigationData;
-use Services\Base\Singleton;
-use Database\DatabaseService;
 
 class NavigationService extends Singleton{
     public array $virtualPageRoutes;

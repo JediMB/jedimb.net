@@ -7,17 +7,16 @@ require_once 'enums/published.enum.php';
 require_once 'enums/visibility.enum.php';
 require_once 'models/db/blog-post.db.model.php';
 require_once 'models/dto/blog-post.dto.model.php';
-require_once 'services/base/base.db.service.php';
 
+use Exception;
 use PDO;
 use PDOException;
+use Abstract\BaseDbService;
 use Enums\Content;
 use Enums\Published;
 use Enums\Visibility;
-use Exception;
 use Models\DB\BlogPost;
 use Models\DTO\BlogPost as BlogPostDTO;
-use Services\Base\BaseDbService;
 
 class BlogPostDbService extends BaseDbService {
     protected function __construct() {

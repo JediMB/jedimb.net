@@ -2,10 +2,8 @@
 
 namespace Services;
 
-require_once 'services/base/singleton.php';
-
 use DateTime;
-use Services\Base\Singleton;
+use Abstract\Singleton;
 use Database\TableModifiedDbService;
 
 class TableModifiedService extends Singleton {
