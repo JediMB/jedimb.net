@@ -2,13 +2,10 @@
 
 namespace API\Session;
 
-require_once 'models/user/user-login-request.model.php';
-require_once 'models/user/user-login-response.model.php';
-
 use Exception;
 use Models\Exceptions\InputException;
-use Models\User\UserLoginRequest;
-use Models\User\UserLoginResponse;
+use Models\App\User\UserLoginRequest;
+use Models\App\User\UserLoginResponse;
 use Services\SessionService;
 use Services\UserService;
 

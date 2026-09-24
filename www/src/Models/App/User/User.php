@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Models\User;
+namespace Models\App\User;
 
 require_once 'enums/user-role.enum.php';
 require_once 'models/db/user.db.model.php';

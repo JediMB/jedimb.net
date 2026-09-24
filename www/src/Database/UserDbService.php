@@ -4,14 +4,13 @@ namespace Database;
 
 require_once 'models/db/user.db.model.php';
 require_once 'models/db/user-token.db.model.php';
-require_once 'models/user/user-password.model.php';
 
 use Exception;
 use PDO;
 use PDOException;
 use Abstract\BaseDbService;
 use Models\DB\User;
-use Models\User\UserPassword;
+use Models\App\User\UserPassword;
 
 class UserDbService extends BaseDbService {
     protected function __construct() {

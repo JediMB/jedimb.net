@@ -2,7 +2,7 @@
 
 namespace Components;
 
-use Models\MenuItem;
+use Models\App\MenuItem;
 use Services\NavigationService;
 use Utils\Component;
 use Utils\MenuLink;

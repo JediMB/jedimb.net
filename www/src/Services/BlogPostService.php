@@ -2,7 +2,6 @@
 
 namespace Services;
 
-require_once 'models/pagination.model.php';
 require_once 'models/db/blog-post-schedule.db.model.php';
 
 use Exception;
@@ -11,7 +10,7 @@ use Database\BlogPostDbService;
 use Enums\Content;
 use Enums\Published;
 use Enums\Visibility;
-use Models\Pagination;
+use Models\App\Pagination;
 use Models\DB\BlogPost;
 use Models\DB\BlogPostSchedule;
 use Models\DTO\BlogPost as BlogPostDTO;

@@ -2,11 +2,10 @@
 
 namespace Components\Blog;
 
-require_once 'models/pagination.model.php';
 require_once 'models/db/blog-post.db.model.php';
 
 use Exception;
-use Models\Pagination;
+use Models\App\Pagination;
 use Models\DB\BlogPost;
 use Utils\Component;
 

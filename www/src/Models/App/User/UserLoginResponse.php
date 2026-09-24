@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Models\User;
+namespace Models\App\User;
 
 use DateTime;
 

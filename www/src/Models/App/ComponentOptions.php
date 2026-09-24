@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Models;
+namespace Models\App;
 
 class ComponentOptions {
     public array $attributes = [];

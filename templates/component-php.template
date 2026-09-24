@@ -2,7 +2,6 @@
 
 namespace Components{namespace};
 
-
 use Utils\Component;
 
 Component::renderCSS();

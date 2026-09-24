@@ -16,7 +16,7 @@ spl_autoload_register(function(string $class) {
 
 require_once 'routing.php';
 
-use Models\MenuItem;
+use Models\App\MenuItem;
 use Services\NavigationService;
 use Services\SessionService;
 

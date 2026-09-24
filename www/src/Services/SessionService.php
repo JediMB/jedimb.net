@@ -3,7 +3,6 @@
 namespace Services;
 
 require_once 'enums/user-permission.enum.php';
-require_once 'models/user/user.model.php';
 
 use DateTime;
 use Exception;
@@ -12,7 +11,7 @@ use Database\UserTokenDbService;
 use Enums\UserRole;
 use Enums\UserPermission;
 use Models\DB\UserToken;
-use Models\User\User;
+use Models\App\User\User;
 use Services\UserService;
 use Utils\Response;
 

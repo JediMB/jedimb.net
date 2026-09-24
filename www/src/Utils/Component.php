@@ -2,11 +2,8 @@
 
 namespace Utils;
 
-require_once 'models/component-options.model.php';
-
 use Exception;
-use Models\ComponentOptions;
-
+use Models\App\ComponentOptions;
 
 class Component {
     private static array $components = [];

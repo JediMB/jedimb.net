@@ -2,15 +2,12 @@
 
 namespace Services;
 
-require_once 'models/menu-item.model.php';
-require_once 'models/page-navigation-data.model.php';
-
 use Exception;
 use PDOException;
 use Abstract\Singleton;
 use Database\DatabaseService;
-use Models\MenuItem;
-use Models\PageNavigationData;
+use Models\App\MenuItem;
+use Models\App\PageNavigationData;
 
 class NavigationService extends Singleton{
     public array $virtualPageRoutes;
@@ -29,10 +26,11 @@ class NavigationService extends Singleton{
                 'page_navigation_data'
             );
         }
-        catch (PDOException $e) {
+        catch (PDOException) {
             $paths = [];
         }
         finally {
+            $paths ??= [];
             $newPaths = []; 
 
             foreach ($paths as $path) {
