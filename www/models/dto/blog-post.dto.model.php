@@ -2,16 +2,15 @@
 
 namespace Models\DTO;
 
-require_once 'models/base/db-base.model.php';
 require_once 'models/exceptions/input-exception.php';
 
 use InvalidArgumentException;
-use Models\Base\DBBase;
+use Abstract\DbBase;
 use Models\Exceptions\InputException;
 use Utils\DateTime;
 use Utils\Input;
 
-class BlogPost extends DBBase {
+class BlogPost extends DbBase {
     public string $permalink;
     public string $title;
     public string $description;

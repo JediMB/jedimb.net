@@ -2,11 +2,9 @@
 
 namespace Models\DB;
 
-require_once 'models/base/db-page-content.model.php';
+use Abstract\DbPageContent;
 
-use Models\Base\DBPageContent;
-
-class Page extends DBPageContent {
+class Page extends DbPageContent {
     public ?string $titleShort;
     public ?int $parentId;
     public string $pathPart;

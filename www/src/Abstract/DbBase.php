@@ -1,13 +1,11 @@
 <?php declare(strict_types=1);
 
-namespace Models\Base;
+namespace Abstract;
 
-class DBBase {
+abstract class DbBase {
     public int $id;
 
     public function __construct(array $dbRow) {
         $this->id = $dbRow['id'];
     }
 }
-
-?>

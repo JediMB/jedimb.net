@@ -2,11 +2,9 @@
 
 namespace Models{namespace};
 
-require_once 'models/base/db-created-modified.model.php';
+use Abstract\DbCreatedModified;
 
-use Models\Base\DBCreatedModified;
-
-class {pascal_name} extends DBCreatedModified {
+class {pascal_name} extends DbCreatedModified {
     public string $member;
 
     public function __construct(array $dbRow) {
@@ -15,5 +13,3 @@ class {pascal_name} extends DBCreatedModified {
         $this->member = $dbRow['member'];
     }
 }
-
-?>

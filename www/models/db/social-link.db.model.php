@@ -2,11 +2,9 @@
 
 namespace Models\DB;
 
-require_once 'models/base/db-base.model.php';
+use Abstract\DbBase;
 
-use Models\Base\DBBase;
-
-class SocialLink extends DBBase {
+class SocialLink extends DbBase {
     public string $name;
     public string $description;
     public string $url;

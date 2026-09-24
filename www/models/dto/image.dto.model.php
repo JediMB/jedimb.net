@@ -4,12 +4,11 @@ namespace Models\DTO;
 
 use InvalidArgumentException;
 
-require_once 'models/base/db-base.model.php';
 require_once 'models/db/image.db.model.php';
 
-use Models\Base\DBBase;
+use Abstract\DbBase;
 
-class Image extends DBBase {
+class Image extends DbBase {
     public ?string $filename;
     public string $title;
     public string $description;

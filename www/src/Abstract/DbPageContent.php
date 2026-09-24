@@ -1,10 +1,8 @@
 <?php declare(strict_types=1);
 
-namespace Models\Base;
+namespace Abstract;
 
-require_once 'models/base/db-created-modified.model.php';
-
-class DBPageContent extends DBCreatedModified {
+abstract class DbPageContent extends DbCreatedModified {
     public ?int $userId;
     public string $title;
     public ?string $description; 
@@ -23,5 +21,3 @@ class DBPageContent extends DBCreatedModified {
         $this->isHidden = $dbRow['is_hidden'];
     }
 }
-
-?>

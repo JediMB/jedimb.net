@@ -1,12 +1,10 @@
 <?php declare(strict_types=1);
 
-namespace Models\Base;
-
-require_once 'models/base/db-base.model.php';
+namespace Abstract;
 
 use Utils\DateTime;
 
-class DBCreatedModified extends DBBase {
+abstract class DbCreatedModified extends DbBase {
     public \DateTime $createdOn;
     public ?\DateTime $modifiedOn;
 
@@ -17,5 +15,3 @@ class DBCreatedModified extends DBBase {
         $this->modifiedOn = DateTime::parse($dbRow['modified_on']);
     }
 }
-
-?>

@@ -2,11 +2,9 @@
 
 namespace Models{namespace};
 
-require_once 'models/base/db-base.model.php';
+use Abstract\DbBase;
 
-use Models\Base\DBBase;
-
-class {pascal_name} extends DBBase {
+class {pascal_name} extends DbBase {
     public string $member;
 
     public function __construct(array $input) {
@@ -15,5 +13,3 @@ class {pascal_name} extends DBBase {
         $this->member = $input['member'];
     }
 }
-
-?>

@@ -2,11 +2,9 @@
 
 namespace Models\DB;
 
-require_once 'models/base/db-base.model.php';
+use Abstract\DbBase;
 
-use Models\Base\DBBase;
-
-class GalleryImage extends DBBase {
+class GalleryImage extends DbBase {
     public int $galleryId;
     public int $imageId;
     public int $order;
@@ -19,7 +17,7 @@ class GalleryImage extends DBBase {
         $this->order = $dbRow['order'];
     }
 
-    public static function create($galleryId, $imageId, $order) {
+    public static function create(int $galleryId, int $imageId, int $order) {
         return new GalleryImage([
                 'id' => 0,
                 'gallery_id' => $galleryId,

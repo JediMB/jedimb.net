@@ -2,12 +2,10 @@
 
 namespace Models\DTO;
 
-require_once 'models/base/db-base.model.php';
-
 use InvalidArgumentException;
-use Models\Base\DBBase;
+use Abstract\DbBase;
 
-class Gallery extends DBBase {
+class Gallery extends DbBase {
     public string $title;
     public string $description;
 

@@ -2,12 +2,10 @@
 
 namespace Models\DB;
 
-require_once 'models/base/db-base.model.php';
-
-use Models\Base\DBBase;
+use Abstract\DbBase;
 use Utils\DateTime;
 
-class BlogPostSchedule extends DBBase {
+class BlogPostSchedule extends DbBase {
     public int $blogPostId;
     public \DateTime $publishOn;
 

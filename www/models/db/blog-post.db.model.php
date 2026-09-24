@@ -2,12 +2,10 @@
 
 namespace Models\DB;
 
-require_once 'models/base/db-page-content.model.php';
-
-use Models\Base\DBPageContent;
+use Abstract\DbPageContent;
 use Utils\DateTime;
 
-class BlogPost extends DBPageContent {
+class BlogPost extends DbPageContent {
     public string $permalink;
     public ?string $mastolink;
     public bool $isPinned;

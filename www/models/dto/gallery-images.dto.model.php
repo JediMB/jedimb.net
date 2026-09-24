@@ -2,10 +2,6 @@
 
 namespace Models\DTO;
 
-require_once 'models/base/db-base.model.php';
-
-use Models\Base\DBBase;
-
 class GalleryImages {
     public int $galleryId;
     /** @var int[] */

@@ -2,11 +2,9 @@
 
 namespace Models\DB;
 
-require_once 'models/base/db-created-modified.model.php';
+use Abstract\DbCreatedModified;
 
-use Models\Base\DBCreatedModified;
-
-class Gallery extends DBCreatedModified {
+class Gallery extends DbCreatedModified {
     public string $title;
     public string $description;
     public array $imageIds;
