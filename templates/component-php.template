@@ -2,9 +2,7 @@
 
 namespace Components{namespace};
 
-require_once 'utilities/component.utility.php';
-
-use Utilities\Component;
+use Utils\Component;
 
 Component::renderCSS();
 Component::addJSModule();

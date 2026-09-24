@@ -1,0 +1,92 @@
+<?php declare(strict_types=1);
+
+namespace Database;
+
+use Exception;
+use PDO;
+use PDOException;
+use Abstract\BaseDbService;
+use Models\DB\Gallery;
+use Models\DTO\GalleryDTO;
+
+class GalleryDbService extends BaseDbService {
+    protected function __construct() {
+        parent::__construct();
+    }
+
+    public function createGallery(GalleryDTO $object) : Gallery {
+        try {
+            $result = $this->dbService->selectFunction(
+                'create_gallery', [
+                    1 => [ 'value' => $object->title, 'type' => PDO::PARAM_STR ],
+                    2 => [ 'value' => $object->description, 'type' => PDO::PARAM_STR ]
+                ]
+            );
+
+            return new Gallery($result);
+        }
+        catch (PDOException $e) {
+            throw new Exception('Database error: ' . $e->getMessage());
+        }
+    }
+
+    public function deleteGallery(int $id) : Gallery|false {
+        try {
+            $deletedGallery = $this->dbService->deleteById('gallery', $id);
+
+            if ($deletedGallery)
+                return new Gallery($deletedGallery);
+
+            return false;
+        }
+        catch (PDOException $e) {
+            throw new Exception('Database error: ' . $e->getMessage());
+        }
+    }
+
+    /** @return Gallery[] */
+    public function getGalleries() : array {
+        try {
+            $galleries = $this->dbService->selectView('gallery', orderBy: [ [ 'name' => 'id' ] ]);
+
+            return array_map(function($gallery) {
+                return new Gallery($gallery);
+            }, $galleries);
+        }
+        catch (PDOException $e) {
+            throw new Exception('Database error: ' . $e->getMessage());
+        }
+    }
+
+    public function getGallery(int $id) : Gallery {
+        try {
+            $gallery = $this->dbService->selectById('gallery', $id);
+
+            if (!$gallery)
+                throw new Exception('Invalid gallery ID');
+
+            return new Gallery($gallery);
+
+        }
+        catch (PDOException $e) {
+            throw new Exception('Database error: ' . $e->getMessage());
+        }
+    }
+
+    public function updateGallery(Gallery $object) : Gallery {
+        try {
+            $result = $this->dbService->selectFunction(
+                'update_gallery', [
+                    1 => [ 'value' => $object->id, 'type' => PDO::PARAM_INT ],
+                    2 => [ 'value' => $object->title, 'type' => PDO::PARAM_STR ],
+                    3 => [ 'value' => $object->description, 'type' => PDO::PARAM_STR ]
+                ]
+            );
+
+            return new Gallery($result);
+        }
+        catch (PDOException $e) {
+            throw new Exception('Database error: ' . $e->getMessage());
+        }
+    }
+}

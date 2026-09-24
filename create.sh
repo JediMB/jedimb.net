@@ -40,7 +40,7 @@ elif [[ "$name" =~ [\-\/][\-\/] ]]; then
     exit
 fi
 
-php_root='./public_html'
+php_root='./www'
 
 if ! [ -d $php_root ]; then
     echo "Defined root directory ($php_root) does not exist"

@@ -1,0 +1,150 @@
+<?php declare(strict_types=1);
+
+namespace Services;
+
+use DateTime;
+use Exception;
+use Abstract\Singleton;
+use Database\UserTokenDbService;
+use Enums\UserRole;
+use Enums\UserPermission;
+use Models\DB\UserToken;
+use Models\App\User\User;
+use Services\UserService;
+use Utils\Response;
+
+class SessionService extends Singleton {
+    private UserTokenDbService $tokenDbService;
+    private UserService $userService;
+    private array $userRolePermissions;
+
+    protected function __construct() {
+        session_start();
+
+        $this->tokenDbService = UserTokenDbService::getInstance();
+        $this->userService = UserService::getInstance();
+
+        $this->userRolePermissions = [
+            UserRole::Administrator->value => [
+                UserPermission::Configuration, UserPermission::Publishing, UserPermission::Editing, UserPermission::Deleting
+            ],
+            UserRole::Contributor->value => [
+                UserPermission::Publishing, UserPermission::Editing, UserPermission::Deleting
+            ]
+        ];
+    }
+
+    public function clearSession() {
+        session_unset();
+        session_destroy();
+    }
+
+    public function enforcePermissions(array $permissionRequirements) {
+        if (!$this->hasPermissions($permissionRequirements))
+            servePHP([
+                'header' => 'HTTP/1.1 403 Forbidden',
+                'pagePath' => PATH_ERROR403
+            ]);
+    }
+
+    public function getInvalidSubmissionResponse(mixed $requestBody, array $permissions) : array|false {
+        if (!$this->isLoggedIn())
+            return Response::Forbidden(TEXT_NOT_LOGGED_IN);
+
+        if (!$this->hasPermissions($permissions))
+            return Response::Forbidden(TEXT_INSUFFICIENT_PERMISSIONS);
+
+        if (empty($requestBody))
+            return Response::BadRequest('Request body is empty');
+
+        return false;
+    }
+
+    public function getUser() : User|false {
+        return $_SESSION[SESSION_USER_KEY] ?? false;
+    }
+
+    public function hasPermissions(array $permissionRequirements) : bool {
+        $user = $this->getUser();
+
+        if (!$user)
+            return false;
+
+        if (empty($this->userRolePermissions[$user->role->value]))
+            throw new Exception('No permissions defined for user role');
+
+        foreach ($permissionRequirements as $requirement) { /** @var UserPermission $requirement */
+            $match = false;
+            foreach ($this->userRolePermissions[$user->role->value] as $permission) { /** @var UserPermission $permission */
+                if ($requirement !== $permission)
+                    continue;
+
+                $match = true;
+                break;
+            }
+
+            if (!$match)
+                return false;
+        }
+
+        return true;
+    }
+
+    public function isLoggedIn() : bool {
+        return isset($_SESSION[SESSION_STATUS_KEY]);
+    }
+
+    public function loginFromCookie() : bool {
+        $token = $this->verifyCookie();
+
+        if (!$token)
+            return false;
+
+        $user = $this->userService->getUser($token->userId);
+
+        if (!$user)
+            return false;
+
+        $this->setSession($user, $token->selector);
+        $this->tokenDbService->refreshUserToken($token->id);
+        return true;
+    }
+
+    public function setSession(User $user, ?string $tokenSelector) {
+        session_regenerate_id();
+        $_SESSION[SESSION_STATUS_KEY] = true;
+        $_SESSION[SESSION_TOKEN_KEY] = $tokenSelector;
+        $_SESSION[SESSION_USER_KEY] = $user;
+    }
+
+    public function verifyCookie() : UserToken|false {
+        if (!isset($_COOKIE[COOKIE_USER_KEY], $_COOKIE[COOKIE_TOKEN_KEY], $_COOKIE[COOKIE_VALIDATOR_KEY]))
+            return false;
+
+        $userId = (int) $_COOKIE[COOKIE_USER_KEY];
+        $selector = $_COOKIE[COOKIE_TOKEN_KEY];
+        $validator = $_COOKIE[COOKIE_VALIDATOR_KEY];
+
+        try {
+            $token = $this->tokenDbService->getUserToken($selector);
+            
+            if ( !$token ) {
+                return false;
+            }
+            
+            if ( $token->expiresOn < new DateTime() )
+                return false;
+
+            if ( $userId !== $token->userId )
+                return false;
+
+            if ( !password_verify($validator, $token->validator_hash) )
+                return false;
+
+            return $token;
+        }
+        catch (Exception $e) {
+            throw new Exception('Error verifying cookie: ' . $e->getMessage());
+        }
+    }
+}

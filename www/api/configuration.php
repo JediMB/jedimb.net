@@ -1,0 +1,101 @@
+<?php declare(strict_types=1);
+
+use Enums\UserPermission;
+use Models\DTO\ConfigurationDTO;
+use Services\ConfigurationService;
+use Services\SessionService;
+use Utils\Response;
+
+$sessionService = SessionService::getInstance(); /** @var SessionService $sessionService */
+
+if (!$sessionService->isLoggedIn())
+    return Response::Forbidden(TEXT_NOT_LOGGED_IN);
+
+if (!$sessionService->hasPermissions([ UserPermission::Configuration ]))
+    return Response::Forbidden(TEXT_INSUFFICIENT_PERMISSIONS);
+
+$input = json_decode(file_get_contents('php://input'), true);
+$errors = [];
+
+if (empty($input))
+    return Response::BadRequest('Request body is empty');
+
+$configService = ConfigurationService::getInstance(); /** @var ConfigurationService $configService */
+
+switch ( $_SERVER['REQUEST_METHOD'] ) {
+    case 'POST':
+        try {
+            foreach ($input as $config) {
+                $configDTO = new ConfigurationDTO($config);
+
+                if (!in_array($configDTO->name, CONFIGURABLE_CONSTANTS)) {
+                    $errors[] = 'Attempted to create new configuration for disallowed constant';
+                    continue;
+                }
+
+                if ($configDTO->id !== 0) {
+                    $errors[] = 'Attempted to create new configuration with non-zero id';
+                    continue;
+                }
+
+                if (is_int($configDTO->value) && $configDTO->value < 1) {
+                    $errors[] = 'Attempted to create a new configuration with a non-positive integer value';
+                    continue;
+                }
+
+                if (empty( ($result = $configService->createConfiguration($configDTO)) ))
+                    $errors[] = "Failed to create: {$configDTO->name}";
+            }
+
+            if ($errors)
+                return Response::Error($errors);
+
+            return Response::Success(count($input));
+        }
+        catch (InvalidArgumentException $e) {
+            return Response::BadRequest('Malformed request body: ' . $e->getMessage());
+        }
+        catch (Exception $e) {
+            return Response::Error($errors + [$e->getMessage()]);
+        }
+
+    case 'PATCH':
+        try {
+            foreach ($input as $config) {
+                $configDTO = new ConfigurationDTO($config);
+
+                if (!in_array($configDTO->name, CONFIGURABLE_CONSTANTS)) {
+                    $errors[] = 'Attempted to create new configuration for disallowed constant';
+                    continue;
+                }
+
+                if (is_int($configDTO->value) && $configDTO->value < 1) {
+                    $errors[] = 'Attempted to create a new configuration with a non-positive integer value';
+                    continue;
+                }
+                
+                $configDB = $configService->getConfiguration($configDTO->name)['config'];
+
+                ConfigurationDTO::update($configDB, $configDTO);
+
+                if (empty( ($result = $configService->updateConfiguration($configDB)) ))
+                    $errors[] = "Failed to update: {$configDTO->name}";
+            }
+
+            if ($errors)
+                return Response::Error($errors);
+
+            return Response::Success(count($input));
+        }
+        catch (InvalidArgumentException $e) {
+            return Response::BadRequest('Malformed request body: ' . $e->getMessage());
+        }
+        catch (Exception $e) {
+            return Response::Error($errors + [$e->getMessage()]);
+        }
+
+    default:
+        return Response::InvalidRequest();
+}
+
+?>

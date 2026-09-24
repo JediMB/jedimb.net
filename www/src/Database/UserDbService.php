@@ -1,0 +1,48 @@
+<?php declare(strict_types=1);
+
+namespace Database;
+
+use Exception;
+use PDO;
+use PDOException;
+use Abstract\BaseDbService;
+use Models\DB\User;
+use Models\App\User\UserPassword;
+
+class UserDbService extends BaseDbService {
+    protected function __construct() {
+        parent::__construct();
+    }
+
+    public function getUser(int $userId) : User|false {
+        try {
+            $user = $this->dbService->selectById('user', $userId);
+
+            if ($user)
+                return new User($user);
+        }
+        catch (PDOException $e) {
+            throw new Exception('Database error: ' . $e->getMessage());
+        }
+
+        return false;
+    }
+
+    public function getUserPassword(string $userName) : UserPassword|false {
+        try {
+            $userPassword = $this->dbService->selectFunction(
+                'read_user_password', [
+                    1 => [ 'value' => $userName, 'type' => PDO::PARAM_STR ]
+                ]
+            );
+
+            if ($userPassword)
+                return new UserPassword($userPassword);
+        }
+        catch (PDOException $e) {
+            throw new Exception('Database error: ' . $e->getMessage());
+        }
+
+        return false;
+    }
+}
