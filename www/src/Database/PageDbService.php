@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Services\DB;
+namespace Database;
 
 require_once 'models/db/page.db.model.php';
 require_once 'services/base/base.db.service.php';
@@ -8,9 +8,9 @@ require_once 'services/base/base.db.service.php';
 use Exception;
 use PDOException;
 use Models\DB\Page;
-use Services\Base\BaseDBService;
+use Services\Base\BaseDbService;
 
-class PageDBService extends BaseDBService {
+class PageDbService extends BaseDbService {
     public function getPage(int $id) : Page|false {
         try {
             $page = $this->dbService->selectById('page', $id);

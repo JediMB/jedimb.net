@@ -3,13 +3,12 @@
 namespace Components\Blog;
 
 require_once 'models/db/blog-post.db.model.php';
-require_once 'utilities/component.utility.php';
 
 use Exception;
 use Models\DB\BlogPost;
 use Services\BlogPostScheduleService;
-use Utilities\Component;
-use Utilities\DateTime;
+use Utils\Component;
+use Utils\DateTime;
 
 /** @var BlogPost $post */
 

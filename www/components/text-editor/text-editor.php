@@ -2,9 +2,7 @@
 
 namespace Components;
 
-require_once 'utilities/component.utility.php';
-
-use Utilities\Component;
+use Utils\Component;
 
 /** @var string $value */
 $value ??= null;

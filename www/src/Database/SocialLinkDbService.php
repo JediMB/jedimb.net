@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Services\DB;
+namespace Database;
 
 require_once 'models/db/social-link.db.model.php';
 require_once 'services/base/base.db.service.php';
@@ -8,9 +8,9 @@ require_once 'services/base/base.db.service.php';
 use PDOException;
 use Exception;
 use Models\DB\SocialLink;
-use Services\Base\BaseDBService;
+use Services\Base\BaseDbService;
 
-class SocialLinkDBService extends BaseDBService {
+class SocialLinkDbService extends BaseDbService {
     protected function __construct() {
         parent::__construct();
     }

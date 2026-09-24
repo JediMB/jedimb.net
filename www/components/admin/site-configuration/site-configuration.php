@@ -2,11 +2,8 @@
 
 namespace Components;
 
-require_once 'services/configuration.service.php';
-require_once 'utilities/component.utility.php';
-
 use Services\ConfigurationService;
-use Utilities\Component;
+use Utils\Component;
 
 Component::renderOnce();
 Component::renderCSS();

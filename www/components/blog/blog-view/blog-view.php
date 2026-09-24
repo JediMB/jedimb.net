@@ -4,12 +4,11 @@ namespace Components\Blog;
 
 require_once 'models/pagination.model.php';
 require_once 'models/db/blog-post.db.model.php';
-require_once 'utilities/component.utility.php';
 
 use Exception;
 use Models\Pagination;
 use Models\DB\BlogPost;
-use Utilities\Component;
+use Utils\Component;
 
 /** @var Pagination $pagination */
 /** @var BlogPost[] $posts */

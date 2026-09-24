@@ -2,10 +2,8 @@
 
 namespace Components;
 
-require_once 'utilities/component.utility.php';
-
 use Exception;
-use Utilities\Component;
+use Utils\Component;
 
 $missingArgs = [];
 if (empty($id)) $missingArgs[] = 'id';

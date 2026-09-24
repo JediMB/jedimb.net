@@ -4,14 +4,12 @@ namespace Models\DTO;
 
 require_once 'models/base/db-base.model.php';
 require_once 'models/exceptions/input-exception.php';
-require_once 'utilities/datetime.utility.php';
-require_once 'utilities/input.utility.php';
 
 use InvalidArgumentException;
 use Models\Base\DBBase;
 use Models\Exceptions\InputException;
-use Utilities\DateTime;
-use Utilities\Input;
+use Utils\DateTime;
+use Utils\Input;
 
 class BlogPost extends DBBase {
     public string $permalink;

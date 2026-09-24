@@ -3,8 +3,6 @@
 namespace API\Blog;
 
 require_once 'models/dto/blog-post.dto.model.php';
-require_once 'services/blog-post.service.php';
-require_once 'utilities/response.utility.php';
 
 use Exception;
 use Enums\UserPermission;
@@ -12,8 +10,8 @@ use Models\DTO\BlogPost as BlogPostDTO;
 use Models\Exceptions\InputException;
 use Services\BlogPostService;
 use Services\SessionService;
-use Utilities\DateTime;
-use Utilities\Response;
+use Utils\DateTime;
+use Utils\Response;
 
 $service = BlogPostService::getInstance(); /** @var BlogPostService $service */
 $sessionService = SessionService::getInstance(); /** @var SessionService $sessionService */

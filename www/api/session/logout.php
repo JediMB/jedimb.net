@@ -2,12 +2,9 @@
 
 namespace API\Session;
 
-require_once 'services/session.service.php';
-require_once 'services/db/user-token.db.service.php';
-
 use Exception;
 use Services\SessionService;
-use Services\DB\UserTokenDBService;
+use Database\UserTokenDbService;
 
 switch ( $_SERVER['REQUEST_METHOD'] ) {
     case 'POST':
@@ -16,7 +13,7 @@ switch ( $_SERVER['REQUEST_METHOD'] ) {
 
             $result = false;
             if (!empty($_SESSION[SESSION_TOKEN_KEY]))
-                $result = UserTokenDBService::getInstance()->removeUserToken($_SESSION[SESSION_TOKEN_KEY]);
+                $result = UserTokenDbService::getInstance()->removeUserToken($_SESSION[SESSION_TOKEN_KEY]);
 
             $sessionService->clearSession();
 

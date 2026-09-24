@@ -15,11 +15,6 @@ spl_autoload_register(function(string $class) {
 });
 
 require_once 'routing.php';
-require_once 'enums/page-type.enum.php';
-require_once 'services/navigation.service.php';
-require_once 'services/session.service.php';
-require_once 'services/db/user-token.db.service.php';
-require_once 'utilities/response.utility.php';
 
 use Models\MenuItem;
 use Services\NavigationService;

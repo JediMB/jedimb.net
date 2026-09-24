@@ -5,7 +5,7 @@ namespace Models\DB;
 require_once 'models/base/db-page-content.model.php';
 
 use Models\Base\DBPageContent;
-use Utilities\DateTime;
+use Utils\DateTime;
 
 class BlogPost extends DBPageContent {
     public string $permalink;

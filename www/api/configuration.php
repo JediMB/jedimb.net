@@ -1,14 +1,12 @@
 <?php declare(strict_types=1);
 
 require_once 'models/dto/configuration.dto.model.php';
-require_once 'services/configuration.service.php';
-require_once 'services/session.service.php';
 
 use Enums\UserPermission;
 use Models\DTO\Configuration;
 use Services\ConfigurationService;
 use Services\SessionService;
-use Utilities\Response;
+use Utils\Response;
 
 $sessionService = SessionService::getInstance(); /** @var SessionService $sessionService */
 

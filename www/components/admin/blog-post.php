@@ -2,13 +2,10 @@
 
 namespace Components\Admin;
 
-require_once 'utilities/component.utility.php';
-require_once 'utilities/datetime.utility.php';
-
 use Exception;
 use Models\DB\BlogPost;
-use Utilities\Component;
-use Utilities\DateTime;
+use Utils\Component;
+use Utils\DateTime;
 
 /** @var bool $template */
 /** @var BlogPost $post */

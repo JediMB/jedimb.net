@@ -2,14 +2,10 @@
 
 namespace Components;
 
-require_once 'services/navigation.service.php';
-require_once 'utilities/component.utility.php';
-require_once 'utilities/menu-link.utility.php';
-
 use Models\MenuItem;
 use Services\NavigationService;
-use Utilities\Component;
-use Utilities\MenuLink;
+use Utils\Component;
+use Utils\MenuLink;
 
 Component::renderCSS();
 Component::queueJS(__FILE__);

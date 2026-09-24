@@ -3,9 +3,8 @@
 namespace Models\Base;
 
 require_once 'models/base/db-base.model.php';
-require_once 'utilities/datetime.utility.php';
 
-use Utilities\DateTime;
+use Utils\DateTime;
 
 class DBCreatedModified extends DBBase {
     public \DateTime $createdOn;

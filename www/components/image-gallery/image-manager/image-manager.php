@@ -2,11 +2,8 @@
 
 namespace Components\ImageGallery;
 
-require_once 'utilities/component.utility.php';
-require_once 'utilities/datetime.utility.php';
-
-use Utilities\Component;
-use Utilities\DateTime;
+use Utils\Component;
+use Utils\DateTime;
 
 Component::renderCSS();
 Component::addJSModule();

@@ -3,17 +3,16 @@
 namespace Services;
 
 require_once 'services/base/singleton.php';
-require_once 'services/db/table-modified.db.service.php';
 
 use DateTime;
 use Services\Base\Singleton;
-use Services\DB\TableModifiedDBService;
+use Database\TableModifiedDbService;
 
 class TableModifiedService extends Singleton {
-    private TableModifiedDBService $tableModifiedDbService;
+    private TableModifiedDbService $tableModifiedDbService;
 
     protected function __construct() {
-        $this->tableModifiedDbService = TableModifiedDBService::getInstance();
+        $this->tableModifiedDbService = TableModifiedDbService::getInstance();
     }
 
     public function getOrCreateModifiedDate(string $table) : DateTime {

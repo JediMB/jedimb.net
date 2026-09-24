@@ -6,11 +6,7 @@ require_once 'models/db/gallery-image.db.model.php';
 require_once 'models/dto/gallery-images.dto.model.php';
 require_once 'models/dto/gallery.dto.model.php';
 require_once 'models/dto/image.dto.model.php';
-require_once 'services/table-modified.service.php';
 require_once 'services/base/singleton.php';
-require_once 'services/db/gallery-image.db.service.php';
-require_once 'services/db/gallery.db.service.php';
-require_once 'services/db/image.db.service.php';
 
 use Error;
 use Exception;
@@ -22,20 +18,20 @@ use Models\DTO\GalleryImages;
 use Models\DTO\Image as ImageDTO;
 use Services\TableModifiedService;
 use Services\Base\Singleton;
-use Services\DB\GalleryImageDBService;
-use Services\DB\GalleryDBService;
-use Services\DB\ImageDBService;
+use Database\GalleryImageDbService;
+use Database\GalleryDbService;
+use Database\ImageDbService;
 
 class ImageGalleryService extends Singleton {
-    private GalleryImageDBService $galleryImageDbService;
-    private GalleryDBService $galleryDbService;
-    private ImageDBService $imageDbService;
+    private GalleryImageDbService $galleryImageDbService;
+    private GalleryDbService $galleryDbService;
+    private ImageDbService $imageDbService;
     private TableModifiedService $tableModifiedService;
 
     protected function __construct() {
-        $this->galleryImageDbService = GalleryImageDBService::getInstance();
-        $this->galleryDbService = GalleryDBService::getInstance();
-        $this->imageDbService = ImageDBService::getInstance();
+        $this->galleryImageDbService = GalleryImageDbService::getInstance();
+        $this->galleryDbService = GalleryDbService::getInstance();
+        $this->imageDbService = ImageDbService::getInstance();
         $this->tableModifiedService = TableModifiedService::getInstance();
     }
 

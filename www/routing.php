@@ -1,15 +1,12 @@
 <?php
 
 require_once 'enums/page-type.enum.php';
-require_once 'services/blog-post-schedule.service.php';
-require_once 'services/blog-post.service.php';
-require_once 'services/db/page.db.service.php';
 
 use Enums\PageType;
 use Services\NavigationService;
 use Services\BlogPostScheduleService;
 use Services\BlogPostService;
-use Services\DB\PageDBService;
+use Database\PageDbService;
 
 function getRealPath(string $path, bool &$isForbidden) : string|false {
     /*  Try to find a matching file in the following order:
@@ -154,7 +151,7 @@ function handleVirtualPages(string $path, int|null $pageNumber) {
 
     foreach ($nav->virtualPageRoutes as $id => $route) {
         if (ltrim($route, '/') === $path) {
-            $service = PageDBService::getInstance(); /** @var PageDBService $service */
+            $service = PageDbService::getInstance(); /** @var PageDbService $service */
 
             $page = $service->getPage($id);
 

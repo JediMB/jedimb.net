@@ -2,12 +2,9 @@
 
 namespace Views;
 
-require_once 'services/configuration.service.php';
-require_once 'utilities/component.utility.php';
-
 use Enums\PageType;
 use Services\ConfigurationService;
-use Utilities\Component;
+use Utils\Component;
 
 $config = ConfigurationService::getInstance(); /** @var ConfigurationService $config */
 extract($config->getUserConstants([

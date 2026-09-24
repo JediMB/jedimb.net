@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Services\DB;
+namespace Database;
 
 require_once 'models/db/configuration.db.model.php';
 require_once 'services/base/base.db.service.php';
@@ -10,9 +10,9 @@ use PDO;
 use PDOException;
 use Models\DB\Configuration;
 use Models\DTO\Configuration as ConfigurationDTO;
-use Services\Base\BaseDBService;
+use Services\Base\BaseDbService;
 
-class ConfigurationDBService extends BaseDBService {
+class ConfigurationDbService extends BaseDbService {
     protected function __construct() {
         parent::__construct();
     }

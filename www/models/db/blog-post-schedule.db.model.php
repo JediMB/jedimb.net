@@ -5,7 +5,7 @@ namespace Models\DB;
 require_once 'models/base/db-base.model.php';
 
 use Models\Base\DBBase;
-use Utilities\DateTime;
+use Utils\DateTime;
 
 class BlogPostSchedule extends DBBase {
     public int $blogPostId;

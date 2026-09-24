@@ -2,12 +2,10 @@
 
 namespace API{namespace};
 
-require_once 'utilities/response.utility.php';
-
 use Exception;
 use Enums\UserPermission;
 use Services\SessionService;
-use Utilities\Response;
+use Utils\Response;
 
 //$service = ServiceName::getInstance(); /** @var ServiceName $service */
 $sessionService = SessionService::getInstance(); /** @var SessionService $sessionService */

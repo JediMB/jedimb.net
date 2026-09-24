@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Utilities;
+namespace Utils;
 
 require_once 'enums/input-error.enum.php';
 

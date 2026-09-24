@@ -3,13 +3,11 @@
 namespace Services\Base;
 
 require_once 'services/base/singleton.php';
-require_once 'services/db/database.service.php';
 
-use Exception;
 use Services\Base\Singleton;
-use Services\DB\DatabaseService;
+use Database\DatabaseService;
 
-class BaseDBService extends Singleton {
+class BaseDbService extends Singleton {
     protected DatabaseService $dbService;
     protected string $table;
 

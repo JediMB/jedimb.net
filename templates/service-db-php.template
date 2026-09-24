@@ -7,9 +7,9 @@ require_once 'services/base/base.db.service.php';
 use Exception;
 use PDO;
 use PDOException;
-use Services\Base\BaseDBService;
+use Services\Base\BaseDbService;
 
-class {pascal_name}DbService extends BaseDBService {
+class {pascal_name}DbService extends BaseDbService {
     protected function __construct() {
         parent::__construct();
     }

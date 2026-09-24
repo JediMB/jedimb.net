@@ -2,15 +2,13 @@
 
 require_once 'enums/published.enum.php';
 require_once 'enums/visibility.enum.php';
-require_once 'services/blog-post.service.php';
-require_once 'utilities/response.utility.php';
 
 use Enums\Published;
 use Enums\UserPermission;
 use Enums\Visibility;
 use Services\BlogPostService;
 use Services\SessionService;
-use Utilities\Response;
+use Utils\Response;
 
 $service = BlogPostService::getInstance(); /** @var BlogPostService $service */
 $sessionService = SessionService::getInstance(); /** @var SessionService $sessionService */

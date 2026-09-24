@@ -2,14 +2,12 @@
 
 namespace Components;
 
-require_once 'services/db/social-link.db.service.php';
-
 use Models\DB\SocialLink;
-use Services\DB\SocialLinkDBService;
+use Database\SocialLinkDbService;
 
-\Utilities\Component::noContainer();
+\Utils\Component::noContainer();
 
-$socials = SocialLinkDBService::getInstance()->getSocialLinks();
+$socials = SocialLinkDbService::getInstance()->getSocialLinks();
 $symbolPrefix = 'svg-social-link-';
 
 ?>

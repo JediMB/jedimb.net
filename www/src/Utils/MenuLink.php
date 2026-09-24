@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Utilities;
+namespace Utils;
 
 class MenuLink {
     static function onClick(?string $value, bool $isUrl = false, bool $useHref = true) {

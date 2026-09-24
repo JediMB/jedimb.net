@@ -1,15 +1,13 @@
 <?php declare(strict_types=1);
 
 require_once 'models/dto/gallery-images.dto.model.php';
-require_once 'services/image-gallery.service.php';
-require_once 'utilities/response.utility.php';
 
 use Enums\UserPermission;
 use Models\DTO\Gallery;
 use Models\DTO\GalleryImages;
 use Services\ImageGalleryService;
 use Services\SessionService;
-use Utilities\Response;
+use Utils\Response;
 
 $service = ImageGalleryService::getInstance(); /** @var ImageGalleryService $service */
 $sessionService = SessionService::getInstance(); /** @var SessionService $sessionService */

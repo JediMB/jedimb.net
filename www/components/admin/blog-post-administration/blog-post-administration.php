@@ -3,13 +3,11 @@
 namespace Components\Admin;
 
 require_once 'enums/published.enum.php';
-require_once 'services/blog-post.service.php';
-require_once 'utilities/component.utility.php';
 
 use Enums\Published;
 use Enums\Visibility;
 use Services\BlogPostService;
-use Utilities\Component;
+use Utils\Component;
 
 $blogPostService = BlogPostService::getInstance();
 $data = $blogPostService->getBlogPostsAdminData($page);

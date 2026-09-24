@@ -3,23 +3,22 @@
 namespace Services;
 
 require_once 'services/base/singleton.php';
-require_once 'services/db/configuration.db.service.php';
 
 use Exception;
 use Models\DB\Configuration;
 use Models\DTO\Configuration as ConfigurationDTO;
 use Services\Base\Singleton;
-use Services\DB\ConfigurationDBService;
+use Database\ConfigurationDbService;
 
 class ConfigurationService extends Singleton {
-    private readonly ConfigurationDBService $configDbService;
+    private readonly ConfigurationDbService $configDbService;
     /** @var (array<string, Configuration>) $configuration */
     private readonly array $configuration;
     /** @var (array<string, string|int>) */
     private readonly array $constants;
 
     protected function __construct() {
-        $this->configDbService = ConfigurationDBService::getInstance();
+        $this->configDbService = ConfigurationDbService::getInstance();
 
         $this->configuration = $this->configDbService->getConfiguration();
 

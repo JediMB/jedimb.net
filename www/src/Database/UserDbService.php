@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Services\DB;
+namespace Database;
 
 require_once 'models/db/user.db.model.php';
 require_once 'models/db/user-token.db.model.php';
@@ -12,9 +12,9 @@ use PDO;
 use PDOException;
 use Models\DB\User;
 use Models\User\UserPassword;
-use Services\Base\BaseDBService;
+use Services\Base\BaseDbService;
 
-class UserDBService extends BaseDBService {
+class UserDbService extends BaseDbService {
     protected function __construct() {
         parent::__construct();
     }

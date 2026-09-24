@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Services\DB;
+namespace Database;
 
 require_once 'models/db/image.db.model.php';
 require_once 'services/base/base.db.service.php';
@@ -10,9 +10,9 @@ use PDO;
 use Models\DB\Image;
 use Models\DTO\Image as ImageDTO;
 use PDOException;
-use Services\Base\BaseDBService;
+use Services\Base\BaseDbService;
 
-class ImageDBService extends BaseDBService {
+class ImageDbService extends BaseDbService {
     protected function __construct() {
         parent::__construct();
     }

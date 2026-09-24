@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Services\DB;
+namespace Database;
 
 require_once 'enums/db-fetch.enum.php';
 require_once 'services/base/singleton.php';

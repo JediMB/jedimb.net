@@ -1,17 +1,16 @@
 <?php declare(strict_types=1);
 
-namespace Services\DB;
+namespace Database;
 
 require_once 'services/base/base.db.service.php';
-require_once 'utilities/datetime.utility.php';
 
 use Exception;
 use PDO;
 use PDOException;
-use Services\Base\BaseDBService;
-use Utilities\DateTime;
+use Services\Base\BaseDbService;
+use Utils\DateTime;
 
-class TableModifiedDBService extends BaseDBService {
+class TableModifiedDbService extends BaseDbService {
     protected function __construct() {
         parent::__construct();
     }

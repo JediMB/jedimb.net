@@ -2,8 +2,6 @@
 
 namespace API\Session;
 
-require_once 'services/session.service.php';
-
 use Services\SessionService;
 
 switch ( $_SERVER['REQUEST_METHOD'] ) {

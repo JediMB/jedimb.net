@@ -7,7 +7,7 @@ require_once 'models/base/db-base.model.php';
 
 use Enums\UserRole;
 use Models\Base\DBBase;
-use Utilities\DateTime;
+use Utils\DateTime;
 
 class User extends DBBase {
     public string $username;

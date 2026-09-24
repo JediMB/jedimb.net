@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Services\DB;
+namespace Database;
 
 require_once 'enums/content.enum.php';
 require_once 'enums/published.enum.php';
@@ -17,9 +17,9 @@ use Enums\Visibility;
 use Exception;
 use Models\DB\BlogPost;
 use Models\DTO\BlogPost as BlogPostDTO;
-use Services\Base\BaseDBService;
+use Services\Base\BaseDbService;
 
-class BlogPostDBService extends BaseDBService {
+class BlogPostDbService extends BaseDbService {
     protected function __construct() {
         parent::__construct();
     }

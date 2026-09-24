@@ -3,11 +3,10 @@
 namespace Components;
 
 require_once 'models/pagination.model.php';
-require_once 'utilities/component.utility.php';
 
 use Exception;
 use Models\Pagination;
-use Utilities\Component;
+use Utils\Component;
 
 /** @var int $cId */
 /** @var Pagination $data */

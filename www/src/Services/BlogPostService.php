@@ -4,13 +4,10 @@ namespace Services;
 
 require_once 'models/pagination.model.php';
 require_once 'models/db/blog-post-schedule.db.model.php';
-require_once 'services/blog-post-schedule.service.php';
-require_once 'services/configuration.service.php';
-require_once 'services/table-modified.service.php';
 require_once 'services/base/singleton.php';
-require_once 'services/db/blog-post.db.service.php';
 
 use Exception;
+use Database\BlogPostDbService;
 use Enums\Content;
 use Enums\Published;
 use Enums\Visibility;
@@ -22,16 +19,15 @@ use Services\BlogPostScheduleService;
 use Services\ConfigurationService;
 use Services\TableModifiedService;
 use Services\Base\Singleton;
-use Services\DB\BlogPostDBService;
 
 class BlogPostService extends Singleton {
-    private BlogPostDBService $blogPostDbService;
+    private BlogPostDbService $blogPostDbService;
     private BlogPostScheduleService $blogPostScheduleService;
     private ConfigurationService $configurationService;
     private TableModifiedService $tableModifiedService;
 
     protected function __construct() {
-        $this->blogPostDbService = BlogPostDBService::getInstance();
+        $this->blogPostDbService = BlogPostDbService::getInstance();
         $this->blogPostScheduleService = BlogPostScheduleService::getInstance();
         $this->configurationService = ConfigurationService::getInstance();
         $this->tableModifiedService = TableModifiedService::getInstance();

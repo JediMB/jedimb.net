@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Utilities;
+namespace Utils;
 
 class Response {
     public static function BadRequest(string $reason) : array {

@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Services\DB;
+namespace Database;
 
 require_once 'services/base/base.db.service.php';
 
@@ -9,9 +9,9 @@ use PDO;
 use PDOException;
 use Enums\DBFetch;
 use Models\DB\BlogPostSchedule;
-use Services\Base\BaseDBService;
+use Services\Base\BaseDbService;
 
-class BlogPostScheduleDbService extends BaseDBService {
+class BlogPostScheduleDbService extends BaseDbService {
     protected function __construct() {
         parent::__construct();
         $this->table = 'blog_post_schedule';

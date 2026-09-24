@@ -1,9 +1,8 @@
 <?php declare(strict_types=1);
 
-namespace Services\DB;
+namespace Database;
 
 require_once 'models/db/user-token.db.model.php';
-require_once 'services/configuration.service.php';
 require_once 'services/base/base.db.service.php';
 
 use DateTime;
@@ -12,9 +11,9 @@ use PDO;
 use PDOException;
 use Models\DB\UserToken;
 use Services\ConfigurationService;
-use Services\Base\BaseDBService;
+use Services\Base\BaseDbService;
 
-class UserTokenDBService extends BaseDBService {
+class UserTokenDbService extends BaseDbService {
     private readonly ConfigurationService $configService;
 
     protected function __construct() {

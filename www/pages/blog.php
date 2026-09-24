@@ -2,13 +2,10 @@
 
 namespace Pages;
 
-require_once 'services/blog-post.service.php';
-require_once 'utilities/component.utility.php';
-
 use Enums\UserPermission;
 use Services\BlogPostService;
 use Services\SessionService;
-use Utilities\Component;
+use Utils\Component;
 
 $sessionService = SessionService::getInstance();
 $blogPostService = BlogPostService::getInstance();

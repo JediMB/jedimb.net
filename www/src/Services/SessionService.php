@@ -5,29 +5,27 @@ namespace Services;
 require_once 'enums/user-permission.enum.php';
 require_once 'models/user/user.model.php';
 require_once 'services/base/singleton.php';
-require_once 'services/user.service.php';
-require_once 'services/db/user-token.db.service.php';
 
 use DateTime;
 use Exception;
+use Database\UserTokenDbService;
 use Enums\UserRole;
 use Enums\UserPermission;
 use Models\DB\UserToken;
 use Models\User\User;
 use Services\Base\Singleton;
 use Services\UserService;
-use Services\DB\UserTokenDBService;
-use Utilities\Response;
+use Utils\Response;
 
 class SessionService extends Singleton {
-    private UserTokenDBService $tokenDBService;
+    private UserTokenDbService $tokenDbService;
     private UserService $userService;
     private array $userRolePermissions;
 
     protected function __construct() {
         session_start();
 
-        $this->tokenDBService = UserTokenDBService::getInstance();
+        $this->tokenDbService = UserTokenDbService::getInstance();
         $this->userService = UserService::getInstance();
 
         $this->userRolePermissions = [
@@ -112,7 +110,7 @@ class SessionService extends Singleton {
             return false;
 
         $this->setSession($user, $token->selector);
-        $this->tokenDBService->refreshUserToken($token->id);
+        $this->tokenDbService->refreshUserToken($token->id);
         return true;
     }
 
@@ -132,7 +130,7 @@ class SessionService extends Singleton {
         $validator = $_COOKIE[COOKIE_VALIDATOR_KEY];
 
         try {
-            $token = $this->tokenDBService->getUserToken($selector);
+            $token = $this->tokenDbService->getUserToken($selector);
             
             if ( !$token ) {
                 return false;

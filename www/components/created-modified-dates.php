@@ -2,11 +2,9 @@
 
 namespace Components;
 
-require_once 'utilities/datetime.utility.php';
-
 use Exception;
-use Utilities\Component;
-use Utilities\DateTime;
+use Utils\Component;
+use Utils\DateTime;
 
 /** @var bool $relativeDate */
 

@@ -1,20 +1,17 @@
 <?php declare(strict_types=1);
 
 namespace Services{namespace};
-require_once 'services/table-modified.service.php';
-require_once 'services/base/singleton.php';
-require_once 'services/db/{base_name}.db.service.php';
 
+use Database\{pascal_name}DbService;
 use Services\TableModifiedService;
 use Services\Base\Singleton;
-use Services\DB\{pascal_name}DBService;
 
 class {pascal_name}Service extends Singleton {
-    private {pascal_name}DBService ${camel_name}DbService;
+    private {pascal_name}DbService ${camel_name}DbService;
     private TableModifiedService $tableModifiedService;
 
     protected function __construct() {
-        $this->{camel_name}DbService = {pascal_name}DBService::getInstance();
+        $this->{camel_name}DbService = {pascal_name}DbService::getInstance();
         $this->tableModifiedService = TableModifiedService::getInstance();
     }
 }

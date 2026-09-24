@@ -2,11 +2,8 @@
 
 namespace Components;
 
-require_once 'services/session.service.php';
-require_once 'utilities/component.utility.php';
-
 use Services\SessionService;
-use Utilities\Component;
+use Utils\Component;
 
 Component::renderOnce();
 Component::renderCSS();

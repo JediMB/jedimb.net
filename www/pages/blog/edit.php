@@ -2,15 +2,11 @@
 
 namespace Pages\Blog;
 
-require_once 'services/blog-post.service.php';
-require_once 'services/session.service.php';
-require_once 'utilities/component.utility.php';
-
 use Exception;
 use Enums\UserPermission;
 use Services\BlogPostService;
 use Services\SessionService;
-use Utilities\Component;
+use Utils\Component;
 
 /** @var int|null $page */
 

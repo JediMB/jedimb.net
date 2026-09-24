@@ -4,27 +4,25 @@ namespace Services;
 
 require_once 'models/user/user.model.php';
 require_once 'models/user/user-login-response.model.php';
-require_once 'services/configuration.service.php';
 require_once 'services/base/singleton.php';
-require_once 'services/db/user.db.service.php';
 
 use DateTime;
 use SensitiveParameter;
+use Database\UserDbService;
+use Database\UserTokenDbService;
 use Models\User\User;
 use Models\User\UserLoginResponse;
 use Services\ConfigurationService;
 use Services\Base\Singleton;
-use Services\DB\UserDBService;
-use Services\DB\UserTokenDBService;
 
 class UserService extends Singleton {
-    private readonly UserDBService $userDbService;
-    private readonly UserTokenDBService $tokenDbService;
+    private readonly UserDbService $userDbService;
+    private readonly UserTokenDbService $tokenDbService;
     private readonly ConfigurationService $configService;
 
     protected function __construct() {
-        $this->userDbService = UserDBService::getInstance();
-        $this->tokenDbService = UserTokenDBService::getInstance();
+        $this->userDbService = UserDbService::getInstance();
+        $this->tokenDbService = UserTokenDbService::getInstance();
         $this->configService = ConfigurationService::getInstance();
     }
 

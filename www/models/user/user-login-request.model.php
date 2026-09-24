@@ -3,10 +3,9 @@
 namespace Models\User;
 
 require_once 'models/exceptions/input-exception.php';
-require_once 'utilities/input.utility.php';
 
 use Models\Exceptions\InputException;
-use Utilities\Input;
+use Utils\Input;
 
 class UserLoginRequest {
     public string $username;

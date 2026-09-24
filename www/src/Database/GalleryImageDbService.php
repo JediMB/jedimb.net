@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Services\DB;
+namespace Database;
 
 require_once 'services/base/base.db.service.php';
 
@@ -8,9 +8,9 @@ use Exception;
 use PDO;
 use Models\DB\GalleryImage;
 use PDOException;
-use Services\Base\BaseDBService;
+use Services\Base\BaseDbService;
 
-class GalleryImageDBService extends BaseDBService {
+class GalleryImageDbService extends BaseDbService {
     protected function __construct() {
         parent::__construct();
     }

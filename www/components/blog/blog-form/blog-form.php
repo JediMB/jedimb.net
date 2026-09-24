@@ -2,12 +2,10 @@
 
 namespace Components\Blog;
 
-require_once 'utilities/component.utility.php';
-
 use Exception;
 use Models\DB\BlogPost;
 use Services\BlogPostScheduleService;
-use Utilities\Component;
+use Utils\Component;
 
 /** @var string $formId */
 /** @var BlogPost $post */

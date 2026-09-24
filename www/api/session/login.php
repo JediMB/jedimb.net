@@ -4,8 +4,6 @@ namespace API\Session;
 
 require_once 'models/user/user-login-request.model.php';
 require_once 'models/user/user-login-response.model.php';
-require_once 'services/session.service.php';
-require_once 'services/user.service.php';
 
 use Exception;
 use Models\Exceptions\InputException;
