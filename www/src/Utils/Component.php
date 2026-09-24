@@ -95,7 +95,7 @@ class Component {
         echo $output;
     }
 
-    private static function findPath($component) : string|false {
+    private static function findPath(string $component) : string|false {
         if ( ($path = realpath("components/$component.php")) )
             return $path;
 
