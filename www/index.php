@@ -10,6 +10,10 @@ if (!file_exists('secrets.php')) {
 }
 require_once 'secrets.php';
 
+spl_autoload_register(function(string $class) {
+    require 'src/' . str_replace("\\", "/", $class) . '.php';
+});
+
 require_once 'routing.php';
 require_once 'enums/page-type.enum.php';
 require_once 'services/navigation.service.php';
