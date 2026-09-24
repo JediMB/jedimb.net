@@ -6,7 +6,7 @@ use InvalidArgumentException;
 
 require_once 'models/db/configuration.db.model.php';
 
-class Configuration {
+class ConfigurationDTO {
     public int $id;
     public string $name;
     public string|int|null $value;
@@ -27,7 +27,7 @@ class Configuration {
         $this->isActive = $input['isActive'] ?? null;
     }
 
-    public static function update(\Models\DB\Configuration &$object, Configuration $source) {
+    public static function update(\Models\DB\Configuration &$object, ConfigurationDTO $source) {
         if ($object->id !== $source->id)
             throw new InvalidArgumentException('Incorrect Configuration id in update call');
         if ($object->name !== $source->name)
@@ -47,5 +47,3 @@ class Configuration {
         if ($source->isActive !== null) $object->isActive = $source->isActive;
     }
 }
-
-?>

@@ -2,8 +2,6 @@
 
 namespace Models\App\User;
 
-require_once 'models/exceptions/input-exception.php';
-
 use Models\Exceptions\InputException;
 use Utils\Input;
 

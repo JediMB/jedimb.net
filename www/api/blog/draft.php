@@ -2,11 +2,9 @@
 
 namespace API\Blog;
 
-require_once 'models/dto/blog-post.dto.model.php';
-
 use Exception;
 use Enums\UserPermission;
-use Models\DTO\BlogPost as BlogPostDTO;
+use Models\DTO\BlogPostDTO;
 use Models\Exceptions\InputException;
 use Services\BlogPostService;
 use Services\SessionService;

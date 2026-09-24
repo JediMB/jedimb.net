@@ -1,9 +1,7 @@
 <?php declare(strict_types=1);
 
-require_once 'models/dto/image.dto.model.php';
-
 use Enums\UserPermission;
-use Models\DTO\Image;
+use Models\DTO\ImageDTO;
 use Services\ImageGalleryService;
 use Services\SessionService;
 use Utils\Response;
@@ -54,7 +52,7 @@ switch ( $_SERVER['REQUEST_METHOD'] ) {
             return $response;
         
         try {
-            $imageDTO = new Image($input);
+            $imageDTO = new ImageDTO($input);
 
             $result = $service->updateImage($imageDTO);
 
@@ -75,7 +73,7 @@ switch ( $_SERVER['REQUEST_METHOD'] ) {
             return Response::BadRequest(TEXT_IMAGE_SIZE_LIMIT);
 
         try {
-            $result = $service->createImage(new Image($input['dto']), $input['file']);
+            $result = $service->createImage(new ImageDTO($input['dto']), $input['file']);
             
             if (isset($result['badrequest']))
                 return Response::BadRequest($result['message']);

@@ -3,9 +3,6 @@
 namespace Services;
 
 require_once 'models/db/gallery-image.db.model.php';
-require_once 'models/dto/gallery-images.dto.model.php';
-require_once 'models/dto/gallery.dto.model.php';
-require_once 'models/dto/image.dto.model.php';
 
 use Error;
 use Exception;
@@ -16,9 +13,9 @@ use Database\ImageDbService;
 use Models\DB\Gallery;
 use Models\DB\GalleryImage;
 use Models\DB\Image;
-use Models\DTO\Gallery as GalleryDTO;
-use Models\DTO\GalleryImages;
-use Models\DTO\Image as ImageDTO;
+use Models\DTO\GalleryDTO;
+use Models\DTO\GalleryImagesDTO;
+use Models\DTO\ImageDTO;
 use Services\TableModifiedService;
 
 class ImageGalleryService extends Singleton {
@@ -180,8 +177,8 @@ class ImageGalleryService extends Singleton {
         ];
     }
 
-    /** @return (array{'gallery': Gallery, 'removed': GalleryImages, 'modifiedOn': \DateTime}|array{'errors': true, 'messages': string[]}) */
-    public function updateGalleryImages(GalleryImages $galleryImagesDTO) : array {
+    /** @return (array{'gallery': Gallery, 'removed': GalleryImagesDTO, 'modifiedOn': \DateTime}|array{'errors': true, 'messages': string[]}) */
+    public function updateGalleryImages(GalleryImagesDTO $galleryImagesDTO) : array {
         if ( ( $galleryId = $galleryImagesDTO->galleryId ) < 1 )
             throw new Exception('A gallery id cannot be less than 1.');
 
@@ -238,7 +235,7 @@ class ImageGalleryService extends Singleton {
         if ($updateErrors)
             $errors[] = "Updated GalleryImages did not match source data for rows " . implode(', ', $updateErrors);
 
-        $deletedGalleryImageRows = new GalleryImages(['galleryId' => $galleryId, 'imageIds' => []]);
+        $deletedGalleryImageRows = new GalleryImagesDTO(['galleryId' => $galleryId, 'imageIds' => []]);
         $deleteMissing = [];
         $deleteErrors = [];
         foreach ($removedGalleryImages as $removedGalleryImage) {

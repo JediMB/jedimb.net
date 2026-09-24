@@ -6,7 +6,7 @@ use Exception;
 use Abstract\Singleton;
 use Database\ConfigurationDbService;
 use Models\DB\Configuration;
-use Models\DTO\Configuration as ConfigurationDTO;
+use Models\DTO\ConfigurationDTO;
 
 class ConfigurationService extends Singleton {
     private readonly ConfigurationDbService $configDbService;

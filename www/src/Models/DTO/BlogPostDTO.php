@@ -2,15 +2,13 @@
 
 namespace Models\DTO;
 
-require_once 'models/exceptions/input-exception.php';
-
 use InvalidArgumentException;
 use Abstract\DbBase;
 use Models\Exceptions\InputException;
 use Utils\DateTime;
 use Utils\Input;
 
-class BlogPost extends DbBase {
+class BlogPostDTO extends DbBase {
     public string $permalink;
     public string $title;
     public string $description;
@@ -48,7 +46,7 @@ class BlogPost extends DbBase {
             throw new InputException(__CLASS__, $errors);
     }
 
-    public static function update(\Models\DB\BlogPost &$object, BlogPost $source, ?int $userId = null) {
+    public static function update(\Models\DB\BlogPost &$object, BlogPostDTO $source, ?int $userId = null) {
         if ($object->id !== $source->id)
             throw new InvalidArgumentException('Incorrect Blog Post id in update call');
 
@@ -67,5 +65,3 @@ class BlogPost extends DbBase {
             $object->userId = $userId;
     }
 }
-
-?>

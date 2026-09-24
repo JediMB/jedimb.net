@@ -3,26 +3,29 @@
 namespace Models\DTO;
 
 use InvalidArgumentException;
+
+require_once 'models/db/image.db.model.php';
+
 use Abstract\DbBase;
 
-class Gallery extends DbBase {
+class ImageDTO extends DbBase {
+    public ?string $filename;
     public string $title;
     public string $description;
 
     public function __construct(array $input) {
         parent::__construct($input);
 
+        $this->filename = isset($input['filename']) ? trim($input['filename']) : null;
         $this->title = trim($input['title']);
         $this->description = trim($input['description']);
     }
 
-    public static function update(\Models\DB\Gallery &$object, Gallery $source) {
+    public static function update(\Models\DB\Image &$object, ImageDTO $source) {
         if ($object->id !== $source->id)
-            throw new InvalidArgumentException('Incorrect Gallery id in update call');
+            throw new InvalidArgumentException('Incorrect Image id in update call');
 
         $object->title = $source->title;
         $object->description = $source->description;
     }
 }
-
-?>

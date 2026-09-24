@@ -37,5 +37,3 @@ class InputException extends Exception {
         return $this->errors;
     }
 }
-
-?>

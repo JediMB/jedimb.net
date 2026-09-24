@@ -9,7 +9,7 @@ use PDO;
 use PDOException;
 use Abstract\BaseDbService;
 use Models\DB\Configuration;
-use Models\DTO\Configuration as ConfigurationDTO;
+use Models\DTO\ConfigurationDTO;
 
 class ConfigurationDbService extends BaseDbService {
     protected function __construct() {

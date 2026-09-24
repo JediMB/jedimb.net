@@ -9,7 +9,7 @@ use PDO;
 use PDOException;
 use Abstract\BaseDbService;
 use Models\DB\Image;
-use Models\DTO\Image as ImageDTO;
+use Models\DTO\ImageDTO;
 
 class ImageDbService extends BaseDbService {
     protected function __construct() {

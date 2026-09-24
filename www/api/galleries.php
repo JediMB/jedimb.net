@@ -1,10 +1,8 @@
 <?php declare(strict_types=1);
 
-require_once 'models/dto/gallery-images.dto.model.php';
-
 use Enums\UserPermission;
-use Models\DTO\Gallery;
-use Models\DTO\GalleryImages;
+use Models\DTO\GalleryDTO;
+use Models\DTO\GalleryImagesDTO;
 use Services\ImageGalleryService;
 use Services\SessionService;
 use Utils\Response;
@@ -55,7 +53,7 @@ switch ( $_SERVER['REQUEST_METHOD'] ) {
             return $response;
 
         try {
-            $galleryImagesDTO = new GalleryImages($input);
+            $galleryImagesDTO = new GalleryImagesDTO($input);
 
             $result = $service->updateGalleryImages($galleryImagesDTO);
 
@@ -73,7 +71,7 @@ switch ( $_SERVER['REQUEST_METHOD'] ) {
             return $response;
 
         try {
-            $galleryDTO = new Gallery($input);
+            $galleryDTO = new GalleryDTO($input);
 
             $result = $service->createGallery($galleryDTO);
 
@@ -88,7 +86,7 @@ switch ( $_SERVER['REQUEST_METHOD'] ) {
             return $response;
 
         try {
-            $galleryDTO = new Gallery($input);
+            $galleryDTO = new GalleryDTO($input);
 
             $result = $service->updateGallery($galleryDTO);
 

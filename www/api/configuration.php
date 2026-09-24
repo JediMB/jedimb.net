@@ -1,9 +1,7 @@
 <?php declare(strict_types=1);
 
-require_once 'models/dto/configuration.dto.model.php';
-
 use Enums\UserPermission;
-use Models\DTO\Configuration;
+use Models\DTO\ConfigurationDTO;
 use Services\ConfigurationService;
 use Services\SessionService;
 use Utils\Response;
@@ -28,7 +26,7 @@ switch ( $_SERVER['REQUEST_METHOD'] ) {
     case 'POST':
         try {
             foreach ($input as $config) {
-                $configDTO = new Configuration($config);
+                $configDTO = new ConfigurationDTO($config);
 
                 if (!in_array($configDTO->name, CONFIGURABLE_CONSTANTS)) {
                     $errors[] = 'Attempted to create new configuration for disallowed constant';
@@ -64,7 +62,7 @@ switch ( $_SERVER['REQUEST_METHOD'] ) {
     case 'PATCH':
         try {
             foreach ($input as $config) {
-                $configDTO = new Configuration($config);
+                $configDTO = new ConfigurationDTO($config);
 
                 if (!in_array($configDTO->name, CONFIGURABLE_CONSTANTS)) {
                     $errors[] = 'Attempted to create new configuration for disallowed constant';
@@ -78,7 +76,7 @@ switch ( $_SERVER['REQUEST_METHOD'] ) {
                 
                 $configDB = $configService->getConfiguration($configDTO->name)['config'];
 
-                Configuration::update($configDB, $configDTO);
+                ConfigurationDTO::update($configDB, $configDTO);
 
                 if (empty( ($result = $configService->updateConfiguration($configDB)) ))
                     $errors[] = "Failed to update: {$configDTO->name}";

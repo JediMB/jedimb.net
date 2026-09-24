@@ -2,7 +2,7 @@
 
 namespace Models\DTO;
 
-class GalleryImages {
+class GalleryImagesDTO {
     public int $galleryId;
     /** @var int[] */
     public array $imageIds;
@@ -16,5 +16,3 @@ class GalleryImages {
         }
     }
 }
-
-?>

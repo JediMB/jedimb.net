@@ -13,7 +13,7 @@ use Enums\Visibility;
 use Models\App\Pagination;
 use Models\DB\BlogPost;
 use Models\DB\BlogPostSchedule;
-use Models\DTO\BlogPost as BlogPostDTO;
+use Models\DTO\BlogPostDTO;
 use Services\BlogPostScheduleService;
 use Services\ConfigurationService;
 use Services\TableModifiedService;
