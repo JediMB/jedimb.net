@@ -29,5 +29,3 @@ class User extends DbBase {
         $this->lastLogin = DateTime::parse($dbRow['last_login']);
     }
 }
-
-?>

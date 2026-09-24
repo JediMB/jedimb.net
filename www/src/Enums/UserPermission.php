@@ -8,5 +8,3 @@ enum UserPermission {
     case Editing;
     case Deleting;
 }
-
-?>

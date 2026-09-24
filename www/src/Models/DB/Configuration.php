@@ -19,5 +19,3 @@ class Configuration extends DbCreatedModified {
         $this->isActive = $dbRow['is_active'];
     }
 }
-
-?>

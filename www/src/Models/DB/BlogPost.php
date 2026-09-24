@@ -20,5 +20,3 @@ class BlogPost extends DbPageContent {
         $this->publishedOn = DateTime::parse($dbRow['published_on']);
     }
 }
-
-?>

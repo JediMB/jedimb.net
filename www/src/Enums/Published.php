@@ -7,5 +7,3 @@ enum Published : int {
     case Published = 1;
     case Any = 2;
 }
-
-?>

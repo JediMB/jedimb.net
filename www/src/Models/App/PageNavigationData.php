@@ -17,5 +17,3 @@ class PageNavigationData {
         $this->description = $dbRow['description'] ?? null;
     }
 }
-
-?>

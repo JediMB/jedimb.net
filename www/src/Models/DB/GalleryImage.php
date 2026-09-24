@@ -35,5 +35,3 @@ class GalleryImage extends DbBase {
             && $other->order === $this->order;
     }
 }
-
-?>

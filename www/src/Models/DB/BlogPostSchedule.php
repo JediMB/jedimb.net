@@ -16,5 +16,3 @@ class BlogPostSchedule extends DbBase {
         $this->publishOn = DateTime::parse($dbRow['publish_on']);
     }
 }
-
-?>

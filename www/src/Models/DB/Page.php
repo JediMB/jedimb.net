@@ -19,5 +19,3 @@ class Page extends DbPageContent {
         $this->order = $dbRow['order'];
     }
 }
-
-?>

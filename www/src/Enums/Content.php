@@ -7,5 +7,3 @@ enum Content {
     case Short;
     case None;
 }
-
-?>

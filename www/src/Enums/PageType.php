@@ -7,5 +7,3 @@ enum PageType {
     case Virtual;
     case BlogPost;
 }
-
-?>

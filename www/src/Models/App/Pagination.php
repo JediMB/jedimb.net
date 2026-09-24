@@ -21,5 +21,3 @@ class Pagination {
         return "{$this->page},{$this->pageSize},{$this->offset},{$this->itemCount},{$this->pageCount}";
     }
 }
-
-?>

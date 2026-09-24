@@ -7,5 +7,3 @@ enum Visibility : int {
     case Visible = 1;
     case Any = 2;
 }
-
-?>

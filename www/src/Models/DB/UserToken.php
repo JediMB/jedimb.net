@@ -20,5 +20,3 @@ class UserToken extends DbBase {
         $this->expiresOn = DateTime::parse($dbRow['expires_on']);
     }
 }
-
-?>

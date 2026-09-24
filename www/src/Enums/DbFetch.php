@@ -6,5 +6,3 @@ enum DbFetch {
     case One;
     case All;
 }
-
-?>

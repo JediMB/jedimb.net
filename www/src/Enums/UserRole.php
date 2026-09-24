@@ -7,5 +7,3 @@ enum UserRole : int {
     case Administrator = 1;
     case Contributor = 2;
 }
-
-?>

@@ -25,5 +25,3 @@ class SocialLink extends DbBase {
         $this->isHidden = $dbRow['is_hidden'];
     }
 }
-
-?>

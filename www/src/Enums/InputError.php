@@ -8,5 +8,3 @@ enum InputError : string {
     case TooLong = 'tooLong';
     case Mismatch = 'mismatch';
 }
-
-?>

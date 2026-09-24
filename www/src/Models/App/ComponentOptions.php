@@ -10,5 +10,3 @@ class ComponentOptions {
     public bool $includeJSModule = false;
     public bool $renderOnce = false;
 }
-
-?>

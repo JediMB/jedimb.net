@@ -17,5 +17,3 @@ class Gallery extends DbCreatedModified {
         $this->imageIds = [];
     }
 }
-
-?>
