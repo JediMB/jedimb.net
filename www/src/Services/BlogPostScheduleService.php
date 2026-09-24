@@ -37,5 +37,3 @@ class BlogPostScheduleService extends Singleton {
         return $this->blogPostScheduleDbService->publishPendingScheduledBlogPost();
     }
 }
-
-?>

@@ -193,5 +193,3 @@ class BlogPostService extends Singleton {
         return $this->blogPostDbService->updateBlogPost($dbPost);
     }
 }
-
-?>

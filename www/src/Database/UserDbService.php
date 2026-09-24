@@ -51,5 +51,3 @@ class UserDbService extends BaseDbService {
         return false;
     }
 }
-
-?>

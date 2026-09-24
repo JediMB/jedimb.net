@@ -289,5 +289,3 @@ class ImageGalleryService extends Singleton {
         ];
     }
 }
-
-?>

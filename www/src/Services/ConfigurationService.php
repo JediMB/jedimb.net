@@ -97,5 +97,3 @@ class ConfigurationService extends Singleton {
         return $this->configDbService->updateConfiguration($object);
     }
 }
-
-?>

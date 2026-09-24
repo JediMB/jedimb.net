@@ -95,5 +95,3 @@ class ConfigurationDbService extends BaseDbService {
         }
     }
 }
-
-?>

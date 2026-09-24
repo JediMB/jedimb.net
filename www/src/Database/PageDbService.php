@@ -25,5 +25,3 @@ class PageDbService extends BaseDbService {
         return false;
     }
 }
-
-?>

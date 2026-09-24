@@ -99,5 +99,3 @@ class UserTokenDbService extends BaseDbService {
         }
     }
 }
-
-?>

@@ -29,5 +29,3 @@ class DateTime {
         return $dateTime->format('Y-m-d H:i:s O');
     }
 }
-
-?>

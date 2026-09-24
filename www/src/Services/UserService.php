@@ -62,5 +62,3 @@ class UserService extends Singleton {
         return false;
     }
 }
-
-?>

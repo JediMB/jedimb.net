@@ -33,5 +33,3 @@ class TableModifiedService extends Singleton {
         return $this->tableModifiedDbService->updateTableModifiedDate($table);
     }
 }
-
-?>

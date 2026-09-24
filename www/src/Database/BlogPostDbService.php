@@ -238,5 +238,3 @@ class BlogPostDbService extends BaseDbService {
         }
     }
 }
-
-?>

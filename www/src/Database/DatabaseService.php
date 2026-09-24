@@ -275,5 +275,3 @@ class DatabaseService extends Singleton {
         }
     }
 }
-
-?>

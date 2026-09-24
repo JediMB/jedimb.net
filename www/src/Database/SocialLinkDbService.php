@@ -28,5 +28,3 @@ class SocialLinkDbService extends BaseDbService {
         }
     }
 }
-
-?>

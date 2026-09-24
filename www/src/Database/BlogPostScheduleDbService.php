@@ -101,5 +101,3 @@ class BlogPostScheduleDbService extends BaseDbService {
         }
     }
 }
-
-?>

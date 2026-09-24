@@ -62,5 +62,3 @@ class Input {
         return $inputString;
     }
 }
-
-?>

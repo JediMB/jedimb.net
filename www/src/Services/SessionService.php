@@ -152,5 +152,3 @@ class SessionService extends Singleton {
         }
     }
 }
-
-?>

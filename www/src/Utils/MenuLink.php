@@ -34,5 +34,3 @@ class MenuLink {
         return $prefix . "window.location = '" . $value . "'" . $suffix;
     }
 }
-
-?>
