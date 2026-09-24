@@ -2,8 +2,6 @@
 
 namespace Utils;
 
-require_once 'enums/input-error.enum.php';
-
 use Enums\InputError;
 
 class Input {

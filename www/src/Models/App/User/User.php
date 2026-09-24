@@ -2,9 +2,6 @@
 
 namespace Models\App\User;
 
-require_once 'enums/user-role.enum.php';
-require_once 'models/db/user.db.model.php';
-
 use DateTime;
 use Enums\UserRole;
 

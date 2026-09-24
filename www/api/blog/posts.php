@@ -1,8 +1,5 @@
 <?php declare(strict_types=1);
 
-require_once 'enums/published.enum.php';
-require_once 'enums/visibility.enum.php';
-
 use Enums\Published;
 use Enums\UserPermission;
 use Enums\Visibility;

@@ -2,8 +2,6 @@
 
 namespace Database;
 
-require_once 'models/db/gallery.db.model.php';
-
 use Exception;
 use PDO;
 use PDOException;

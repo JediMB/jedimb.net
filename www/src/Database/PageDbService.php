@@ -2,8 +2,6 @@
 
 namespace Database;
 
-require_once 'models/db/page.db.model.php';
-
 use Exception;
 use PDOException;
 use Models\DB\Page;

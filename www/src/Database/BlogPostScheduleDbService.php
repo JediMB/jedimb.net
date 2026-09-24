@@ -6,7 +6,7 @@ use Exception;
 use PDO;
 use PDOException;
 use Abstract\BaseDbService;
-use Enums\DBFetch;
+use Enums\DbFetch;
 use Models\DB\BlogPostSchedule;
 
 class BlogPostScheduleDbService extends BaseDbService {
@@ -84,7 +84,7 @@ class BlogPostScheduleDbService extends BaseDbService {
     /** @return BlogPostSchedule[] */
     public function publishPendingScheduledBlogPost() : array {
         try {
-            $blogPostSchedules = $this->dbService->selectFunction('publish_pending_scheduled_posts', amount: DBFetch::All);
+            $blogPostSchedules = $this->dbService->selectFunction('publish_pending_scheduled_posts', amount: DbFetch::All);
 
             if (!$blogPostSchedules)
                 return [];

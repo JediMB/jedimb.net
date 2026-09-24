@@ -2,8 +2,6 @@
 
 namespace Database;
 
-require_once 'models/db/social-link.db.model.php';
-
 use Exception;
 use PDOException;
 use Abstract\BaseDbService;

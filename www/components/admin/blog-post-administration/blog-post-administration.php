@@ -2,12 +2,12 @@
 
 namespace Components\Admin;
 
-require_once 'enums/published.enum.php';
-
 use Enums\Published;
 use Enums\Visibility;
 use Services\BlogPostService;
 use Utils\Component;
+
+/** @var int $page */
 
 $blogPostService = BlogPostService::getInstance();
 $data = $blogPostService->getBlogPostsAdminData($page);

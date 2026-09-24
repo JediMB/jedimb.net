@@ -2,8 +2,6 @@
 
 namespace Database;
 
-require_once 'models/db/user-token.db.model.php';
-
 use DateTime;
 use Exception;
 use PDO;

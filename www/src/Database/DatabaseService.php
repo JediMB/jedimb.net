@@ -2,13 +2,11 @@
 
 namespace Database;
 
-require_once 'enums/db-fetch.enum.php';
-
 use Exception;
 use InvalidArgumentException;
 use PDO;
 use Abstract\Singleton;
-use Enums\DBFetch;
+use Enums\DbFetch;
 
 class DatabaseService extends Singleton {
     private PDO|null $service;
@@ -139,9 +137,9 @@ class DatabaseService extends Singleton {
     /**
      * @param string $function
      * @param (array<int, (array{value: int|string|boolean, type: int})>) $parameters
-     * @param DBFetch $amount
+     * @param DbFetch $amount
      */
-    public function selectFunction(string $function, array $parameters = [], DBFetch $amount = DBFetch::One) {
+    public function selectFunction(string $function, array $parameters = [], DbFetch $amount = DbFetch::One) {
         $paramString = rtrim(str_repeat('?, ', count($parameters)), ', ');
         $query = $this->service->prepare(
             "SELECT * FROM {$this->schema}.$function($paramString)"
@@ -153,7 +151,7 @@ class DatabaseService extends Singleton {
 
         $query->execute();
 
-        if ($amount === DBFetch::All)
+        if ($amount === DbFetch::All)
             return $query->fetchAll() ?: [];
         
         return $query->fetch();

@@ -2,8 +2,6 @@
 
 namespace Models\DB;
 
-require_once 'enums/user-role.enum.php';
-
 use Abstract\DbBase;
 use Enums\UserRole;
 use Utils\DateTime;

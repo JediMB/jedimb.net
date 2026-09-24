@@ -2,8 +2,6 @@
 
 namespace Services;
 
-require_once 'enums/user-permission.enum.php';
-
 use DateTime;
 use Exception;
 use Abstract\Singleton;

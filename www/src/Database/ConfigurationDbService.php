@@ -2,8 +2,6 @@
 
 namespace Database;
 
-require_once 'models/db/configuration.db.model.php';
-
 use Exception;
 use PDO;
 use PDOException;

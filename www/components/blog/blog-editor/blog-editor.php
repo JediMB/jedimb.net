@@ -2,8 +2,6 @@
 
 namespace Components\Blog;
 
-require_once 'models/db/blog-post.db.model.php';
-
 use Exception;
 use Models\DB\BlogPost;
 use Services\BlogPostScheduleService;

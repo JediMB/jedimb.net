@@ -2,8 +2,6 @@
 
 namespace Services;
 
-require_once 'models/db/gallery-image.db.model.php';
-
 use Error;
 use Exception;
 use Abstract\Singleton;

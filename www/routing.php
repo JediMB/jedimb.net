@@ -1,7 +1,5 @@
 <?php
 
-require_once 'enums/page-type.enum.php';
-
 use Enums\PageType;
 use Services\NavigationService;
 use Services\BlogPostScheduleService;

@@ -3,9 +3,6 @@
 namespace Models\DTO;
 
 use InvalidArgumentException;
-
-require_once 'models/db/image.db.model.php';
-
 use Abstract\DbBase;
 
 class ImageDTO extends DbBase {

@@ -2,8 +2,6 @@
 
 namespace Services;
 
-require_once 'models/db/blog-post-schedule.db.model.php';
-
 use Exception;
 use Abstract\Singleton;
 use Database\BlogPostDbService;

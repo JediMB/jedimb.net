@@ -4,8 +4,6 @@ namespace Models\DTO;
 
 use InvalidArgumentException;
 
-require_once 'models/db/configuration.db.model.php';
-
 class ConfigurationDTO {
     public int $id;
     public string $name;

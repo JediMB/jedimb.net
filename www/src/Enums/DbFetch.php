@@ -2,7 +2,7 @@
 
 namespace Enums;
 
-enum DBFetch {
+enum DbFetch {
     case One;
     case All;
 }

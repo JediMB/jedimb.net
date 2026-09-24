@@ -2,9 +2,6 @@
 
 namespace Database;
 
-require_once 'models/db/user.db.model.php';
-require_once 'models/db/user-token.db.model.php';
-
 use Exception;
 use PDO;
 use PDOException;

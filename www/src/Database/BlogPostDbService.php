@@ -2,11 +2,6 @@
 
 namespace Database;
 
-require_once 'enums/content.enum.php';
-require_once 'enums/published.enum.php';
-require_once 'enums/visibility.enum.php';
-require_once 'models/db/blog-post.db.model.php';
-
 use Exception;
 use PDO;
 use PDOException;
