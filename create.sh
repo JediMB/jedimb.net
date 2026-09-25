@@ -1,7 +1,7 @@
 #!/bin/bash
 
 type="${1,,}" # e.g. model
-name="${2,,}" # e.g. user, or db/user
+name="${2,,}" # e.g. user
 
 if [[ $1 == '' ]]; then
     echo 'create 1.0'
@@ -14,9 +14,11 @@ if [[ $1 == '' ]]; then
     echo 'Currently supported [type]s:'
     echo '  api (a)'
     echo '  component (c)'
-    echo '  database (d) [service]'
     echo '  model (m)'
+    echo '  model/db (m/db)'
+    echo '  model/dto (m/dto)'
     echo '  service (s)'
+    echo '  service/db (s/db)'
     echo
     echo '[Name]s use the lower-case English standard alphabet,'
     echo 'with hyphens between words and forward-slashes as'
@@ -24,8 +26,11 @@ if [[ $1 == '' ]]; then
     echo 'or directory names. E.g.'
     echo '  api-9'
     echo '  fancy-component-name'
-    echo '  dto/cute-model-name'
+    echo '  category/cute-model-name'
     echo '  cool-service-name'
+    echo
+    echo 'Type-specific suffixes like "DbService" and "DTO" are'
+    echo 'applied automatically and should not be specified.'
     exit
 elif [[ $2 == '' ]]; then
     echo 'Argument 2 (name) empty'
@@ -50,9 +55,12 @@ fi
 
 api_dir="${php_root}/public/api"
 components_dir="${php_root}/public/components"
-database_dir="${php_root}/src/Database"
 models_dir="${php_root}/src/Models"
+models_app_dir="${models_dir}/App"
+models_db_dir="${models_dir}/DB"
+models_dto_dir="${models_dir}/DTO"
 services_dir="${php_root}/src/Services"
+services_db_dir="${php_root}/src/Database"
 
 template_dir='./templates'
 
@@ -118,13 +126,7 @@ function make_name_variants() { # arg1 = hyphen-delimited string
     for i in ${!split_name[@]}; do
         local name_part=${split_name[$i]}
 
-        local pascal_part=${name_part:0:1}
-        pascal_part=${pascal_part^^}
-
-        local length=${#name_part}
-        if [ $length -gt 1 ]; then
-            pascal_part+=${name_part:1:$length-1}
-        fi
+        local pascal_part=${name_part^}
 
         pascal_name+=$pascal_part
 
@@ -141,7 +143,8 @@ function make_name_variants() { # arg1 = hyphen-delimited string
 function prepare() {
     local type_name=$1
     local type_dir=$2
-    local use_name_dir=$3
+    local use_pascal_path=$3
+    local use_name_dir=$4
 
     if ! [ -d $type_dir ]; then
         echo "defined $type_name directory ($type_dir) does not exist"
@@ -153,17 +156,25 @@ function prepare() {
     split_name=($name)
     IFS=$old_ifs
 
-    local arr_length=${#split_name[@]}
     base_name=${split_name[-1]}
+    make_namespace ${split_name[@]}
+    make_name_variants $base_name
 
-    if [[ $use_name_dir == true ]]; then
-        dir_path="$type_dir/$name"
-    else
+    if [[ $use_pascal_path == true ]]; then
         dir_path=$type_dir
-        
-        for (( i=0; i<arr_length-1; i++)); do
-            dir_path+="/${split_name[$i]}"
-        done
+
+        dir_path+=${namespace//\\/\/}
+    else
+        if [[ $use_name_dir == true ]]; then
+            dir_path="$type_dir/$name"
+        else
+            dir_path=$type_dir
+            
+            local arr_length=${#split_name[@]}
+            for (( i=0; i<arr_length-1; i++)); do
+                dir_path+="/${split_name[$i]}"
+            done
+        fi
     fi
 
     if [ -d $dir_path ]; then
@@ -174,9 +185,6 @@ function prepare() {
     else
         mkdir $dir_path --parents --verbose
     fi
-
-    make_namespace ${split_name[@]}
-    make_name_variants $base_name
 }
 
 function file_from_template() {
@@ -210,28 +218,30 @@ case $type in
         file_from_template $api_php_template_file "$dir_path/$base_name.php"
         ;;
     'c' | 'component')
-        prepare 'component' $components_dir true
+        prepare 'component' $components_dir false true
         file_from_template $component_css_template_file "$dir_path/$base_name.css"
         file_from_template $component_module_template_file "$dir_path/$base_name.module.js"
         file_from_template $component_php_template_file "$dir_path/$base_name.php"
         ;;
-    'd' | 'database')
-        prepare 'database service' $database_dir
-        file_from_template $database_service_php_template_file "$dir_path/$pascal_name.php"
-        ;;
     'm' | 'model')
-        prepare 'model' $models_dir
-        if [[ ${split_name[0]} == 'db' ]]; then
-            file_from_template $model_db_php_template_file "$dir_path/${pascal_name}DB.php"
-        elif [[ ${split_name[0]} == 'dto' ]]; then
-            file_from_template $model_dto_php_template_file "$dir_path/${pascal_name}DTO.php"
-        else
-            file_from_template $model_php_template_file "$dir_path/$pascal_name.php"
-        fi
+        prepare 'model' $models_app_dir true
+        file_from_template $model_php_template_file "$dir_path/$pascal_name.php"
+        ;;
+    'm/db' | 'model/db')
+        prepare 'DB model' $models_db_dir true
+        file_from_template $model_db_php_template_file "$dir_path/${pascal_name}.php"
+        ;;
+    'm/dto' | 'model/dto')
+        prepare 'DTO model' $models_dto_dir true
+        file_from_template $model_dto_php_template_file "$dir_path/${pascal_name}DTO.php"
         ;;
     's' | 'service')
-        prepare 'service' $services_dir
-        file_from_template $service_php_template_file "$dir_path/$pascal_name.php"
+        prepare 'service' $services_dir true
+        file_from_template $service_php_template_file "$dir_path/${pascal_name}Service.php"
+        ;;
+    's/db' | 'service/db')
+        prepare 'DB service' $services_db_dir true
+        file_from_template $database_service_php_template_file "$dir_path/${pascal_name}DbService.php"
         ;;
     *)
         echo 'Invalid type in argument 1'
