@@ -14,8 +14,9 @@ if [[ $1 == '' ]]; then
     echo 'Currently supported [type]s:'
     echo '  api (a)'
     echo '  component (c)'
+    echo '  database (d) [service]'
     echo '  model (m)'
-    echo '  service (c)'
+    echo '  service (s)'
     echo
     echo '[Name]s use the lower-case English standard alphabet,'
     echo 'with hyphens between words and forward-slashes as'
@@ -24,7 +25,7 @@ if [[ $1 == '' ]]; then
     echo '  api-9'
     echo '  fancy-component-name'
     echo '  dto/cute-model-name'
-    echo '  db/cool-service-name'
+    echo '  cool-service-name'
     exit
 elif [[ $2 == '' ]]; then
     echo 'Argument 2 (name) empty'
@@ -47,10 +48,11 @@ if ! [ -d $php_root ]; then
     exit
 fi
 
-api_dir="${php_root}/api"
-components_dir="${php_root}/components"
-models_dir="${php_root}/models"
-services_dir="${php_root}/services"
+api_dir="${php_root}/public/api"
+components_dir="${php_root}/public/components"
+database_dir="${php_root}/src/Database"
+models_dir="${php_root}/src/Models"
+services_dir="${php_root}/src/Services"
 
 template_dir='./templates'
 
@@ -63,10 +65,10 @@ api_php_template_file="$template_dir/api-php.template"
 component_css_template_file="$template_dir/component-css.template"
 component_module_template_file="$template_dir/component-module.template"
 component_php_template_file="$template_dir/component-php.template"
+database_service_php_template_file="$template_dir/database-service-php.template"
 model_db_php_template_file="$template_dir/model-db-php.template"
 model_dto_php_template_file="$template_dir/model-dto-php.template"
 model_php_template_file="$template_dir/model-php.template"
-service_db_php_template_file="$template_dir/service-db-php.template"
 service_php_template_file="$template_dir/service-php.template"
 
 function make_namespace() { # args = all name parts
@@ -213,23 +215,23 @@ case $type in
         file_from_template $component_module_template_file "$dir_path/$base_name.module.js"
         file_from_template $component_php_template_file "$dir_path/$base_name.php"
         ;;
+    'd' | 'database')
+        prepare 'database service' $database_dir
+        file_from_template $database_service_php_template_file "$dir_path/$pascal_name.php"
+        ;;
     'm' | 'model')
         prepare 'model' $models_dir
         if [[ ${split_name[0]} == 'db' ]]; then
-            file_from_template $model_db_php_template_file "$dir_path/$base_name.db.model.php"
+            file_from_template $model_db_php_template_file "$dir_path/${pascal_name}DB.php"
         elif [[ ${split_name[0]} == 'dto' ]]; then
-            file_from_template $model_dto_php_template_file "$dir_path/$base_name.dto.model.php"
+            file_from_template $model_dto_php_template_file "$dir_path/${pascal_name}DTO.php"
         else
-            file_from_template $model_php_template_file "$dir_path/$base_name.model.php"
+            file_from_template $model_php_template_file "$dir_path/$pascal_name.php"
         fi
         ;;
     's' | 'service')
         prepare 'service' $services_dir
-        if [[ ${split_name[0]} == 'db' ]]; then
-            file_from_template $service_db_php_template_file "$dir_path/$base_name.db.service.php"
-        else
-            file_from_template $service_php_template_file "$dir_path/$base_name.service.php"
-        fi
+        file_from_template $service_php_template_file "$dir_path/$pascal_name.php"
         ;;
     *)
         echo 'Invalid type in argument 1'
