@@ -2,16 +2,16 @@
 
 chdir(__DIR__);
 
-require_once 'configuration.php';
+require_once '../config/configuration.php';
 
-if (!file_exists('secrets.php')) {
+if (!file_exists('../config/secrets.php')) {
     echo 'ERROR: Please create a secrets.php file.';
     exit;
 }
-require_once 'secrets.php';
+require_once '../config/secrets.php';
 
 spl_autoload_register(function(string $class) {
-    require 'src/' . str_replace("\\", "/", $class) . '.php';
+    require '../src/' . str_replace("\\", "/", $class) . '.php';
 });
 
 require_once 'routing.php';

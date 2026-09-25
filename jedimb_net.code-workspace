@@ -18,7 +18,7 @@
 		"intelephense.completion.parameterCase": "camel",
 		"intelephense.completion.propertyCase": "camel",
 		"intelephense.completion.suggestObjectOperatorStaticMethods": false,
-		"intelephense.environment.documentRoot": "./www",
+		"intelephense.environment.documentRoot": "./www/public",
 		"intelephense.environment.phpVersion": "8.4.11",
 		"intelephense.files.exclude": [
 			"**/.git/**",
@@ -44,7 +44,7 @@
 		"javascript.suggest.enabled": true,
 		"js/ts.suggest.enabled": true,
 		"liveServer.settings.port": 5500,
-		"liveServer.settings.root": "/www",
+		"liveServer.settings.root": "/www/public",
 		"liveServer.settings.AdvanceCustomBrowserCmdLine": "firefox --new-window",
 		"liveServer.settings.NoBrowser": false,
 		"liveServer.settings.fullReload": false,

@@ -1,4 +1,4 @@
 node_modules/
-www/secrets.php
-www/.secrets.json
-www/sqlca.pem
+www/config/secrets.php
+www/config/.secrets.json
+www/config/sqlca.pem
