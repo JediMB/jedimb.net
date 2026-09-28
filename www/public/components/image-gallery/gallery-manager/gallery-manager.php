@@ -2,8 +2,8 @@
 
 namespace Components\ImageGallery;
 
-use Utils\Component;
-use Utils\DateTime;
+use App\Utils\Component;
+use App\Utils\DateTime;
 
 Component::renderCSS();
 Component::addJSModule();
@@ -16,7 +16,7 @@ Component::addJSModule();
             <ul>
                 <?php foreach ($galleries as $gallery): ?>
                     <?php
-                    /** @var \Models\DB\Gallery $gallery */
+                    /** @var \App\Models\DB\Gallery $gallery */
                     $galleryTitle = htmlspecialchars($gallery->title);
                     $galleryDesc = htmlspecialchars($gallery->description);
                     ?>

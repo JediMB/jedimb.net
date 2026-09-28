@@ -3,13 +3,13 @@
 namespace API\Blog;
 
 use Exception;
-use Enums\UserPermission;
-use Models\DTO\BlogPostDTO;
-use Models\Exceptions\InputException;
-use Services\BlogPostService;
-use Services\SessionService;
-use Utils\DateTime;
-use Utils\Response;
+use App\Enums\UserPermission;
+use App\Models\DTO\BlogPostDTO;
+use App\Models\Exceptions\InputException;
+use App\Services\BlogPostService;
+use App\Services\SessionService;
+use App\Utils\DateTime;
+use App\Utils\Response;
 
 $service = BlogPostService::getInstance(); /** @var BlogPostService $service */
 $sessionService = SessionService::getInstance(); /** @var SessionService $sessionService */

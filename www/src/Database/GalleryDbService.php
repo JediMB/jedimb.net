@@ -1,13 +1,13 @@
 <?php declare(strict_types=1);
 
-namespace Database;
+namespace App\Database;
 
 use Exception;
 use PDO;
 use PDOException;
-use Abstract\BaseDbService;
-use Models\DB\Gallery;
-use Models\DTO\GalleryDTO;
+use App\Abstract\BaseDbService;
+use App\Models\DB\Gallery;
+use App\Models\DTO\GalleryDTO;
 
 class GalleryDbService extends BaseDbService {
     protected function __construct() {

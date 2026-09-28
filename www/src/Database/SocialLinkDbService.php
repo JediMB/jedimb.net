@@ -1,11 +1,11 @@
 <?php declare(strict_types=1);
 
-namespace Database;
+namespace App\Database;
 
 use Exception;
 use PDOException;
-use Abstract\BaseDbService;
-use Models\DB\SocialLink;
+use App\Abstract\BaseDbService;
+use App\Models\DB\SocialLink;
 
 class SocialLinkDbService extends BaseDbService {
     protected function __construct() {

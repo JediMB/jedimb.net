@@ -1,8 +1,8 @@
 <?php declare(strict_types=1);
 
-use Enums\UserPermission;
-use Services\SessionService;
-use Utils\Component;
+use App\Enums\UserPermission;
+use App\Services\SessionService;
+use App\Utils\Component;
 
 $sessionService = SessionService::getInstance(); /** @var SessionService $sessionService */
 $sessionService->enforcePermissions([ UserPermission::Configuration ]);

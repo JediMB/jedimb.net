@@ -2,9 +2,9 @@
 
 namespace Components;
 
-use Services\NavigationService;
-use Utils\Component;
-use Utils\MenuLink;
+use App\Services\NavigationService;
+use App\Utils\Component;
+use App\Utils\MenuLink;
 
 Component::renderCSS();
 

@@ -1,7 +1,7 @@
 <?php declare(strict_types=1);
 
-use Services\TableModifiedService;
-use Utils\Response;
+use App\Services\TableModifiedService;
+use App\Utils\Response;
 
 $supportedTables = [
     'blog_post', 'configuration', 'gallery', 'gallery_image', 'image', 'page', 'social_link'

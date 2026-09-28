@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Models\App;
+namespace App\Models\App;
 
 class PageNavigationData {
     public int $id;

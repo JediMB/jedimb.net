@@ -1,8 +1,8 @@
 <?php declare(strict_types=1);
 
-namespace Utils;
+namespace App\Utils;
 
-use Enums\InputError;
+use App\Enums\InputError;
 
 class Input {
     /**

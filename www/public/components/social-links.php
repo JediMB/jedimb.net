@@ -2,10 +2,10 @@
 
 namespace Components;
 
-use Models\DB\SocialLink;
-use Database\SocialLinkDbService;
+use App\Models\DB\SocialLink;
+use App\Database\SocialLinkDbService;
 
-\Utils\Component::noContainer();
+\App\Utils\Component::noContainer();
 
 $socials = SocialLinkDbService::getInstance()->getSocialLinks();
 $symbolPrefix = 'svg-social-link-';

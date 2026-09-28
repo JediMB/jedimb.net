@@ -1,13 +1,13 @@
 <?php declare(strict_types=1);
 
-namespace Database;
+namespace App\Database;
 
 use Exception;
 use PDO;
 use PDOException;
-use Abstract\BaseDbService;
-use Models\DB\Image;
-use Models\DTO\ImageDTO;
+use App\Abstract\BaseDbService;
+use App\Models\DB\Image;
+use App\Models\DTO\ImageDTO;
 
 class ImageDbService extends BaseDbService {
     protected function __construct() {

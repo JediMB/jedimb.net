@@ -2,8 +2,8 @@
 
 namespace Components;
 
-use Services\ConfigurationService;
-use Utils\Component;
+use App\Services\ConfigurationService;
+use App\Utils\Component;
 
 Component::renderOnce();
 Component::renderCSS();

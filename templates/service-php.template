@@ -1,10 +1,10 @@
 <?php declare(strict_types=1);
 
-namespace Services{namespace};
+namespace App\Services{namespace};
 
-use Abstract\Singleton;
-use Database\{pascal_name}DbService;
-use Services\TableModifiedService;
+use App\Abstract\Singleton;
+use App\Database\{pascal_name}DbService;
+use App\Services\TableModifiedService;
 
 class {pascal_name}Service extends Singleton {
     private {pascal_name}DbService ${camel_name}DbService;

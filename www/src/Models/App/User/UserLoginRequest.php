@@ -1,9 +1,9 @@
 <?php declare(strict_types=1);
 
-namespace Models\App\User;
+namespace App\Models\App\User;
 
-use Models\Exceptions\InputException;
-use Utils\Input;
+use App\Models\Exceptions\InputException;
+use App\Utils\Input;
 
 class UserLoginRequest {
     public string $username;

@@ -1,10 +1,10 @@
 <?php declare(strict_types=1);
 
-namespace Models\DB;
+namespace App\Models\DB;
 
-use Abstract\DbBase;
-use Enums\UserRole;
-use Utils\DateTime;
+use App\Abstract\DbBase;
+use App\Enums\UserRole;
+use App\Utils\DateTime;
 
 class User extends DbBase {
     public string $username;

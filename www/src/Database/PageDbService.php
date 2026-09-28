@@ -1,11 +1,11 @@
 <?php declare(strict_types=1);
 
-namespace Database;
+namespace App\Database;
 
 use Exception;
 use PDOException;
-use Models\DB\Page;
-use Abstract\BaseDbService;
+use App\Models\DB\Page;
+use App\Abstract\BaseDbService;
 
 class PageDbService extends BaseDbService {
     public function getPage(int $id) : Page|false {

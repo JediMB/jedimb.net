@@ -1,10 +1,10 @@
 <?php declare(strict_types=1);
 
-use Enums\UserPermission;
-use Models\DTO\ConfigurationDTO;
-use Services\ConfigurationService;
-use Services\SessionService;
-use Utils\Response;
+use App\Enums\UserPermission;
+use App\Models\DTO\ConfigurationDTO;
+use App\Services\ConfigurationService;
+use App\Services\SessionService;
+use App\Utils\Response;
 
 $sessionService = SessionService::getInstance(); /** @var SessionService $sessionService */
 

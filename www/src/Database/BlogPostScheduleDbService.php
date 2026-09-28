@@ -1,13 +1,13 @@
 <?php declare(strict_types=1);
 
-namespace Database;
+namespace App\Database;
 
 use Exception;
 use PDO;
 use PDOException;
-use Abstract\BaseDbService;
-use Enums\DbFetch;
-use Models\DB\BlogPostSchedule;
+use App\Abstract\BaseDbService;
+use App\Enums\DbFetch;
+use App\Models\DB\BlogPostSchedule;
 
 class BlogPostScheduleDbService extends BaseDbService {
     protected function __construct() {

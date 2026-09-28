@@ -1,8 +1,8 @@
 <?php declare(strict_types=1);
 
-namespace Models\DB;
+namespace App\Models\DB;
 
-use Abstract\DbBase;
+use App\Abstract\DbBase;
 
 class GalleryImage extends DbBase {
     public int $galleryId;

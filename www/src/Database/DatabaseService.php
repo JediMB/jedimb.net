@@ -1,12 +1,12 @@
 <?php declare(strict_types=1);
 
-namespace Database;
+namespace App\Database;
 
 use Exception;
 use InvalidArgumentException;
 use PDO;
-use Abstract\Singleton;
-use Enums\DbFetch;
+use App\Abstract\Singleton;
+use App\Enums\DbFetch;
 
 class DatabaseService extends Singleton {
     private PDO|null $service;

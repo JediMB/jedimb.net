@@ -1,11 +1,11 @@
 <?php declare(strict_types=1);
 
-use Enums\Published;
-use Enums\UserPermission;
-use Enums\Visibility;
-use Services\BlogPostService;
-use Services\SessionService;
-use Utils\Response;
+use App\Enums\Published;
+use App\Enums\UserPermission;
+use App\Enums\Visibility;
+use App\Services\BlogPostService;
+use App\Services\SessionService;
+use App\Utils\Response;
 
 $service = BlogPostService::getInstance(); /** @var BlogPostService $service */
 $sessionService = SessionService::getInstance(); /** @var SessionService $sessionService */

@@ -1,17 +1,17 @@
 <?php declare(strict_types=1);
 
-namespace Services;
+namespace App\Services;
 
 use DateTime;
 use Exception;
-use Abstract\Singleton;
-use Database\UserTokenDbService;
-use Enums\UserRole;
-use Enums\UserPermission;
-use Models\DB\UserToken;
-use Models\App\User\User;
-use Services\UserService;
-use Utils\Response;
+use App\Abstract\Singleton;
+use App\Database\UserTokenDbService;
+use App\Enums\UserRole;
+use App\Enums\UserPermission;
+use App\Models\DB\UserToken;
+use App\Models\App\User\User;
+use App\Services\UserService;
+use App\Utils\Response;
 
 class SessionService extends Singleton {
     private UserTokenDbService $tokenDbService;

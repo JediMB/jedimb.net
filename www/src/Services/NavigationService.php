@@ -1,13 +1,13 @@
 <?php declare(strict_types=1);
 
-namespace Services;
+namespace App\Services;
 
 use Exception;
 use PDOException;
-use Abstract\Singleton;
-use Database\DatabaseService;
-use Models\App\MenuItem;
-use Models\App\PageNavigationData;
+use App\Abstract\Singleton;
+use App\Database\DatabaseService;
+use App\Models\App\MenuItem;
+use App\Models\App\PageNavigationData;
 
 class NavigationService extends Singleton{
     public array $virtualPageRoutes;

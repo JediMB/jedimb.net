@@ -1,10 +1,10 @@
 <?php declare(strict_types=1);
 
-namespace Services;
+namespace App\Services;
 
-use Abstract\Singleton;
-use Database\BlogPostScheduleDbService;
-use Models\DB\BlogPostSchedule;
+use App\Abstract\Singleton;
+use App\Database\BlogPostScheduleDbService;
+use App\Models\DB\BlogPostSchedule;
 
 class BlogPostScheduleService extends Singleton {
     private BlogPostScheduleDbService $blogPostScheduleDbService;

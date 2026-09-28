@@ -1,6 +1,6 @@
 <?php
 
-namespace Models\Exceptions;
+namespace App\Models\Exceptions;
 
 use Exception;
 use Throwable;

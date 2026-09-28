@@ -3,9 +3,9 @@
 namespace API{namespace};
 
 use Exception;
-use Enums\UserPermission;
-use Services\SessionService;
-use Utils\Response;
+use App\Enums\UserPermission;
+use App\Services\SessionService;
+use App\Utils\Response;
 
 //$service = ServiceName::getInstance(); /** @var ServiceName $service */
 $sessionService = SessionService::getInstance(); /** @var SessionService $sessionService */

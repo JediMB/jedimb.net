@@ -2,10 +2,10 @@
 
 namespace Components\Admin;
 
-use Enums\Published;
-use Enums\Visibility;
-use Services\BlogPostService;
-use Utils\Component;
+use App\Enums\Published;
+use App\Enums\Visibility;
+use App\Services\BlogPostService;
+use App\Utils\Component;
 
 /** @var int $page */
 

@@ -2,8 +2,8 @@
 
 namespace Components;
 
-use Services\SessionService;
-use Utils\Component;
+use App\Services\SessionService;
+use App\Utils\Component;
 
 Component::renderOnce();
 Component::renderCSS();

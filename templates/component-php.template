@@ -2,7 +2,7 @@
 
 namespace Components{namespace};
 
-use Utils\Component;
+use App\Utils\Component;
 
 Component::renderCSS();
 Component::addJSModule();

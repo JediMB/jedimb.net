@@ -2,10 +2,10 @@
 
 namespace Components;
 
-use Models\App\MenuItem;
-use Services\NavigationService;
-use Utils\Component;
-use Utils\MenuLink;
+use App\Models\App\MenuItem;
+use App\Services\NavigationService;
+use App\Utils\Component;
+use App\Utils\MenuLink;
 
 Component::renderCSS();
 Component::queueJS(__FILE__);

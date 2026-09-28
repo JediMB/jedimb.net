@@ -1,12 +1,12 @@
 <?php declare(strict_types=1);
 
-namespace Database;
+namespace App\Database;
 
 use Exception;
 use PDO;
 use PDOException;
-use Abstract\BaseDbService;
-use Utils\DateTime;
+use App\Abstract\BaseDbService;
+use App\Utils\DateTime;
 
 class TableModifiedDbService extends BaseDbService {
     protected function __construct() {

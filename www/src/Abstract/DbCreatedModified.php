@@ -1,8 +1,8 @@
 <?php declare(strict_types=1);
 
-namespace Abstract;
+namespace App\Abstract;
 
-use Utils\DateTime;
+use App\Utils\DateTime;
 
 abstract class DbCreatedModified extends DbBase {
     public \DateTime $createdOn;

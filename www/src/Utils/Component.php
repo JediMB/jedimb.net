@@ -1,9 +1,9 @@
 <?php declare(strict_types=1);
 
-namespace Utils;
+namespace App\Utils;
 
 use Exception;
-use Models\App\ComponentOptions;
+use App\Models\App\ComponentOptions;
 
 class Component {
     private static array $components = [];

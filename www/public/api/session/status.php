@@ -2,7 +2,7 @@
 
 namespace API\Session;
 
-use Services\SessionService;
+use App\Services\SessionService;
 
 switch ( $_SERVER['REQUEST_METHOD'] ) {
     case 'GET':

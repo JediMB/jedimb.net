@@ -1,13 +1,13 @@
 <?php declare(strict_types=1);
 
-namespace Database;
+namespace App\Database;
 
 use Exception;
 use PDO;
 use PDOException;
-use Abstract\BaseDbService;
-use Models\DB\Configuration;
-use Models\DTO\ConfigurationDTO;
+use App\Abstract\BaseDbService;
+use App\Models\DB\Configuration;
+use App\Models\DTO\ConfigurationDTO;
 
 class ConfigurationDbService extends BaseDbService {
     protected function __construct() {

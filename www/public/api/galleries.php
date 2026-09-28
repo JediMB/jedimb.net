@@ -1,11 +1,11 @@
 <?php declare(strict_types=1);
 
-use Enums\UserPermission;
-use Models\DTO\GalleryDTO;
-use Models\DTO\GalleryImagesDTO;
-use Services\ImageGalleryService;
-use Services\SessionService;
-use Utils\Response;
+use App\Enums\UserPermission;
+use App\Models\DTO\GalleryDTO;
+use App\Models\DTO\GalleryImagesDTO;
+use App\Services\ImageGalleryService;
+use App\Services\SessionService;
+use App\Utils\Response;
 
 $service = ImageGalleryService::getInstance(); /** @var ImageGalleryService $service */
 $sessionService = SessionService::getInstance(); /** @var SessionService $sessionService */

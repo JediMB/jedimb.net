@@ -1,11 +1,11 @@
 <?php declare(strict_types=1);
 
-namespace Database{namespace};
+namespace App\Database{namespace};
 
 use Exception;
 use PDO;
 use PDOException;
-use Abstract\BaseDbService;
+use App\Abstract\BaseDbService;
 
 class {pascal_name}DbService extends BaseDbService {
     protected function __construct() {

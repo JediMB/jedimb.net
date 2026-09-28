@@ -1,8 +1,9 @@
 <?php declare(strict_types=1);
 
-namespace Models\DTO;
+namespace App\Models\DTO;
 
 use InvalidArgumentException;
+use App\Models\DB\Configuration;
 
 class ConfigurationDTO {
     public int $id;
@@ -25,7 +26,7 @@ class ConfigurationDTO {
         $this->isActive = $input['isActive'] ?? null;
     }
 
-    public static function update(\Models\DB\Configuration &$object, ConfigurationDTO $source) {
+    public static function update(Configuration &$object, ConfigurationDTO $source) {
         if ($object->id !== $source->id)
             throw new InvalidArgumentException('Incorrect Configuration id in update call');
         if ($object->name !== $source->name)

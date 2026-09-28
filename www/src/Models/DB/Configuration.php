@@ -1,8 +1,8 @@
 <?php declare(strict_types=1);
 
-namespace Models\DB;
+namespace App\Models\DB;
 
-use Abstract\DbCreatedModified;
+use App\Abstract\DbCreatedModified;
 
 class Configuration extends DbCreatedModified {
     public string $name;

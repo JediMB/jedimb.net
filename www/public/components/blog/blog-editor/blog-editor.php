@@ -3,10 +3,10 @@
 namespace Components\Blog;
 
 use Exception;
-use Models\DB\BlogPost;
-use Services\BlogPostScheduleService;
-use Utils\Component;
-use Utils\DateTime;
+use App\Models\DB\BlogPost;
+use App\Services\BlogPostScheduleService;
+use App\Utils\Component;
+use App\Utils\DateTime;
 
 /** @var BlogPost $post */
 

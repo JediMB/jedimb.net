@@ -1,9 +1,9 @@
 <?php declare(strict_types=1);
 
-namespace Models\DB;
+namespace App\Models\DB;
 
-use Abstract\DbPageContent;
-use Utils\DateTime;
+use App\Abstract\DbPageContent;
+use App\Utils\DateTime;
 
 class BlogPost extends DbPageContent {
     public string $permalink;

@@ -1,10 +1,10 @@
 <?php declare(strict_types=1);
 
-namespace Services;
+namespace App\Services;
 
 use DateTime;
-use Abstract\Singleton;
-use Database\TableModifiedDbService;
+use App\Abstract\Singleton;
+use App\Database\TableModifiedDbService;
 
 class TableModifiedService extends Singleton {
     private TableModifiedDbService $tableModifiedDbService;

@@ -3,8 +3,8 @@
 namespace API\Session;
 
 use Exception;
-use Services\SessionService;
-use Database\UserTokenDbService;
+use App\Services\SessionService;
+use App\Database\UserTokenDbService;
 
 switch ( $_SERVER['REQUEST_METHOD'] ) {
     case 'POST':

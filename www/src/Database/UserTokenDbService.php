@@ -1,14 +1,14 @@
 <?php declare(strict_types=1);
 
-namespace Database;
+namespace App\Database;
 
 use DateTime;
 use Exception;
 use PDO;
 use PDOException;
-use Abstract\BaseDbService;
-use Models\DB\UserToken;
-use Services\ConfigurationService;
+use App\Abstract\BaseDbService;
+use App\Models\DB\UserToken;
+use App\Services\ConfigurationService;
 
 class UserTokenDbService extends BaseDbService {
     private readonly ConfigurationService $configService;

@@ -1,15 +1,15 @@
 <?php declare(strict_types=1);
 
-namespace Services;
+namespace App\Services;
 
 use DateTime;
 use SensitiveParameter;
-use Abstract\Singleton;
-use Database\UserDbService;
-use Database\UserTokenDbService;
-use Models\App\User\User;
-use Models\App\User\UserLoginResponse;
-use Services\ConfigurationService;
+use App\Abstract\Singleton;
+use App\Database\UserDbService;
+use App\Database\UserTokenDbService;
+use App\Models\App\User\User;
+use App\Models\App\User\UserLoginResponse;
+use App\Services\ConfigurationService;
 
 class UserService extends Singleton {
     private readonly UserDbService $userDbService;

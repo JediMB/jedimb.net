@@ -1,9 +1,10 @@
 <?php declare(strict_types=1);
 
-namespace Models\App\User;
+namespace App\Models\App\User;
 
 use DateTime;
-use Enums\UserRole;
+use App\Enums\UserRole;
+use App\Models\DB\User as DbUser;
 
 class User {
     public int $id;
@@ -14,7 +15,7 @@ class User {
     public DateTime $registeredOn;
     public ?DateTime $lastLogin;
 
-    public function __construct(\Models\DB\User $dbUser) {
+    public function __construct(DbUser $dbUser) {
         $this->id = $dbUser->id;
         $this->username = $dbUser->username;
         $this->email = $dbUser->email;

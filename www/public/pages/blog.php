@@ -2,10 +2,10 @@
 
 namespace Pages;
 
-use Enums\UserPermission;
-use Services\BlogPostService;
-use Services\SessionService;
-use Utils\Component;
+use App\Enums\UserPermission;
+use App\Services\BlogPostService;
+use App\Services\SessionService;
+use App\Utils\Component;
 
 $sessionService = SessionService::getInstance();
 $blogPostService = BlogPostService::getInstance();

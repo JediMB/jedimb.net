@@ -3,8 +3,8 @@
 namespace Components;
 
 use Exception;
-use Utils\Component;
-use Utils\DateTime;
+use App\Utils\Component;
+use App\Utils\DateTime;
 
 /** @var bool $relativeDate */
 

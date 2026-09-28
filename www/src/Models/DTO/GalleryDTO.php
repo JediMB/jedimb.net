@@ -1,9 +1,10 @@
 <?php declare(strict_types=1);
 
-namespace Models\DTO;
+namespace App\Models\DTO;
 
 use InvalidArgumentException;
-use Abstract\DbBase;
+use App\Abstract\DbBase;
+use App\Models\DB\Gallery;
 
 class GalleryDTO extends DbBase {
     public string $title;
@@ -16,7 +17,7 @@ class GalleryDTO extends DbBase {
         $this->description = trim($input['description']);
     }
 
-    public static function update(\Models\DB\Gallery &$object, GalleryDTO $source) {
+    public static function update(Gallery &$object, GalleryDTO $source) {
         if ($object->id !== $source->id)
             throw new InvalidArgumentException('Incorrect Gallery id in update call');
 

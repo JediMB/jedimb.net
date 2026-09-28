@@ -3,8 +3,8 @@
 namespace Components;
 
 use Exception;
-use Models\App\Pagination;
-use Utils\Component;
+use App\Models\App\Pagination;
+use App\Utils\Component;
 
 /** @var int $cId */
 /** @var Pagination $data */

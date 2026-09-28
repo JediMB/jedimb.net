@@ -3,11 +3,11 @@
 namespace API\Session;
 
 use Exception;
-use Models\Exceptions\InputException;
-use Models\App\User\UserLoginRequest;
-use Models\App\User\UserLoginResponse;
-use Services\SessionService;
-use Services\UserService;
+use App\Models\Exceptions\InputException;
+use App\Models\App\User\UserLoginRequest;
+use App\Models\App\User\UserLoginResponse;
+use App\Services\SessionService;
+use App\Services\UserService;
 
 $input = json_decode(file_get_contents('php://input'), true);
 $errors = [];

@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Models\DTO;
+namespace App\Models\DTO;
 
 class GalleryImagesDTO {
     public int $galleryId;

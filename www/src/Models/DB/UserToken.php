@@ -1,9 +1,9 @@
 <?php declare(strict_types=1);
 
-namespace Models\DB;
+namespace App\Models\DB;
 
-use Abstract\DbBase;
-use Utils\DateTime;
+use App\Abstract\DbBase;
+use App\Utils\DateTime;
 
 class UserToken extends DbBase {
     public int $userId;

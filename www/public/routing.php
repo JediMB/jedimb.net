@@ -1,10 +1,10 @@
 <?php
 
-use Enums\PageType;
-use Services\NavigationService;
-use Services\BlogPostScheduleService;
-use Services\BlogPostService;
-use Database\PageDbService;
+use App\Enums\PageType;
+use App\Services\NavigationService;
+use App\Services\BlogPostScheduleService;
+use App\Services\BlogPostService;
+use App\Database\PageDbService;
 
 function getRealPath(string $path, bool &$isForbidden) : string|false {
     /*  Try to find a matching file in the following order:

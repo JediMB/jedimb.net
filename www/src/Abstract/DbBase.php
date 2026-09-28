@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Abstract;
+namespace App\Abstract;
 
 abstract class DbBase {
     public int $id;

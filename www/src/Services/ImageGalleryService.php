@@ -1,20 +1,20 @@
 <?php declare(strict_types=1);
 
-namespace Services;
+namespace App\Services;
 
 use Error;
 use Exception;
-use Abstract\Singleton;
-use Database\GalleryImageDbService;
-use Database\GalleryDbService;
-use Database\ImageDbService;
-use Models\DB\Gallery;
-use Models\DB\GalleryImage;
-use Models\DB\Image;
-use Models\DTO\GalleryDTO;
-use Models\DTO\GalleryImagesDTO;
-use Models\DTO\ImageDTO;
-use Services\TableModifiedService;
+use App\Abstract\Singleton;
+use App\Database\GalleryImageDbService;
+use App\Database\GalleryDbService;
+use App\Database\ImageDbService;
+use App\Models\DB\Gallery;
+use App\Models\DB\GalleryImage;
+use App\Models\DB\Image;
+use App\Models\DTO\GalleryDTO;
+use App\Models\DTO\GalleryImagesDTO;
+use App\Models\DTO\ImageDTO;
+use App\Services\TableModifiedService;
 
 class ImageGalleryService extends Singleton {
     private GalleryImageDbService $galleryImageDbService;

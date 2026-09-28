@@ -1,8 +1,8 @@
 <?php declare(strict_types=1);
 
-namespace Models\DB;
+namespace App\Models\DB;
 
-use Abstract\DbPageContent;
+use App\Abstract\DbPageContent;
 
 class Page extends DbPageContent {
     public ?string $titleShort;

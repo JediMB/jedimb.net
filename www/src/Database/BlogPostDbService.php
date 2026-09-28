@@ -1,16 +1,16 @@
 <?php declare(strict_types=1);
 
-namespace Database;
+namespace App\Database;
 
 use Exception;
 use PDO;
 use PDOException;
-use Abstract\BaseDbService;
-use Enums\Content;
-use Enums\Published;
-use Enums\Visibility;
-use Models\DB\BlogPost;
-use Models\DTO\BlogPostDTO;
+use App\Abstract\BaseDbService;
+use App\Enums\Content;
+use App\Enums\Published;
+use App\Enums\Visibility;
+use App\Models\DB\BlogPost;
+use App\Models\DTO\BlogPostDTO;
 
 class BlogPostDbService extends BaseDbService {
     protected function __construct() {

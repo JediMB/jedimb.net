@@ -2,7 +2,7 @@
 
 namespace Components;
 
-use Utils\Component;
+use App\Utils\Component;
 
 /** @var string $value */
 $value ??= null;

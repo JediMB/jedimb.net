@@ -2,13 +2,13 @@
 
 namespace Components;
 
-use Enums\UserPermission;
-use Models\DB\Image;
-use Services\ImageGalleryService;
-use Services\SessionService;
-use Services\TableModifiedService;
-use Utils\Component;
-use Utils\DateTime;
+use App\Enums\UserPermission;
+use App\Models\DB\Image;
+use App\Services\ImageGalleryService;
+use App\Services\SessionService;
+use App\Services\TableModifiedService;
+use App\Utils\Component;
+use App\Utils\DateTime;
 
 $sessionService = SessionService::getInstance(); /** @var SessionService $sessionService */
 $sessionService->enforcePermissions([UserPermission::Publishing]);

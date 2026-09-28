@@ -2,9 +2,9 @@
 
 namespace Components\Blog;
 
-use Enums\UserPermission;
-use Services\SessionService;
-use Utils\Component;
+use App\Enums\UserPermission;
+use App\Services\SessionService;
+use App\Utils\Component;
 
 $sessionService = SessionService::getInstance(); /** @var SessionService $sessionService */
 $sessionService->enforcePermissions([UserPermission::Publishing]);

@@ -3,7 +3,7 @@
 namespace Components;
 
 use Exception;
-use Utils\Component;
+use App\Utils\Component;
 
 /** @var string $containerId */
 /** @var (array<int, array{title: string, targetId: string, active?: string}>) $tabs */

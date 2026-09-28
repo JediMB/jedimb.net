@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Utils;
+namespace App\Utils;
 
 class DateTime {
     static function parse(?string $string) : \DateTime | null {

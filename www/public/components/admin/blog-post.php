@@ -3,9 +3,9 @@
 namespace Components\Admin;
 
 use Exception;
-use Models\DB\BlogPost;
-use Utils\Component;
-use Utils\DateTime;
+use App\Models\DB\BlogPost;
+use App\Utils\Component;
+use App\Utils\DateTime;
 
 /** @var bool $template */
 /** @var BlogPost $post */

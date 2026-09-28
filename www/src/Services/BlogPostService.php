@@ -1,20 +1,20 @@
 <?php declare(strict_types=1);
 
-namespace Services;
+namespace App\Services;
 
 use Exception;
-use Abstract\Singleton;
-use Database\BlogPostDbService;
-use Enums\Content;
-use Enums\Published;
-use Enums\Visibility;
-use Models\App\Pagination;
-use Models\DB\BlogPost;
-use Models\DB\BlogPostSchedule;
-use Models\DTO\BlogPostDTO;
-use Services\BlogPostScheduleService;
-use Services\ConfigurationService;
-use Services\TableModifiedService;
+use App\Abstract\Singleton;
+use App\Database\BlogPostDbService;
+use App\Enums\Content;
+use App\Enums\Published;
+use App\Enums\Visibility;
+use App\Models\App\Pagination;
+use App\Models\DB\BlogPost;
+use App\Models\DB\BlogPostSchedule;
+use App\Models\DTO\BlogPostDTO;
+use App\Services\BlogPostScheduleService;
+use App\Services\ConfigurationService;
+use App\Services\TableModifiedService;
 
 class BlogPostService extends Singleton {
     private BlogPostDbService $blogPostDbService;

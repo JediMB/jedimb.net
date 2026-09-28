@@ -1,9 +1,9 @@
 <?php declare(strict_types=1);
 
-namespace Abstract;
+namespace App\Abstract;
 
-use Abstract\Singleton;
-use Database\DatabaseService;
+use App\Abstract\Singleton;
+use App\Database\DatabaseService;
 
 abstract class BaseDbService extends Singleton {
     protected DatabaseService $dbService;

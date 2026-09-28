@@ -1,9 +1,10 @@
 <?php declare(strict_types=1);
 
-namespace Models\DTO;
+namespace App\Models\DTO;
 
 use InvalidArgumentException;
-use Abstract\DbBase;
+use App\Abstract\DbBase;
+use App\Models\DB\Image;
 
 class ImageDTO extends DbBase {
     public ?string $filename;
@@ -18,7 +19,7 @@ class ImageDTO extends DbBase {
         $this->description = trim($input['description']);
     }
 
-    public static function update(\Models\DB\Image &$object, ImageDTO $source) {
+    public static function update(Image &$object, ImageDTO $source) {
         if ($object->id !== $source->id)
             throw new InvalidArgumentException('Incorrect Image id in update call');
 

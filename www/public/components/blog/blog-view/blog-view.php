@@ -3,9 +3,9 @@
 namespace Components\Blog;
 
 use Exception;
-use Models\App\Pagination;
-use Models\DB\BlogPost;
-use Utils\Component;
+use App\Models\App\Pagination;
+use App\Models\DB\BlogPost;
+use App\Utils\Component;
 
 /** @var Pagination $pagination */
 /** @var BlogPost[] $posts */

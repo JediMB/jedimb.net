@@ -2,7 +2,7 @@
 
 namespace Components;
 
-use Utils\Component;
+use App\Utils\Component;
 
 Component::noContainer();
 Component::renderOnce();

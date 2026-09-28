@@ -3,10 +3,10 @@
 namespace Pages\Blog;
 
 use Exception;
-use Enums\UserPermission;
-use Services\BlogPostService;
-use Services\SessionService;
-use Utils\Component;
+use App\Enums\UserPermission;
+use App\Services\BlogPostService;
+use App\Services\SessionService;
+use App\Utils\Component;
 
 /** @var int|null $page */
 

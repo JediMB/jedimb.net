@@ -1,12 +1,12 @@
 <?php declare(strict_types=1);
 
-namespace Services;
+namespace App\Services;
 
 use Exception;
-use Abstract\Singleton;
-use Database\ConfigurationDbService;
-use Models\DB\Configuration;
-use Models\DTO\ConfigurationDTO;
+use App\Abstract\Singleton;
+use App\Database\ConfigurationDbService;
+use App\Models\DB\Configuration;
+use App\Models\DTO\ConfigurationDTO;
 
 class ConfigurationService extends Singleton {
     private readonly ConfigurationDbService $configDbService;

@@ -1,13 +1,13 @@
 <?php declare(strict_types=1);
 
-namespace Database;
+namespace App\Database;
 
 use Exception;
 use PDO;
 use PDOException;
-use Abstract\BaseDbService;
-use Models\DB\User;
-use Models\App\User\UserPassword;
+use App\Abstract\BaseDbService;
+use App\Models\DB\User;
+use App\Models\App\User\UserPassword;
 
 class UserDbService extends BaseDbService {
     protected function __construct() {

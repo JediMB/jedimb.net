@@ -3,7 +3,7 @@
 namespace Components;
 
 use Exception;
-use Utils\Component;
+use App\Utils\Component;
 
 $missingArgs = [];
 if (empty($id)) $missingArgs[] = 'id';
@@ -21,7 +21,7 @@ if (empty($config)) {
     $value = $default;
     $isDefault = true;
 }
-else { /** @var \Models\DB\Configuration $config */
+else { /** @var \App\Models\DB\Configuration $config */
     $dbId = $config->id;
     $value = $config->valueInt ?? $config->valueString;
     $isDefault = !$config->isActive;
