@@ -10,19 +10,8 @@ if (!file_exists('../config/secrets.php')) {
 }
 require_once '../config/secrets.php';
 
-spl_autoload_register(function(string $class) {
-    $matches = [];
-
-    if (!preg_match('/^([\w\d]+)\\\\([\w\d\\\\]+)$/', $class, $matches))
-        throw new Exception("Invalid class name ($matches[2]) or namespace ($matches[1]) in autoloader: $class");
-
-    $subPath = str_replace("\\", "/", $matches[2]) . '.php';
-
-    require match ($matches[1]) {
-        "App" => "../src/",
-        default => throw new Exception("Unknown first-level namespace in autoloader: $matches[1]")
-    } . $subPath;
-});
+require_once '../functions/pathFromClass.php';
+spl_autoload_register(fn($class) => require pathFromClass($class));
 
 require_once 'routing.php';
 
