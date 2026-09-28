@@ -44,7 +44,7 @@
 		"javascript.suggest.enabled": true,
 		"js/ts.suggest.enabled": true,
 		"liveServer.settings.port": 5500,
-		"liveServer.settings.root": "/www/public",
+		"liveServer.settings.root": "/www",
 		"liveServer.settings.AdvanceCustomBrowserCmdLine": "firefox --new-window",
 		"liveServer.settings.NoBrowser": false,
 		"liveServer.settings.fullReload": false,
