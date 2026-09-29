@@ -1,0 +1,15 @@
+:root {
+    --screens-sm: 20rem;
+    --screens-md: 37.5rem;
+    --screens-lg: 55rem;
+}
+
+body {
+    --size-xxs: 0.125rem;
+    --size-xs: 0.25rem;
+    --size-s: 0.5rem;
+    --size-m: 1rem; 
+    --size-l: 2rem;
+    --size-xl: 4rem;
+    --size-xxl: 8rem;
+}

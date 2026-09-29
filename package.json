@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.php",
+  "type": "module",
   "scripts": {
     "serve": "php -S localhost:4000 -t ./www/public/ ./www/public/index.php"
   }
