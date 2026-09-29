@@ -1,5 +1,9 @@
 #!/bin/bash
 
+if ! [[ "${0%/*}" == "" ]]; then
+    cd "${0%/*}"
+fi
+
 type="${1,,}" # e.g. model
 name="${2,,}" # e.g. user
 
@@ -46,7 +50,7 @@ elif [[ "$name" =~ [\-\/][\-\/] ]]; then
     exit
 fi
 
-php_root='./www'
+php_root='../www'
 
 if ! [ -d $php_root ]; then
     echo "Defined root directory ($php_root) does not exist"
