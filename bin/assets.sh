@@ -43,7 +43,7 @@ function main() {
                     fi
 
                     echo $CSS_EXTENSION file changed.
-                    merge_css
+                    node ./merge-css.js
                     break
                 done
                 ;;
@@ -57,7 +57,7 @@ function main() {
                     fi
 
                     echo $JS_EXTENSION file changed.
-                    merge_js
+                    node ./merge-js.js
                     break
                 done
                 ;;
@@ -69,14 +69,6 @@ function main() {
         # echo "${BASH_REMATCH[3]}" #filename
         # echo "${BASH_REMATCH[4]}" #extension
     done
-}
-
-function merge_css() {
-    # node ./js/assets.js
-}
-
-function merge_js() {
-    # node ./js/assets.js
 }
 
 main
