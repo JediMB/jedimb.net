@@ -1,13 +1,11 @@
 import fs from 'node:fs';
-import { dirname } from 'node:path'
-import { fileURLToPath } from 'node:url';
 import { exit } from 'node:process';
 
 class WatchCSS {
-    static PROJECT_DIR = Object.freeze(fs.realpathSync(`${dirname(fileURLToPath(import.meta.url))}/..`));
+    static PROJECT_DIR = Object.freeze(fs.realpathSync(`${import.meta.dirname}/..`));
     static SOURCE_DIR = Object.freeze(`${WatchCSS.PROJECT_DIR}/assets/css`);
     static INPUT_FILE = Object.freeze(`${WatchCSS.SOURCE_DIR}/input.css`);
-    static OUTPUT_FILE = Object.freeze(`${this.PROJECT_DIR}/output.css`);
+    static OUTPUT_FILE = Object.freeze(`${this.PROJECT_DIR}/www/public/css/style.css`);
 
     static REGEX_IMPORT = /@import\s*(?:url\(\s*)?[\"\'\`]([^"'`]+)[\"\'\`][^;]*;/g;
 

@@ -36,6 +36,7 @@ $links = !empty($links);
     
     <script type="text/javascript" src="/js/purify.min.js"></script>
     <script type="module" src="/js/default.js"></script>
+    <script type="module" src="/js/script.js"></script>
 </head>
 <body>
     <header>

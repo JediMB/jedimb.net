@@ -19,9 +19,6 @@ function main() {
     local CSS_EXTENSIONS=("css")
     local JS_EXTENSIONS=("js")
 
-    local CSS_DESTINATION_FILE="../test-merge.css"
-    local JS_DESTINATION_FILE="../test-merge.js"
-
     echo Monitoring $ASSET_DIR...
     trap "echo ; echo Monitoring ended." SIGINT
 
@@ -63,11 +60,6 @@ function main() {
                 ;;
         
         esac
-
-        # echo "${BASH_REMATCH[1]}" #directory
-        # echo "${BASH_REMATCH[2]}" #TYPE
-        # echo "${BASH_REMATCH[3]}" #filename
-        # echo "${BASH_REMATCH[4]}" #extension
     done
 }
 
