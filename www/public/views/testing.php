@@ -2,6 +2,7 @@
 
 namespace Views;
 
+use App\Components\ContentTimestampsComponent;
 use App\Enums\PageType;
 use App\Services\ConfigurationService;
 use App\Utils\Component;
@@ -44,10 +45,7 @@ $links = !empty($links);
                 <h2><?= $title ?></h2>
             <?php endif ?>
             <?php if ($pageType === PageType::BlogPost): ?>
-                <div><?php Component::include('created-modified-dates', [
-                    'createdOn' => $createdOn,
-                    'modifiedOn' => $modifiedOn
-                ]) ?></div>
+                <div><?php new ContentTimestampsComponent($createdOn, $modifiedOn) ?></div>
             <?php endif ?>
             <div><?= $content ?></div>
         </main>

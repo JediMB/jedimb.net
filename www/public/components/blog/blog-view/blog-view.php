@@ -3,6 +3,7 @@
 namespace Components\Blog;
 
 use Exception;
+use App\Components\ContentTimestampsComponent;
 use App\Models\App\Pagination;
 use App\Models\DB\BlogPost;
 use App\Utils\Component;
@@ -48,10 +49,7 @@ Component::renderOnce();
                         <title>Hidden</title>
                         <use xlink:href="#svg-hidden" href="#svg-hidden"></use>
                     </svg>
-                    <?php Component::include('created-modified-dates', [
-                        'createdOn' => $post->publishedOn,
-                        'modifiedOn' => $post->modifiedOn
-                    ]) ?>
+                    <?php new ContentTimestampsComponent($post->publishedOn, $post->modifiedOn) ?>
                 </article-byline>
                 <article-toolbar
                     <?= !$editPermissions ? 'hidden' : null ?>
@@ -129,10 +127,7 @@ Component::renderOnce();
                         <title>Pinned</title>
                         <use xlink:href="#svg-pinned" href="#svg-pinned"></use>
                     </svg>
-                <?php Component::include('created-modified-dates', [
-                    'createdOn' => new \DateTime(),
-                    'modifiedOn' => new \DateTime()
-                ]) ?>
+                <?php new ContentTimestampsComponent(new \DateTime(), new \DateTime()) ?>
             </article-byline>
             <article-toolbar hidden>
                 <button post-action="delete"

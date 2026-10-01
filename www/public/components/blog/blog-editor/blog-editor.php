@@ -3,6 +3,7 @@
 namespace Components\Blog;
 
 use Exception;
+use App\Components\ContentTimestampsComponent;
 use App\Models\DB\BlogPost;
 use App\Services\BlogPostScheduleService;
 use App\Utils\Component;
@@ -26,15 +27,12 @@ Component::addJSModule();
 
 <div>
     Created on 
-    <?php Component::include('created-modified-dates', [
-        'createdOn' => $post->createdOn,
-        'modifiedOn' => $post->modifiedOn
-    ]) ?>
+    <?php new ContentTimestampsComponent($post->createdOn, $post->modifiedOn) ?>
 </div>
 <?php if ($post->publishedOn): ?>
     <div>
         Published on 
-        <?php Component::include('created-modified-dates', [ 'createdOn' => $post->publishedOn ]) ?>
+        <?php new ContentTimestampsComponent($post->publishedOn) ?>
     </div>
 <?php endif ?>
 
