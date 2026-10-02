@@ -7,9 +7,9 @@ use App\Abstract\Component;
 use App\Utils\DateTime as DateTimeUtil;
 
 class ContentTimestampsComponent extends Component {
-    public string $createdOn;
-    public string $modifiedOn;
-    public string $showRelativeDate;
+    public readonly string $createdOn;
+    public readonly string $modifiedOn;
+    public readonly string $showRelativeDate;
 
     public function __construct(DateTime $createdOn, ?DateTime $modifiedOn = null, bool $showRelativeDate = false) {
         $this->createdOn = DateTimeUtil::toString($createdOn);
