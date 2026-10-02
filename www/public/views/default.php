@@ -5,6 +5,7 @@ namespace Views;
 use App\Components\ContentTimestampsComponent;
 use App\Enums\PageType;
 use App\Services\ConfigurationService;
+use App\Utils\Asset;
 use App\Utils\Component;
 
 $config = ConfigurationService::getInstance(); /** @var ConfigurationService $config */
@@ -31,7 +32,7 @@ $links = !empty($links);
 
     <title><?= empty($title) ? $site_title : "$title &ndash; ". $site_title ?></title>
     
-    <?php Component::include('css-revision-link', [ 'cssPath' => PATH_CSS_DEFAULT ]) ?>
+    <link href="<?= Asset::addRevisionQuery(PATH_CSS_DEFAULT) ?>" rel="stylesheet" />
 
     <link rel="icon" type="image/x-icon" href="/favicon.svg" />
     
