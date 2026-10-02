@@ -52,6 +52,6 @@ $links = !empty($links);
         </main>
     </content-container>
     
-    <?php Component::include('svg-library') ?>
+    <?php include "../templates/svg-library.php" ?>
 </body>
 </html>

@@ -117,7 +117,7 @@ $links = !empty($links);
 
     <?php Component::renderQueuedJS() ?>
     
-    <?php Component::include('svg-library') ?>
+    <?php include "../templates/svg-library.php" ?>
     </svg>
 </body>
 </html>

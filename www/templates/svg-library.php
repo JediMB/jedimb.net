@@ -1,13 +1,4 @@
-<?php declare(strict_types=1);
-
-namespace Components;
-
-use App\Utils\Component;
-
-Component::noContainer();
-Component::renderOnce();
-
-?>
+<?php declare(strict_types=1) ?>
 
 <svg hidden xmlns="http://www.w3.org/2000/svg">
     <symbol id="svg-loading" viewBox="0 0 496 496" fill="currentColor">
