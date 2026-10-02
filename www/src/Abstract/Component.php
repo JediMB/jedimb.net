@@ -8,7 +8,8 @@ abstract class Component {
     private string $template;
 
     public function __construct() {
-        $this->template = pathFromClass(static::class, "_template");
+        $template = pathFromClass(static::class, "_template");
+        $this->template = preg_replace('/\/[^\/]+$/', "/templates$0", $template);
 
         $this->render();
     }
