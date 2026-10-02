@@ -1,6 +1,8 @@
 <?php declare(strict_types=1);
 
-/** @var \App\Components\ContentTimestampsComponent $data */
+use App\Components\ContentTimestampsComponent;
+
+/** @var ContentTimestampsComponent $data */
 
 ?>
 

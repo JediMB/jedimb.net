@@ -3,6 +3,7 @@
 namespace Views;
 
 use App\Components\ContentTimestampsComponent;
+use App\Components\MastodonCommentsComponent;
 use App\Enums\PageType;
 use App\Services\ConfigurationService;
 use App\Utils\Asset;
@@ -102,7 +103,7 @@ $links = !empty($links);
     </content-container>
 
     <?php if ($pageType === PageType::BlogPost && isset($mastolink)): ?>
-        <?php Component::include('mastodon-comments', [ 'mastolink' => $mastolink ]) ?>
+        <?php new MastodonCommentsComponent($mastolink) ?>
     <?php endif ?>
 
     <footer>
