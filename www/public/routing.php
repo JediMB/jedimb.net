@@ -237,7 +237,7 @@ function servePHP(array $variables = [ 'header' => false ]) {
         $content = ob_get_clean(); // Used in template/view
     }
 
-    require_once realpath("views/$template");
+    require_once "../views/$template";
     exit;
 }
 
