@@ -18,6 +18,7 @@
 		"intelephense.completion.parameterCase": "camel",
 		"intelephense.completion.propertyCase": "camel",
 		"intelephense.completion.suggestObjectOperatorStaticMethods": false,
+		"intelephense.diagnostics.typeErrors": true,
 		"intelephense.environment.documentRoot": "./www/public",
 		"intelephense.environment.phpVersion": "8.4.11",
 		"intelephense.files.exclude": [
