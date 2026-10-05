@@ -1,8 +1,4 @@
-<?php declare(strict_types=1);
-
-namespace Components;
-
-?>
+<?php declare(strict_types=1) ?>
 
 <h2>Links</h2>
 <div class="mb-3">

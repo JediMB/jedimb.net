@@ -104,7 +104,7 @@ $links = !empty($links);
         </main>
         <?php if ($links): ?>
             <aside class="links max-md:bg-hotpink-950 max-md:p-2 max-md:rounded-lg">
-                <?php Component::include('button-links') ?>
+                <?php include('../templates/button-links.php') ?>
             </aside>
         <?php endif ?>
     </content-container>
