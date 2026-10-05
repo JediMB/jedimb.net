@@ -3,6 +3,7 @@
 namespace Views;
 
 use App\Components\ContentTimestampsComponent;
+use App\Components\CopyrightComponent;
 use App\Components\MastodonCommentsComponent;
 use App\Components\SocialLinksComponent;
 use App\Enums\PageType;
@@ -113,11 +114,9 @@ $links = !empty($links);
     <?php endif ?>
 
     <footer>
-        <?php if ($pageType === PageType::PHP): ?>
-            <?php Component::include('copyright', [ 'pagePath' => $pagePath, 'siteAuthor' => $siteAuthor ]) ?>
-        <?php else: ?>
-            <?php Component::include('copyright', [ 'pageDate' => $modifiedOn ?: $createdOn, 'siteAuthor' => $siteAuthor ]) ?>
-        <?php endif ?>
+        <?php new CopyrightComponent($siteAuthor,
+            $pageType === PageType::PHP ? $pagePath : ( $modifiedOn ?: $createdOn )
+        ) ?>
         <br/>
         Made in PHP, HTML, CSS and JavaScript, with Visual Studio Code and PHP Intelephense.
     </footer>
