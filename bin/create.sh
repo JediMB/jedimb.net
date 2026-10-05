@@ -66,7 +66,7 @@ models_dto_dir="${models_dir}/DTO"
 services_dir="${php_root}/src/Services"
 services_db_dir="${php_root}/src/Database"
 
-template_dir='./templates'
+template_dir='../templates'
 
 if ! [ -d $template_dir ]; then
     echo "Defined templates directory ($template_dir) does not exist"
