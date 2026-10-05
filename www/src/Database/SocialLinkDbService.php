@@ -5,6 +5,7 @@ namespace App\Database;
 use Exception;
 use PDOException;
 use App\Abstract\BaseDbService;
+use App\Enums\Visibility;
 use App\Models\DB\SocialLink;
 
 class SocialLinkDbService extends BaseDbService {
@@ -12,9 +13,19 @@ class SocialLinkDbService extends BaseDbService {
         parent::__construct();
     }
 
-    public function getSocialLinks() : array {
+    /** @return SocialLink[] */
+    public function getSocialLinks(Visibility $visibility = Visibility::Visible) : array {
         try {
-            $links = $this->dbService->selectView('social_link', orderBy: [ [ 'name' => 'order'] ]);
+            $columnValues = [];
+
+            if ($visibility !== Visibility::Any)
+                $columnValues['is_hidden'] = $visibility === Visibility::Hidden;
+
+            $links = $this->dbService->selectView(
+                view: 'social_link',
+                columnValues: $columnValues,
+                orderBy: [ [ 'name' => 'order'] ]
+            );
 
             return array_map(function($link) {
                 return new SocialLink($link);

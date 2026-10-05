@@ -4,8 +4,10 @@ namespace Views;
 
 use App\Components\ContentTimestampsComponent;
 use App\Components\MastodonCommentsComponent;
+use App\Components\SocialLinksComponent;
 use App\Enums\PageType;
 use App\Services\ConfigurationService;
+use App\Services\SocialLinkService;
 use App\Utils\Asset;
 use App\Utils\Component;
 
@@ -57,7 +59,9 @@ $links = !empty($links);
                     </a>
                 </home-wrapper>
                 <social-container>
-                    <?php Component::include('social-links') ?>
+                    <?php new SocialLinksComponent(
+                        SocialLinkService::getInstance()->getVisibleSocialLinks()
+                    ) ?>
                 </social-container>
             </header-links>
             <menu-container>
