@@ -6,7 +6,6 @@ use App\Components\ContentTimestampsComponent;
 use App\Enums\PageType;
 use App\Services\ConfigurationService;
 use App\Utils\Asset;
-use App\Utils\Component;
 
 $config = ConfigurationService::getInstance(); /** @var ConfigurationService $config */
 
