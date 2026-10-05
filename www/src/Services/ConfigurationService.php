@@ -37,7 +37,7 @@ class ConfigurationService extends Singleton {
         ];
     }
 
-    public function getUserConstant(string $name) : Configuration|string|int {
+    public function getUserConstant(string $name) : string|int {
         if (empty($this->constants[$name]))
             throw new Exception('Trying to access nonexistent constant');
 
@@ -56,16 +56,10 @@ class ConfigurationService extends Singleton {
 
     /**
      * @param string[] $names
-     * @return (array<string, Configuration|string|int>)
+     * @return (array<string|int>)
      */
     public function getUserConstants(array $names) : array {
-        $constants = [];
-
-        foreach ($names as $name) {
-            $constants[strtolower($name)] = $this->getUserConstant($name);
-        }
-
-        return $constants;
+        return array_map(fn($name) => $this->getUserConstant($name), $names);
     }
 
     private function noActiveConfiguration(string $name) : bool {

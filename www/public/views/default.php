@@ -12,10 +12,12 @@ use App\Utils\Asset;
 use App\Utils\Component;
 
 $config = ConfigurationService::getInstance(); /** @var ConfigurationService $config */
-extract($config->getUserConstants([
-    'SITE_TITLE', 'SITE_TAGLINE', 'SITE_AUTHOR',
-    'META_DESCRIPTION', 'META_KEYWORDS'
-]));
+
+list(
+    $siteTitle, $siteTagline, $siteAuthor, $metaDescription, $metaKeywords) =
+    $config->getUserConstants([
+        'SITE_TITLE', 'SITE_TAGLINE', 'SITE_AUTHOR', 'META_DESCRIPTION', 'META_KEYWORDS'
+]);
 
 $links = !empty($links);
 
@@ -27,13 +29,13 @@ $links = !empty($links);
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <meta name="author" content="<?= $site_author ?>">
-    <meta name="description" content="<?= $meta_description ?>">
-    <meta name="keywords" content="<?= $meta_keywords ?>">
+    <meta name="author" content="<?= $siteAuthor ?>">
+    <meta name="description" content="<?= $metaDescription ?>">
+    <meta name="keywords" content="<?= $metaKeywords ?>">
     
     <meta name="constants" content="<?= htmlspecialchars(json_encode(META_CONSTANTS)) ?>">
 
-    <title><?= empty($title) ? $site_title : "$title &ndash; ". $site_title ?></title>
+    <title><?= empty($title) ? $siteTitle : "$title &ndash; ". $siteTitle ?></title>
     
     <link href="<?= Asset::addRevisionQuery(PATH_CSS_DEFAULT) ?>" rel="stylesheet" />
 
@@ -66,13 +68,13 @@ $links = !empty($links);
             </header-links>
             <menu-container>
                 <desktop-title>
-                    <h1><a href="/"><?= $site_title ?></a></h1>
+                    <h1><a href="/"><?= $siteTitle ?></a></h1>
                     <!-- <img src="images/logo.svg"> -->
-                    <div class="tagline"><?= $site_tagline ?></div>
+                    <div class="tagline"><?= $siteTagline ?></div>
                 </desktop-title>
 
                 <mobile-title>
-                    <h1><?= $site_title ?></h1>
+                    <h1><?= $siteTitle ?></h1>
                 </mobile-title>
 
                 <mobile-menu>
@@ -112,9 +114,9 @@ $links = !empty($links);
 
     <footer>
         <?php if ($pageType === PageType::PHP): ?>
-            <?php Component::include('copyright', [ 'pagePath' => $pagePath, 'siteAuthor' => $site_author ]) ?>
+            <?php Component::include('copyright', [ 'pagePath' => $pagePath, 'siteAuthor' => $siteAuthor ]) ?>
         <?php else: ?>
-            <?php Component::include('copyright', [ 'pageDate' => $modifiedOn ?: $createdOn, 'siteAuthor' => $site_author ]) ?>
+            <?php Component::include('copyright', [ 'pageDate' => $modifiedOn ?: $createdOn, 'siteAuthor' => $siteAuthor ]) ?>
         <?php endif ?>
         <br/>
         Made in PHP, HTML, CSS and JavaScript, with Visual Studio Code and PHP Intelephense.
