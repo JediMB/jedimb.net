@@ -9,5 +9,3 @@ class {pascal_name} {
         $this->member = $dbRow['member'];
     }
 }
-
-?>

@@ -15,5 +15,3 @@ class {pascal_name}Service extends Singleton {
         $this->tableModifiedService = TableModifiedService::getInstance();
     }
 }
-
-?>

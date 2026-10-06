@@ -27,5 +27,3 @@ class {pascal_name}DbService extends BaseDbService {
         }
     }
 }
-
-?>

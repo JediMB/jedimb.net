@@ -59,5 +59,3 @@ switch ( $_SERVER['REQUEST_METHOD'] ) {
     default:
         return Response::InvalidRequest();
 }
-
-?>
