@@ -12,6 +12,7 @@ define('CONFIGURABLE_CONSTANTS', [
 define('PATH_HOMEPAGE', 'pages/blog.php');
 define('PATH_BLOG_PREFIX', 'blog');
 define('PATH_API_DIR', 'api');
+define('PATH_VIEW_DIR', '../views');
 define('PATH_COMPONENT_MODULE_DIR_ALIAS', 'js/components');
 define('PATH_COMPONENTS_DIR', 'components');
 define('PATH_REALPAGES_DIR', 'pages');

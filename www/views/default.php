@@ -7,10 +7,13 @@ use App\Components\CopyrightComponent;
 use App\Components\MastodonCommentsComponent;
 use App\Components\SocialLinksComponent;
 use App\Enums\PageType;
+use App\Models\App\Page;
 use App\Services\ConfigurationService;
 use App\Services\SocialLinkService;
 use App\Utils\Asset;
 use App\Utils\Component;
+
+/** @var Page $page */
 
 $config = ConfigurationService::getInstance(); /** @var ConfigurationService $config */
 
@@ -36,7 +39,12 @@ $links = !empty($links);
     
     <meta name="constants" content="<?= htmlspecialchars(json_encode(META_CONSTANTS)) ?>">
 
-    <title><?= empty($title) ? $siteTitle : "$title &ndash; ". $siteTitle ?></title>
+    <title>
+        <?= $page->title
+            ? "{$page->title} &ndash; ". $siteTitle
+            : $siteTitle
+        ?>
+    </title>
     
     <link href="<?= Asset::addRevisionQuery(PATH_CSS_DEFAULT) ?>" rel="stylesheet" />
 
@@ -94,13 +102,13 @@ $links = !empty($links);
     
     <content-container class="mb-3 <?= $links ? 'grid-cols-sidebar-right' : null ?>">
         <main>
-            <?php if (!empty($title)): ?>
-                <h2><?= $title ?></h2>
+            <?php if ($page->title): ?>
+                <h2><?= $page->title ?></h2>
             <?php endif ?>
-            <?php if ($pageType === PageType::BlogPost): ?>
-                <div><?php new ContentTimestampsComponent($createdOn, $modifiedOn) ?></div>
+            <?php if ($page->pageType === PageType::BlogPost): ?>
+                <div><?php new ContentTimestampsComponent($page->createdOn, $page->modifiedOn) ?></div>
             <?php endif ?>
-            <div><?= $content ?></div>
+            <div><?= $page->content ?></div>
         </main>
         <?php if ($links): ?>
             <aside class="links max-md:bg-hotpink-950 max-md:p-2 max-md:rounded-lg">
@@ -109,13 +117,13 @@ $links = !empty($links);
         <?php endif ?>
     </content-container>
 
-    <?php if ($pageType === PageType::BlogPost && isset($mastolink)): ?>
+    <?php if ($page->pageType === PageType::BlogPost && isset($mastolink)): ?>
         <?php new MastodonCommentsComponent($mastolink) ?>
     <?php endif ?>
 
     <footer>
         <?php new CopyrightComponent($siteAuthor,
-            $pageType === PageType::PHP ? $pagePath : ( $modifiedOn ?: $createdOn )
+            $page->pageType === PageType::PHP ? $page->realPath : ( $page->modifiedOn ?: $page->createdOn )
         ) ?>
         <br/>
         Made in PHP, HTML, CSS and JavaScript, with Visual Studio Code and PHP Intelephense.

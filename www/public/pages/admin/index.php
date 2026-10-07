@@ -1,13 +1,16 @@
 <?php declare(strict_types=1);
 
 use App\Enums\UserPermission;
+use App\Models\App\Page;
 use App\Services\SessionService;
 use App\Utils\Component;
+
+/** @var Page $page */
 
 $sessionService = SessionService::getInstance(); /** @var SessionService $sessionService */
 $sessionService->enforcePermissions([ UserPermission::Configuration ]);
 
-$title = PAGE_ADMIN_TITLE;
+$page->title = PAGE_ADMIN_TITLE;
 
 ?>
 

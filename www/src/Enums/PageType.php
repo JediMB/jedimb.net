@@ -6,4 +6,6 @@ enum PageType {
     case PHP;
     case Virtual;
     case BlogPost;
+    case NotFound;
+    case Forbidden;
 }

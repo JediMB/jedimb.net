@@ -3,14 +3,17 @@
 namespace Pages;
 
 use App\Enums\UserPermission;
+use App\Models\App\Page;
 use App\Services\BlogPostService;
 use App\Services\SessionService;
 use App\Utils\Component;
 
+/** @var Page $page */
+
 $sessionService = SessionService::getInstance();
 $blogPostService = BlogPostService::getInstance();
 
-$result = $blogPostService->getPublicBlogPosts($page);
+$result = $blogPostService->getPublicBlogPosts($page->pageNumber);
 
 $posts = $result['blogPosts'];
 $pagination = $result['pagination'];

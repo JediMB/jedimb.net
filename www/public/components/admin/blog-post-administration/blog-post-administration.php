@@ -4,13 +4,14 @@ namespace Components\Admin;
 
 use App\Enums\Published;
 use App\Enums\Visibility;
+use App\Models\App\Page;
 use App\Services\BlogPostService;
 use App\Utils\Component;
 
-/** @var int $page */
+/** @var Page $page */
 
 $blogPostService = BlogPostService::getInstance();
-$data = $blogPostService->getBlogPostsAdminData($page);
+$data = $blogPostService->getBlogPostsAdminData($page->pageNumber);
 $posts = $data['blogPosts'];
 $pagination = $data['pagination'];
 

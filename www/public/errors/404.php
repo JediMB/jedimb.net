@@ -1,6 +1,10 @@
 <?php declare(strict_types=1);
 
-$title = '404 Not Found';
+use App\Models\App\Page;
+
+/** @var Page $page */
+
+$page->title = '404 Not Found';
 
 ?>
 

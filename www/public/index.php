@@ -13,74 +13,13 @@ require_once '../config/secrets.php';
 require_once '../functions/pathFromClass.php';
 spl_autoload_register(fn($class) => require pathFromClass($class));
 
-require_once 'routing.php';
-
-use App\Models\App\MenuItem;
-use App\Services\NavigationService;
+use App\Services\RoutingService;
 use App\Services\SessionService;
 
-// Force lowercase
-$requestPath = strtolower(
-    // Remove query string from end
-    parse_url(
-        // Remove slashes and dots from start
-        trim($_SERVER['REQUEST_URI'], '/.'),
-        PHP_URL_PATH
-    )
-);
-
 $sessionService = SessionService::getInstance();
-
-handleBots();
-
-handleApiRequests($requestPath);
-
-handleComponentModules($requestPath);
+$routingService = RoutingService::getInstance();
 
 if (!$sessionService->isLoggedIn())
     $sessionService->loginFromCookie();
 
-$navService = NavigationService::getInstance();
-$navService->menu[] = new MenuItem('About me', '/about');
-
-$pageNumber = separatePageNumber($requestPath);
-
-handleHome($requestPath, $pageNumber);
-
-foreach (SPECIAL_PATHS as $request => $path) {
-    if ($requestPath === $request)
-        servePHP([ 'pagePath' => $path ]);
-}
-
-handleVirtualPages($requestPath, $pageNumber);
-
-handleBlogRequests($requestPath, $pageNumber);
-
-$isForbidden = false;
-$realPath = getRealPath($requestPath, $isForbidden);
-
-if (!$realPath)
-    servePHP([
-        'header' => 'HTTP/1.1 404 Not Found',
-        'pagePath' => PATH_ERROR404,
-        'baseRoute' => $requestPath
-    ]);
-
-if ($isForbidden)
-    servePHP([
-        'header' => 'HTTP/1.1 403 Forbidden',
-        'pagePath' => PATH_ERROR403,
-        'baseRoute' => $requestPath
-    ]);
-
-if (isPHP($realPath))
-    servePHP([
-        'pagePath' => $realPath,
-        'baseRoute' => $requestPath,
-        'page' => $pageNumber
-    ]);
-
-// Serve asset file from filesystem
-return false;
-
-?>
+return $routingService->handle();

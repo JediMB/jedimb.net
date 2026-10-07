@@ -1,6 +1,10 @@
 <?php declare(strict_types=1);
 
-$title = 'About me';
+use App\Models\App\Page;
+
+/** @var Page $page */
+
+$page->title = 'About me';
 
 ?>
 
