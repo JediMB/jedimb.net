@@ -3,7 +3,7 @@ import Image from "/js/models/image-gallery/image.model.js";
 import ImageDTO from "/js/models/image-gallery/image.dto.model.js";
 import imageGalleryService from "/js/services/image-gallery.service.js";
 
-customElements.define('image-manager-component', class ImageManagerComponent extends HTMLElement {
+export default class ImageManagerComponent extends HTMLElement {
     static observedAttributes = [ 'upload-mode' ];
 
     /** @type {ImageManagerComponent} */
@@ -382,4 +382,5 @@ customElements.define('image-manager-component', class ImageManagerComponent ext
 
         this.#renderImageProperties(data);
     }
-});
+}
+customElements.define('image-manager-component', ImageManagerComponent);

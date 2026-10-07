@@ -6,7 +6,7 @@ import { UserRole } from "/js/enums/user-role.enum.js";
 import { formatDate } from "/js/utilities/format-date.utility.js";
 import MarkupConstants from "/js/constants/markup-constants.js";
 
-customElements.define('blog-view-component', class BlogViewComponent extends HTMLElement {
+export default class BlogViewComponent extends HTMLElement {
     #editingPermissions = false;
 
     /**@type {PaginationComponent} */ #pagination;
@@ -244,4 +244,6 @@ customElements.define('blog-view-component', class BlogViewComponent extends HTM
             }
         );
     }
-});
+}
+
+customElements.define('blog-view-component', BlogViewComponent);

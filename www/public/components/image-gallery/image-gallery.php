@@ -29,7 +29,6 @@ $insertAttribute = ( empty($insertTarget) ? [] : [ 'insert-target' => $insertTar
 $cPrefix = 'image-gallery';
 
 Component::renderCSS();
-Component::addJSModule();
 
 ?>
 

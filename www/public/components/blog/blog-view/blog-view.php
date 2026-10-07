@@ -19,7 +19,6 @@ if (!isset($pagination) || get_class($pagination) !== Pagination::class)
 $editPermissions ??= false;
 
 Component::renderCSS();
-Component::addJSModule();
 Component::renderOnce();
 
 ?>

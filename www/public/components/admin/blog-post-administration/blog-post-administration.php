@@ -17,7 +17,6 @@ $pagination = $data['pagination'];
 
 Component::renderOnce();
 Component::renderCSS();
-Component::addJSModule();
 
 ?>
 

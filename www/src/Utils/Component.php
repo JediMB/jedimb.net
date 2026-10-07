@@ -67,23 +67,6 @@ class Component {
             }
         }
 
-        $includeType = 'module.js';
-        if ($options->includeJSModule && empty(static::$components[$component][$includeType])) {
-            static::$components[$component][$includeType] = true;
-
-            if ( ($jsPath = realpath(rtrim($realPath, 'php') . $includeType)) ) {
-                $jsPath = str_replace(
-                    getcwd() . DIRECTORY_SEPARATOR . PATH_COMPONENTS_DIR,
-                    DIRECTORY_SEPARATOR . PATH_COMPONENT_MODULE_DIR_ALIAS,
-                    $jsPath
-                );
-                $output = <<<HTML
-                    <script type="module" src="{$jsPath}"></script>
-                    $output
-                HTML;
-            }
-        }
-
         static::$components[$component]['count'] = $cId + 1;
         
         if ($returnResult)
@@ -121,10 +104,6 @@ class Component {
         static::getOptions()->attributes = array_merge(static::getOptions()->attributes, $attributes);
     }
 
-    static function addJSModule() {
-        static::getOptions()->includeJSModule = true;
-    }
-
     static function hide() {
         static::getOptions()->hidden = true;
     }
@@ -139,36 +118,5 @@ class Component {
 
     static function renderOnce() {
         static::getOptions()->renderOnce = true;
-    }
-
-    static function queueJS(string $componentPath, string $type = 'text/javascript') {
-        $fileType = 'js';
-        $componentKey = static::relativeComponentPath($componentPath);
-
-        if (isset(static::$components[$componentKey][$fileType]))
-            return;
-
-        if ( ($filePath = realpath(rtrim($componentPath, 'php') . $fileType)) ) {
-            $content = file_get_contents($filePath);
-            static::$components[$componentKey][$fileType] = [
-                'content' => $content,
-                'type' => $type
-            ];
-        }
-        else
-            static::$components[$componentKey][$fileType] = false;
-    }
-
-    static function renderQueuedJS() {
-        $fileType = 'js';
-
-        foreach (static::$components as $component) {
-            if (!empty($component[$fileType]))
-                echo <<<HTML
-                    <script type="{$component[$fileType]['type']}">
-                        {$component[$fileType]['content']}
-                    </script>
-                HTML;
-        }
     }
 }

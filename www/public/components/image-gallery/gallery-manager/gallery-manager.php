@@ -6,7 +6,6 @@ use App\Utils\Component;
 use App\Utils\DateTime;
 
 Component::renderCSS();
-Component::addJSModule();
 
 ?>
 

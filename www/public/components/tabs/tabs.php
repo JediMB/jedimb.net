@@ -13,9 +13,7 @@ if (empty($containerId) || !is_string($containerId))
 $tabs ??= [];
 
 Component::addAttributes(['container-target' => "#$containerId"]);
-
 Component::renderCSS();
-Component::addJSModule();
 
 ?>
 

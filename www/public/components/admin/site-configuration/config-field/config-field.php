@@ -31,7 +31,6 @@ $isInt = is_int($value);
 
 Component::hide();
 Component::renderCSS();
-Component::addJSModule();
 
 ?>
 

@@ -128,8 +128,6 @@ $links = !empty($links);
         <br/>
         Made in PHP, HTML, CSS and JavaScript, with Visual Studio Code and PHP Intelephense.
     </footer>
-
-    <?php Component::renderQueuedJS() ?>
     
     <?php include "../templates/svg-library.php" ?>
     </svg>

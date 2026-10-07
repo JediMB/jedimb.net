@@ -1,4 +1,4 @@
-customElements.define('image-gallery-component', class ImageGalleryComponent extends HTMLElement {
+export default class ImageGalleryComponent extends HTMLElement {
     /** @type {ImageGalleryComponent} */
     #self;
 
@@ -120,4 +120,5 @@ customElements.define('image-gallery-component', class ImageGalleryComponent ext
 
         pane.toggleAttribute('hidden', !activate);
     }
-});
+}
+customElements.define('image-gallery-component', ImageGalleryComponent);

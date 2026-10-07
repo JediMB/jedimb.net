@@ -7,7 +7,6 @@ use App\Utils\Component;
 
 Component::renderOnce();
 Component::renderCSS();
-Component::addJSModule();
 
 $configService = ConfigurationService::getInstance(); /** @var ConfigurationService $configService */
 

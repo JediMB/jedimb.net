@@ -14,7 +14,6 @@ $formId = 'blog-head__form';
 Component::addAttributes(['class' => 'form-column']);
 Component::renderOnce();
 Component::renderCSS();
-Component::addJSModule();
 
 ?>
 

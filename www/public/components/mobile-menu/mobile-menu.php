@@ -8,7 +8,6 @@ use App\Utils\Component;
 use App\Utils\MenuLink;
 
 Component::renderCSS();
-Component::queueJS(__FILE__);
 
 ?>
 

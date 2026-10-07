@@ -29,7 +29,6 @@ else { /** @var \App\Models\DB\Configuration $config */
 
 Component::hide();
 Component::renderCSS();
-Component::addJSModule();
 
 $initialValue = $isDefault ? $default : $value;
 

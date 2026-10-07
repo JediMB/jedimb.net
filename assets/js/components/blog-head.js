@@ -3,7 +3,7 @@ import BlogPostDTO from "/js/models/blog/blog-post.dto.model.js";
 import blogPostService from "/js/services/blog-post.service.js";
 import { Listener } from "/js/utilities/emitter.js";
 
-class BlogHeadComponent extends HTMLElement {
+export default class BlogHeadComponent extends HTMLElement {
     /** @type {Listener} */ #validationListener;
 
     /** @type {HTMLButtonElement} */ #btnAddPost;

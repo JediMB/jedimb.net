@@ -20,7 +20,6 @@ $schedule = !$post || $post->publishedOn
 
 Component::addAttributes(['form-id' => $formId, 'role' => 'form']);
 Component::renderCSS();
-Component::addJSModule();
 
 ?>
 

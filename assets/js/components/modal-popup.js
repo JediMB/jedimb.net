@@ -1,4 +1,4 @@
-customElements.define('modal-popup-component', class ModalPopupContainer extends HTMLElement {
+export default class ModalPopupContainer extends HTMLElement {
     /** @type ModalPopupContainer */
     #self;
     #popup;
@@ -50,4 +50,5 @@ customElements.define('modal-popup-component', class ModalPopupContainer extends
         this.#root.style.removeProperty('overflow');
         this.#body.style.removeProperty('overflow');
     }
-});
+}
+customElements.define('modal-popup-component', ModalPopupContainer);

@@ -3,7 +3,7 @@ import Gallery from "/js/models/image-gallery/gallery.model.js";
 import imageGalleryService from "/js/services/image-gallery.service.js";
 import { formatDate } from "/js/utilities/format-date.utility.js";
 
-customElements.define('gallery-manager-component', class GalleryManagerComponent extends HTMLElement {
+export default class GalleryManagerComponent extends HTMLElement {
     static observedAttributes = [ 'properties-mode' ];
 
     /** @type {GalleryManagerComponent} */ #self;
@@ -526,4 +526,5 @@ customElements.define('gallery-manager-component', class GalleryManagerComponent
 
         this.#renderImageLists(gallery.id);
     }
-});
+}
+customElements.define('gallery-manager-component', GalleryManagerComponent);

@@ -7,7 +7,6 @@ use App\Utils\Component;
 
 Component::renderOnce();
 Component::renderCSS();
-Component::queueJS(__FILE__, 'module');
 
 $sessionService = SessionService::getInstance(); /** @var SessionService $sessionService */
 

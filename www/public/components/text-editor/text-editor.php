@@ -8,7 +8,6 @@ use App\Utils\Component;
 $value ??= null;
 
 Component::renderCSS();
-Component::addJSModule();
 
 ?>
 

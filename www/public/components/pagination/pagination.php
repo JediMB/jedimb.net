@@ -19,7 +19,6 @@ Component::addAttributes([
 ]);
 
 Component::renderCSS();
-Component::addJSModule();
 
 $currentPage = $data->page;
 $totalPages = $data->pageCount;

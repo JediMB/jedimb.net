@@ -9,5 +9,5 @@
         },
         "noImplicitAny": true
     },
-    "include": ["www/**/*"]
+    "include": ["www/**/*", "assets/js/**/*"]
 }

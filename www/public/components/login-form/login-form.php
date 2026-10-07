@@ -6,7 +6,6 @@ use App\Utils\Component;
 
 Component::renderOnce();
 Component::renderCSS();
-Component::queueJS(__FILE__, 'module');
 
 ?>
 

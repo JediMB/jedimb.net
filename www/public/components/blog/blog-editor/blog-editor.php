@@ -21,7 +21,6 @@ $schedule = $post->publishedOn
 $formId = 'blog-editor__form';
 
 Component::renderOnce();
-Component::addJSModule();
 
 ?>
 
