@@ -3,8 +3,8 @@ import { exit } from 'node:process';
 
 class WatchJS {
     static PROJECT_DIR = Object.freeze(fs.realpathSync(`${import.meta.dirname}/..`));
-    static SOURCE_DIR = Object.freeze(`${this.PROJECT_DIR}/assets/js`);
-    static INPUT_FILE = Object.freeze(`${this.SOURCE_DIR}/input.js`);
+    static ASSET_DIR = Object.freeze(`${this.PROJECT_DIR}/assets`);
+    static INPUT_FILE = Object.freeze(`${this.ASSET_DIR}/js/input.js`);
     static OUTPUT_FILE = Object.freeze(`${this.PROJECT_DIR}/www/public/js/script.js`);
 
     static REGEX_IMPORT = /import\s+.+\s+from\s+["'`]([^"'`]+)["'`]\s*[;\n]/g;
@@ -39,19 +39,24 @@ class WatchJS {
         this.#filesRead.add(realPath);
         
         let fileData = fs.readFileSync(realPath, { encoding: 'utf-8' });
-
+        
         fileData = fileData.replace(WatchJS.REGEX_EXPORT, '');
 
         const matches = fileData.matchAll(WatchJS.REGEX_IMPORT);
 
         for (const match of matches) {
             const importPath = match[1].startsWith('/')
-                ? `${WatchJS.SOURCE_DIR}${match[1]}`
+                ? `${WatchJS.ASSET_DIR}${match[1]}`
                 : `${directory}/${match[1]}`;
-            const importData = this.#readFile(importPath);
-            const importComment = `\n\n/* IMPORT: ${match[1]} */\n\n`;
+            try {
+                const importData = this.#readFile(importPath);
+                const importComment = `\n\n/* IMPORT: ${match[1]} */\n\n`;
 
-            fileData = fileData.replace(match[0], importComment + importData);
+                fileData = fileData.replace(match[0], importComment + importData);
+            }
+            catch(e) {
+                console.warn(`WARNING: Couldn't read file (${importPath})`);
+            }
         }
 
         return fileData;
