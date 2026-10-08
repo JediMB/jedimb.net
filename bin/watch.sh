@@ -26,11 +26,8 @@ function main() {
 
     while INOTIF_OUT=`inotifywait -qr -e modify -e move -e create -e delete $ASSET_DIR`; do
         if ! [[ $INOTIF_OUT =~ $INOTIF_REGEX ]]; then
-            echo Regex miss: "$INOTIF_OUT"
             continue
         fi
-
-        echo Regex hit: "$INOTIF_OUT"
 
         case ${BASH_REMATCH[1]} in
 
