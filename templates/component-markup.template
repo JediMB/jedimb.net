@@ -1,0 +1,10 @@
+<?php declare(strict_types=1);
+
+use App\Components\{pascal_name}Component;
+
+/** @var {pascal_name}Component $data */
+
+?>
+
+<{base_name}-component>
+</{base_name}-component>

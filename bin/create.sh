@@ -51,6 +51,7 @@ elif [[ "$name" =~ [\-\/][\-\/] ]]; then
 fi
 
 php_root='../www'
+assets_dir="../assets"
 
 if ! [ -d $php_root ]; then
     echo "Defined root directory ($php_root) does not exist"
@@ -58,7 +59,8 @@ if ! [ -d $php_root ]; then
 fi
 
 api_dir="${php_root}/public/api"
-components_dir="${php_root}/public/components"
+components_php_dir="${php_root}/src/Components"
+components_js_dir="${assets_dir}/js/components"
 models_dir="${php_root}/src/Models"
 models_app_dir="${models_dir}/App"
 models_db_dir="${models_dir}/DB"
@@ -74,9 +76,9 @@ if ! [ -d $template_dir ]; then
 fi
 
 api_php_template_file="$template_dir/api-php.template"
-component_css_template_file="$template_dir/component-css.template"
-component_module_template_file="$template_dir/component-module.template"
-component_php_template_file="$template_dir/component-php.template"
+component_class_template_file="$template_dir/component-class.template"
+component_js_template_file="$template_dir/component-js.template"
+component_markup_template_file="$template_dir/component-markup.template"
 database_service_php_template_file="$template_dir/database-service-php.template"
 model_db_php_template_file="$template_dir/model-db-php.template"
 model_dto_php_template_file="$template_dir/model-dto-php.template"
@@ -148,7 +150,6 @@ function prepare() {
     local type_name=$1
     local type_dir=$2
     local use_pascal_path=$3
-    local use_name_dir=$4
 
     if ! [ -d $type_dir ]; then
         echo "defined $type_name directory ($type_dir) does not exist"
@@ -169,24 +170,15 @@ function prepare() {
 
         dir_path+=${namespace//\\/\/}
     else
-        if [[ $use_name_dir == true ]]; then
-            dir_path="$type_dir/$name"
-        else
-            dir_path=$type_dir
-            
-            local arr_length=${#split_name[@]}
-            for (( i=0; i<arr_length-1; i++)); do
-                dir_path+="/${split_name[$i]}"
-            done
-        fi
+        dir_path=$type_dir
+        
+        local arr_length=${#split_name[@]}
+        for (( i=0; i<arr_length-1; i++)); do
+            dir_path+="/${split_name[$i]}"
+        done
     fi
 
-    if [ -d $dir_path ]; then
-        if [[ $use_name_dir == true ]]; then
-            echo "$type_name already exists: $dir_path"
-            exit
-        fi
-    else
+    if ! [ -d $dir_path ]; then
         mkdir $dir_path --parents --verbose
     fi
 }
@@ -222,10 +214,11 @@ case $type in
         file_from_template $api_php_template_file "$dir_path/$base_name.php"
         ;;
     'c' | 'component')
-        prepare 'component' $components_dir false true
-        file_from_template $component_css_template_file "$dir_path/$base_name.css"
-        file_from_template $component_module_template_file "$dir_path/$base_name.module.js"
-        file_from_template $component_php_template_file "$dir_path/$base_name.php"
+        prepare 'component' $components_php_dir false
+        file_from_template $component_class_template_file "$dir_path/${pascal_name}Component.php"
+        file_from_template $component_markup_template_file "$dir_path/${pascal_name}Component_template.php"
+        # TODO: Function that makes sure that components directory and any necessary subdirectory exists
+        file_from_template $component_js_template_file "$components_js_dir/$base_name-component.js"
         ;;
     'm' | 'model')
         prepare 'model' $models_app_dir true
