@@ -8,7 +8,8 @@ class WatchJS {
     static OUTPUT_FILE = Object.freeze(`${this.PROJECT_DIR}/www/public/js/script.js`);
 
     static REGEX_IMPORT = /import\s+.+\s+from\s+["'`]([^"'`]+)["'`]\s*[;\n]/g;
-    static REGEX_EXPORT = /(export\s+(?:default\s+|(?:\*(?:\s+as\s+[\w\d]+)?|{[^}]*})(?:\s+from\s+["'`]([^"'`]*)["'`])?;?)?)/g;
+    static REGEX_EXPORT_1 = /\bexport\s+(?:default\s+)?((?:function|class|let|var|const)\s+)/g;
+    static REGEX_EXPORT_2 = /\bexport\s+(?:default\s+.+|{.*})\s*[\n;]/g;
 
     #filesRead = new Set();
 
@@ -40,8 +41,10 @@ class WatchJS {
         
         let fileData = fs.readFileSync(realPath, { encoding: 'utf-8' });
         
-        fileData = fileData.replace(WatchJS.REGEX_EXPORT, '');
-
+        fileData = fileData
+            .replaceAll(WatchJS.REGEX_EXPORT_1, '$1')
+            .replaceAll(WatchJS.REGEX_EXPORT_2, '');
+        
         const matches = fileData.matchAll(WatchJS.REGEX_IMPORT);
 
         for (const match of matches) {

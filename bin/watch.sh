@@ -10,7 +10,7 @@ if ! [[ "${0%/*}" == "" ]]; then
 fi
 
 function main() {
-    local INOTIF_REGEX='^([A-Za-z0-9\.\-_ \/]+)\/ ([A-Z_,]+) ([A-Za-z0-9\.\-_ ]+\.([A-Za-z0-9]+))$'
+    local INOTIF_REGEX='^(.+\/)\s([A-Z_,]+)\s(.+\.([A-Za-z0-9]{1,5}))$'
 
     local ASSET_DIR="../assets"
     local CSS_DIR="$ASSET_DIR/css"
@@ -26,8 +26,11 @@ function main() {
 
     while INOTIF_OUT=`inotifywait -qr -e modify -e move -e create -e delete $ASSET_DIR`; do
         if ! [[ $INOTIF_OUT =~ $INOTIF_REGEX ]]; then
+            echo Regex miss: "$INOTIF_OUT"
             continue
         fi
+
+        echo Regex hit: "$INOTIF_OUT"
 
         case ${BASH_REMATCH[1]} in
 
