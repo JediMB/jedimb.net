@@ -15,7 +15,7 @@ class ConfigurationDTO {
         $this->id = $input['id'];
         $this->name = trim($input['name']);
 
-        $value = $input['value'];
+        $value = $input['value'] ?? null;
         $this->value = is_null($value)
             ? null
             : (
