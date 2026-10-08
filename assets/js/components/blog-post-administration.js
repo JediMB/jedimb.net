@@ -1,4 +1,4 @@
-import PaginationComponent from "/js/components/pagination/pagination.module.js";
+import PaginationComponent from "/js/components/pagination.js";
 import MarkupConstants from "/js/constants/markup-constants.js";
 import BlogPost from "/js/models/blog/blog-post.model.js";
 import blogPostService from "/js/services/blog-post.service.js";

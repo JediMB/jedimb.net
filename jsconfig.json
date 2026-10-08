@@ -4,8 +4,7 @@
         "target": "ES2022",
         "baseUrl": ".",
         "paths": {
-            "/js/*": ["./www/js/*"],
-            "/js/components/*": ["./www/components/*"]
+            "/js/*": ["./assets/js/*"],
         },
         "noImplicitAny": true
     },

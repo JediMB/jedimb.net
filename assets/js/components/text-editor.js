@@ -1,5 +1,5 @@
-import * as c from "/js/constants/editor-constants.js";
-import * as p from "/js/utilities/paste.utility.js";
+import { containerTags, containerTagsAndLabels, defaultBehaviorKeys, elementsWithOptions, regexDisallowedAttributes, regexIndentations, textAlignAttributes, textContentTags } from "/js/constants/editor-constants.js";
+import { fillFirstContainer, fillLastContainer, fillRemainingContainers, splitIntoContainerRows } from "/js/utilities/paste.utility.js";
 import { fillSelect } from "/js/utilities/form.utility.js";
 import Gallery from "/js/models/image-gallery/gallery.model.js";
 import Image from "/js/models/image-gallery/image.model.js";
@@ -71,7 +71,7 @@ export default class TextEditorComponent extends HTMLElement {
 
         document.addEventListener('selectionchange', this.#onSelectionChange);
 
-        fillSelect(this.#blockSelector, c.containerTagsAndLabels);
+        fillSelect(this.#blockSelector, containerTagsAndLabels);
 
         this.#blockSelector.addEventListener('change', event => {
             event.stopPropagation();
@@ -122,7 +122,7 @@ export default class TextEditorComponent extends HTMLElement {
                 return;
 
             const element = event.target;
-            const options = c.elementsWithOptions[element.localName];
+            const options = elementsWithOptions[element.localName];
             const isMatch = !!options;
 
             this.#optionsElement = null;
@@ -605,7 +605,7 @@ export default class TextEditorComponent extends HTMLElement {
 
             const tag = rootChild.previousSibling?.localName
                 ?? rootChild.nextSibling?.localName
-                ?? c.containerTags[0];
+                ?? containerTags[0];
 
             const newElement = document.createElement(tag);
             this.#textBox.insertBefore(newElement, rootChild);
@@ -694,7 +694,7 @@ export default class TextEditorComponent extends HTMLElement {
         if (!tagName)
             tagName = this.#blockSelector.value
                 ? this.#blockSelector.value
-                : c.containerTags[0];
+                : containerTags[0];
 
         if (!childNode || childNode === textBox) {
             const newElement = document.createElement(tagName);
@@ -731,7 +731,7 @@ export default class TextEditorComponent extends HTMLElement {
         if (!doFormat)
             return htmlOutput;
 
-        for (const tag of c.containerTags)
+        for (const tag of containerTags)
             htmlOutput = htmlOutput.replaceAll(`><${tag}>`, `>\r\n<${tag}>`);
 
         return htmlOutput.replaceAll('><!--', '>\r\n<!--');
@@ -858,7 +858,7 @@ export default class TextEditorComponent extends HTMLElement {
      */
     #insertContentElement(tagInfo, selectionData) {
         selectionData ??= new SelectionData(window.getSelection());
-        const isTextElement = c.textContentTags.some(t => t === tagInfo.name);
+        const isTextElement = textContentTags.some(t => t === tagInfo.name);
 
         const element = document.createElement(tagInfo.name);
 
@@ -932,7 +932,7 @@ export default class TextEditorComponent extends HTMLElement {
      * @returns {boolean}
      */
     #isBlockType(tagName) {
-        return !!c.containerTags.find(tag => tag === tagName);
+        return !!containerTags.find(tag => tag === tagName);
     }
 
     /**
@@ -976,7 +976,7 @@ export default class TextEditorComponent extends HTMLElement {
         const selectedTextNodes = this.#getTextNodesFromSelection(this.#latestSelection);
 
         if (selectedTextNodes.length === 0) {
-            [this.#blockSelector.value] = c.containerTags;
+            [this.#blockSelector.value] = containerTags;
             this.#blockAttributeButtons.forEach(b => b.classList.remove('highlight'));
         }
         else {
@@ -1079,14 +1079,14 @@ export default class TextEditorComponent extends HTMLElement {
             return;
         }
 
-        text = text.replaceAll(c.regexDisallowedAttributes, '')
-            .replaceAll(c.regexIndentations, '')
-            .replaceAll(c.regexDisallowedElements, '');
+        text = text.replaceAll(regexDisallowedAttributes, '')
+            .replaceAll(regexIndentations, '')
+            .replaceAll(regexDisallowedElements, '');
 
-        const textRows = p.splitIntoContainerRows(text);
+        const textRows = splitIntoContainerRows(text);
 
         if (!textRows[0].tag || textRows[0].tag === currentBlockTag)
-            p.fillFirstContainer(textRows, node, offset);
+            fillFirstContainer(textRows, node, offset);
 
         if (textRows.length === 0)
             return;
@@ -1096,9 +1096,9 @@ export default class TextEditorComponent extends HTMLElement {
 
         const lastTag = textRows[textRows.length - 1].tag;
         if (!lastTag || lastTag === currentBlockTag)
-            p.fillLastContainer(textRows, lastContainer);
+            fillLastContainer(textRows, lastContainer);
 
-        p.fillRemainingContainers(textRows, lastContainer, originalLength);
+        fillRemainingContainers(textRows, lastContainer, originalLength);
     }
 
     /**
@@ -1201,7 +1201,7 @@ export default class TextEditorComponent extends HTMLElement {
         }
         this.#undo.saveData(textBox, selectionData);
 
-        if (c.defaultBehaviorKeys.some(k => k === keyUpper))
+        if (defaultBehaviorKeys.some(k => k === keyUpper))
             return;
 
         if (!this.#hasKeyMods(event, TextEditorComponent.#keyMods.ctrl))
@@ -1251,7 +1251,7 @@ export default class TextEditorComponent extends HTMLElement {
             textNodes.map(node => this.#getBlockElement(node))
         )];
 
-        const isAlign = c.textAlignAttributes.includes(attribute);
+        const isAlign = textAlignAttributes.includes(attribute);
 
         for (const block of blockElements) {
             const hasAttribute = block.hasAttribute(attribute);
@@ -1262,7 +1262,7 @@ export default class TextEditorComponent extends HTMLElement {
             }
 
             if (isAlign) {
-                c.textAlignAttributes.forEach(
+                textAlignAttributes.forEach(
                     attr => block.toggleAttribute(attr, attr === attribute)
                 );
                 continue;

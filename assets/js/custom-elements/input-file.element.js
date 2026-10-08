@@ -1,4 +1,6 @@
-export class InputFileElement extends HTMLElement {
+export default InputFileElement;
+
+class InputFileElement extends HTMLElement {
     /** @type {InputFileElement} */
     #self;
     #buttonAttributes = [ 'title' ];

@@ -46,7 +46,7 @@ $links = !empty($links);
     <link rel="icon" type="image/x-icon" href="/favicon.svg" />
     
     <script type="text/javascript" src="/js/purify.min.js"></script>
-    <script type="module" src="/js/default.js"></script>
+    <script type="module" src="/js/script.js"></script>
 </head>
 <body>
     <content-container class="mb-3 <?= $links ? 'grid-cols-sidebar-right' : null ?>">

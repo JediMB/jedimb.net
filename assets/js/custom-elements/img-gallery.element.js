@@ -2,9 +2,11 @@ import { imageGalleryPath } from "/js/constants/meta-constants.js";
 import fullscreenImage from "/js/custom-elements/fullscreen-image.element.js";
 import imageGalleryService from "/js/services/image-gallery.service.js";
 
+export default ImgGalleryElement;
+
 const imgGalleryTag = 'img-gallery';
 
-export class ImgGalleryElement extends HTMLElement {
+class ImgGalleryElement extends HTMLElement {
     static observedAttributes = [
         'gallery-id',
         'aspect-ratio',

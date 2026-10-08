@@ -1,4 +1,4 @@
-import { TextEditorComponent } from "/js/components/text-editor/text-editor.module.js";
+import { TextEditorComponent } from "/js/components/text-editor.js";
 import BlogPost from "/js/models/blog/blog-post.model.js";
 import Emitter from "/js/utilities/emitter.js";
 

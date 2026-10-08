@@ -2,9 +2,11 @@ import { imageGalleryPath } from "/js/constants/meta-constants.js";
 import fullscreenImage from "/js/custom-elements/fullscreen-image.element.js";
 import imageGalleryService from "/js/services/image-gallery.service.js";
 
+export default ImgWrapperElement;
+
 const imgWrapperTag = 'img-wrapper';
 
-export class ImgWrapperElement extends HTMLElement {
+class ImgWrapperElement extends HTMLElement {
     static observedAttributes = [
         'image-id',
         'aspect-ratio',

@@ -1,6 +1,6 @@
 import configurationApiService from "/js/services/api/configuration-api.service.js";
-import configField from "/js/components/admin/site-configuration/config-field/config-field.module.js";
-import configCSV from "/js/components/admin/site-configuration/config-csv/config-csv.module.js";
+import configField from "/js/components/non-elemental/config-field.js";
+import configCSV from "/js/components/non-elemental/config-csv.js";
 
 class SiteConfiguration {
     #configApiService;
@@ -10,6 +10,10 @@ class SiteConfiguration {
     constructor() {
         this.#configApiService = configurationApiService;
         const component = document.querySelector('site-configuration-component');
+
+        // TODO: This should be a custom element so its code doesn't try to execute when it doesn't exist
+        if (!component)
+            return;
 
         const form = component.querySelector('form');
         const fieldset = form.querySelector('fieldset');

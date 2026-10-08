@@ -1,4 +1,4 @@
-import BlogFormComponent from "/js/components/blog/blog-form/blog-form.module.js";
+import BlogFormComponent from "/js/components/blog-form.js";
 import BlogPostDTO from "/js/models/blog/blog-post.dto.model.js";
 import blogPostService from "/js/services/blog-post.service.js";
 import DateTimeElement from "/js/custom-elements/date-time.element.js";
