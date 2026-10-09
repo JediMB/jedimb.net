@@ -100,7 +100,7 @@ class RoutingService extends Singleton {
         
         if ($this->getAssettMatch()) {
             if ($this->isForbidden)
-                $this->servePHP(new Page(PageType::Forbidden, $this->requestPath));
+                $this->serveForbidden();
 
             return false;
         }
@@ -108,10 +108,10 @@ class RoutingService extends Singleton {
         $realPath = $this->getPHPMatch();
 
         if (!$realPath)
-            $this->servePHP(new Page(PageType::NotFound, $this->requestPath));
+            $this->serveNotFound();
 
         if ($this->isForbidden)
-            $this->servePHP(new Page(PageType::Forbidden, $this->requestPath));
+            $this->serveForbidden();
 
         $this->servePHP(new Page(PageType::PHP, $this->requestPath, $this->pageNumber, $realPath));
         
@@ -160,12 +160,11 @@ class RoutingService extends Singleton {
             $page->content = $blogPost->contentShort . $blogPost->contentRest;
             $page->createdOn = $blogPost->createdOn;
             $page->modifiedOn = $blogPost->modifiedOn;
-        }
-        else {
-            $page = new Page(PageType::NotFound, $path);
+
+            $this->servePHP($page);
         }
 
-        $this->servePHP($page);
+        $this->serveNotFound();
     }
 
     private function handleHome() {
@@ -215,10 +214,7 @@ class RoutingService extends Singleton {
 
         foreach (INVALID_USER_AGENTS as $botAgent)
             if (strpos($httpUserAgent, $botAgent) !== false)
-                $this->servePHP(new Page(
-                    PageType::NotFound,
-                    $this->requestPath
-                ));
+                $this->serveNotFound();
     }
 
     private function separatePageNumber() {
@@ -254,6 +250,14 @@ class RoutingService extends Singleton {
 
         echo json_encode($result);
         exit;
+    }
+
+    public function serveForbidden() {
+        $this->servePHP(new Page(PageType::Forbidden, $this->requestPath));
+    }
+
+    public function serveNotFound() {
+        $this->servePHP(new Page(PageType::NotFound, $this->requestPath));
     }
 
     private function servePHP(Page $page) {

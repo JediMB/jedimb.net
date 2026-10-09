@@ -10,10 +10,12 @@ use App\Enums\UserRole;
 use App\Enums\UserPermission;
 use App\Models\DB\UserToken;
 use App\Models\App\User\User;
+use App\Services\RoutingService;
 use App\Services\UserService;
 use App\Utils\Response;
 
 class SessionService extends Singleton {
+    private RoutingService $routingService;
     private UserTokenDbService $tokenDbService;
     private UserService $userService;
     private array $userRolePermissions;
@@ -21,6 +23,7 @@ class SessionService extends Singleton {
     protected function __construct() {
         session_start();
 
+        $this->routingService = RoutingService::getInstance();
         $this->tokenDbService = UserTokenDbService::getInstance();
         $this->userService = UserService::getInstance();
 
@@ -41,10 +44,7 @@ class SessionService extends Singleton {
 
     public function enforcePermissions(array $permissionRequirements) {
         if (!$this->hasPermissions($permissionRequirements))
-            servePHP([
-                'header' => 'HTTP/1.1 403 Forbidden',
-                'pagePath' => PATH_ERROR403
-            ]);
+            $this->routingService->serveForbidden();
     }
 
     public function getInvalidSubmissionResponse(mixed $requestBody, array $permissions) : array|false {
