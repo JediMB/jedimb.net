@@ -48,6 +48,7 @@ import ImgWrapperElement from '/js/custom-elements/img-wrapper.element.js';
 import InputFileElement from '/js/custom-elements/input-file.element.js';
 
 /* Components */
+import AccountMenuComponent from '/js/components/account-menu-component.js';
 import BlogEditorComponent from './components/blog-editor.js';
 import BlogFormComponent from './components/blog-form.js';
 import BlogHeadComponent from './components/blog-head.js';
@@ -61,10 +62,8 @@ import TabsComponent from './components/tabs.js';
 import TextEditorComponent from './components/text-editor.js';
 
 /* Non-elemental components */
-import accountMenu from './components/non-elemental/account-menu.js';
 import configCSV from './components/non-elemental/config-csv.js';
 import configField from './components/non-elemental/config-field.js';
-import loginForm from './components/non-elemental/login-form.js';
 import mobileMenu from './components/non-elemental/mobile-menu.js';
 import siteConfiguration from './components/non-elemental/site-configuration.js';
 import subMenu from './components/non-elemental/sub-menu.js';

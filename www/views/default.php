@@ -2,6 +2,7 @@
 
 namespace Views;
 
+use App\Components\AccountMenuComponent;
 use App\Components\ContentTimestampsComponent;
 use App\Components\CopyrightComponent;
 use App\Components\MastodonCommentsComponent;
@@ -9,6 +10,7 @@ use App\Components\SocialLinksComponent;
 use App\Enums\PageType;
 use App\Models\App\Page;
 use App\Services\ConfigurationService;
+use App\Services\SessionService;
 use App\Services\SocialLinkService;
 use App\Utils\Asset;
 use App\Utils\Component;
@@ -16,6 +18,7 @@ use App\Utils\Component;
 /** @var Page $page */
 
 $config = ConfigurationService::getInstance(); /** @var ConfigurationService $config */
+$isLoggedIn = SessionService::getInstance()->isLoggedIn();
 
 list(
     $siteTitle, $siteTagline, $siteAuthor, $metaDescription, $metaKeywords) =
@@ -57,7 +60,7 @@ $links = !empty($links);
     <header>
         <header-container>
             <account-container>
-                <?php Component::include('account-menu') ?>
+                <?php new AccountMenuComponent($isLoggedIn) ?>
             </account-container>
             <header-links>
                 <home-wrapper>
