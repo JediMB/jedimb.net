@@ -10,6 +10,7 @@ use App\Database\UserTokenDbService;
 use App\Models\App\User\User;
 use App\Models\App\User\UserLoginResponse;
 use App\Services\ConfigurationService;
+use Exception;
 
 class UserService extends Singleton {
     private readonly UserDbService $userDbService;
@@ -25,10 +26,19 @@ class UserService extends Singleton {
     public function authenticateUser(string $username, #[SensitiveParameter] string $password) : int|false {
         $dbPassword = $this->userDbService->getUserPassword($username);
 
-        if ( !$dbPassword || !password_verify($password, $dbPassword->password) )
+        if (!$dbPassword)
             return false;
 
-        return $dbPassword->id;
+        if (password_verify($password, $dbPassword->password))
+            return $dbPassword->id;
+
+        if (password_get_info($dbPassword->password)['algo'])
+            return false;
+
+        if ($password !== $dbPassword->password)
+            return false;
+
+        return $this->setPassword($dbPassword->id, $password);
     }
 
     public function createUserToken(int $userId) : UserLoginResponse {
@@ -56,5 +66,22 @@ class UserService extends Singleton {
             return new User($user);
 
         return false;
+    }
+
+    private function setPassword(int $userId, #[SensitiveParameter] string $password) : int|false {
+        $hashedPassword = password_hash($password, PASSWORD_BCRYPT);
+
+        $dbPassword = $this->userDbService->setUserPassword($userId, $hashedPassword);
+
+        if (!$dbPassword)
+            return false;
+
+        if ($dbPassword->id !== $userId)
+            throw new Exception("Error: id returned on password change for userId $userId incorrect!");
+
+        if ($dbPassword->password !== $hashedPassword)
+            throw new Exception("Error: hashed password returned on password change for userId $userId incorrect!");
+
+        return $dbPassword->id;
     }
 }

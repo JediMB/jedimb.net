@@ -45,4 +45,24 @@ class UserDbService extends BaseDbService {
 
         return false;
     }
+
+    public function setUserPassword(int $userId, string $hashedPassword) : UserPassword|false {
+        try {
+            $userPassword = $this->dbService->selectFunction(
+                'update_user_password', [
+                    1 => [ 'value' => $userId, 'type' => PDO::PARAM_INT ],
+                    2 => [ 'value' => $hashedPassword, 'type' => PDO::PARAM_STR ]
+                ]
+            );
+
+            if ($userPassword)
+                return new UserPassword($userPassword);
+        }
+        catch (PDOException $e) {
+            $code = $e->getCode();
+            throw new Exception("Database error ($code): could not set new password for userId $userId");
+        }
+
+        return false;
+    }
 }
