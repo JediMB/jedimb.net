@@ -16,7 +16,7 @@ import UndoData from '/js/models/undo-data.model.js';
 import BlogPostSchedule from '/js/models/blog/blog-post-schedule.model.js';
 import BlogPostDTO from '/js/models/blog/blog-post.dto.model.js';
 import BlogPost from '/js/models/blog/blog-post.model.js';
-import Pagination from '/js/models/blog/pagination.model.js';
+import Pagination from './models/pagination.model.js';
 import GalleryImagesDTO from '/js/models/image-gallery/gallery-images.dto.model.js';
 import GalleryDTO from '/js/models/image-gallery/gallery.dto.model.js';
 import Gallery from '/js/models/image-gallery/gallery.model.js';

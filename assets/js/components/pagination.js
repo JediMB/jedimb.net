@@ -1,4 +1,4 @@
-import Pagination from "/js/models/blog/pagination.model.js";
+import Pagination from "/js/models/pagination.model.js";
 
 export default class PaginationComponent extends HTMLElement {
     #baseRoute;

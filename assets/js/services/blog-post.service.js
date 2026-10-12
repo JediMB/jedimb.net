@@ -2,7 +2,7 @@ import BlogPost from "/js/models/blog/blog-post.model.js";
 import BlogPostDTO from "/js/models/blog/blog-post.dto.model.js";
 import BlogPostSchedule from "/js/models/blog/blog-post-schedule.model.js";
 import Emitter from "/js/utilities/emitter.js";
-import Pagination from "/js/models/blog/pagination.model.js";
+import Pagination from "/js/models/pagination.model.js";
 
 import blogPostApiService from "/js/services/api/blog-post-api.service.js";
 

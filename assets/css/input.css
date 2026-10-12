@@ -69,6 +69,10 @@ a[disabled] {
     }
 }
 
+.margin-auto {
+    margin: auto;
+}
+
 *, ::before, ::after {
     --tw-border-spacing-x: 0;
     --tw-border-spacing-y: 0;
