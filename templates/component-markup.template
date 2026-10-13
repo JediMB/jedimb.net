@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-use App\Components\{pascal_name}Component;
+use App\Components{namespace}\{pascal_name}Component;
 
 /** @var {pascal_name}Component $data */
 

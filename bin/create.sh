@@ -177,7 +177,7 @@ function prepare() {
             dir_path+="/${split_name[$i]}"
         done
     fi
-
+    echo "$dir_path"
     if ! [ -d $dir_path ]; then
         mkdir $dir_path --parents --verbose
     fi
@@ -214,7 +214,7 @@ case $type in
         file_from_template $api_php_template_file "$dir_path/$base_name.php"
         ;;
     'c' | 'component')
-        prepare 'component' $components_php_dir false
+        prepare 'component' $components_php_dir true
         file_from_template $component_class_template_file "$dir_path/${pascal_name}Component.php"
         file_from_template $component_markup_template_file "$dir_path/${pascal_name}Component_template.php"
         # TODO: Function that makes sure that components directory and any necessary subdirectory exists
