@@ -1,4 +1,4 @@
-import PaginationComponent from "/js/components/pagination.js";
+import PageSelectorComponent from "/js/components/page-selector-component.js";
 import MarkupConstants from "/js/constants/markup-constants.js";
 import BlogPost from "/js/models/blog/blog-post.model.js";
 import blogPostService from "/js/services/blog-post.service.js";
@@ -8,7 +8,7 @@ export default class BlogPostAdministrationComponent extends HTMLElement {
     /** @type {{start: HTMLSpanElement, end: HTMLSpanElement, total: HTMLSpanElement}} */ #itemCounters = {};
     /** @type {HTMLUListElement} */ #list;
     /** @type {HTMLTemplateElement} */ #template;
-    /** @type {PaginationComponent} */ #pagination;
+    /** @type {PageSelectorComponent} */ #pageSelector;
 
     /** @type {{published: '0'|'1'|'2', visibility: '0'|'1'|'2'}} */ #statuses = {};
 
@@ -23,8 +23,8 @@ export default class BlogPostAdministrationComponent extends HTMLElement {
 
         this.#list = this.querySelector('#admin__blog-post__list');
         this.#template = this.querySelector('#admin__blog-post__template');
-        this.#pagination = this.querySelector('#admin__blog-post__pagination');
-
+        this.#pageSelector = this.querySelector(customElements.getName(PageSelectorComponent));
+        
         this.#statusForm.addEventListener('change', event => {
             this.#statuses[event.target.name] = event.target.value;
 
@@ -34,17 +34,17 @@ export default class BlogPostAdministrationComponent extends HTMLElement {
         const actionButtons = this.#list.querySelectorAll('[post-action]');
         this.#assignButtonActions(actionButtons);
 
-        this.#pagination.onDataUpdate = data => {
+        this.#pageSelector.onDataUpdate = data => {
             const counters = this.#itemCounters;
             counters.start.textContent = data.offset + 1;
             counters.end.textContent = data.offset + Number(this.#list.childElementCount);
             counters.total.textContent = data.itemCount;
         };
 
-        this.#pagination.onPageChange = (page, updateHistory = true, next = undefined) => {
+        this.#pageSelector.onPageChange = (page, doUpdateHistory = true, next = undefined) => {
             this.#list.innerHTML = `<li>${MarkupConstants.loadingSpinner}</li>`;
 
-            this.#loadPageContent(page, updateHistory, next);
+            this.#loadPageContent(page, doUpdateHistory, next);
         };
     }
 
@@ -237,15 +237,15 @@ export default class BlogPostAdministrationComponent extends HTMLElement {
 
     /**
      * @param {number} page 
-     * @param {boolean} updateHistory
+     * @param {boolean} doUpdateHistory
      * @param {() =>  void} next 
      */
-    #loadPageContent(page = this.#pagination.getData().page, updateHistory = true, next = undefined) {
-        blogPostService.getBlogPostsAdminData(page, this.#pagination.getData().pageSize, this.#statuses,
+    #loadPageContent(page = this.#pageSelector.getData().page, doUpdateHistory = true, next = undefined) {
+        blogPostService.getBlogPostsAdminData(page, this.#pageSelector.getData().pageSize, this.#statuses,
             (blogPosts, paginationData) => {
                 const templateItems = blogPosts.map(post => this.#createBlogPostItem(post));
                 this.#list.replaceChildren(...templateItems);
-                this.#pagination.setData(paginationData, updateHistory);
+                this.#pageSelector.setData(paginationData, doUpdateHistory);
                 next?.call(this);
             }
         );

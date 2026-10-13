@@ -2,6 +2,7 @@
 
 namespace Components\Admin;
 
+use App\Components\PageSelectorComponent;
 use App\Enums\Published;
 use App\Enums\Visibility;
 use App\Models\App\Page;
@@ -59,7 +60,4 @@ Component::renderCSS();
     <?php Component::include('admin/blog-post', [ 'template' => true ]) ?>
 </template>
 
-<?php Component::include('pagination', [
-    'attributes' => [ 'id' => 'admin__blog-post__pagination'],
-    'data' => $pagination
-]);
+<?php new PageSelectorComponent($pagination) ?>

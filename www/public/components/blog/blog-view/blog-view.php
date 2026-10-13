@@ -4,6 +4,7 @@ namespace Components\Blog;
 
 use Exception;
 use App\Components\ContentTimestampsComponent;
+use App\Components\PageSelectorComponent;
 use App\Models\App\Pagination;
 use App\Models\DB\BlogPost;
 use App\Utils\Component;
@@ -182,7 +183,4 @@ Component::renderOnce();
     </article>
 </template>
 
-<?php Component::include('pagination', [
-    'attributes' => [ 'id' => 'blog__pagination' ],
-    'data' => $pagination
-]) ?>
+<?php new PageSelectorComponent($pagination) ?>

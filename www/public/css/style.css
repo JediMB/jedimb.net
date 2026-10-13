@@ -706,6 +706,47 @@ account-menu {
     }
 }
 
+
+/* IMPORT: components/page-selector-component.css */
+
+.page-selector__list {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    gap: var(--size-xs);
+}
+
+.page-selector__link {
+    display: inline-block;
+    min-width: 3ch;
+    border-radius: var(--size-xs);
+    text-align: center;
+    vertical-align: middle;
+    transition:
+        background-color 1s,
+        transform 1s,
+        font-weight 1s,
+        color 1s;
+
+    &:hover,
+    &:focus-visible {
+        background-color: var(--clr-primary-50);
+    }
+
+    &.active {
+        pointer-events: none;
+        background-color: var(--clr-primary);
+        transform: scale(1.1);
+        font-weight: 700;
+        color: black;
+    }
+
+    &[disabled] {
+        opacity: 0.75;
+    }
+}
+
 /* Custom elements */
 fullscreen-image,
 img-gallery,
@@ -767,6 +808,10 @@ a[disabled] {
     &:not(:hover) .hovered {
         display: none;
     }
+}
+
+.margin-auto {
+    margin: auto;
 }
 
 *, ::before, ::after {

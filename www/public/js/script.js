@@ -327,7 +327,7 @@ class BlogPost {
 }
 
 
-/* IMPORT: /js/models/blog/pagination.model.js */
+/* IMPORT: ./models/pagination.model.js */
 
 class Pagination {
     constructor({page, pageSize, offset, itemCount, pageCount}) {
@@ -817,7 +817,7 @@ class Listener {
 }
 
 
-/* IMPORT: /js/models/blog/pagination.model.js */
+/* IMPORT: /js/models/pagination.model.js */
 
 
 
@@ -847,7 +847,7 @@ class Listener {
 
 
 
-/* IMPORT: /js/models/blog/pagination.model.js */
+/* IMPORT: /js/models/pagination.model.js */
 
 
 
@@ -5820,57 +5820,58 @@ customElements.define('blog-head-component', BlogHeadComponent);
 
 
 
-/* IMPORT: /js/components/pagination.js */
+/* IMPORT: /js/components/page-selector-component.js */
 
 
 
-/* IMPORT: /js/models/blog/pagination.model.js */
+/* IMPORT: /js/models/pagination.model.js */
 
 
 
-class PaginationComponent extends HTMLElement {
+class PageSelectorComponent extends HTMLElement {
+    static PAGE_CHANGE_DELAY = 1000;
+
     #baseRoute;
     #data;
-    #pageChangeDelay = 1000;
-    #pageChangeId = 0;
     #startPage;
+    #pageChangeId = 0;
 
-    /** @type {{nav: HTMLUListElement, pages: HTMLUListElement}} */ #lists = {};
-    /** @type {{active: HTMLAnchorElement, first: HTMLAnchorElement, prev: HTMLAnchorElement, next: HTMLAnchorElement, last: HTMLAnchorElement}} */ #links = {};
+    /** @type {PageLists} */ #lists = {};
+    /** @type {PageLinks} */ #links = {};
 
     /** @type {(data: Pagination) => void} */ #onDataUpdate;
-    /** @type {(page: number, updateHistory: boolean, next: () => void) => void} */ #onPageChange;
+    /** @type {onPageChange} */ #onPageChange;
 
     constructor() {
         super();
 
         this.#baseRoute = this.getAttribute('base-route');
-        
+
         const data = this.dataset.csv.split(',');
-        const page = Number(data[0]);
+        this.#startPage = Number(data[0]);
 
         this.#data = new Pagination({
-            page: page,
+            page: this.#startPage,
             pageSize: Number(data[1]),
             offset: Number(data[2]),
             itemCount: Number(data[3]),
             pageCount: Number(data[4])
+
         });
-        
-        this.#startPage = page;
     }
 
     connectedCallback() {
-        const cId = Number(this.dataset.id);
-        const navList = this.querySelector('ul');
-        this.#lists.nav = navList;
-        this.#lists.pages = navList.querySelector(`#pagination__pages-${cId}`);
+        const navList = this.querySelector('[page-nav]');
+        const pageList = navList.querySelector('[page-list]');
 
-        this.#links.first = navList.querySelector(`#pagination__first-${cId}`);
-        this.#links.prev = navList.querySelector(`#pagination__previous-${cId}`);
-        this.#links.next = navList.querySelector(`#pagination__next-${cId}`);
-        this.#links.last = navList.querySelector(`#pagination__last-${cId}`);
-        this.#links.active = navList.querySelector('.active');
+        this.#lists.nav = navList;
+        this.#lists.pages = pageList;
+
+        this.#links.first = navList.querySelector('[page-first]');
+        this.#links.prev = navList.querySelector('[page-prev]');
+        this.#links.next = navList.querySelector('[page-next]');
+        this.#links.last = navList.querySelector('[page-last]');
+        this.#links.active = pageList.querySelector('.active');
 
         this.#links.first.addEventListener('click', event => {
             event.preventDefault();
@@ -5910,6 +5911,7 @@ class PaginationComponent extends HTMLElement {
             if (page !== this.#data.page)
                 this.#gotoPage(page, false);
         });
+
     }
 
     connectedMoveCallback() {}
@@ -5922,46 +5924,54 @@ class PaginationComponent extends HTMLElement {
 
     /**
      * @param {Pagination} value 
-     * @param {boolean} [updateHistory=true]  */
-    setData(value, updateHistory = true) {
-        if (updateHistory)
-            history.pushState(value.page, null, `${this.#baseRoute}/${value.page}`);
+     * @param {boolean} doUpdateHistory 
+     */
+    setData(value, doUpdateHistory = true) {
+        const page = value.page;
 
-        const isNewPage = value.page !== this.#data.page;
+        if (doUpdateHistory)
+            history.pushState(page, null, `${this.#baseRoute}/${page}`);
+
+        const isNewPage = page !== this.#data.page;
         const hasNewPageCount = value.pageCount !== this.#data.pageCount;
-
         this.#data = new Pagination(value);
 
         if (isNewPage || hasNewPageCount)
-            this.#refreshPagination();
+            this.#refreshPageList();
 
         this.#onDataUpdate?.call(this, this.getData());
     }
 
-    /** Lets the page using the pagination module update itself in response to a pagination data update
-     * @param {(data: Pagination) => void} callbackFn  */
+    /** Lets the page using the page selector component update itself in response to a pagination data update
+     * @param {(data: Pagination) => void} callbackFn 
+    */
     set onDataUpdate(callbackFn) {
-        if (typeof callbackFn === 'function')
-            this.#onDataUpdate = callbackFn;
+        if (typeof callbackFn !== 'function')
+            throw new Error('onDataUpdate argument is not a function');
+        
+        this.#onDataUpdate = callbackFn;
     }
 
-    /** @param {(page: number, updateHistory: boolean, next: () => void) => void} callbackFn  */
+    /** @param {onPageChange} callbackFn  */
     set onPageChange(callbackFn) {
-        if (typeof callbackFn === 'function')
-            this.#onPageChange = callbackFn;
+        if (typeof callbackFn !== 'function')
+            throw new Error('onPageChange argument is not a function');
+
+        this.#onPageChange = callbackFn;
     }
 
     /**
      * @param {number} page 
      * @returns {HTMLLIElement}
      */
-    #createPaginationItem(page) {
+    #createPageListItem(page) {
         const a = document.createElement('a');
 
         a.href = `${this.#baseRoute}/${page}`;
         a.setAttribute('onclick', 'return false;');
         a.title = `Page ${page}`;
         a.setAttribute('target-page', `${page}`);
+        a.classList.add('page-selector__link');
         a.textContent = `${page}`;
         a.addEventListener('click', event => {
             event.preventDefault();
@@ -5975,14 +5985,22 @@ class PaginationComponent extends HTMLElement {
         return li;
     }
 
-    /** @param {boolean} gotoNext  */
-    #gotoNeighboringPage(gotoNext) {
+    /**
+     * @param {HTMLLIElement} listItem 
+     * @returns {number}
+     */
+    #getPageNumber(listItem) {
+        return Number(listItem.firstElementChild.getAttribute('target-page'));
+    }
+
+    /** @param {boolean} directionForward  */
+    #gotoNeighboringPage(directionForward) {
         clearTimeout(this.#pageChangeId);
 
-        const neighbor = gotoNext
+        const neighbor = directionForward
             ? this.#links.active.parentElement.nextElementSibling
             : this.#links.active.parentElement.previousElementSibling;
-        
+
         if (!neighbor)
             return false;
 
@@ -5990,32 +6008,29 @@ class PaginationComponent extends HTMLElement {
         const targetPage = Number(newActive.getAttribute('target-page'));
         const pageCount = this.#data.pageCount;
 
-        this.#links.first.toggleAttribute('disabled', targetPage < 3);
-        this.#links.prev.toggleAttribute('disabled', targetPage === 1);
-        this.#links.next.toggleAttribute('disabled', targetPage === pageCount);
-        this.#links.last.toggleAttribute('disabled', targetPage > pageCount - 2);
+        this.#toggleLinksDisabledStatus(targetPage, pageCount);
 
         this.#links.active.classList.remove('active');
         newActive.classList.add('active');
         const isCentered = pageCount >= 5 && this.#lists.pages.children.item(2).firstElementChild === this.#links.active;
         this.#links.active = newActive;
 
-        if (gotoNext) {
-            const highestValue = Number(this.#lists.pages.lastElementChild.firstElementChild.getAttribute('target-page'));
+        if (directionForward) {
+            const highestValue = this.#getPageNumber(this.#lists.pages.lastElementChild);
 
             if (highestValue < pageCount && isCentered) {
                 this.#lists.pages.append(
-                    this.#createPaginationItem(highestValue + 1)
+                    this.#createPageListItem(highestValue + 1)
                 );
-                this.#lists.pages.firstElementChild.remove();
+                this.#lists.pages.firstElementChild();
             }
         }
         else {
-            const lowestValue = Number(this.#lists.pages.firstElementChild.firstElementChild.getAttribute('target-page'));
+            const lowestValue = this.#getPageNumber(this.#lists.pages.firstElementChild);
 
             if (lowestValue > 1 && isCentered) {
                 this.#lists.pages.prepend(
-                    this.#createPaginationItem(lowestValue - 1)
+                    this.#createPageListItem(lowestValue - 1)
                 );
                 this.#lists.pages.lastElementChild.remove();
             }
@@ -6023,36 +6038,28 @@ class PaginationComponent extends HTMLElement {
 
         this.#pageChangeId = setTimeout(
             () => this.#onPageChange?.call(this, targetPage),
-            this.#pageChangeDelay
+            PageSelectorComponent.PAGE_CHANGE_DELAY
         );
     }
 
     /**
      * @param {number} targetPage 
-     * @param {boolean} updateHistory 
+     * @param {boolean} doUpdateHistory 
      */
-    async #gotoPage(targetPage, updateHistory = true) {
+    async #gotoPage(targetPage, doUpdateHistory = true) {
         clearTimeout(this.#pageChangeId);
-
         this.#lists.nav.toggleAttribute('disabled', true);
+        
+        await this.#scrollPageList(targetPage);
 
-        const currentPage = Number(this.#links.active.getAttribute('target-page'));
+        this.#toggleLinksDisabledStatus(targetPage, this.#data.pageCount);
 
-        await this.#scrollPagination(targetPage, currentPage);
-
-        const pageCount = this.#data.pageCount;
-
-        this.#links.first.toggleAttribute('disabled', targetPage < 3);
-        this.#links.prev.toggleAttribute('disabled', targetPage === 1);
-        this.#links.next.toggleAttribute('disabled', targetPage === pageCount);
-        this.#links.last.toggleAttribute('disabled', targetPage > pageCount - 2);
-
-        this.#onPageChange?.call(this, targetPage, updateHistory,
+        this.#onPageChange?.call(this, targetPage, doUpdateHistory,
             () => this.#lists.nav.removeAttribute('disabled')
         );
     }
 
-    async #refreshPagination() {
+    async #refreshPageList() {
         const currentPage = this.#data.page;
         const pageCount = this.#data.pageCount;
         const pageSet = new Set([ currentPage ]);
@@ -6067,7 +6074,6 @@ class PaginationComponent extends HTMLElement {
             pageSet.add(nextPage);
 
             const newSize = pageSet.size;
-
             if (newSize === oldSize || newSize >= 5)
                 break;
         }
@@ -6075,10 +6081,10 @@ class PaginationComponent extends HTMLElement {
         const pages = Array.from(pageSet);
         pages.sort();
 
-        const paginationItems = [];
+        const pageListItems = [];
         for (const page of pages) {
-            const newItem = this.#createPaginationItem(page);
-            paginationItems.push(newItem);
+            const newItem = this.#createPageListItem(page);
+            pageListItems.push(newItem);
 
             if (page === currentPage) {
                 this.#links.active = newItem.firstElementChild;
@@ -6086,7 +6092,7 @@ class PaginationComponent extends HTMLElement {
             }
         }
 
-        this.#lists.pages.replaceChildren(...paginationItems);
+        this.#lists.pages.replaceChildren(...pageListItems);
     }
 
     /**
@@ -6094,23 +6100,25 @@ class PaginationComponent extends HTMLElement {
      * @param {number} startPage 
      * @returns {Promise<void>}
      */
-    async #scrollPagination(targetPage, startPage) {
+    async #scrollPageList(targetPage) {
+        const startPage = Number(this.#links.active.getAttribute('target-page'));
+
         if (targetPage === startPage)
             return;
 
         const delayFor = (ms) => new Promise(res => setTimeout(res, ms));
         const time = Math.ceil(1000 / Math.abs(targetPage - startPage));
 
-        const pageList = this.#lists.pages;
-
         const scrollForward = targetPage > startPage;
+        const pageList = this.#lists.pages;
         const pageCount = this.#data.pageCount;
+
         let currentPage = startPage;
-        
+
         while (
-            ( scrollForward && currentPage < targetPage )
+            (scrollForward && currentPage < targetPage)
             ||
-            ( !scrollForward && currentPage > targetPage )
+            (!scrollForward && currentPage > targetPage)
         ) {
             if (currentPage !== startPage)
                 await delayFor(time);
@@ -6131,35 +6139,67 @@ class PaginationComponent extends HTMLElement {
             if (pageCount < 6)
                 continue;
 
-            const middlePageNumber = Number(pageList.children.item(2).firstElementChild.getAttribute('target-page'));
-            if (scrollForward && currentPage <= middlePageNumber)
-                continue;
-            if (!scrollForward && currentPage >= middlePageNumber)
+            const middlePageNumber = this.#getPageNumber(pageList.children.item(2));
+
+            if (middlePageNumber === currentPage || scrollForward === currentPage < middlePageNumber)
                 continue;
 
-            const edgeNumber = scrollForward
-                ? Number(pageList.lastElementChild.firstElementChild.getAttribute('target-page'))
-                : Number(pageList.firstElementChild.firstElementChild.getAttribute('target-page'));
+            const edgeNumber = this.#getPageNumber(
+                scrollForward ? pageList.lastElementChild : pageList.firstElementChild
+            );
 
             if (edgeNumber === (scrollForward ? pageCount : 1))
                 continue;
 
             if (scrollForward) {
-                const newItem = this.#createPaginationItem(edgeNumber + 1);
-                pageList.append(newItem);
+                pageList.append(this.#createPageListItem(edgeNumber + 1));
                 pageList.firstElementChild.remove();
             }
             else {
-                const newItem = this.#createPaginationItem(edgeNumber - 1);
-                pageList.prepend(newItem);
+                pageList.prepend(this.#createPageListItem(edgeNumber - 1));
                 pageList.lastElementChild.remove();
             }
         }
     }
+
+    /**
+     *  @param {number} targetPage 
+     *  @param {number} pageCount 
+     */
+    #toggleLinksDisabledStatus(targetPage, pageCount) {
+        this.#links.first.toggleAttribute('disabled', targetPage < 3);
+        this.#links.prev.toggleAttribute('disabled', targetPage === 1);
+        this.#links.next.toggleAttribute('disabled', targetPage === pageCount);
+        this.#links.last.toggleAttribute('disabled', targetPage > pageCount - 2);
+    }
 }
 
-customElements.define('pagination-component', PaginationComponent);
+customElements.define('page-selector-component', PageSelectorComponent);
 
+/**
+ * @typedef PageLists
+ * @type {object}
+ * @property {HTMLUListElement} nav
+ * @property {HTMLUListElement} pages
+ */
+
+/**
+ * @typedef PageLinks
+ * @type {object}
+ * @property {HTMLAnchorElement} active
+ * @property {HTMLAnchorElement} first
+ * @property {HTMLAnchorElement} prev
+ * @property {HTMLAnchorElement} next
+ * @property {HTMLAnchorElement} last
+ */
+
+/**
+ * @callback onPageChange
+ * @param {number} page
+ * @param {boolean} doUpdateHistory
+ * @param {() => void} next
+ * @returns {void}
+ */
 
 
 /* IMPORT: /js/constants/markup-constants.js */
@@ -6181,7 +6221,7 @@ class BlogPostAdministrationComponent extends HTMLElement {
     /** @type {{start: HTMLSpanElement, end: HTMLSpanElement, total: HTMLSpanElement}} */ #itemCounters = {};
     /** @type {HTMLUListElement} */ #list;
     /** @type {HTMLTemplateElement} */ #template;
-    /** @type {PaginationComponent} */ #pagination;
+    /** @type {PageSelectorComponent} */ #pageSelector;
 
     /** @type {{published: '0'|'1'|'2', visibility: '0'|'1'|'2'}} */ #statuses = {};
 
@@ -6196,8 +6236,8 @@ class BlogPostAdministrationComponent extends HTMLElement {
 
         this.#list = this.querySelector('#admin__blog-post__list');
         this.#template = this.querySelector('#admin__blog-post__template');
-        this.#pagination = this.querySelector('#admin__blog-post__pagination');
-
+        this.#pageSelector = this.querySelector(customElements.getName(PageSelectorComponent));
+        
         this.#statusForm.addEventListener('change', event => {
             this.#statuses[event.target.name] = event.target.value;
 
@@ -6207,17 +6247,17 @@ class BlogPostAdministrationComponent extends HTMLElement {
         const actionButtons = this.#list.querySelectorAll('[post-action]');
         this.#assignButtonActions(actionButtons);
 
-        this.#pagination.onDataUpdate = data => {
+        this.#pageSelector.onDataUpdate = data => {
             const counters = this.#itemCounters;
             counters.start.textContent = data.offset + 1;
             counters.end.textContent = data.offset + Number(this.#list.childElementCount);
             counters.total.textContent = data.itemCount;
         };
 
-        this.#pagination.onPageChange = (page, updateHistory = true, next = undefined) => {
+        this.#pageSelector.onPageChange = (page, doUpdateHistory = true, next = undefined) => {
             this.#list.innerHTML = `<li>${MarkupConstants.loadingSpinner}</li>`;
 
-            this.#loadPageContent(page, updateHistory, next);
+            this.#loadPageContent(page, doUpdateHistory, next);
         };
     }
 
@@ -6410,15 +6450,15 @@ class BlogPostAdministrationComponent extends HTMLElement {
 
     /**
      * @param {number} page 
-     * @param {boolean} updateHistory
+     * @param {boolean} doUpdateHistory
      * @param {() =>  void} next 
      */
-    #loadPageContent(page = this.#pagination.getData().page, updateHistory = true, next = undefined) {
-        blogPostService.getBlogPostsAdminData(page, this.#pagination.getData().pageSize, this.#statuses,
+    #loadPageContent(page = this.#pageSelector.getData().page, doUpdateHistory = true, next = undefined) {
+        blogPostService.getBlogPostsAdminData(page, this.#pageSelector.getData().pageSize, this.#statuses,
             (blogPosts, paginationData) => {
                 const templateItems = blogPosts.map(post => this.#createBlogPostItem(post));
                 this.#list.replaceChildren(...templateItems);
-                this.#pagination.setData(paginationData, updateHistory);
+                this.#pageSelector.setData(paginationData, doUpdateHistory);
                 next?.call(this);
             }
         );
@@ -6433,7 +6473,7 @@ customElements.define('blog-post-administration-component', BlogPostAdministrati
 
 
 
-/* IMPORT: /js/components/pagination.js */
+/* IMPORT: /js/components/page-selector-component.js */
 
 
 
@@ -6470,7 +6510,7 @@ customElements.define('blog-post-administration-component', BlogPostAdministrati
 class BlogViewComponent extends HTMLElement {
     #editingPermissions = false;
 
-    /**@type {PaginationComponent} */ #pagination;
+    /**@type {PageSelectorComponent} */ #pageSelector;
 
     /** @type {HTMLSpanElement} */ #start;
     /** @type {HTMLSpanElement} */ #end;
@@ -6501,31 +6541,31 @@ class BlogViewComponent extends HTMLElement {
         this.#blogPosts = this.querySelector('blog-posts');
         this.#blogPostTemplate = this.querySelector('[blog-post-template]');
 
-        this.#pagination = this.querySelector('#blog__pagination');
+        this.#pageSelector = this.querySelector(customElements.getName(PageSelectorComponent));
 
         const actionButtons = this.#blogPosts.querySelectorAll('[post-action]');
         this.#assignButtonActions(actionButtons);
 
-        this.#pagination.onDataUpdate = data =>  {
+        this.#pageSelector.onDataUpdate = data =>  {
             this.#start.textContent = data.offset + 1;
             this.#end.textContent = data.offset + Number(this.#blogPosts.childElementCount);
             this.#total.textContent = data.itemCount;
         };
 
-        this.#pagination.onPageChange = (page, updateHistory = true, next = undefined) => {
+        this.#pageSelector.onPageChange = (page, doUpdateHistory = true, next = undefined) => {
             this.#blogPosts.innerHTML = MarkupConstants.loadingSpinner;
 
-            this.#loadPageContent(page, updateHistory, next);
+            this.#loadPageContent(page, doUpdateHistory, next);
         };
 
         blogPostService.subscription.subscribe({
             next: newBlogPost => {
-                const paginationData = this.#pagination.getData();
+                const paginationData = this.#pageSelector.getData();
                 paginationData.itemCount++;
 
                 if (paginationData.page !== 1) {
                     paginationData.offset++;
-                    this.#pagination.setData(paginationData, false);
+                    this.#pageSelector.setData(paginationData, false);
                     return;
                 }
                 
@@ -6538,7 +6578,7 @@ class BlogViewComponent extends HTMLElement {
                     paginationData.pageCount = Math.ceil(paginationData.itemCount / paginationData.pageSize);
                 }
 
-                this.#pagination.setData(paginationData, false);
+                this.#pageSelector.setData(paginationData, false);
             }
         });
     }
@@ -6685,11 +6725,11 @@ class BlogViewComponent extends HTMLElement {
 
     /**
      * @param {number} page 
-     * @param {boolean} updateHistory
+     * @param {boolean} doUpdateHistory
      * @param {() =>  void} next 
      */
-    #loadPageContent(page = this.#pagination.getData().page, updateHistory = true, next = undefined) {
-        blogPostService.getBlogPosts(page, this.#pagination.getData().pageSize,
+    #loadPageContent(page = this.#pageSelector.getData().page, doUpdateHistory = true, next = undefined) {
+        blogPostService.getBlogPosts(page, this.#pageSelector.getData().pageSize,
             (blogPosts, paginationData) => {
                 this.#blogPosts.innerText = '';
 
@@ -6699,7 +6739,7 @@ class BlogViewComponent extends HTMLElement {
                     );
                 }
 
-                this.#pagination.setData(paginationData, updateHistory);
+                this.#pageSelector.setData(paginationData, doUpdateHistory);
 
                 next?.call(this);
             }
@@ -7851,6 +7891,11 @@ class ModalPopupContainer extends HTMLElement {
     }
 }
 customElements.define('modal-popup-component', ModalPopupContainer);
+
+
+/* IMPORT: /js/components/page-selector-component.js */
+
+
 
 
 /* IMPORT: ./components/tabs.js */

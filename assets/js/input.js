@@ -58,6 +58,7 @@ import GalleryManagerComponent from './components/gallery-manager.js';
 import ImageGalleryComponent from './components/image-gallery.js';
 import ImageManagerComponent from './components/image-manager.js'
 import ModalPopupContainer from './components/modal-popup.js';
+import PageSelectorComponent from '/js/components/page-selector-component.js';
 import TabsComponent from './components/tabs.js';
 import TextEditorComponent from './components/text-editor.js';
 

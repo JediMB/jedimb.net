@@ -1,4 +1,4 @@
-import PaginationComponent from "/js/components/pagination.js";
+import PageSelectorComponent from "/js/components/page-selector-component.js";
 import BlogPost from "/js/models/blog/blog-post.model.js";
 import blogPostService from "/js/services/blog-post.service.js";
 import sessionService from "/js/services/session.service.js";
@@ -9,7 +9,7 @@ import MarkupConstants from "/js/constants/markup-constants.js";
 export default class BlogViewComponent extends HTMLElement {
     #editingPermissions = false;
 
-    /**@type {PaginationComponent} */ #pagination;
+    /**@type {PageSelectorComponent} */ #pageSelector;
 
     /** @type {HTMLSpanElement} */ #start;
     /** @type {HTMLSpanElement} */ #end;
@@ -40,31 +40,31 @@ export default class BlogViewComponent extends HTMLElement {
         this.#blogPosts = this.querySelector('blog-posts');
         this.#blogPostTemplate = this.querySelector('[blog-post-template]');
 
-        this.#pagination = this.querySelector('#blog__pagination');
+        this.#pageSelector = this.querySelector(customElements.getName(PageSelectorComponent));
 
         const actionButtons = this.#blogPosts.querySelectorAll('[post-action]');
         this.#assignButtonActions(actionButtons);
 
-        this.#pagination.onDataUpdate = data =>  {
+        this.#pageSelector.onDataUpdate = data =>  {
             this.#start.textContent = data.offset + 1;
             this.#end.textContent = data.offset + Number(this.#blogPosts.childElementCount);
             this.#total.textContent = data.itemCount;
         };
 
-        this.#pagination.onPageChange = (page, updateHistory = true, next = undefined) => {
+        this.#pageSelector.onPageChange = (page, doUpdateHistory = true, next = undefined) => {
             this.#blogPosts.innerHTML = MarkupConstants.loadingSpinner;
 
-            this.#loadPageContent(page, updateHistory, next);
+            this.#loadPageContent(page, doUpdateHistory, next);
         };
 
         blogPostService.subscription.subscribe({
             next: newBlogPost => {
-                const paginationData = this.#pagination.getData();
+                const paginationData = this.#pageSelector.getData();
                 paginationData.itemCount++;
 
                 if (paginationData.page !== 1) {
                     paginationData.offset++;
-                    this.#pagination.setData(paginationData, false);
+                    this.#pageSelector.setData(paginationData, false);
                     return;
                 }
                 
@@ -77,7 +77,7 @@ export default class BlogViewComponent extends HTMLElement {
                     paginationData.pageCount = Math.ceil(paginationData.itemCount / paginationData.pageSize);
                 }
 
-                this.#pagination.setData(paginationData, false);
+                this.#pageSelector.setData(paginationData, false);
             }
         });
     }
@@ -224,11 +224,11 @@ export default class BlogViewComponent extends HTMLElement {
 
     /**
      * @param {number} page 
-     * @param {boolean} updateHistory
+     * @param {boolean} doUpdateHistory
      * @param {() =>  void} next 
      */
-    #loadPageContent(page = this.#pagination.getData().page, updateHistory = true, next = undefined) {
-        blogPostService.getBlogPosts(page, this.#pagination.getData().pageSize,
+    #loadPageContent(page = this.#pageSelector.getData().page, doUpdateHistory = true, next = undefined) {
+        blogPostService.getBlogPosts(page, this.#pageSelector.getData().pageSize,
             (blogPosts, paginationData) => {
                 this.#blogPosts.innerText = '';
 
@@ -238,7 +238,7 @@ export default class BlogViewComponent extends HTMLElement {
                     );
                 }
 
-                this.#pagination.setData(paginationData, updateHistory);
+                this.#pageSelector.setData(paginationData, doUpdateHistory);
 
                 next?.call(this);
             }
