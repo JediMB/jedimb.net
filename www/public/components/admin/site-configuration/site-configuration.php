@@ -25,6 +25,11 @@ $configService = ConfigurationService::getInstance(); /** @var ConfigurationServ
         </svg>
 
         <?php
+        foreach (ConfigurationService::$CONFIGURABLE_CONSTANTS as $constantName => $_) {
+            $label =  ucwords(strtolower(str_replace('_', ' ', $constantName)));
+
+            new ConfigFieldComponent($label, $constantName);
+        } 
         ?>
     </fieldset>
 </form>
