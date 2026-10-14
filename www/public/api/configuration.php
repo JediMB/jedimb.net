@@ -28,7 +28,7 @@ switch ( $_SERVER['REQUEST_METHOD'] ) {
             foreach ($input as $config) {
                 $configDTO = new ConfigurationDTO($config);
 
-                if (!in_array($configDTO->name, CONFIGURABLE_CONSTANTS)) {
+                if (!ConfigurationService::isConfigurable($configDTO->name)) {
                     $errors[] = 'Attempted to create new configuration for disallowed constant';
                     continue;
                 }
@@ -64,7 +64,7 @@ switch ( $_SERVER['REQUEST_METHOD'] ) {
             foreach ($input as $config) {
                 $configDTO = new ConfigurationDTO($config);
 
-                if (!in_array($configDTO->name, CONFIGURABLE_CONSTANTS)) {
+                if (!ConfigurationService::isConfigurable($configDTO->name)) {
                     $errors[] = 'Attempted to create new configuration for disallowed constant';
                     continue;
                 }
@@ -74,7 +74,7 @@ switch ( $_SERVER['REQUEST_METHOD'] ) {
                     continue;
                 }
                 
-                $configDB = $configService->getConfiguration($configDTO->name)['config'];
+                $configDB = $configService->getConfiguration($configDTO->name);
 
                 ConfigurationDTO::update($configDB, $configDTO);
 

@@ -3,19 +3,20 @@
 namespace App\Models\DB;
 
 use App\Abstract\DbCreatedModified;
+use App\Enums\ConfigType;
 
 class Configuration extends DbCreatedModified {
     public string $name;
-    public ?int $valueInt;
-    public ?string $valueString;
-    public bool $isActive;
+    public string $value;
+    public ConfigType $configType;
+    public bool $isInactive;
 
     public function __construct(array $dbRow) {
         parent::__construct($dbRow);
 
         $this->name = $dbRow['name'];
-        $this->valueString = $dbRow['value'];
-        $this->valueInt = $dbRow['value_int'];
-        $this->isActive = $dbRow['is_active'];
+        $this->value = $dbRow['value'];
+        $this->configType = ConfigType::from($dbRow['config_type']);
+        $this->isInactive = $dbRow['is_inactive'];
     }
 }

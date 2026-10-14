@@ -3,27 +3,27 @@
 namespace App\Models\DTO;
 
 use InvalidArgumentException;
+use App\Enums\ConfigType;
 use App\Models\DB\Configuration;
 
 class ConfigurationDTO {
     public int $id;
     public string $name;
-    public string|int|null $value;
-    public ?bool $isActive;
+    public string|null $value;
+    public ConfigType $configType;
+    public ?bool $isInactive;
 
     public function __construct(array $input) {
         $this->id = $input['id'];
         $this->name = trim($input['name']);
 
-        $value = $input['value'] ?? null;
-        $this->value = is_null($value)
-            ? null
-            : (
-                is_int($value)
-                ? $value
-                : trim("$value")
-            );
-        $this->isActive = $input['isActive'] ?? null;
+        if (is_string($input['value']))
+            $this->value = $input['value'];
+        else
+            $this->value = null;
+        
+        $this->configType = ConfigType::from($input['configType']);
+        $this->isInactive = $input['isInactive'] ?? null;
     }
 
     public static function update(Configuration &$object, ConfigurationDTO $source) {
@@ -31,18 +31,13 @@ class ConfigurationDTO {
             throw new InvalidArgumentException('Incorrect Configuration id in update call');
         if ($object->name !== $source->name)
             throw new InvalidArgumentException('Incorrect Configuration name in update call');
+        if ($object->configType !== $object->configType)
+            throw new InvalidArgumentException('Incorrect Configuration type in update call');
 
-        if ($source->value !== null) {
-            if (is_int($source->value)) {
-                $object->valueInt = $source->value;
-                $object->valueString = null;
-            }
-            else {
-                $object->valueString = $source->value;
-                $object->valueInt = null;
-            }
-        }
+        if ($source->value !== null)
+            $object->value = $source->value;
 
-        if ($source->isActive !== null) $object->isActive = $source->isActive;
+        if ($source->isInactive !== null)
+            $object->isInactive = $source->isInactive;
     }
 }

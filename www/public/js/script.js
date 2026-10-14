@@ -166,13 +166,15 @@ class Configuration {
     * @param {Object} param0 
     * @param {number} param0.id 
     * @param {string} param0.name 
-    * @param {number|string} param0.value 
-    * @param {boolean} param0.isActive  */
-    constructor({ id, name, value, isActive }) {
+    * @param {string} param0.value 
+    * @param {string} param0.configType
+    * @param {boolean} param0.isInactive  */
+    constructor({ id, name, value, configType, isInactive }) {
         this.id = Number(id);
         this.name = name;
         this.value = value;
-        this.isActive = isActive;
+        this.configType = configType;
+        this.isInactive = isInactive;
     }
 }
 
@@ -7941,7 +7943,321 @@ customElements.define('tabs-component', TabsComponent);
 /* Non-elemental components */
 
 
-/* IMPORT: ./components/non-elemental/config-csv.js */
+/* IMPORT: ./components/non-elemental/mobile-menu.js */
+
+const html = document.querySelector(':root');
+const body = document.querySelector('body');
+const mobileMenu = document.querySelector('#mobile-menu');
+const menuButton = mobileMenu.querySelector('#mobile-menu-button');
+const animatedSvgParts = Array.from(menuButton.querySelectorAll('svg *[style]'));
+const menuButtonFrame = menuButton.querySelector('#svg-rect-frame');
+const menuContents = mobileMenu.querySelector('#mobile-menu-contents');
+const menuItems = Array.from(menuContents.querySelectorAll('a[href]'));
+
+window.addEventListener('resize', () =>
+    menuContents.classList.contains('shown') && closeMobileMenu()
+);
+
+menuContents.addEventListener('click', (e) => e.stopPropagation());
+
+menuContents.addEventListener('animationend', (event) => {
+    const animationName = event.animationName;
+
+    switch (animationName) {
+        case 'hide-mobile-menu':
+            event.target.classList.add('hidden');
+            event.target.classList.remove('hide-mobile-menu');
+            break;
+        
+        case 'show-mobile-menu':
+            event.target.classList.add('shown');
+            event.target.classList.remove('show-mobile-menu');
+            break;
+
+        default:
+            event.stopPropagation();
+            break;
+    }
+});
+
+const KEYCODE_TAB = 9;
+function menuFocusTrap(e) {
+    if ( !(e.key === 'Tab' || e.keyCode === KEYCODE_TAB))
+        return;
+
+    const checkIndex = e.shiftKey ? 0 : menuItems.length-1;
+    const targetIndex = e.shiftKey ? menuItems.length-1 : 0;
+
+    if (document.activeElement === menuItems[checkIndex]
+        || document.activeElement === menuButton
+    ) {
+        menuItems[targetIndex].focus();
+        e.preventDefault();
+        return;
+    }
+}
+
+let hoverAnimation = false;
+let activated = false;
+menuButtonFrame.addEventListener('mouseover', () => buttonMouseOver());
+menuButtonFrame.addEventListener('focus', () => buttonMouseOver());
+menuButtonFrame.addEventListener('mouseout', () => buttonMouseOut());
+menuButtonFrame.addEventListener('blur', () => buttonMouseOut());
+
+function buttonMouseOver() {
+    if (hoverAnimation)
+        return;
+
+    hoverAnimation = true;
+
+    if (menuButton.classList.contains('reverting'));
+        animatedSvgParts.forEach(part => 
+            part.style.cssText = part.style.cssText.replace('third', 'first'));
+    
+    menuButton.classList.add('animating');
+    menuButton.classList.remove('reverting');
+    menuButton.addEventListener('animationend', () => {
+        if (activated) {
+            animatedSvgParts.forEach(part => 
+                part.style.cssText = part.style.cssText.replace('first', 'second'));
+            menuButton.classList.add('active');
+            menuButton.classList.remove('animating');
+        }
+
+        hoverAnimation = false;
+    }, {once: true});
+}
+
+function buttonMouseOut() {
+    if (activated)
+        return;
+
+    menuButton.classList.remove('animating');
+    hoverAnimation = false;
+}
+
+function openMobileMenu(e) {
+    if (menuContents.classList.contains('hidden')) {
+        e.stopPropagation();
+        
+        if (hoverAnimation) {
+            activated = true;
+        }
+        else if (menuButton.classList.contains('animating')) {
+            animatedSvgParts.forEach(part => 
+                part.style.cssText = part.style.cssText.replace('first', 'second'));
+            menuButton.classList.add('active');
+            menuButton.classList.remove('animating');
+        }
+        else {
+            activated = true;
+            buttonMouseOver();
+        }
+
+        menuContents.classList.remove('hidden');
+        menuContents.classList.add('show-mobile-menu');
+        body.classList.add('fixed');
+        body.classList.add('pointer-events-none');
+        body.addEventListener('keydown', menuFocusTrap);
+
+        html.addEventListener('click', () => 
+            closeMobileMenu(), {once: true}
+        );
+    }
+}
+
+function closeMobileMenu() {
+    if (menuContents.classList.contains('shown')) {
+        activated = false;
+        animatedSvgParts.forEach(part => 
+            part.style.cssText = part.style.cssText.replace('second', 'third'));
+        menuButton.classList.add('reverting');
+        menuButton.classList.remove('active');
+        menuContents.classList.remove('shown');
+        menuContents.classList.add('hide-mobile-menu');
+        body.classList.remove('fixed');
+        body.classList.remove('pointer-events-none');
+        body.removeEventListener('keydown', menuFocusTrap);
+    }
+}
+
+
+/* IMPORT: ./components/non-elemental/site-configuration.js */
+
+
+
+/* IMPORT: /js/services/api/configuration-api.service.js */
+
+
+
+
+/* IMPORT: /js/components/non-elemental/config-field.js */
+
+
+
+/* IMPORT: /js/models/configuration.model.js */
+
+
+
+
+/* IMPORT: /js/services/form-validation.service.js */
+
+
+
+
+
+class ConfigField {
+    #components;
+    #onChanges = [];
+
+    constructor() {
+        const components = Array.from(document.querySelectorAll('config-field-component'));
+        this.#components = components;
+
+        const configFields = components.map(c => c.querySelector('input[config-field]'));
+        const toggles = components.map(c => c.querySelector('input[type="checkbox"]'));
+        const errorContainers = components.map(c => c.querySelector('[input-errors]'));
+        const restoreButtons = components.map(c => c.querySelector('button[restore-input]'));
+        
+        components.forEach((component, key) => {
+            const textField = configFields[key];
+            const restoreButton = restoreButtons[key];
+            const toggle = toggles[key];
+            const errorContainer = errorContainers[key];
+
+            toggle.addEventListener('change', () => {
+                const isDefault = toggle.checked;
+
+                textField.disabled = isDefault;
+                textField.value = isDefault
+                    ? textField.dataset.defaultValue.trim()
+                    : textField.dataset.inputValue.trim();
+
+                    
+                const textChanges = !isDefault && this.#hasNewValue(textField);
+                const hasChanges = textChanges || this.#hasNewValue(toggle);
+
+                if (isDefault)
+                    errorContainer.innerHTML = '';
+
+                if (textChanges)
+                    formValidationService.validateField(textField, errorContainer);
+
+                const isNew = Boolean(toggle.dataset.originalValue.trim());
+                restoreButton.classList.toggle('hidden', !textChanges || isNew);
+                component.toggleAttribute('has-changes', hasChanges);
+
+                this.#emitChanges(
+                    components.some(c => c.hasAttribute('has-changes')),
+                    configFields.every(t => t.checkValidity())
+                );
+            });
+
+            textField.addEventListener('input', () => {
+                textField.dataset.inputValue = textField.value.trim();
+
+                const hasChanges = this.#hasNewValue(textField);
+                const isNew = Boolean(toggle.dataset.originalValue.trim());
+                restoreButton.classList.toggle('hidden', !hasChanges || isNew);
+                component.toggleAttribute('has-changes', hasChanges);
+                
+                this.#emitChanges(
+                    components.some(c => c.hasAttribute('has-changes')),
+                    configFields.every(t => t.checkValidity())
+                );
+            });
+
+            textField.addEventListener('change', () => {
+                textField.value = textField.value.trim();
+                formValidationService.validateField(textField, errorContainer);
+            });
+
+            restoreButton.addEventListener('click', event => {
+                event.preventDefault();
+                const isNew = Boolean(toggle.dataset.originalValue.trim());
+
+                if (isNew)
+                    textField.value = textField.dataset.defaultValue.trim();
+                else
+                    textField.value = textField.dataset.originalValue.trim();
+                
+                textField.dataset.inputValue = textField.value.trim();
+                restoreButton.classList.add('hidden');
+
+                const hasChanges = this.#hasNewValue(toggle);
+                component.toggleAttribute('has-changes', hasChanges);
+                this.#emitChanges(
+                    components.some(c => c.hasAttribute('has-changes')),
+                    configFields.every(t => t.checkValidity())
+                );
+            });
+
+            component.removeAttribute('hidden');
+        });
+    }
+
+    #emitChanges(hasChanges, isValid) {
+        this.#onChanges.forEach(func => func.call(this, hasChanges, isValid));
+    }
+
+    async getChanges() {
+        return this.#components
+            .filter(c => c.hasAttribute('has-changes'))
+            .map(c => {
+                const id = Number(c.querySelector('input[type="hidden"]').value.trim());
+                /** @type {HTMLInputElement} */
+                const configInput = c.querySelector('input[config-field]');
+
+                const value = configInput.type === 'number'
+                    ? Number(configInput.value)
+                    : configInput.value.trim();
+
+                if (id < 1)
+                    return new Configuration({
+                        id: 0,
+                        name: configInput.dataset.constant.trim(),
+                        value: value,
+                        isActive: true
+                    });
+
+                const toggle = c.querySelector('input[type="checkbox"]');
+
+                const data = { id: id, name: configInput.dataset.constant.trim() };
+
+                if (toggle.checked !== Boolean(toggle.dataset.originalValue))
+                    data.isActive = !toggle.checked;
+
+                if (!toggle.checked && this.#hasNewValue(configInput))
+                    data.value = value;
+                
+                return new Configuration(data);
+            });
+    }
+
+    #hasNewValue(inputElement) {
+        const originalValue = inputElement.dataset.originalValue;
+
+        switch (inputElement.getAttribute('type')) {
+            case 'text':
+                return inputElement.value.trim() !== originalValue.trim();
+            case 'number':
+                return inputElement.value !== originalValue;
+            case 'checkbox':
+                return inputElement.checked !== Boolean(originalValue.trim());
+            default:
+                throw new Error('Input type not implemented!');
+        }
+    }
+
+    onChanges(func) {
+        if (typeof func === 'function')
+            this.#onChanges.push(func);
+    }
+}
+const configField = new ConfigField();
+
+
+/* IMPORT: /js/components/non-elemental/config-csv.js */
 
 
 
@@ -8153,330 +8469,6 @@ class ConfigCSV {
     }
 }
 const configCSV = new ConfigCSV();
-
-
-/* IMPORT: ./components/non-elemental/config-field.js */
-
-
-
-/* IMPORT: /js/models/configuration.model.js */
-
-
-
-
-/* IMPORT: /js/services/form-validation.service.js */
-
-
-
-
-
-class ConfigField {
-    #components;
-    #onChanges = [];
-
-    constructor() {
-        const components = Array.from(document.querySelectorAll('config-field-component'));
-        this.#components = components;
-
-        const configFields = components.map(c => c.querySelector('input[config-field]'));
-        const toggles = components.map(c => c.querySelector('input[type="checkbox"]'));
-        const errorContainers = components.map(c => c.querySelector('[input-errors]'));
-        const restoreButtons = components.map(c => c.querySelector('button[restore-input]'));
-        
-        components.forEach((component, key) => {
-            const textField = configFields[key];
-            const restoreButton = restoreButtons[key];
-            const toggle = toggles[key];
-            const errorContainer = errorContainers[key];
-
-            toggle.addEventListener('change', () => {
-                const isDefault = toggle.checked;
-
-                textField.disabled = isDefault;
-                textField.value = isDefault
-                    ? textField.dataset.defaultValue.trim()
-                    : textField.dataset.inputValue.trim();
-
-                    
-                const textChanges = !isDefault && this.#hasNewValue(textField);
-                const hasChanges = textChanges || this.#hasNewValue(toggle);
-
-                if (isDefault)
-                    errorContainer.innerHTML = '';
-
-                if (textChanges)
-                    formValidationService.validateField(textField, errorContainer);
-
-                const isNew = Boolean(toggle.dataset.originalValue.trim());
-                restoreButton.classList.toggle('hidden', !textChanges || isNew);
-                component.toggleAttribute('has-changes', hasChanges);
-
-                this.#emitChanges(
-                    components.some(c => c.hasAttribute('has-changes')),
-                    configFields.every(t => t.checkValidity())
-                );
-            });
-
-            textField.addEventListener('input', () => {
-                textField.dataset.inputValue = textField.value.trim();
-
-                const hasChanges = this.#hasNewValue(textField);
-                const isNew = Boolean(toggle.dataset.originalValue.trim());
-                restoreButton.classList.toggle('hidden', !hasChanges || isNew);
-                component.toggleAttribute('has-changes', hasChanges);
-                
-                this.#emitChanges(
-                    components.some(c => c.hasAttribute('has-changes')),
-                    configFields.every(t => t.checkValidity())
-                );
-            });
-
-            textField.addEventListener('change', () => {
-                textField.value = textField.value.trim();
-                formValidationService.validateField(textField, errorContainer);
-            });
-
-            restoreButton.addEventListener('click', event => {
-                event.preventDefault();
-                const isNew = Boolean(toggle.dataset.originalValue.trim());
-
-                if (isNew)
-                    textField.value = textField.dataset.defaultValue.trim();
-                else
-                    textField.value = textField.dataset.originalValue.trim();
-                
-                textField.dataset.inputValue = textField.value.trim();
-                restoreButton.classList.add('hidden');
-
-                const hasChanges = this.#hasNewValue(toggle);
-                component.toggleAttribute('has-changes', hasChanges);
-                this.#emitChanges(
-                    components.some(c => c.hasAttribute('has-changes')),
-                    configFields.every(t => t.checkValidity())
-                );
-            });
-
-            component.removeAttribute('hidden');
-        });
-    }
-
-    #emitChanges(hasChanges, isValid) {
-        this.#onChanges.forEach(func => func.call(this, hasChanges, isValid));
-    }
-
-    async getChanges() {
-        return this.#components
-            .filter(c => c.hasAttribute('has-changes'))
-            .map(c => {
-                const id = Number(c.querySelector('input[type="hidden"]').value.trim());
-                /** @type {HTMLInputElement} */
-                const configInput = c.querySelector('input[config-field]');
-
-                const value = configInput.type === 'number'
-                    ? Number(configInput.value)
-                    : configInput.value.trim();
-
-                if (id < 1)
-                    return new Configuration({
-                        id: 0,
-                        name: configInput.dataset.constant.trim(),
-                        value: value,
-                        isActive: true
-                    });
-
-                const toggle = c.querySelector('input[type="checkbox"]');
-
-                const data = { id: id, name: configInput.dataset.constant.trim() };
-
-                if (toggle.checked !== Boolean(toggle.dataset.originalValue))
-                    data.isActive = !toggle.checked;
-
-                if (!toggle.checked && this.#hasNewValue(configInput))
-                    data.value = value;
-                
-                return new Configuration(data);
-            });
-    }
-
-    #hasNewValue(inputElement) {
-        const originalValue = inputElement.dataset.originalValue;
-
-        switch (inputElement.getAttribute('type')) {
-            case 'text':
-                return inputElement.value.trim() !== originalValue.trim();
-            case 'number':
-                return inputElement.value !== originalValue;
-            case 'checkbox':
-                return inputElement.checked !== Boolean(originalValue.trim());
-            default:
-                throw new Error('Input type not implemented!');
-        }
-    }
-
-    onChanges(func) {
-        if (typeof func === 'function')
-            this.#onChanges.push(func);
-    }
-}
-const configField = new ConfigField();
-
-
-/* IMPORT: ./components/non-elemental/mobile-menu.js */
-
-const html = document.querySelector(':root');
-const body = document.querySelector('body');
-const mobileMenu = document.querySelector('#mobile-menu');
-const menuButton = mobileMenu.querySelector('#mobile-menu-button');
-const animatedSvgParts = Array.from(menuButton.querySelectorAll('svg *[style]'));
-const menuButtonFrame = menuButton.querySelector('#svg-rect-frame');
-const menuContents = mobileMenu.querySelector('#mobile-menu-contents');
-const menuItems = Array.from(menuContents.querySelectorAll('a[href]'));
-
-window.addEventListener('resize', () =>
-    menuContents.classList.contains('shown') && closeMobileMenu()
-);
-
-menuContents.addEventListener('click', (e) => e.stopPropagation());
-
-menuContents.addEventListener('animationend', (event) => {
-    const animationName = event.animationName;
-
-    switch (animationName) {
-        case 'hide-mobile-menu':
-            event.target.classList.add('hidden');
-            event.target.classList.remove('hide-mobile-menu');
-            break;
-        
-        case 'show-mobile-menu':
-            event.target.classList.add('shown');
-            event.target.classList.remove('show-mobile-menu');
-            break;
-
-        default:
-            event.stopPropagation();
-            break;
-    }
-});
-
-const KEYCODE_TAB = 9;
-function menuFocusTrap(e) {
-    if ( !(e.key === 'Tab' || e.keyCode === KEYCODE_TAB))
-        return;
-
-    const checkIndex = e.shiftKey ? 0 : menuItems.length-1;
-    const targetIndex = e.shiftKey ? menuItems.length-1 : 0;
-
-    if (document.activeElement === menuItems[checkIndex]
-        || document.activeElement === menuButton
-    ) {
-        menuItems[targetIndex].focus();
-        e.preventDefault();
-        return;
-    }
-}
-
-let hoverAnimation = false;
-let activated = false;
-menuButtonFrame.addEventListener('mouseover', () => buttonMouseOver());
-menuButtonFrame.addEventListener('focus', () => buttonMouseOver());
-menuButtonFrame.addEventListener('mouseout', () => buttonMouseOut());
-menuButtonFrame.addEventListener('blur', () => buttonMouseOut());
-
-function buttonMouseOver() {
-    if (hoverAnimation)
-        return;
-
-    hoverAnimation = true;
-
-    if (menuButton.classList.contains('reverting'));
-        animatedSvgParts.forEach(part => 
-            part.style.cssText = part.style.cssText.replace('third', 'first'));
-    
-    menuButton.classList.add('animating');
-    menuButton.classList.remove('reverting');
-    menuButton.addEventListener('animationend', () => {
-        if (activated) {
-            animatedSvgParts.forEach(part => 
-                part.style.cssText = part.style.cssText.replace('first', 'second'));
-            menuButton.classList.add('active');
-            menuButton.classList.remove('animating');
-        }
-
-        hoverAnimation = false;
-    }, {once: true});
-}
-
-function buttonMouseOut() {
-    if (activated)
-        return;
-
-    menuButton.classList.remove('animating');
-    hoverAnimation = false;
-}
-
-function openMobileMenu(e) {
-    if (menuContents.classList.contains('hidden')) {
-        e.stopPropagation();
-        
-        if (hoverAnimation) {
-            activated = true;
-        }
-        else if (menuButton.classList.contains('animating')) {
-            animatedSvgParts.forEach(part => 
-                part.style.cssText = part.style.cssText.replace('first', 'second'));
-            menuButton.classList.add('active');
-            menuButton.classList.remove('animating');
-        }
-        else {
-            activated = true;
-            buttonMouseOver();
-        }
-
-        menuContents.classList.remove('hidden');
-        menuContents.classList.add('show-mobile-menu');
-        body.classList.add('fixed');
-        body.classList.add('pointer-events-none');
-        body.addEventListener('keydown', menuFocusTrap);
-
-        html.addEventListener('click', () => 
-            closeMobileMenu(), {once: true}
-        );
-    }
-}
-
-function closeMobileMenu() {
-    if (menuContents.classList.contains('shown')) {
-        activated = false;
-        animatedSvgParts.forEach(part => 
-            part.style.cssText = part.style.cssText.replace('second', 'third'));
-        menuButton.classList.add('reverting');
-        menuButton.classList.remove('active');
-        menuContents.classList.remove('shown');
-        menuContents.classList.add('hide-mobile-menu');
-        body.classList.remove('fixed');
-        body.classList.remove('pointer-events-none');
-        body.removeEventListener('keydown', menuFocusTrap);
-    }
-}
-
-
-/* IMPORT: ./components/non-elemental/site-configuration.js */
-
-
-
-/* IMPORT: /js/services/api/configuration-api.service.js */
-
-
-
-
-/* IMPORT: /js/components/non-elemental/config-field.js */
-
-
-
-
-/* IMPORT: /js/components/non-elemental/config-csv.js */
-
-
 
 class SiteConfiguration {
     #configApiService;

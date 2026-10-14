@@ -52,7 +52,7 @@ class UserService extends Singleton {
         
         $validatorHash = password_hash($validator, PASSWORD_BCRYPT);
 
-        $expiresOn = (new DateTime('+' . $this->configService->getUserConstant('COOKIE_EXPIRATION')))->format(DB_DATETIME_FORMAT);
+        $expiresOn = (new DateTime('+' . $this->configService->getCurrentValue('COOKIE_EXPIRATION')))->format(DB_DATETIME_FORMAT);
 
         $token = $this->tokenDbService->setUserToken($userId, $selector, $validatorHash, $expiresOn);
 

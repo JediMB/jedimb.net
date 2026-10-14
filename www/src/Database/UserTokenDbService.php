@@ -59,7 +59,7 @@ class UserTokenDbService extends BaseDbService {
 
     public function refreshUserToken(int $tokenId) : UserToken|false {
         try {
-            $formattedExpirationDate = (new DateTime('+' . $this->configService->getUserConstant('COOKIE_EXPIRATION')))->format(DB_DATETIME_FORMAT);
+            $formattedExpirationDate = (new DateTime('+' . $this->configService->getCurrentValue('COOKIE_EXPIRATION')))->format(DB_DATETIME_FORMAT);
 
             $token = $this->dbService->selectFunction(
                 'update_user_token_expiration', [

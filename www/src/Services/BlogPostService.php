@@ -45,7 +45,7 @@ class BlogPostService extends Singleton {
     private function getBlogPosts(int $page, ?int $pageSize, Published $published, Visibility $visibility, Content $content) : array {
         if ($page < 1) $page = 1;
 
-        $pageSize ??= $this->configurationService->getUserConstant('PAGINATION_PAGE_SIZE');
+        $pageSize ??= $this->configurationService->getCurrentValue('PAGINATION_PAGE_SIZE');
 
         if ($pageSize < 1) $pageSize = 1;
 

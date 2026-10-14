@@ -63,8 +63,6 @@ import TabsComponent from './components/tabs.js';
 import TextEditorComponent from './components/text-editor.js';
 
 /* Non-elemental components */
-import configCSV from './components/non-elemental/config-csv.js';
-import configField from './components/non-elemental/config-field.js';
 import mobileMenu from './components/non-elemental/mobile-menu.js';
 import siteConfiguration from './components/non-elemental/site-configuration.js';
 import subMenu from './components/non-elemental/sub-menu.js';

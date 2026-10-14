@@ -2,6 +2,7 @@
 
 namespace Components;
 
+use App\Components\Admin\ConfigFieldComponent;
 use App\Services\ConfigurationService;
 use App\Utils\Component;
 
@@ -23,20 +24,7 @@ $configService = ConfigurationService::getInstance(); /** @var ConfigurationServ
             <use xlink:href="#svg-loading" href="#svg-loading"></use>
         </svg>
 
-        <?php foreach (CONFIGURABLE_CONSTANTS as $constantName): ?>
-            <?php
-            $id = strtolower(str_replace('_', '-', $constantName));
-            $label =  ucwords(str_replace('-', ' ', $id));
-
-            if ($constantName === 'META_KEYWORDS')
-                Component::include('admin/site-configuration/config-csv', [
-                    'id' => $id, 'label' => $label, 'name' => $constantName
-                ] + $configService->getConfiguration($constantName));
-            else
-                Component::include('admin/site-configuration/config-field', [
-                    'id' => $id, 'label' => $label, 'name' => $constantName
-                ] + $configService->getConfiguration($constantName));
-            ?>
-        <?php endforeach ?>
+        <?php
+        ?>
     </fieldset>
 </form>

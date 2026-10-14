@@ -22,7 +22,7 @@ $isLoggedIn = SessionService::getInstance()->isLoggedIn();
 
 list(
     $siteTitle, $siteTagline, $siteAuthor, $metaDescription, $metaKeywords) =
-    $config->getUserConstants([
+    $config->getCurrentValues([
         'SITE_TITLE', 'SITE_TAGLINE', 'SITE_AUTHOR', 'META_DESCRIPTION', 'META_KEYWORDS'
 ]);
 

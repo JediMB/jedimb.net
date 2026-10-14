@@ -1,14 +1,5 @@
 <?php declare(strict_types=1);
 
-define('CONFIGURABLE_CONSTANTS', [
-    'SITE_TITLE',
-    'SITE_TAGLINE',
-    'SITE_AUTHOR',
-    'META_DESCRIPTION',
-    'META_KEYWORDS',
-    'PAGINATION_PAGE_SIZE'
-]);
-
 define('PATH_HOMEPAGE', 'pages/blog.php');
 define('PATH_BLOG_PREFIX', 'blog');
 define('PATH_API_DIR', 'api');
@@ -124,7 +115,6 @@ define('TEXT_CONFIG_ITEM_CHARS', 'Lowercase characters, numbers, apostrophes, an
 
 define('PAGE_ADMIN_TITLE', 'Administration');
 define('PAGE_ADMIN_SECTION_SITE', 'Site settings');
-define('PAGE_ADMIN_USEDEFAULT', 'Use default');
 
 define('PAGINATION_PAGE_SIZE', 10);
 
