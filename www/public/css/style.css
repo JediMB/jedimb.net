@@ -399,12 +399,14 @@ body {
 
 /* IMPORT: default/forms.css */
 
+/* TODO: Move and change these to something more general-purpose (not forms)
+START: */
+
 .form-column {
     display: block flex;
     flex-direction: column;
     gap: var(--size-l);
 }
-
 
 .form-spaced-row,
 .form-row-group {
@@ -441,6 +443,8 @@ button, select, input {
     color: var(--clr-text);
 }
 
+/* :END */
+
 input[type="email"],
 input[type="number"],
 input[type="password"],
@@ -471,10 +475,59 @@ textarea,
     }
 }
 
+input-container:has(input, textarea) {
+    display: flex block;
+    flex-direction: row;
+    justify-content: space-between;
+    border-radius: var(--size-xs);
+    padding: var(--size-xs) calc(var(--size-xs) * 2);
+    background-color: var(--clr-text);
+    color: var(--clr-bg);
+
+    & input,
+    & textarea {
+        flex-grow: 1;
+        border: none !important;
+        border-radius: 0 !important;
+        padding: 0 !important;
+        background-color: transparent !important;
+        color: inherit !important;
+    }
+
+    & button {
+        background-color: transparent;
+        color: var(--clr-bg);
+    }
+}
+
+input-container:has(
+    input:enabled:user-valid,
+    textarea:enabled:user-valid
+) {
+    background-color: var(--clr-safe-light);
+}
+
+input-container:has(
+    input:enabled:user-invalid,
+    input[aria-invalid="true"],
+    textarea:enabled:user-invalid,
+    textarea[aria-invalid="true"]
+) {
+    background-color: var(--clr-warn-light);
+}
+
+input-container:has(
+    input[class|=error],
+    textarea[class|=error]
+) {
+    border: 2px solid var(--clr-warn);
+}
+
 button:disabled,
 select:disabled,
 input:disabled,
-textarea:disabled {
+textarea:disabled,
+input-container:has(input:disabled, textarea:disabled) {
     background-color: var(--clr-disabled-background);
     color: var(--clr-disabled-text);
 }
