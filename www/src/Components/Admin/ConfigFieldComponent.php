@@ -35,10 +35,14 @@ class ConfigFieldComponent extends Component {
         $this->isDefaultValue = $config?->isInactive ?? true;
         $this->defaultValue = "$default";
         $this->value = $config?->value ?? "$default";
-        $this->configType = $config?->configType ?? ConfigurationService::$CONFIGURABLE_CONSTANTS[$constantName];
 
-        if ($this->configType === ConfigType::CSV)
-            $this->values = explode(', ', $this->value);
+        $this->configType = $config?->configType
+            ?? ConfigurationService::$CONFIGURABLE_CONSTANTS[$constantName];
+
+        $this->values = match($this->configType) {
+            ConfigType::CSV => array_map('trim', explode(',', $this->value)),
+            default => null
+        };
 
         return parent::__construct();
     }
