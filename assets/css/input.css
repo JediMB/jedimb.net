@@ -13,6 +13,12 @@ img-wrapper {
     display: contents;
 }
 
+.flex-row {
+    display: flex block;
+    flex-direction: row;
+    gap: var(--size-s);
+}
+
 a[disabled] {
     pointer-events: none;
 }

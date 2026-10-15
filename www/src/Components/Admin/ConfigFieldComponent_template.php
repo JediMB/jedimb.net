@@ -22,13 +22,16 @@ $uid = $data->uid;
                     case ConfigType::Number: ?>
                         type="number"
                         min="1"
+                        title="Whole positive numbers only"
                     <?php break;
                     default: ?>
                         type="text"
                         pattern="<?= REGEX_HTML['default-text'] ?>"
                         title="<?= TEXT_CONFIG_CHARS ?>"
+                        data-error-pattern-mismatch="<?= TEXT_CONFIG_CHARS ?>"
                     <?php break ?>
                 <?php endswitch ?>
+                data-error-value-missing="Field can't be empty"
                 value="<?= $data->value ?>"
                 placeholder="<?= $data->label ?>"
                 <?php if ($data->isDefaultValue): ?>
@@ -42,6 +45,23 @@ $uid = $data->uid;
                 </svg>
             </button>
         </input-container>
+        <?php if ($data->values): ?>
+            <ul class="flex-row">
+                <?php foreach ($data->values as $key => $item): ?>
+                    <li>
+                        <input
+                            type="text"
+                            title="<?= TEXT_CONFIG_ITEM_CHARS ?>"
+                            placeholder="Type here..."
+                            value="<?= $item ?>"
+                            size="<?= strlen($item) ?>"
+                            pattern="<?= TEXT_CONFIG_ITEM_CHARS ?>"
+                            required
+                            >
+                    </li>
+                <?php endforeach ?>
+            </ul>
+        <?php endif ?>
     </div>
     <label for="config-field__toggle-<?= $data->uid ?>">
         <input

@@ -74,6 +74,10 @@ textarea,
     }
 }
 
+input-container:not(:has(input, textarea)) {
+    display: none;
+}
+
 input-container:has(input, textarea) {
     display: flex block;
     flex-direction: row;
