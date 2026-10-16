@@ -6752,6 +6752,60 @@ class BlogViewComponent extends HTMLElement {
 customElements.define('blog-view-component', BlogViewComponent);
 
 
+/* IMPORT: /js/components/config-field-component.js */
+
+class ConfigFieldComponent extends HTMLElement {
+    /** @type {HTMLInputElement} */ #input;
+    /** @type {HTMLButtonElement} */ #buttonSave;
+    /** @type {HTMLButtonElement} */ #buttonUndo;
+    /** @type {HTMLUListElement} */ #listCSV;
+    /** @type {HTMLInputElement[]|undefined} */ #inputsCSV;
+    /** @type {HTMLInputElement} */ #toggleDefault;
+
+    constructor() { super(); }
+
+    connectedCallback() {
+        const inputRow = this.querySelector('input-row');
+
+        this.#input = inputRow.querySelector('[input-config]');
+
+        const listCSV = this.querySelector('[list-csv]');
+        this.#listCSV = listCSV;
+        if (listCSV)
+            this.#inputsCSV = Array.from(listCSV.querySelectorAll('[input-csv'));
+
+        this.#buttonSave = inputRow.querySelector('[btn-save');
+        this.#buttonUndo = inputRow.querySelector('[btn-undo]');
+
+        this.#toggleDefault = this.querySelector('[toggle-default]');
+
+        this.#setup();
+    }
+
+    connectedMoveCallback() {}
+
+    disconnectedCallback() {}
+
+    #setup() {
+        if (this.#inputsCSV)
+            this.#toggleDefault.addEventListener('change', event => {
+                const isDefault = event.currentTarget.checked;
+                this.#input.hidden = !isDefault;
+                this.#input.disabled = isDefault;
+                this.#listCSV.hidden = isDefault;
+            });
+        else
+            this.#toggleDefault.addEventListener('change', event => {
+                const isDefault = event.currentTarget.checked;
+                this.#input.disabled = isDefault;
+            });
+    }
+}
+
+customElements.define('config-field-component', ConfigFieldComponent);
+
+
+
 /* IMPORT: ./components/gallery-manager.js */
 
 
@@ -8090,386 +8144,6 @@ function closeMobileMenu() {
 
 
 
-
-/* IMPORT: /js/components/non-elemental/config-field.js */
-
-
-
-/* IMPORT: /js/models/configuration.model.js */
-
-
-
-
-/* IMPORT: /js/services/form-validation.service.js */
-
-
-
-
-
-class ConfigField {
-    #components;
-    #onChanges = [];
-
-    constructor() {
-        const components = Array.from(document.querySelectorAll('config-field-component'));
-        this.#components = components;
-
-        const configFields = components.map(c => c.querySelector('input[config-field]'));
-        const toggles = components.map(c => c.querySelector('input[type="checkbox"]'));
-        const errorContainers = components.map(c => c.querySelector('[input-errors]'));
-        const restoreButtons = components.map(c => c.querySelector('button[restore-input]'));
-        
-        components.forEach((component, key) => {
-            const textField = configFields[key];
-            const restoreButton = restoreButtons[key];
-            const toggle = toggles[key];
-            const errorContainer = errorContainers[key];
-
-            toggle.addEventListener('change', () => {
-                const isDefault = toggle.checked;
-
-                textField.disabled = isDefault;
-                textField.value = isDefault
-                    ? textField.dataset.defaultValue.trim()
-                    : textField.dataset.inputValue.trim();
-
-                    
-                const textChanges = !isDefault && this.#hasNewValue(textField);
-                const hasChanges = textChanges || this.#hasNewValue(toggle);
-
-                if (isDefault)
-                    errorContainer.innerHTML = '';
-
-                if (textChanges)
-                    formValidationService.validateField(textField, errorContainer);
-
-                const isNew = Boolean(toggle.dataset.originalValue.trim());
-                restoreButton.classList.toggle('hidden', !textChanges || isNew);
-                component.toggleAttribute('has-changes', hasChanges);
-
-                this.#emitChanges(
-                    components.some(c => c.hasAttribute('has-changes')),
-                    configFields.every(t => t.checkValidity())
-                );
-            });
-
-            textField.addEventListener('input', () => {
-                textField.dataset.inputValue = textField.value.trim();
-
-                const hasChanges = this.#hasNewValue(textField);
-                const isNew = Boolean(toggle.dataset.originalValue.trim());
-                restoreButton.classList.toggle('hidden', !hasChanges || isNew);
-                component.toggleAttribute('has-changes', hasChanges);
-                
-                this.#emitChanges(
-                    components.some(c => c.hasAttribute('has-changes')),
-                    configFields.every(t => t.checkValidity())
-                );
-            });
-
-            textField.addEventListener('change', () => {
-                textField.value = textField.value.trim();
-                formValidationService.validateField(textField, errorContainer);
-            });
-
-            restoreButton.addEventListener('click', event => {
-                event.preventDefault();
-                const isNew = Boolean(toggle.dataset.originalValue.trim());
-
-                if (isNew)
-                    textField.value = textField.dataset.defaultValue.trim();
-                else
-                    textField.value = textField.dataset.originalValue.trim();
-                
-                textField.dataset.inputValue = textField.value.trim();
-                restoreButton.classList.add('hidden');
-
-                const hasChanges = this.#hasNewValue(toggle);
-                component.toggleAttribute('has-changes', hasChanges);
-                this.#emitChanges(
-                    components.some(c => c.hasAttribute('has-changes')),
-                    configFields.every(t => t.checkValidity())
-                );
-            });
-
-            component.removeAttribute('hidden');
-        });
-    }
-
-    #emitChanges(hasChanges, isValid) {
-        this.#onChanges.forEach(func => func.call(this, hasChanges, isValid));
-    }
-
-    async getChanges() {
-        return this.#components
-            .filter(c => c.hasAttribute('has-changes'))
-            .map(c => {
-                const id = Number(c.querySelector('input[type="hidden"]').value.trim());
-                /** @type {HTMLInputElement} */
-                const configInput = c.querySelector('input[config-field]');
-
-                const value = configInput.type === 'number'
-                    ? Number(configInput.value)
-                    : configInput.value.trim();
-
-                if (id < 1)
-                    return new Configuration({
-                        id: 0,
-                        name: configInput.dataset.constant.trim(),
-                        value: value,
-                        isActive: true
-                    });
-
-                const toggle = c.querySelector('input[type="checkbox"]');
-
-                const data = { id: id, name: configInput.dataset.constant.trim() };
-
-                if (toggle.checked !== Boolean(toggle.dataset.originalValue))
-                    data.isActive = !toggle.checked;
-
-                if (!toggle.checked && this.#hasNewValue(configInput))
-                    data.value = value;
-                
-                return new Configuration(data);
-            });
-    }
-
-    #hasNewValue(inputElement) {
-        const originalValue = inputElement.dataset.originalValue;
-
-        switch (inputElement.getAttribute('type')) {
-            case 'text':
-                return inputElement.value.trim() !== originalValue.trim();
-            case 'number':
-                return inputElement.value !== originalValue;
-            case 'checkbox':
-                return inputElement.checked !== Boolean(originalValue.trim());
-            default:
-                throw new Error('Input type not implemented!');
-        }
-    }
-
-    onChanges(func) {
-        if (typeof func === 'function')
-            this.#onChanges.push(func);
-    }
-}
-const configField = new ConfigField();
-
-
-/* IMPORT: /js/components/non-elemental/config-csv.js */
-
-
-
-/* IMPORT: /js/models/configuration.model.js */
-
-
-
-
-
-// TODO: Export configuration object
-
-class ConfigCSV {
-    #components;
-    #textFieldCollections;
-    #stringFields;
-
-    #onChanges = [];
-
-    constructor() {
-        const components = Array.from(document.querySelectorAll('config-csv-component'));
-        this.#components = components;
-
-        const defaultValues = components.map(c => c.querySelector('default-value'));
-        const fieldsets = components.map(c => c.querySelector('fieldset'));
-        this.#stringFields = components.map(c => this.#findStringField({ at: c }));
-        const addButtons = components.map(c => this.#findAddButton({ at: c }));
-        this.#textFieldCollections = components.map(c => this.#findTextField({ at: c, all: true }));
-        const deleteButtonCollections = components.map(c => this.#findDeleteButton({ at: c, all: true }));
-
-        const toggles = components.map(c => c.querySelector('[default-toggle'));
-
-        components.forEach((component, key) => {
-            component.dataset.fields = this.#textFieldCollections[key].length;
-
-            toggles[key].addEventListener('change', () => {
-                const isDefault = !!toggles[key].checked;
-
-                defaultValues[key].toggleAttribute('hidden', !isDefault);
-                defaultValues[key].nextElementSibling.toggleAttribute('hidden', isDefault);
-                
-                fieldsets[key].disabled = isDefault;
-
-                const textChanges = !isDefault && this.#hasNewValue(this.#stringFields[key]);
-                const hasChanges = textChanges || this.#hasNewValue(toggles[key]);
-                component.toggleAttribute('has-changes', hasChanges);
-
-                this.#emitChanges(this.#hasValidChanges());
-            });
-
-            addButtons[key].addEventListener('click', () => {
-                this.#addItem(key);
-            });
-
-            this.#textFieldCollections[key].forEach(field => this.#addEventListeners(field, key));
-
-            deleteButtonCollections[key].forEach(btn => {
-                btn.addEventListener('click', event => this.#deleteItem(event, key));
-            });
-
-            component.removeAttribute('hidden');
-        });
-    }
-
-    #addEventListeners(field, key) {
-        const component = this.#components[key];
-
-        field.addEventListener('input', () => {
-            this.#findAddButton({ at: component }).disabled = this.#isInvalid(key);
-            this.#findStringField({ at: component }).value = this.#textFieldCollections[key].map(f => f.value).join(', ');
-            component.toggleAttribute('has-changes', this.#hasNewValue(this.#stringFields[key]));
-            this.#findAddButton({ at: component }).disabled = this.#isInvalid(key);
-            this.#emitChanges(this.#hasValidChanges());
-        });
-
-        field.addEventListener('change', () => {
-            field.value = field.value.toLocaleLowerCase();
-            this.#findStringField({ at: component }).value = this.#textFieldCollections[key].map(f => f.value).join(', ');
-            this.#emitChanges(this.#hasValidChanges());
-        });
-    }
-
-    #addItem(key) {
-        const component = this.#components[key];
-        this.#findAddButton({ at: component }).disabled = true;
-
-        const template = component.querySelector('template');
-        const itemNumber = Number(component.dataset.fields);
-
-        const newItem = template.content.cloneNode(true);
-        const textField = this.#findTextField({ at: newItem });
-        textField.id = textField.id.replace('template', `${itemNumber}`);
-        this.#addEventListeners(textField, key);
-
-        const deleteButton = this.#findDeleteButton({ at: newItem });
-        deleteButton.addEventListener('click', event => {
-            this.#deleteItem(event, key);
-        });
-        
-        template.parentNode.appendChild(newItem);
-        this.#textFieldCollections[key].push(textField);
-        textField.focus();
-
-        component.dataset.fields = itemNumber + 1;
-        
-        this.#emitChanges(this.#hasValidChanges());
-    }
-
-    #deleteItem(event, key) {
-        event.preventDefault();
-
-        if (event.shiftKey) {
-            let item = event.target;
-            while (item.localName !== 'li') {
-                item = item.parentNode;
-            }
-            const field = this.#findTextField({ at: item });
-            this.#textFieldCollections[key] = this.#textFieldCollections[key].filter(f => f !== field);
-            this.#stringFields[key].value = this.#textFieldCollections[key].map(f => f.value).join(', ');
-
-            item.remove();
-
-            this.#emitChanges(this.#hasValidChanges());
-        }
-        else
-            alert('Hold shift when clicking to delete item.');
-    }
-
-    #emitChanges([hasChanges, isValid]) {
-        this.#onChanges.forEach(func => func.call(this, hasChanges, isValid));
-    }
-
-    #findAddButton({ at, all = false }) {
-        return this.#findQuery(at, '[btn-add]', all)
-    }
-
-    #findDeleteButton({ at, all = false }) {
-        return this.#findQuery(at, '[btn-delete]', all)
-    }
-
-    #findStringField({ at, all = false }) {
-        return this.#findQuery(at, '[input-string]', all);
-    }
-
-    #findTextField({ at, all = false }) {
-        return this.#findQuery(at, '[text-item]', all);
-    }
-
-    #findQuery(container, query, findAll) {
-        if (findAll)
-            return Array.from(container.querySelectorAll(query));
-
-        return container.querySelector(query);
-    }
-
-    async getChanges() {
-        return this.#components
-            .filter(c => c.hasAttribute('has-changes'))
-            .map(c => {
-                const id = Number(c.querySelector('[config-id]').value.trim());
-                const stringField = this.#findStringField({ at: c });
-
-                if (id < 0)
-                    return new Configuration({
-                        id: 0,
-                        name: stringField.dataset.constant.trim(),
-                        value: stringField.value.trim(),
-                        isActive: true
-                });
-
-                const toggle = c.querySelector('[default-toggle]');
-
-                const data = { id: id, name: stringField.dataset.constant.trim() };
-
-                if (toggle.checked !== Boolean(toggle.dataset.originalValue))
-                    data.isActive = !toggle.checked;
-
-                if (!toggle.checked && this.#hasNewValue(stringField))
-                    data.value = stringField.value.trim();
-
-                return new Configuration(data);
-            });
-    }
-
-    #hasNewValue(inputElement) {
-        const originalValue = inputElement.dataset.originalValue;
-
-        switch (inputElement.getAttribute('type')) {
-            case 'hidden':
-                return inputElement.value.trim() !== originalValue.trim();
-            case 'checkbox':
-                return inputElement.checked !== Boolean(originalValue.trim());
-            default:
-                throw new Error('Input type not implemented!');
-        }
-    }
-
-    #hasValidChanges() {
-        return [ this.#components.some(c => c.hasAttribute('has-changes')),
-            this.#textFieldCollections.every(c => c.every(t => t.checkValidity())) ];
-    }
-
-    #isInvalid(key) {
-        return this.#textFieldCollections[key].some(f => f.checkValidity() === false);
-    }
-
-    onChanges(func) {
-        if (typeof func === 'function')
-            this.#onChanges.push(func);
-    }
-}
-const configCSV = new ConfigCSV();
-
 class SiteConfiguration {
     #configApiService;
     #fieldsUnchanged = true;
@@ -8488,15 +8162,15 @@ class SiteConfiguration {
         const saveButton = fieldset.querySelector('button[type="submit"]');
         const isLoading = fieldset.querySelector('[is-loading]');
 
-        configField.onChanges((hasChanges, isValid) => {
-            this.#fieldsUnchanged = !hasChanges;
-            saveButton.disabled = !isValid || (this.#fieldsUnchanged && this.#csvUnchanged);
-        });
+        // configField.onChanges((hasChanges, isValid) => {
+        //     this.#fieldsUnchanged = !hasChanges;
+        //     saveButton.disabled = !isValid || (this.#fieldsUnchanged && this.#csvUnchanged);
+        // });
 
-        configCSV.onChanges((hasChanges, isValid) => {
-            this.#csvUnchanged = !hasChanges;
-            saveButton.disabled = !isValid || (this.#fieldsUnchanged && this.#csvUnchanged);
-        })
+        // configCSV.onChanges((hasChanges, isValid) => {
+        //     this.#csvUnchanged = !hasChanges;
+        //     saveButton.disabled = !isValid || (this.#fieldsUnchanged && this.#csvUnchanged);
+        // })
 
         form.addEventListener('submit', event => {
             event.preventDefault();

@@ -17,7 +17,7 @@ $configService = ConfigurationService::getInstance(); /** @var ConfigurationServ
     <fieldset>
         <div class="category-head">
             <h3 class="h3" style="margin: 0;"><?= PAGE_ADMIN_SECTION_SITE ?></h3>
-            <button type="submit" class="btn" disabled>Save</button>
+            <button type="submit" class="btn-primary btn-safe" disabled>Save all changes</button>
         </div>
 
         <svg is-loading width="2em" height="2em">

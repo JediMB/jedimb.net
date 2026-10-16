@@ -1,6 +1,4 @@
 import configurationApiService from "/js/services/api/configuration-api.service.js";
-import configField from "/js/components/non-elemental/config-field.js";
-import configCSV from "/js/components/non-elemental/config-csv.js";
 
 class SiteConfiguration {
     #configApiService;
@@ -20,15 +18,15 @@ class SiteConfiguration {
         const saveButton = fieldset.querySelector('button[type="submit"]');
         const isLoading = fieldset.querySelector('[is-loading]');
 
-        configField.onChanges((hasChanges, isValid) => {
-            this.#fieldsUnchanged = !hasChanges;
-            saveButton.disabled = !isValid || (this.#fieldsUnchanged && this.#csvUnchanged);
-        });
+        // configField.onChanges((hasChanges, isValid) => {
+        //     this.#fieldsUnchanged = !hasChanges;
+        //     saveButton.disabled = !isValid || (this.#fieldsUnchanged && this.#csvUnchanged);
+        // });
 
-        configCSV.onChanges((hasChanges, isValid) => {
-            this.#csvUnchanged = !hasChanges;
-            saveButton.disabled = !isValid || (this.#fieldsUnchanged && this.#csvUnchanged);
-        })
+        // configCSV.onChanges((hasChanges, isValid) => {
+        //     this.#csvUnchanged = !hasChanges;
+        //     saveButton.disabled = !isValid || (this.#fieldsUnchanged && this.#csvUnchanged);
+        // })
 
         form.addEventListener('submit', event => {
             event.preventDefault();
