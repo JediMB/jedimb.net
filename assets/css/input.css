@@ -13,11 +13,28 @@ img-wrapper {
     display: contents;
 }
 
-.flex-row {
-    display: flex block;
-    flex-direction: row;
-    gap: var(--size-s);
+.invisible {
+    visibility: hidden;
 }
+
+.flex-col,
+.flex-row {
+    --_gap: var(--size-s);
+    display: flex block;
+    gap: var(--_gap);
+}
+
+.flex-col   { flex-direction: column; }
+.flex-row   { flex-direction: row; }
+.gap-xxs    { --_gap: var(--size-xxs); }
+.gap-xs     { --_gap: var(--size-xs); }
+.gap-s      { --_gap: var(--size-s); }
+.gap-m      { --_gap: var(--size-m); }
+.gap-l      { --_gap: var(--size-l); }
+.gap-xl     { --_gap: var(--size-xl); }
+.gap-xxl    { --_gap: var(--size-xxl); }
+.flex-grow  { flex-grow: 1; }
+.flex-wrap  { flex-wrap: wrap; }
 
 a[disabled] {
     pointer-events: none;
@@ -235,10 +252,6 @@ a[disabled] {
 
 .w-full {
     width: 100%;
-}
-
-.flex-grow {
-    flex-grow: 1;
 }
 
 .transform {
@@ -518,7 +531,7 @@ main h2::before {
     content: '>';
 }
 
-[class^='h3'] {
+[class^="h3" i] {
     font-size: 1.5em;
     font-weight: 600;
     margin-block: 1.4em 0.667em;

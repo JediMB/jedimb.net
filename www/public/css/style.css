@@ -326,6 +326,8 @@ body {
     --clr-safe: hsl(120, 100%, 30%);
     --clr-safe-dark: hsl(120, 100%, 20%);
 
+    --clr-attention: hsl(56, 100%, 50%);
+
     --clr-warn-light: hsl(0, 100%, 80%);
     --clr-warn: hsl(0, 100%, 30%);
     --clr-warn-dark: hsl(0, 100%, 20%);
@@ -470,7 +472,7 @@ textarea,
     }
     
     /* TODO: Use a wrapper element that handles error messages via data attributes */
-    &[class|=error] {
+    &[class|="error" i] {
         border: 2px solid var(--clr-warn);
     }
 }
@@ -521,8 +523,8 @@ input-container:has(
 }
 
 input-container:has(
-    input[class|=error],
-    textarea[class|=error]
+    input[class|="error" i],
+    textarea[class|="error" i]
 ) {
     border: 2px solid var(--clr-warn);
 }
@@ -534,6 +536,16 @@ textarea:disabled,
 input-container:has(input:disabled, textarea:disabled) {
     background-color: var(--clr-disabled-background);
     color: var(--clr-disabled-text);
+}
+
+input[type="number" i]:disabled {
+    &::-webkit-outer-spin-button,
+    &::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+    }
+    appearance: textfield;
+    -moz-appearance: textfield;
 }
 
 button[btn-loading] {
@@ -556,8 +568,8 @@ button[btn-loading] [has-loaded] {
     opacity: 0;
 }
 
-[class|=btn],
-[class|=select] {
+[class|="btn" i],
+[class|="select" i] {
     --_clr-border: transparent;
     --_clr-bg: transparent;
     --_clr-text: var(--clr-text, #000);
@@ -569,7 +581,7 @@ button[btn-loading] [has-loaded] {
 
 }
 
-[class|=btn] {
+[class|="btn" i] {
     display: flex;
     flex-direction: row;
     justify-content: center;
@@ -586,6 +598,16 @@ button[btn-loading] [has-loaded] {
 .btn-hover-heavy:focus-visible {
     --_clr-border: var(--clr-text);
     font-weight: 600;
+}
+
+.btn-safe {
+    --_clr-bg: var(--clr-safe-dark);
+    --_clr-text: var(--clr-light);
+}
+
+.btn-attention {
+    --_clr-bg: var(--clr-attention);
+    --_clr-text: var(--clr-dark);
 }
 
 .btn-warn {
@@ -811,11 +833,28 @@ img-wrapper {
     display: contents;
 }
 
-.flex-row {
-    display: flex block;
-    flex-direction: row;
-    gap: var(--size-s);
+.invisible {
+    visibility: hidden;
 }
+
+.flex-col,
+.flex-row {
+    --_gap: var(--size-s);
+    display: flex block;
+    gap: var(--_gap);
+}
+
+.flex-col   { flex-direction: column; }
+.flex-row   { flex-direction: row; }
+.gap-xxs    { --_gap: var(--size-xxs); }
+.gap-xs     { --_gap: var(--size-xs); }
+.gap-s      { --_gap: var(--size-s); }
+.gap-m      { --_gap: var(--size-m); }
+.gap-l      { --_gap: var(--size-l); }
+.gap-xl     { --_gap: var(--size-xl); }
+.gap-xxl    { --_gap: var(--size-xxl); }
+.flex-grow  { flex-grow: 1; }
+.flex-wrap  { flex-wrap: wrap; }
 
 a[disabled] {
     pointer-events: none;
@@ -1033,10 +1072,6 @@ a[disabled] {
 
 .w-full {
     width: 100%;
-}
-
-.flex-grow {
-    flex-grow: 1;
 }
 
 .transform {
@@ -1316,7 +1351,7 @@ main h2::before {
     content: '>';
 }
 
-[class^='h3'] {
+[class^="h3" i] {
     font-size: 1.5em;
     font-weight: 600;
     margin-block: 1.4em 0.667em;

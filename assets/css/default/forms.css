@@ -69,7 +69,7 @@ textarea,
     }
     
     /* TODO: Use a wrapper element that handles error messages via data attributes */
-    &[class|=error] {
+    &[class|="error" i] {
         border: 2px solid var(--clr-warn);
     }
 }
@@ -120,8 +120,8 @@ input-container:has(
 }
 
 input-container:has(
-    input[class|=error],
-    textarea[class|=error]
+    input[class|="error" i],
+    textarea[class|="error" i]
 ) {
     border: 2px solid var(--clr-warn);
 }
@@ -133,6 +133,16 @@ textarea:disabled,
 input-container:has(input:disabled, textarea:disabled) {
     background-color: var(--clr-disabled-background);
     color: var(--clr-disabled-text);
+}
+
+input[type="number" i]:disabled {
+    &::-webkit-outer-spin-button,
+    &::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+    }
+    appearance: textfield;
+    -moz-appearance: textfield;
 }
 
 button[btn-loading] {
@@ -155,8 +165,8 @@ button[btn-loading] [has-loaded] {
     opacity: 0;
 }
 
-[class|=btn],
-[class|=select] {
+[class|="btn" i],
+[class|="select" i] {
     --_clr-border: transparent;
     --_clr-bg: transparent;
     --_clr-text: var(--clr-text, #000);
@@ -168,7 +178,7 @@ button[btn-loading] [has-loaded] {
 
 }
 
-[class|=btn] {
+[class|="btn" i] {
     display: flex;
     flex-direction: row;
     justify-content: center;
@@ -185,6 +195,16 @@ button[btn-loading] [has-loaded] {
 .btn-hover-heavy:focus-visible {
     --_clr-border: var(--clr-text);
     font-weight: 600;
+}
+
+.btn-safe {
+    --_clr-bg: var(--clr-safe-dark);
+    --_clr-text: var(--clr-light);
+}
+
+.btn-attention {
+    --_clr-bg: var(--clr-attention);
+    --_clr-text: var(--clr-dark);
 }
 
 .btn-warn {
