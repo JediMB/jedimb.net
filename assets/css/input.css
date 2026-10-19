@@ -401,31 +401,6 @@ menu-container {
     gap: var(--size-s);
 }
 
-#flip-logo {
-    fill: var(--clr-bg);
-    stroke: var(--clr-header-2);
-}
-
-#flip-logo > rect {
-    transform-origin: var(--center);
-}
-
-#flip-logo > .flipped {
-    animation: var(--delay) flipped 0.3s linear forwards;
-}
-
-/* #flip-logo > .hovered,
-#flip-logo > .hovered-adjacent,
-#flip-logo > .hovered-corner {
-    fill: var(--clr-secondary);
-} */
-
-#flip-logo > .flipped.hovered,
-#flip-logo > .flipped.hovered-adjacent,
-#flip-logo > .flipped.hovered-corner {
-    fill: var(--clr-tertiary) !important;
-}
-
 .hovered {
     filter: brightness(1.5);
 }
