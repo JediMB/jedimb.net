@@ -17,6 +17,10 @@ img-wrapper {
     visibility: hidden;
 }
 
+:not(:hover) > .hidden-unhovered {
+    display: none;
+}
+
 .flex-col,
 .flex-row {
     --_align: normal;

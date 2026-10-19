@@ -33,6 +33,7 @@ $uid = $data->uid;
             <?php endswitch ?>
             data-error-value-missing="Field can't be empty"
             value="<?= $data->value ?>"
+            data-default-value="<?= $data->defaultValue ?>"
             placeholder="<?= $data->label ?>"
             <?php if ($data->isDefaultValue): ?>
                 disabled
@@ -42,26 +43,73 @@ $uid = $data->uid;
             required
         >
         <?php if ($data->values): ?>
-            <ul list-csv
+            <fieldset full-width
                 <?php if ($data->isDefaultValue): ?>
                     hidden
                 <?php endif ?>
-                class="flex-row flex-grow"
                 >
-                <?php foreach ($data->values as $key => $item): ?>
+                <ul list-csv class="flex-row flex-grow">
+                    <?php foreach ($data->values as $key => $item): ?>
+                        <li item-csv>
+                            <input-container>
+                                <input input-csv
+                                    type="text"
+                                    title="<?= TEXT_CONFIG_ITEM_CHARS ?>"
+                                    placeholder="Type here..."
+                                    value="<?= $item ?>"
+                                    size="<?= strlen($item) ?>"
+                                    data-default-size="12"
+                                    data-error-invalid="INVALID ITEM"
+                                    pattern="<?= REGEX_HTML['config-item'] ?>"
+                                    required
+                                    >
+                                <button btn-remove
+                                    class="link-svg hidden-unhovered"
+                                    title="Remove item"
+                                    >
+                                    <svg width="1rem" height="1rem">
+                                        <use xlink:href="#svg-close" href="#svg-close"></use>
+                                    </svg>
+                                </button>
+                            </input-container>
+                        </li>
+                    <?php endforeach ?>
                     <li>
-                        <input input-csv
-                            type="text"
-                            title="<?= TEXT_CONFIG_ITEM_CHARS ?>"
-                            placeholder="Type here..."
-                            value="<?= $item ?>"
-                            size="<?= strlen($item) ?>"
-                            pattern="<?= TEXT_CONFIG_ITEM_CHARS ?>"
-                            required
+                        <button btn-add
+                            class="btn-secondary"
                             >
+                            <svg width="1em" height="1em">
+                                <use xlink:href="#svg-add" href="#svg-add"></use>
+                            </svg>
+                        </button>
                     </li>
-                <?php endforeach ?>
-            </ul>
+                    <template>
+                        <li>
+                            <input-container>
+                                <input input-csv
+                                    type="text"
+                                    title="<?= TEXT_CONFIG_ITEM_CHARS ?>"
+                                    placeholder="Type here..."
+                                    value=""
+                                    size="12"
+                                    data-default-size="12"
+                                    data-error-invalid="INVALID ITEM"
+                                    pattern="<?= REGEX_HTML['config-item'] ?>"
+                                    required
+                                    >
+                                <button btn-remove
+                                    class="link-svg hidden-unhovered"
+                                    title="Remove item"
+                                    >
+                                    <svg width="1rem" height="1rem">
+                                        <use xlink:href="#svg-close" href="#svg-close"></use>
+                                    </svg>
+                                </button>
+                            </input-container>
+                        </li>
+                    </template>
+                </ul>
+            </fieldset>
         <?php endif ?>
         <button btn-save
             type="button"
