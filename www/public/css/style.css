@@ -484,6 +484,7 @@ input-container:not(:has(input, textarea)) {
 input-container:has(input, textarea) {
     display: flex block;
     flex-direction: row;
+    gap: var(--size-s);
     justify-content: space-between;
     border-radius: var(--size-xs);
     padding: var(--size-xs) calc(var(--size-xs) * 2);
@@ -835,6 +836,10 @@ img-wrapper {
 
 .invisible {
     visibility: hidden;
+}
+
+:not(:hover) > .hidden-unhovered {
+    display: none;
 }
 
 .flex-col,
