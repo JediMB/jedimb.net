@@ -19,13 +19,29 @@ img-wrapper {
 
 .flex-col,
 .flex-row {
+    --_align: normal;
     --_gap: var(--size-s);
+    --_justify: normal;
+    --_wrap: nowrap;
+
     display: flex block;
+    flex-wrap: var(--_wrap);
     gap: var(--_gap);
+    justify-content: var(--_justify);
+    align-items: var(--_align);
 }
 
-.flex-col   { flex-direction: column; }
-.flex-row   { flex-direction: row; }
+.flex-col {
+    flex-direction: column;
+    --_justify: center;
+}
+
+.flex-row {
+    flex-direction: row;
+    --_align: center;
+}
+
+.flex-wrap  { --_wrap: wrap; }
 .gap-xxs    { --_gap: var(--size-xxs); }
 .gap-xs     { --_gap: var(--size-xs); }
 .gap-s      { --_gap: var(--size-s); }
@@ -33,8 +49,8 @@ img-wrapper {
 .gap-l      { --_gap: var(--size-l); }
 .gap-xl     { --_gap: var(--size-xl); }
 .gap-xxl    { --_gap: var(--size-xxl); }
+
 .flex-grow  { flex-grow: 1; }
-.flex-wrap  { flex-wrap: wrap; }
 
 a[disabled] {
     pointer-events: none;
