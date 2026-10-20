@@ -726,7 +726,7 @@ class Emitter {
     /**
      * Subscribes to changes of the whole value/object, to values within an array, or both
      * 
-     * @param {Object} callbacks
+     * @param {object} callbacks
      * @param {((value: T) => void)} callbacks.next
      * @param {((index: Number, value: any) => void)} callbacks.nextIndexed
      * @param {{getCurrent: boolean, getUnchanged: boolean}} options
@@ -1327,6 +1327,65 @@ class BlogPostService {
     }
 }
 const blogPostService = new BlogPostService();
+
+
+/* IMPORT: /js/services/configuration.service.js */
+
+
+
+/* IMPORT: /js/models/configuration.model.js */
+
+
+
+
+/* IMPORT: /js/services/api/configuration-api.service.js */
+
+
+
+/* IMPORT: /js/http-client.js */
+
+
+
+
+
+class ConfigurationApiService {
+    #httpClient;
+
+    constructor() {
+        this.#httpClient = httpClient;
+    }
+
+    async createConfigurations(configs) {
+        const response = await this.#httpClient.post('configuration', configs);
+
+        return response;
+    }
+
+    async updateConfigurations(configs) {
+        const response = await this.#httpClient.patch('configuration', configs);
+
+        return response;
+    }
+}
+const configurationApiService = new ConfigurationApiService();
+
+
+
+class ConfigurationService {
+    #service = configurationApiService;
+
+    constructor() {}
+
+    /** @param {Configuration} configuration  */
+    async saveConfiguration(configuration) {
+        if (configuration.id > 0)
+            return await this.#service.updateConfigurations([configuration]);
+
+        return await this.#service.createConfigurations([configuration]);
+    }
+}
+
+const configurationService = new ConfigurationService();
 
 
 /* IMPORT: /js/services/form-validation.service.js */
@@ -2362,33 +2421,6 @@ const undoManagementService = new UndoManagementService();
 /* IMPORT: /js/services/api/configuration-api.service.js */
 
 
-
-/* IMPORT: ../../http-client.js */
-
-
-
-
-
-class ConfigurationApiService {
-    #httpClient;
-
-    constructor() {
-        this.#httpClient = httpClient;
-    }
-
-    async createConfigurations(configs) {
-        const response = await this.#httpClient.post('configuration', configs);
-
-        return response;
-    }
-
-    async updateConfigurations(configs) {
-        const response = await this.#httpClient.patch('configuration', configs);
-
-        return response;
-    }
-}
-const configurationApiService = new ConfigurationApiService();
 
 
 /* IMPORT: /js/services/api/image-gallery-api.service.js */
@@ -6754,6 +6786,12 @@ customElements.define('blog-view-component', BlogViewComponent);
 
 /* IMPORT: /js/components/config-field-component.js */
 
+
+
+/* IMPORT: /js/services/configuration.service.js */
+
+
+
 class ConfigFieldComponent extends HTMLElement {
     /** @type {HTMLButtonElement} */ #buttonAdd;
     /** @type {HTMLButtonElement} */ #buttonSave;
@@ -6761,16 +6799,31 @@ class ConfigFieldComponent extends HTMLElement {
     /** @type {HTMLFieldSetElement} */ #fieldset;
     /** @type {HTMLInputElement} */ #input;
     /** @type {HTMLInputElement[]|undefined} */ #inputsCSV;
+    /** @type {HTMLLIElement} */ #itemAdd;
     /** @type {HTMLUListElement} */ #listCSV;
     /** @type {HTMLTemplateElement} */ #itemTemplate;
     /** @type {HTMLInputElement} */ #toggleDefault;
 
-    /** @type {string} */#currentValue;
-    /** @type {string} */#defaultValue;
-    /** @type {string} */#startingValue;
+    /** @type {number} */ #id;
+    /** @type {string} */ #name;
+    /** @type {string} */ #configType;
 
+    /** @type {boolean} */ #startingChecked;
+    /** @type {boolean} */ #currentChecked;
+    /** @type {string} */ #currentValue;
+    /** @type {string} */ #defaultValue;
+    /** @type {string} */ #startingValue;
+
+    /** @type {Node} */ #startingList;
+
+    /** @type {string} */ #saveEnabledTitle;
+    /** @type {string} */ #saveDisabledTitle;
     /** @type {string} */ #undoEnabledTitle;
     /** @type {string} */ #undoDisabledTitle;
+
+    #isValid = true;
+    #hasChangedChecked = false;
+    #hasChangedValue = false;
 
     constructor() { super(); }
 
@@ -6785,7 +6838,8 @@ class ConfigFieldComponent extends HTMLElement {
         if (listCSV) {
             this.#fieldset = this.querySelector('fieldset');
             this.#inputsCSV = Array.from(listCSV.querySelectorAll('[input-csv'));
-            this.#buttonAdd = listCSV.querySelector('[btn-add]');
+            this.#itemAdd = listCSV.querySelector('[item-add]');
+            this.#buttonAdd = this.#itemAdd.querySelector('[btn-add]');
             this.#itemTemplate = listCSV.querySelector('template');
         }
 
@@ -6801,6 +6855,13 @@ class ConfigFieldComponent extends HTMLElement {
 
     disconnectedCallback() {}
 
+    #addCSVItem() {
+        const fragment = this.#itemTemplate.content.cloneNode(true);
+        this.#listCSV.insertBefore(fragment, this.#itemAdd);
+        const item = this.#itemAdd.previousElementSibling;
+        this.#setupCSVItem(item, { addInputToList: true });
+    }
+
     /** @returns {string} */
     #getCSVString() {
         return String.prototype.concat(
@@ -6812,9 +6873,38 @@ class ConfigFieldComponent extends HTMLElement {
         ).replaceAll(/,\s*/g, ', ');
     }
 
+    async #save() {
+        const value = this.#currentChecked && this.#hasChangedValue
+            ? this.#currentValue
+            : null;
+
+        const isInactive = this.#hasChangedChecked
+            ? this.#currentChecked
+            : null;
+        
+        const config = new Configuration({
+            id: this.#id,
+            name: this.#name,
+            value: value,
+            configType: this.#configType,
+            isInactive: isInactive
+        });
+
+        const response = await configurationService.saveConfiguration(config);
+    }
+
+    #setSaveButtonStatus() {
+        this.#buttonSave.disabled = !this.#isValid
+            || (this.#currentChecked && !this.#hasChangedChecked)
+            || (!this.#currentChecked && !this.#hasChangedValue);
+
+        this.#buttonSave.title = this.#buttonSave.disabled
+            ? this.#saveDisabledTitle
+            : this.#saveEnabledTitle;
+    }
+
     #setUndoButtonStatus() {
-        this.#buttonUndo.disabled = this.#toggleDefault.checked
-            || this.#currentValue === this.#startingValue;
+        this.#buttonUndo.disabled = this.#currentChecked || !this.#hasChangedValue;
         this.#buttonUndo.title = this.#buttonUndo.disabled
             ? this.#undoDisabledTitle
             : this.#undoEnabledTitle;
@@ -6822,10 +6912,19 @@ class ConfigFieldComponent extends HTMLElement {
 
     /** @param {boolean} setupCSV  */
     #setup(setupCSV) {
+        this.#id = Number(this.#input.dataset.id);
+        this.#name = this.#input.name;
+        this.#configType = this.#input.dataset.configType;
+
+        this.#startingChecked = this.#toggleDefault.checked;
+        this.#currentChecked = this.#toggleDefault.checked;
+
         this.#startingValue = this.#input.value;
         this.#currentValue = this.#input.value;
         this.#defaultValue = this.#input.dataset.defaultValue;
 
+        this.#saveEnabledTitle = this.#buttonSave.dataset.enabledTitle;
+        this.#saveDisabledTitle = this.#buttonSave.dataset.disabledTitle;
         this.#undoEnabledTitle = this.#buttonUndo.dataset.enabledTitle;
         this.#undoDisabledTitle = this.#buttonUndo.dataset.disabledTitle;
 
@@ -6834,35 +6933,56 @@ class ConfigFieldComponent extends HTMLElement {
         
         this.#input.addEventListener('input', () => {
             this.#currentValue = this.#input.value;
+            this.#hasChangedValue = this.#currentValue !== this.#defaultValue;
+            this.#isValid = this.#input.checkValidity();
+            this.#setSaveButtonStatus();
             this.#setUndoButtonStatus();
         });
 
         this.#buttonUndo.addEventListener('click', () => {
+            this.#buttonSave.disabled = true;
+            this.#buttonSave.title = this.#saveDisabledTitle;
             this.#buttonUndo.disabled = true;
             this.#buttonUndo.title = this.#undoDisabledTitle;
-            this.#input.value = this.#startingValue;
+
+            this.#currentValue = this.#startingValue;
+            this.#input.defaultValue = this.#startingValue;
+            this.#input.value = this.#currentValue;
+            this.#hasChangedValue = false;
+            this.#isValid = this.#input.checkValidity();
         });
 
         this.#toggleDefault.addEventListener('change', event => {
             const isDefault = event.currentTarget.checked;
+
+            this.#currentChecked = isDefault;
+            this.#hasChangedChecked = this.#currentChecked !== this.#startingChecked;
+            
             this.#input.disabled = isDefault;
+            this.#input.defaultValue = isDefault
+                ? this.#defaultValue
+                : this.#startingValue;
             this.#input.value = isDefault
                 ? this.#defaultValue
                 : this.#currentValue;
+            this.#setSaveButtonStatus();
             this.#setUndoButtonStatus();
         });
     }
 
     #setupCSV() {
+        this.#startingList = this.#listCSV.cloneNode(true);
+
         this.#toggleDefault.addEventListener('change', event => {
             const isDefault = event.currentTarget.checked;
+
+            this.#currentChecked = isDefault;
+            this.#hasChangedChecked = this.#currentChecked !== this.#startingChecked;
+
             this.#input.hidden = !isDefault;
-            this.#input.disabled = isDefault;
-            this.#input.value = isDefault
-                ? this.#defaultValue
-                : this.#currentValue;
-            this.#setUndoButtonStatus();
             this.#fieldset.hidden = isDefault;
+            this.#setSaveButtonStatus();
+            this.#setUndoButtonStatus();
         });
 
         const listItems = this.#listCSV.querySelectorAll('[item-csv]');
@@ -6870,19 +6990,38 @@ class ConfigFieldComponent extends HTMLElement {
             this.#setupCSVItem(item);
         }
 
+        this.#buttonAdd.addEventListener('click', () => {
+            this.#addCSVItem();
+        });
+
         this.#buttonUndo.addEventListener('click', () => {
+            this.#buttonSave.disabled = true;
+            this.#buttonSave.title = this.#saveDisabledTitle;
             this.#buttonUndo.disabled = true;
             this.#buttonUndo.title = this.#undoDisabledTitle;
 
-            // TODO: Restore list of items
-            //this.#input.value = this.#startingValue;
+            this.#currentValue = this.#startingValue;
+            this.#hasChangedValue = false;
+
+            const listClone = this.#startingList.cloneNode(true);
+            this.#listCSV.replaceWith(listClone);
+            this.#listCSV = listClone;
+
+            const listItems = this.#listCSV.querySelectorAll('[item-csv]');
+            for (const item of listItems) {
+                this.#setupCSVItem(item);
+            }
+
+            this.#isValid = this.#fieldset.checkValidity();
         });
     }
 
     /**
      * @param {HTMLLIElement} listItem
+     * @param {object} [options={}] 
+     * @param {boolean} options.addInputToList
      */
-    #setupCSVItem(listItem) {
+    #setupCSVItem(listItem, { addInputToList } = {}) {
         /** @type {HTMLInputElement} */
         const itemInput = listItem.querySelector('[input-csv]');
         /** @type {HTMLButtonElement} */
@@ -6894,18 +7033,26 @@ class ConfigFieldComponent extends HTMLElement {
                 : Number(itemInput.dataset.defaultSize);
             
             this.#currentValue = this.#getCSVString();
+            this.#hasChangedValue = this.#currentValue !== this.#startingValue;
+            this.#isValid = this.#fieldset.checkValidity();
+            this.#setSaveButtonStatus();
             this.#setUndoButtonStatus();
         });
 
+        if (addInputToList) {
+            this.#inputsCSV.push(itemInput);
+        }
         itemButton.addEventListener('click', () => {
             this.#inputsCSV = this.#inputsCSV.filter(
                 input => input !== itemInput
             );
+            listItem.remove();
 
             this.#currentValue = this.#getCSVString();
+            this.#hasChangedValue = this.#currentValue !== this.#startingValue;
+            this.#isValid = this.#fieldset.checkValidity();
+            this.#setSaveButtonStatus();
             this.#setUndoButtonStatus();
-
-            listItem.remove();
         });
     }
 }
@@ -8280,10 +8427,10 @@ class SiteConfiguration {
         //     saveButton.disabled = !isValid || (this.#fieldsUnchanged && this.#csvUnchanged);
         // })
 
-        form.addEventListener('submit', event => {
-            event.preventDefault();
-            this.#save(fieldset);
-        });
+        // form.addEventListener('submit', event => {
+        //     event.preventDefault();
+        //     this.#save(fieldset);
+        // });
 
         isLoading.remove();
     }

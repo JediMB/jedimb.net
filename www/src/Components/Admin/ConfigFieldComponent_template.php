@@ -34,6 +34,8 @@ $uid = $data->uid;
             data-error-value-missing="Field can't be empty"
             value="<?= $data->value ?>"
             data-default-value="<?= $data->defaultValue ?>"
+            data-id="<?= $data->dbId ?>"
+            data-config-type="<?= $data->configType->value ?>"
             placeholder="<?= $data->label ?>"
             <?php if ($data->isDefaultValue): ?>
                 disabled
@@ -64,6 +66,7 @@ $uid = $data->uid;
                                     required
                                     >
                                 <button btn-remove
+                                    type="button"
                                     class="link-svg hidden-unhovered"
                                     title="Remove item"
                                     >
@@ -74,8 +77,9 @@ $uid = $data->uid;
                             </input-container>
                         </li>
                     <?php endforeach ?>
-                    <li>
+                    <li item-add>
                         <button btn-add
+                            type="button"
                             class="btn-secondary"
                             >
                             <svg width="1em" height="1em">
@@ -84,7 +88,7 @@ $uid = $data->uid;
                         </button>
                     </li>
                     <template>
-                        <li>
+                        <li item-csv>
                             <input-container>
                                 <input input-csv
                                     type="text"
@@ -98,6 +102,7 @@ $uid = $data->uid;
                                     required
                                     >
                                 <button btn-remove
+                                    type="button"
                                     class="link-svg hidden-unhovered"
                                     title="Remove item"
                                     >

@@ -29,6 +29,7 @@ import User from '/js/models/user/user.model.js';
 /* Services */
 import httpClient from '/js/http-client.js';
 import blogPostService from '/js/services/blog-post.service.js';
+import configurationService from '/js/services/configuration.service.js';
 import formValidationService from '/js/services/form-validation.service.js';
 import imageGalleryService from '/js/services/image-gallery.service.js';
 import sessionService from '/js/services/session.service.js';

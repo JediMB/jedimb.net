@@ -1,4 +1,4 @@
-import httpClient from "../../http-client.js";
+import httpClient from "/js/http-client.js";
 
 export { configurationApiService as default };
 
