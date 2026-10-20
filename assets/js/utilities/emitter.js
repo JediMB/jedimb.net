@@ -82,7 +82,7 @@ export default class Emitter {
     /**
      * Subscribes to changes of the whole value/object, to values within an array, or both
      * 
-     * @param {Object} callbacks
+     * @param {object} callbacks
      * @param {((value: T) => void)} callbacks.next
      * @param {((index: Number, value: any) => void)} callbacks.nextIndexed
      * @param {{getCurrent: boolean, getUnchanged: boolean}} options
