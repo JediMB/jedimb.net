@@ -28,10 +28,10 @@ class SiteConfiguration {
         //     saveButton.disabled = !isValid || (this.#fieldsUnchanged && this.#csvUnchanged);
         // })
 
-        form.addEventListener('submit', event => {
-            event.preventDefault();
-            this.#save(fieldset);
-        });
+        // form.addEventListener('submit', event => {
+        //     event.preventDefault();
+        //     this.#save(fieldset);
+        // });
 
         isLoading.remove();
     }
