@@ -51,6 +51,15 @@ class Response {
         ];
     }
 
+    public static function Mixed(mixed $result, array $errors) : array {
+        return [
+            'success' => true,
+            'header' => 'HTTP/1.1 200 OK',
+            'value' => $result,
+            'errors' => $errors
+        ];
+    }
+
     public static function Success(mixed $result) : array {
         return [
             'success' => true,

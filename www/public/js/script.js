@@ -1347,27 +1347,60 @@ const blogPostService = new BlogPostService();
 
 
 
+/* IMPORT: /js/models/configuration.model.js */
+
+
+
+
 
 class ConfigurationApiService {
     #httpClient;
+    #api = 'configuration';
 
     constructor() {
         this.#httpClient = httpClient;
     }
 
+    /**
+     * @param {Configuration[]} configs 
+     * @returns {Promise<({success: boolean, errors?: ConfigError[], value?: Configuration[]})>}
+     */
     async createConfigurations(configs) {
-        const response = await this.#httpClient.post('configuration', configs);
+        const response = await this.#httpClient.post(this.#api, configs);
+
+        if (!response.success)
+            return response;
+
+        if (Array.isArray(response.value))
+            response.value = response.value.map(config => new Configuration(config));
 
         return response;
     }
 
+    /**
+     * @param {Configuration[]} configs 
+     * @returns {Promise<({success: boolean, errors?: ConfigError[], value?: Configuration[]})>}
+     */
     async updateConfigurations(configs) {
-        const response = await this.#httpClient.patch('configuration', configs);
+        const response = await this.#httpClient.patch(this.#api, configs);
+
+        if (!response.success)
+            return response;
+
+        if (Array.isArray(response.value))
+            response.value = response.value.map(config => new Configuration(config));
 
         return response;
     }
 }
 const configurationApiService = new ConfigurationApiService();
+
+/**
+ * @typedef ConfigError
+ * @type {object}
+ * @property {string} name
+ * @property {string} message
+ */
 
 
 
@@ -1376,12 +1409,59 @@ class ConfigurationService {
 
     constructor() {}
 
-    /** @param {Configuration} configuration  */
-    async saveConfiguration(configuration) {
-        if (configuration.id > 0)
-            return await this.#service.updateConfigurations([configuration]);
+    /** 
+     * @param {Configuration} configuration
+     * @param {(value: Configuration) => void} next
+     * @param {(errors: ConfigError[]) => void} error
+     */
+    async saveConfiguration(configuration, next, error) {
+        const response = configuration.id === 0
+            ? await this.#service.createConfigurations([configuration])
+            : await this.#service.updateConfigurations([configuration]);
 
-        return await this.#service.createConfigurations([configuration]);
+        if (!response.success)
+            return error?.call(this, response.errors);
+
+        next?.call(this, response.value);
+    }
+
+    /** 
+     * @param {Configuration[]} configurations
+     * @param {(value: Configuration[]) => void} next
+     * @param {(errors: ConfigError[]) => void} error
+     */
+    async saveConfigurations(configurations, next, error) {
+        const newConfigs = configurations.filter(config => config.id === 0);
+        const oldConfigs = configurations.filter(config => config.id > 0);
+
+        const promises = [];
+
+        if (newConfigs.length)
+            promises.push(this.#service.createConfigurations(newConfigs));
+
+        if (oldConfigs.length)
+            promises.push(this.#service.updateConfigurations(oldConfigs));
+
+        Promise.all(promises).then(responses => {
+            /** @type {Configuration[]} */
+            const returnedConfigurations = [];
+            /** @type {ConfigError[]} */
+            const returnedErrors = [];
+
+            for (const response of responses) {
+                returnedConfigurations.push(...response.value);
+                returnedErrors.push(...response.errors);
+            }
+
+            if (returnedConfigurations.length)
+                next?.call(this, returnedConfigurations);
+
+            if (returnedErrors.length)
+                error?.call(this, returnedErrors);
+            },
+            reason => {
+                console.error(reason);
+            });
     }
 }
 
@@ -6802,14 +6882,14 @@ class ConfigFieldComponent extends HTMLElement {
     /** @type {HTMLLIElement} */ #itemAdd;
     /** @type {HTMLUListElement} */ #listCSV;
     /** @type {HTMLTemplateElement} */ #itemTemplate;
-    /** @type {HTMLInputElement} */ #toggleDefault;
+    /** @type {HTMLInputElement} */ #toggleUseDefault;
 
     /** @type {number} */ #id;
     /** @type {string} */ #name;
     /** @type {string} */ #configType;
 
-    /** @type {boolean} */ #startingChecked;
-    /** @type {boolean} */ #currentChecked;
+    /** @type {boolean} */ #startingUseDefault;
+    /** @type {boolean} */ #currentUseDefault;
     /** @type {string} */ #currentValue;
     /** @type {string} */ #defaultValue;
     /** @type {string} */ #startingValue;
@@ -6846,7 +6926,7 @@ class ConfigFieldComponent extends HTMLElement {
         this.#buttonSave = inputRow.querySelector('[btn-save');
         this.#buttonUndo = inputRow.querySelector('[btn-undo]');
 
-        this.#toggleDefault = this.querySelector('[toggle-default]');
+        this.#toggleUseDefault = this.querySelector('[toggle-default]');
 
         this.#setup(!!listCSV);
     }
@@ -6874,12 +6954,16 @@ class ConfigFieldComponent extends HTMLElement {
     }
 
     async #save() {
-        const value = this.#currentChecked && this.#hasChangedValue
+        // TODO: Loading animation
+        this.#setSaveButtonStatus(true);
+        this.#setUndoButtonStatus(true);
+
+        const value = !this.#currentUseDefault && this.#hasChangedValue
             ? this.#currentValue
             : null;
 
         const isInactive = this.#hasChangedChecked
-            ? this.#currentChecked
+            ? this.#currentUseDefault
             : null;
         
         const config = new Configuration({
@@ -6890,21 +6974,57 @@ class ConfigFieldComponent extends HTMLElement {
             isInactive: isInactive
         });
 
-        const response = await configurationService.saveConfiguration(config);
+        configurationService.saveConfiguration(config,
+            response => {
+                this.#id = response.id;
+                const value = response.value;
+                this.#currentValue = value;
+                this.#startingValue = value;
+                
+                if (this.#listCSV) {
+                    /* TODO:
+                        Clear list of inputs
+                        Generate new inputs from value
+                        Clone new input list into #startingList
+                    */
+                }
+                else {
+                    this.#input.defaultValue = value;
+                    this.#input.value = value;
+                }
+
+                this.#startingUseDefault = response.isInactive;
+            },
+            errors => {
+                
+            }
+        );
     }
 
-    #setSaveButtonStatus() {
+    #setSaveButtonStatus(forceDisable = false) {
+        if (forceDisable) {
+            this.#buttonSave.disabled = true;
+            this.#buttonSave.title = this.#saveDisabledTitle;
+            return;
+        }
+
         this.#buttonSave.disabled = !this.#isValid
-            || (this.#currentChecked && !this.#hasChangedChecked)
-            || (!this.#currentChecked && !this.#hasChangedValue);
+            || (this.#currentUseDefault && !this.#hasChangedChecked)
+            || (!this.#currentUseDefault && !this.#hasChangedValue);
 
         this.#buttonSave.title = this.#buttonSave.disabled
             ? this.#saveDisabledTitle
             : this.#saveEnabledTitle;
     }
 
-    #setUndoButtonStatus() {
-        this.#buttonUndo.disabled = this.#currentChecked || !this.#hasChangedValue;
+    #setUndoButtonStatus(forceDisable = false) {
+        if (forceDisable) {
+            this.#buttonUndo.disabled = true;
+            this.#buttonUndo.title = this.#undoDisabledTitle;
+            return;
+        }
+
+        this.#buttonUndo.disabled = this.#currentUseDefault || !this.#hasChangedValue;
         this.#buttonUndo.title = this.#buttonUndo.disabled
             ? this.#undoDisabledTitle
             : this.#undoEnabledTitle;
@@ -6916,8 +7036,8 @@ class ConfigFieldComponent extends HTMLElement {
         this.#name = this.#input.name;
         this.#configType = this.#input.dataset.configType;
 
-        this.#startingChecked = this.#toggleDefault.checked;
-        this.#currentChecked = this.#toggleDefault.checked;
+        this.#startingUseDefault = this.#toggleUseDefault.checked;
+        this.#currentUseDefault = this.#toggleUseDefault.checked;
 
         this.#startingValue = this.#input.value;
         this.#currentValue = this.#input.value;
@@ -6927,6 +7047,8 @@ class ConfigFieldComponent extends HTMLElement {
         this.#saveDisabledTitle = this.#buttonSave.dataset.disabledTitle;
         this.#undoEnabledTitle = this.#buttonUndo.dataset.enabledTitle;
         this.#undoDisabledTitle = this.#buttonUndo.dataset.disabledTitle;
+
+        this.#buttonSave.addEventListener('click', () => this.#save());
 
         if (setupCSV)
             return this.#setupCSV();
@@ -6940,10 +7062,8 @@ class ConfigFieldComponent extends HTMLElement {
         });
 
         this.#buttonUndo.addEventListener('click', () => {
-            this.#buttonSave.disabled = true;
-            this.#buttonSave.title = this.#saveDisabledTitle;
-            this.#buttonUndo.disabled = true;
-            this.#buttonUndo.title = this.#undoDisabledTitle;
+            this.#setSaveButtonStatus(true);
+            this.#setUndoButtonStatus(true);
 
             this.#currentValue = this.#startingValue;
             this.#input.defaultValue = this.#startingValue;
@@ -6952,11 +7072,11 @@ class ConfigFieldComponent extends HTMLElement {
             this.#isValid = this.#input.checkValidity();
         });
 
-        this.#toggleDefault.addEventListener('change', event => {
+        this.#toggleUseDefault.addEventListener('change', event => {
             const isDefault = event.currentTarget.checked;
 
-            this.#currentChecked = isDefault;
-            this.#hasChangedChecked = this.#currentChecked !== this.#startingChecked;
+            this.#currentUseDefault = isDefault;
+            this.#hasChangedChecked = this.#currentUseDefault !== this.#startingUseDefault;
             
             this.#input.disabled = isDefault;
             this.#input.defaultValue = isDefault
@@ -6973,11 +7093,11 @@ class ConfigFieldComponent extends HTMLElement {
     #setupCSV() {
         this.#startingList = this.#listCSV.cloneNode(true);
 
-        this.#toggleDefault.addEventListener('change', event => {
+        this.#toggleUseDefault.addEventListener('change', event => {
             const isDefault = event.currentTarget.checked;
 
-            this.#currentChecked = isDefault;
-            this.#hasChangedChecked = this.#currentChecked !== this.#startingChecked;
+            this.#currentUseDefault = isDefault;
+            this.#hasChangedChecked = this.#currentUseDefault !== this.#startingUseDefault;
 
             this.#input.hidden = !isDefault;
             this.#fieldset.hidden = isDefault;
@@ -6995,10 +7115,8 @@ class ConfigFieldComponent extends HTMLElement {
         });
 
         this.#buttonUndo.addEventListener('click', () => {
-            this.#buttonSave.disabled = true;
-            this.#buttonSave.title = this.#saveDisabledTitle;
-            this.#buttonUndo.disabled = true;
-            this.#buttonUndo.title = this.#undoDisabledTitle;
+            this.#setSaveButtonStatus(true);
+            this.#setUndoButtonStatus(true);
 
             this.#currentValue = this.#startingValue;
             this.#hasChangedValue = false;

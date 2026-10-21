@@ -10,14 +10,14 @@ export default class ConfigFieldComponent extends HTMLElement {
     /** @type {HTMLLIElement} */ #itemAdd;
     /** @type {HTMLUListElement} */ #listCSV;
     /** @type {HTMLTemplateElement} */ #itemTemplate;
-    /** @type {HTMLInputElement} */ #toggleDefault;
+    /** @type {HTMLInputElement} */ #toggleUseDefault;
 
     /** @type {number} */ #id;
     /** @type {string} */ #name;
     /** @type {string} */ #configType;
 
-    /** @type {boolean} */ #startingChecked;
-    /** @type {boolean} */ #currentChecked;
+    /** @type {boolean} */ #startingUseDefault;
+    /** @type {boolean} */ #currentUseDefault;
     /** @type {string} */ #currentValue;
     /** @type {string} */ #defaultValue;
     /** @type {string} */ #startingValue;
@@ -54,7 +54,7 @@ export default class ConfigFieldComponent extends HTMLElement {
         this.#buttonSave = inputRow.querySelector('[btn-save');
         this.#buttonUndo = inputRow.querySelector('[btn-undo]');
 
-        this.#toggleDefault = this.querySelector('[toggle-default]');
+        this.#toggleUseDefault = this.querySelector('[toggle-default]');
 
         this.#setup(!!listCSV);
     }
@@ -82,12 +82,16 @@ export default class ConfigFieldComponent extends HTMLElement {
     }
 
     async #save() {
-        const value = this.#currentChecked && this.#hasChangedValue
+        // TODO: Loading animation
+        this.#setSaveButtonStatus(true);
+        this.#setUndoButtonStatus(true);
+
+        const value = !this.#currentUseDefault && this.#hasChangedValue
             ? this.#currentValue
             : null;
 
         const isInactive = this.#hasChangedChecked
-            ? this.#currentChecked
+            ? this.#currentUseDefault
             : null;
         
         const config = new Configuration({
@@ -98,21 +102,57 @@ export default class ConfigFieldComponent extends HTMLElement {
             isInactive: isInactive
         });
 
-        const response = await configurationService.saveConfiguration(config);
+        configurationService.saveConfiguration(config,
+            response => {
+                this.#id = response.id;
+                const value = response.value;
+                this.#currentValue = value;
+                this.#startingValue = value;
+                
+                if (this.#listCSV) {
+                    /* TODO:
+                        Clear list of inputs
+                        Generate new inputs from value
+                        Clone new input list into #startingList
+                    */
+                }
+                else {
+                    this.#input.defaultValue = value;
+                    this.#input.value = value;
+                }
+
+                this.#startingUseDefault = response.isInactive;
+            },
+            errors => {
+                
+            }
+        );
     }
 
-    #setSaveButtonStatus() {
+    #setSaveButtonStatus(forceDisable = false) {
+        if (forceDisable) {
+            this.#buttonSave.disabled = true;
+            this.#buttonSave.title = this.#saveDisabledTitle;
+            return;
+        }
+
         this.#buttonSave.disabled = !this.#isValid
-            || (this.#currentChecked && !this.#hasChangedChecked)
-            || (!this.#currentChecked && !this.#hasChangedValue);
+            || (this.#currentUseDefault && !this.#hasChangedChecked)
+            || (!this.#currentUseDefault && !this.#hasChangedValue);
 
         this.#buttonSave.title = this.#buttonSave.disabled
             ? this.#saveDisabledTitle
             : this.#saveEnabledTitle;
     }
 
-    #setUndoButtonStatus() {
-        this.#buttonUndo.disabled = this.#currentChecked || !this.#hasChangedValue;
+    #setUndoButtonStatus(forceDisable = false) {
+        if (forceDisable) {
+            this.#buttonUndo.disabled = true;
+            this.#buttonUndo.title = this.#undoDisabledTitle;
+            return;
+        }
+
+        this.#buttonUndo.disabled = this.#currentUseDefault || !this.#hasChangedValue;
         this.#buttonUndo.title = this.#buttonUndo.disabled
             ? this.#undoDisabledTitle
             : this.#undoEnabledTitle;
@@ -124,8 +164,8 @@ export default class ConfigFieldComponent extends HTMLElement {
         this.#name = this.#input.name;
         this.#configType = this.#input.dataset.configType;
 
-        this.#startingChecked = this.#toggleDefault.checked;
-        this.#currentChecked = this.#toggleDefault.checked;
+        this.#startingUseDefault = this.#toggleUseDefault.checked;
+        this.#currentUseDefault = this.#toggleUseDefault.checked;
 
         this.#startingValue = this.#input.value;
         this.#currentValue = this.#input.value;
@@ -135,6 +175,8 @@ export default class ConfigFieldComponent extends HTMLElement {
         this.#saveDisabledTitle = this.#buttonSave.dataset.disabledTitle;
         this.#undoEnabledTitle = this.#buttonUndo.dataset.enabledTitle;
         this.#undoDisabledTitle = this.#buttonUndo.dataset.disabledTitle;
+
+        this.#buttonSave.addEventListener('click', () => this.#save());
 
         if (setupCSV)
             return this.#setupCSV();
@@ -148,10 +190,8 @@ export default class ConfigFieldComponent extends HTMLElement {
         });
 
         this.#buttonUndo.addEventListener('click', () => {
-            this.#buttonSave.disabled = true;
-            this.#buttonSave.title = this.#saveDisabledTitle;
-            this.#buttonUndo.disabled = true;
-            this.#buttonUndo.title = this.#undoDisabledTitle;
+            this.#setSaveButtonStatus(true);
+            this.#setUndoButtonStatus(true);
 
             this.#currentValue = this.#startingValue;
             this.#input.defaultValue = this.#startingValue;
@@ -160,11 +200,11 @@ export default class ConfigFieldComponent extends HTMLElement {
             this.#isValid = this.#input.checkValidity();
         });
 
-        this.#toggleDefault.addEventListener('change', event => {
+        this.#toggleUseDefault.addEventListener('change', event => {
             const isDefault = event.currentTarget.checked;
 
-            this.#currentChecked = isDefault;
-            this.#hasChangedChecked = this.#currentChecked !== this.#startingChecked;
+            this.#currentUseDefault = isDefault;
+            this.#hasChangedChecked = this.#currentUseDefault !== this.#startingUseDefault;
             
             this.#input.disabled = isDefault;
             this.#input.defaultValue = isDefault
@@ -181,11 +221,11 @@ export default class ConfigFieldComponent extends HTMLElement {
     #setupCSV() {
         this.#startingList = this.#listCSV.cloneNode(true);
 
-        this.#toggleDefault.addEventListener('change', event => {
+        this.#toggleUseDefault.addEventListener('change', event => {
             const isDefault = event.currentTarget.checked;
 
-            this.#currentChecked = isDefault;
-            this.#hasChangedChecked = this.#currentChecked !== this.#startingChecked;
+            this.#currentUseDefault = isDefault;
+            this.#hasChangedChecked = this.#currentUseDefault !== this.#startingUseDefault;
 
             this.#input.hidden = !isDefault;
             this.#fieldset.hidden = isDefault;
@@ -203,10 +243,8 @@ export default class ConfigFieldComponent extends HTMLElement {
         });
 
         this.#buttonUndo.addEventListener('click', () => {
-            this.#buttonSave.disabled = true;
-            this.#buttonSave.title = this.#saveDisabledTitle;
-            this.#buttonUndo.disabled = true;
-            this.#buttonUndo.title = this.#undoDisabledTitle;
+            this.#setSaveButtonStatus(true);
+            this.#setUndoButtonStatus(true);
 
             this.#currentValue = this.#startingValue;
             this.#hasChangedValue = false;

@@ -15,6 +15,7 @@ if (!$sessionService->hasPermissions([ UserPermission::Configuration ]))
     return Response::Forbidden(TEXT_INSUFFICIENT_PERMISSIONS);
 
 $input = json_decode(file_get_contents('php://input'), true);
+$result = [];
 $errors = [];
 
 if (empty($input))
@@ -25,32 +26,52 @@ $configService = ConfigurationService::getInstance(); /** @var ConfigurationServ
 switch ( $_SERVER['REQUEST_METHOD'] ) {
     case 'POST':
         try {
-            foreach ($input as $config) {
-                $configDTO = new ConfigurationDTO($config);
+            $configDTOs = array_map(fn($config) => new ConfigurationDTO($config), $input);
 
+            foreach ($configDTOs as $configDTO) {
                 if (!ConfigurationService::isConfigurable($configDTO->name)) {
-                    $errors[] = 'Attempted to create new configuration for disallowed constant';
+                    $errors[] = [
+                        'name' => $configDTO->name,
+                        'message' => 'Attempted to create new configuration for disallowed constant'
+                    ];
                     continue;
                 }
 
                 if ($configDTO->id !== 0) {
-                    $errors[] = 'Attempted to create new configuration with non-zero id';
+                    $errors[] = [
+                        'name' => $configDTO->name,
+                        'message' => 'Attempted to create new configuration with non-zero id'
+                    ];
                     continue;
                 }
 
                 if (is_int($configDTO->value) && $configDTO->value < 1) {
-                    $errors[] = 'Attempted to create a new configuration with a non-positive integer value';
+                    $errors[] = [
+                        'name' => $configDTO->name,
+                        'message' => 'Attempted to create a new configuration with a non-positive integer value'
+                    ];
                     continue;
                 }
 
-                if (empty( ($result = $configService->createConfiguration($configDTO)) ))
-                    $errors[] = "Failed to create: {$configDTO->name}";
+                if (empty( ($config = $configService->createConfiguration($configDTO)) )) {
+                    $errors[] = [
+                        'name' => $configDTO->name,
+                        'message' => 'No created configuration returned from database'
+                    ];
+                    continue;
+                }
+
+                $result[] = $config;
             }
 
-            if ($errors)
-                return Response::Error($errors);
+            if ($errors) {
+                if ($result)
+                    return Response::Mixed($result, $errors);
 
-            return Response::Success(count($input));
+                return Response::Error($errors);
+            }
+
+            return Response::Success($result);
         }
         catch (InvalidArgumentException $e) {
             return Response::BadRequest('Malformed request body: ' . $e->getMessage());
@@ -61,16 +82,22 @@ switch ( $_SERVER['REQUEST_METHOD'] ) {
 
     case 'PATCH':
         try {
-            foreach ($input as $config) {
-                $configDTO = new ConfigurationDTO($config);
+            $configDTOs = array_map(fn($config) => new ConfigurationDTO($config), $input);
 
+            foreach ($configDTOs as $configDTO) {
                 if (!ConfigurationService::isConfigurable($configDTO->name)) {
-                    $errors[] = 'Attempted to create new configuration for disallowed constant';
+                    $errors[] = [
+                        'name' => $configDTO->name,
+                        'message' => 'Attempted to create new configuration for disallowed constant'
+                    ];
                     continue;
                 }
 
                 if (is_int($configDTO->value) && $configDTO->value < 1) {
-                    $errors[] = 'Attempted to create a new configuration with a non-positive integer value';
+                    $errors[] = [
+                        'name' => $configDTO->name,
+                        'message' => 'Attempted to create a new configuration with a non-positive integer value'
+                    ];
                     continue;
                 }
                 
@@ -78,14 +105,25 @@ switch ( $_SERVER['REQUEST_METHOD'] ) {
 
                 ConfigurationDTO::update($configDB, $configDTO);
 
-                if (empty( ($result = $configService->updateConfiguration($configDB)) ))
-                    $errors[] = "Failed to update: {$configDTO->name}";
+                if (empty( ($config = $configService->updateConfiguration($configDB)) )) {
+                    $errors[] = [
+                        'name' => $configDTO->name,
+                        'message' => 'No updated configuration returned from database'
+                    ];
+                    continue;
+                }
+
+                $result[] = $config;
             }
 
-            if ($errors)
-                return Response::Error($errors);
+            if ($errors) {
+                if ($result)
+                    return Response::Mixed($result, $errors);
 
-            return Response::Success(count($input));
+                return Response::Error($errors);
+            }
+            
+            return Response::Success($result);
         }
         catch (InvalidArgumentException $e) {
             return Response::BadRequest('Malformed request body: ' . $e->getMessage());

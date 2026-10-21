@@ -8,12 +8,59 @@ class ConfigurationService {
 
     constructor() {}
 
-    /** @param {Configuration} configuration  */
-    async saveConfiguration(configuration) {
-        if (configuration.id > 0)
-            return await this.#service.updateConfigurations([configuration]);
+    /** 
+     * @param {Configuration} configuration
+     * @param {(value: Configuration) => void} next
+     * @param {(errors: ConfigError[]) => void} error
+     */
+    async saveConfiguration(configuration, next, error) {
+        const response = configuration.id === 0
+            ? await this.#service.createConfigurations([configuration])
+            : await this.#service.updateConfigurations([configuration]);
 
-        return await this.#service.createConfigurations([configuration]);
+        if (!response.success)
+            return error?.call(this, response.errors);
+
+        next?.call(this, response.value);
+    }
+
+    /** 
+     * @param {Configuration[]} configurations
+     * @param {(value: Configuration[]) => void} next
+     * @param {(errors: ConfigError[]) => void} error
+     */
+    async saveConfigurations(configurations, next, error) {
+        const newConfigs = configurations.filter(config => config.id === 0);
+        const oldConfigs = configurations.filter(config => config.id > 0);
+
+        const promises = [];
+
+        if (newConfigs.length)
+            promises.push(this.#service.createConfigurations(newConfigs));
+
+        if (oldConfigs.length)
+            promises.push(this.#service.updateConfigurations(oldConfigs));
+
+        Promise.all(promises).then(responses => {
+            /** @type {Configuration[]} */
+            const returnedConfigurations = [];
+            /** @type {ConfigError[]} */
+            const returnedErrors = [];
+
+            for (const response of responses) {
+                returnedConfigurations.push(...response.value);
+                returnedErrors.push(...response.errors);
+            }
+
+            if (returnedConfigurations.length)
+                next?.call(this, returnedConfigurations);
+
+            if (returnedErrors.length)
+                error?.call(this, returnedErrors);
+            },
+            reason => {
+                console.error(reason);
+            });
     }
 }
 
