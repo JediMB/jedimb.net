@@ -49,20 +49,11 @@ class ConfigurationDbService extends BaseDbService {
 
     public function createConfiguration(ConfigurationDTO $object) : Configuration {
         try {
-            if (is_int($object->value)) {
-                $valueInt = $object->value;
-                $valueString = null;
-            }
-            else {
-                $valueInt = null;
-                $valueString = $object->value;
-            }
-
             $result = $this->dbService->selectFunction(
                 'create_configuration', [
                     1 => [ 'value' => $object->name, 'type' => PDO::PARAM_STR ],
-                    2 => [ 'value' => $valueInt, 'type' => PDO::PARAM_INT ],
-                    3 => [ 'value' => $valueString, 'type' => PDO::PARAM_STR ]
+                    2 => [ 'value' => $object->value, 'type' => PDO::PARAM_STR ],
+                    3 => [ 'value' => $object->configType->value, 'type' => PDO::PARAM_STR ]
                     ]
                 );
 
@@ -79,9 +70,9 @@ class ConfigurationDbService extends BaseDbService {
                 'update_configuration', [
                     1 => [ 'value' => $object->id, 'type' => PDO::PARAM_INT ],
                     2 => [ 'value' => $object->name, 'type' => PDO::PARAM_STR ],
-                    3 => [ 'value' => $object->valueInt, 'type' => PDO::PARAM_INT ],
-                    4 => [ 'value' => $object->valueString, 'type' => PDO::PARAM_STR ],
-                    5 => [ 'value' => $object->isActive, 'type' => PDO::PARAM_BOOL ]
+                    3 => [ 'value' => $object->value, 'type' => PDO::PARAM_STR ],
+                    4 => [ 'value' => $object->configType->value, 'type' => PDO::PARAM_STR ],
+                    5 => [ 'value' => $object->isInactive, 'type' => PDO::PARAM_BOOL ]
                     ]
                 );
 
