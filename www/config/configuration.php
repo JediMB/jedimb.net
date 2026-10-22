@@ -11,7 +11,10 @@ define('PATH_ERROR403', '../templates/errors/403.php');
 define('PATH_ERROR404', '../templates/errors/404.php');
 define('PATH_CSS_DEFAULT', 'css/style.css');
 define('PATH_IMAGE_GALLERY', 'images/gallery');
-define('PATH_TEMP_DIR', '../var/tmp');
+
+$path_var_dir = '../var';
+define('PATH_TEMP_DIR', "$path_var_dir/tmp");
+define('PATH_LOG_DIR', "$path_var_dir/log");
 
 define('SPECIAL_PATHS', [
     'login' => PATH_REALPAGES_DIR . '/account/login.php'
