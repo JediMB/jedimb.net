@@ -1412,7 +1412,7 @@ class ConfigurationService {
     /** 
      * @param {Configuration} configuration
      * @param {(value: Configuration) => void} next
-     * @param {(errors: ConfigError[]) => void} error
+     * @param {(error: ConfigError) => void} error
      */
     async saveConfiguration(configuration, next, error) {
         const response = configuration.id === 0
@@ -1420,9 +1420,9 @@ class ConfigurationService {
             : await this.#service.updateConfigurations([configuration]);
 
         if (!response.success)
-            return error?.call(this, response.errors);
+            return error?.call(this, response.errors.at(0));
 
-        next?.call(this, response.value);
+        next?.call(this, response.value.at(0));
     }
 
     /** 
@@ -6878,6 +6878,7 @@ class ConfigFieldComponent extends HTMLElement {
     /** @type {HTMLButtonElement} */ #buttonUndo;
     /** @type {HTMLFieldSetElement} */ #fieldset;
     /** @type {HTMLInputElement} */ #input;
+    /** @type {HTMLElement} */ #inputErrors;
     /** @type {HTMLInputElement[]|undefined} */ #inputsCSV;
     /** @type {HTMLLIElement} */ #itemAdd;
     /** @type {HTMLUListElement} */ #listCSV;
@@ -6926,6 +6927,8 @@ class ConfigFieldComponent extends HTMLElement {
         this.#buttonSave = inputRow.querySelector('[btn-save');
         this.#buttonUndo = inputRow.querySelector('[btn-undo]');
 
+        this.#inputErrors = this.querySelector('input-errors');
+
         this.#toggleUseDefault = this.querySelector('[toggle-default]');
 
         this.#setup(!!listCSV);
@@ -6935,8 +6938,22 @@ class ConfigFieldComponent extends HTMLElement {
 
     disconnectedCallback() {}
 
-    #addCSVItem() {
+    /** @param {string} message  */
+    addError(message) {
+        const div = document.createElement('div');
+        div.textContent = message;
+        this.#inputErrors.appendChild(div);
+    }
+
+    clearErrors() {
+        this.#inputErrors.textContent = '';
+    }
+
+    #addCSVItem(inputValue = '') {
+        /** @type {DocumentFragment} */
         const fragment = this.#itemTemplate.content.cloneNode(true);
+        const input = fragment.querySelector('input');
+        input.defaultValue = inputValue;
         this.#listCSV.insertBefore(fragment, this.#itemAdd);
         const item = this.#itemAdd.previousElementSibling;
         this.#setupCSVItem(item, { addInputToList: true });
@@ -6956,7 +6973,9 @@ class ConfigFieldComponent extends HTMLElement {
     async #save() {
         // TODO: Loading animation
         this.#setSaveButtonStatus(true);
+        this.#buttonSave.setAttribute('btn-loading', 'true');
         this.#setUndoButtonStatus(true);
+        this.clearErrors();
 
         const value = !this.#currentUseDefault && this.#hasChangedValue
             ? this.#currentValue
@@ -6982,11 +7001,16 @@ class ConfigFieldComponent extends HTMLElement {
                 this.#startingValue = value;
                 
                 if (this.#listCSV) {
-                    /* TODO:
-                        Clear list of inputs
-                        Generate new inputs from value
-                        Clone new input list into #startingList
-                    */
+                    this.#input.defaultValue = this.#defaultValue;
+                    this.#input.value = this.#defaultValue;
+
+                    this.#listCSV.textContent = '';
+
+                    const values = value.split(',').map(v => v.trim());
+                    for (const csv of values)
+                        this.#addCSVItem(csv);
+
+                    this.#startingList = this.#listCSV.cloneNode(true);
                 }
                 else {
                     this.#input.defaultValue = value;
@@ -6994,9 +7018,13 @@ class ConfigFieldComponent extends HTMLElement {
                 }
 
                 this.#startingUseDefault = response.isInactive;
+                this.#buttonSave.removeAttribute('btn-loading');
             },
-            errors => {
-                
+            error => {
+                this.addError(error.message);
+
+                this.#setUndoButtonStatus();
+                this.#buttonSave.removeAttribute('btn-loading');
             }
         );
     }

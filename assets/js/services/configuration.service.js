@@ -11,7 +11,7 @@ class ConfigurationService {
     /** 
      * @param {Configuration} configuration
      * @param {(value: Configuration) => void} next
-     * @param {(errors: ConfigError[]) => void} error
+     * @param {(error: ConfigError) => void} error
      */
     async saveConfiguration(configuration, next, error) {
         const response = configuration.id === 0
@@ -19,9 +19,9 @@ class ConfigurationService {
             : await this.#service.updateConfigurations([configuration]);
 
         if (!response.success)
-            return error?.call(this, response.errors);
+            return error?.call(this, response.errors.at(0));
 
-        next?.call(this, response.value);
+        next?.call(this, response.value.at(0));
     }
 
     /** 

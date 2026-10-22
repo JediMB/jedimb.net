@@ -146,6 +146,7 @@ $uid = $data->uid;
             </svg>
         </button>
     </input-row>
+    <input-errors></input-errors>
     <label for="config-field__toggle-<?= $data->uid ?>">
         <input toggle-default
             id="config-field__toggle-<?= $data->uid ?>"
