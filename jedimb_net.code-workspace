@@ -50,8 +50,8 @@
 		"liveServer.settings.NoBrowser": false,
 		"liveServer.settings.fullReload": false,
 		"liveServer.settings.ignoreFiles" : [
-			"**/images",
-			"**/tmp"
+			"**/images/**",
+			"**/var/**"
 		]
 	}
 }

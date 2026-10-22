@@ -3,4 +3,5 @@ www/config/secrets.php
 www/config/.secrets.json
 www/config/sqlca.pem
 www/var/cache/*
+www/var/log/*
 www/var/tmp/*
