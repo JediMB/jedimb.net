@@ -53,8 +53,7 @@ define('INPUT_LENGTH', [
     'page_sociallink' => [ 'min' => 1, 'max' => 100 ],
     'blog_permalink_title' => [ 'min' => 0, 'max' => 50 ],
     'constant_name' => [ 'min' => 1, 'max' => 50 ],
-    'constant_value' => [ 'min' => 1, 'max' => 512 ],
-    'constant_type' => [ 'min' => 1, 'max' => 15 ],
+    'constant_value' => [ 'min' => 1, 'max' => 512 ]
 ]);
 
 define('INPUT_ALLOWED_TAGS', [
