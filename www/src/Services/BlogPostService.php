@@ -88,7 +88,7 @@ class BlogPostService extends Singleton {
                     <a href="$link#page-break">$text</a>
                 </div>
                 HTML;
-            $blogPost->contentShort = preg_replace(REGEX_PHP['pagebreak-tag'], $html, $blogPost->contentShort, 1);
+            $blogPost->contentShort = preg_replace(REGEX_PHP['pagebreak_tag'], $html, $blogPost->contentShort, 1);
         }
 
         return $result;
@@ -100,7 +100,7 @@ class BlogPostService extends Singleton {
         if (!$blogPost)
             return false;
 
-        $blogPost->contentShort = preg_replace(REGEX_PHP['pagebreak-tag'], '<div id="page-break"></div>', $blogPost->contentShort, 1);
+        $blogPost->contentShort = preg_replace(REGEX_PHP['pagebreak_tag'], '<div id="page-break"></div>', $blogPost->contentShort, 1);
 
         return $blogPost;
     }

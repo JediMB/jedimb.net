@@ -25,8 +25,8 @@ class BlogPostDTO extends DbBase {
 
         $errors = [];
 
-        $this->title = Input::verifyRequiredTextInput('title', $input, INPUT_LENGTH['page_title'], $errors, REGEX_PHP['default-text']);
-        $this->description = Input::verifyRequiredTextInput('description', $input, INPUT_LENGTH['page_description'], $errors, REGEX_PHP['default-text']);
+        $this->title = Input::verifyRequiredTextInput('title', $input, INPUT_LENGTH['page_title'], $errors, REGEX_PHP['default_text']);
+        $this->description = Input::verifyRequiredTextInput('description', $input, INPUT_LENGTH['page_description'], $errors, REGEX_PHP['default_text']);
         
         $this->contentShort = strip_tags($input['contentShort'], INPUT_ALLOWED_TAGS);
         
@@ -41,7 +41,7 @@ class BlogPostDTO extends DbBase {
         $this->scheduledOn = $input['scheduledOn'];
 
         $this->permalink = DateTime::toPermadateString(DateTime::parse($this->scheduledOn))
-            . Input::verifyRequiredTextInput('permalink', $input, INPUT_LENGTH['blog_permalink_title'], $errors, REGEX_PHP['permalink-title']);
+            . Input::verifyRequiredTextInput('permalink', $input, INPUT_LENGTH['blog_permalink_title'], $errors, REGEX_PHP['permalink_title']);
 
         if (!empty($errors))
             throw new InputException(__CLASS__, $errors);

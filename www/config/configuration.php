@@ -48,7 +48,10 @@ define('INPUT_LENGTH', [
     'page_title' => [ 'min' => 1, 'max' => 50 ],
     'page_description' => [ 'min' => 10, 'max' => 250 ],
     'page_sociallink' => [ 'min' => 1, 'max' => 100 ],
-    'blog_permalink_title' => [ 'min' => 0, 'max' => 50 ]
+    'blog_permalink_title' => [ 'min' => 0, 'max' => 50 ],
+    'constant_name' => [ 'min' => 1, 'max' => 50 ],
+    'constant_value' => [ 'min' => 1, 'max' => 512 ],
+    'constant_type' => [ 'min' => 1, 'max' => 15 ],
 ]);
 
 define('INPUT_ALLOWED_TAGS', [
@@ -62,30 +65,32 @@ define('REGEX_PATH_WITH_PAGE', '/^(?:(.+)\/)?(\d{1,7})\/?$/');
 define('REGEX_BLOG_PATH', '/^'. PATH_BLOG_PREFIX .'(\/\d{4}\/\d{2}\/\d{2}\/[a-z\d\-]*)$/');
 
 define('REGEX_PHP', [
-    'default-text' => '/^(?!\s)[\w@.,!?\-\' à-æÀ-Æè-ïÈ-Ïò-öÒ-Öø-ýØ-Ýÿ]+$/',
+    'constant_name' => '/^[A-Z][A-Z0-9_]*$/',
+    'default_text' => '/^(?!\s)[\w@.,!?\-\' à-æÀ-Æè-ïÈ-Ïò-öÒ-Öø-ýØ-Ýÿ]+$/',
     'username' => '/^(?!\s)[\w@.!?\-\' à-æÀ-Æè-ïÈ-Ïò-öÒ-Öø-ýØ-Ýÿ]+(?<!\s)$/',
     'password' => '/^(?=.*[a-z])(?=.*[A-Z])[\w@.!#$&?*+\-\$£€à-æÀ-Æè-ïÈ-Ïò-öÒ-Öø-ýØ-Ýÿ]+$/',
-    'config-item' => '/^(?!\s)[a-z0-9\-\' à-æè-ïò-öø-ýÿ]+[^\s]$/',
+    'config_item' => '/^(?!\s)[a-z0-9\-\' à-æè-ïò-öø-ýÿ]+[^\s]$/',
     'mastolink' => '/^http[s]?:\/\/([-.a-z0-9]+)\/@([-.a-z0-9]+)\/([0-9]+)$/',
-    'permalink-title' => '/^[a-z\d\-]*$/',
-    'permalink-date-title' => '/^\/(\d{4}\/\d{2}\/\d{2})\/([a-z\d\-]*)$/',
+    'permalink_title' => '/^[a-z\d\-]*$/',
+    'permalink_date_title' => '/^\/(\d{4}\/\d{2}\/\d{2})\/([a-z\d\-]*)$/',
     'email' => '/(?!.*\.{2,})^(mailto:)?[\w\-\.\%\/\+]{1,64}\@[\w\.]{1,64}\.[a-zA-Z0-9\-]{1,32}$/',
     'url' => '/^(((ftp|http|https):\/\/)|(\/)|(..\/))(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-\/]))?$/',
-    'pagebreak-tag' => '/<hr page-break(?:="")?>/'
+    'pagebreak_tag' => '/<hr page-break(?:="")?>/'
 ]);
 
 // Copied and pasted with the front-slashes removed to avoid frequent trimming
 define('REGEX_HTML', [
-    'default-text' => '^(?!\s)[\w@.,!?\-\' à-æÀ-Æè-ïÈ-Ïò-öÒ-Öø-ýØ-Ýÿ]+$',
+    'constant_name' => '^[A-Z][A-Z0-9_]*$',
+    'default_text' => '^(?!\s)[\w@.,!?\-\' à-æÀ-Æè-ïÈ-Ïò-öÒ-Öø-ýØ-Ýÿ]+$',
     'username' => '^(?!\s)[\w@.!?\-\' à-æÀ-Æè-ïÈ-Ïò-öÒ-Öø-ýØ-Ýÿ]+(?<!\s)$',
     'password' => '^(?=.*[a-z])(?=.*[A-Z])[\w@.!#$&?*+\-\$£€à-æÀ-Æè-ïÈ-Ïò-öÒ-Öø-ýØ-Ýÿ]+$',
-    'config-item' => '^(?!\s)[a-z0-9\-\' à-æè-ïò-öø-ýÿ]+[^\s]$',
+    'config_item' => '^(?!\s)[a-z0-9\-\' à-æè-ïò-öø-ýÿ]+[^\s]$',
     'mastolink' => '^http[s]?:\/\/([-.a-z0-9]+)\/@([-.a-z0-9]+)\/([0-9]+)$',
-    'permalink-title' => '^[a-z\d\-]*$',
-    'permalink-date-title' => '^\/(\d{4}\/\d{2}\/\d{2})\/([a-z\d\-]*)$',
+    'permalink_title' => '^[a-z\d\-]*$',
+    'permalink_date_title' => '^\/(\d{4}\/\d{2}\/\d{2})\/([a-z\d\-]*)$',
     'email' => '(?!.*\.{2,})^(mailto:)?[\w\-\.\%\/\+]{1,64}\@[\w\.]{1,64}\.[a-zA-Z0-9\-]{1,32}$',
     'url' => '^(((ftp|http|https):\/\/)|(\/)|(..\/))(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-\/]))?$',
-    'pagebreak-tag' => '<hr page-break(?:="")?>'
+    'pagebreak_tag' => '<hr page-break(?:="")?>'
 ]);
 
 define('META_DESCRIPTION', "JediMB's indie website");

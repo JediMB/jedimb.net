@@ -83,7 +83,7 @@ Component::renderCSS();
             value=""
             minlength="<?= INPUT_LENGTH['image_title']['min'] ?>"
             maxlength="<?= INPUT_LENGTH['image_title']['max'] ?>"
-            pattern="<?= REGEX_HTML['default-text'] ?>"
+            pattern="<?= REGEX_HTML['default_text'] ?>"
             required>
     </div>
     <div>
@@ -114,7 +114,7 @@ Component::renderCSS();
             value=""
             minlength="<?= INPUT_LENGTH['image_title']['min'] ?>"
             maxlength="<?= INPUT_LENGTH['image_title']['max'] ?>"
-            pattern="<?= REGEX_HTML['default-text'] ?>"
+            pattern="<?= REGEX_HTML['default_text'] ?>"
             required>
     </div>
     <div>

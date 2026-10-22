@@ -26,7 +26,7 @@ $uid = $data->uid;
                 <?php break;
                 default: ?>
                     type="text"
-                    pattern="<?= REGEX_HTML['default-text'] ?>"
+                    pattern="<?= REGEX_HTML['default_text'] ?>"
                     title="<?= TEXT_CONFIG_CHARS ?>"
                     data-error-pattern-mismatch="<?= TEXT_CONFIG_CHARS ?>"
                 <?php break ?>
@@ -59,10 +59,12 @@ $uid = $data->uid;
                                     title="<?= TEXT_CONFIG_ITEM_CHARS ?>"
                                     placeholder="Type here..."
                                     value="<?= $item ?>"
+                                    min="<?= INPUT_LENGTH['constant_value']['min'] ?>"
+                                    max="<?= INPUT_LENGTH['constant_value']['max'] ?>"
                                     size="<?= strlen($item) ?>"
                                     data-default-size="12"
                                     data-error-invalid="INVALID ITEM"
-                                    pattern="<?= REGEX_HTML['config-item'] ?>"
+                                    pattern="<?= REGEX_HTML['config_item'] ?>"
                                     required
                                     >
                                 <button btn-remove
@@ -98,7 +100,7 @@ $uid = $data->uid;
                                     size="12"
                                     data-default-size="12"
                                     data-error-invalid="INVALID ITEM"
-                                    pattern="<?= REGEX_HTML['config-item'] ?>"
+                                    pattern="<?= REGEX_HTML['config_item'] ?>"
                                     required
                                     >
                                 <button btn-remove
