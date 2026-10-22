@@ -13,7 +13,7 @@ class Input {
      * @param string|null $regEx 
      * @return string|null
      * */
-    public static function verifyOptionalTextInput(string $key, array $inputs, array $inputLengths, array $outErrors, ?string $regEx = null) : string|null {
+    public static function verifyOptionalTextInput(string $key, array $inputs, array $inputLengths, array &$outErrors, ?string $regEx = null) : string|null {
         if (empty($inputs[$key]))
             return null;
 
@@ -28,7 +28,7 @@ class Input {
      * @param string|null $regEx 
      * @return string|null
      * */
-    public static function verifyRequiredTextInput(string $key, array $inputs, array $inputLengths, array $outErrors, ?string $regEx = null) : string|null {
+    public static function verifyRequiredTextInput(string $key, array $inputs, array $inputLengths, array &$outErrors, ?string $regEx = null) : string|null {
         if (empty($inputs[$key])) {
             $errors[$key][InputError::Required->value] = true;
             return null;
@@ -45,7 +45,7 @@ class Input {
      * @param string|null $regEx 
      * @return string|null
      * */
-    private static function verifyTextInput(string $key, string $inputString, array $inputLengths, array $outErrors, ?string $regEx) : string|null {
+    private static function verifyTextInput(string $key, string $inputString, array $inputLengths, array &$outErrors, ?string $regEx) : string|null {
         $inputString = trim($inputString);
         $length = strlen($inputString);
 
