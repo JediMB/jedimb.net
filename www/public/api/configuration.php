@@ -2,6 +2,7 @@
 
 use App\Enums\UserPermission;
 use App\Models\DTO\ConfigurationDTO;
+use App\Models\Exceptions\InputException;
 use App\Services\ConfigurationService;
 use App\Services\SessionService;
 use App\Utils\Response;
@@ -22,10 +23,9 @@ if (empty($input))
     return Response::BadRequest('Request body is empty');
 
 $configService = ConfigurationService::getInstance(); /** @var ConfigurationService $configService */
-
-switch ( $_SERVER['REQUEST_METHOD'] ) {
-    case 'POST':
-        try {
+try {
+    switch ( $_SERVER['REQUEST_METHOD'] ) {
+        case 'POST':
             $configDTOs = array_map(fn($config) => new ConfigurationDTO($config), $input);
 
             foreach ($configDTOs as $configDTO) {
@@ -72,16 +72,9 @@ switch ( $_SERVER['REQUEST_METHOD'] ) {
             }
 
             return Response::Success($result);
-        }
-        catch (InvalidArgumentException $e) {
-            return Response::BadRequest('Malformed request body: ' . $e->getMessage());
-        }
-        catch (Exception $e) {
-            return Response::Error($errors + [$e->getMessage()]);
-        }
+            
 
-    case 'PATCH':
-        try {
+        case 'PATCH':
             $configDTOs = array_map(fn($config) => new ConfigurationDTO($config), $input);
 
             foreach ($configDTOs as $configDTO) {
@@ -124,16 +117,17 @@ switch ( $_SERVER['REQUEST_METHOD'] ) {
             }
             
             return Response::Success($result);
-        }
-        catch (InvalidArgumentException $e) {
-            return Response::BadRequest('Malformed request body: ' . $e->getMessage());
-        }
-        catch (Exception $e) {
-            return Response::Error($errors + [$e->getMessage()]);
-        }
 
-    default:
-        return Response::InvalidRequest();
+        default:
+            return Response::InvalidRequest();
+    }
 }
-
-?>
+catch (InputException $e) {
+    return Response::InputException($e->getErrors());
+}
+catch (InvalidArgumentException $e) {
+    return Response::BadRequest('Malformed request body: ' . $e->getMessage());
+}
+catch (Exception $e) {
+    return Response::Error($errors + [$e->getMessage()]);
+}
