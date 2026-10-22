@@ -84,6 +84,7 @@ export default class ConfigFieldComponent extends HTMLElement {
     async #save() {
         // TODO: Loading animation
         this.#setSaveButtonStatus(true);
+        this.#buttonSave.setAttribute('btn-loading', 'true');
         this.#setUndoButtonStatus(true);
 
         const value = !this.#currentUseDefault && this.#hasChangedValue

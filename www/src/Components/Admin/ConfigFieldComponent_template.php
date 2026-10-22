@@ -126,7 +126,10 @@ $uid = $data->uid;
             class="btn-secondary btn-safe"
             disabled
             >
-            <svg width="1em" height="1em">
+            <svg is-loading width="1em" height="1em">
+                <use xlink:href="#svg-loading" href="#svg-loading"></use>
+            </svg>
+            <svg has-loaded width="1em" height="1em">
                 <use xlink:href="#svg-check" href="#svg-check"></use>
             </svg>
         </button>
