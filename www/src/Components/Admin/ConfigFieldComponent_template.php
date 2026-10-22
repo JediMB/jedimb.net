@@ -28,6 +28,8 @@ $uid = $data->uid;
                     type="text"
                     pattern="<?= REGEX_HTML['default_text'] ?>"
                     title="<?= TEXT_CONFIG_CHARS ?>"
+                    minlength="<?= INPUT_LENGTH['constant_value']['min'] ?>"
+                    maxlength="<?= INPUT_LENGTH['constant_value']['max'] ?>"
                     data-error-pattern-mismatch="<?= TEXT_CONFIG_CHARS ?>"
                 <?php break ?>
             <?php endswitch ?>
@@ -59,8 +61,6 @@ $uid = $data->uid;
                                     title="<?= TEXT_CONFIG_ITEM_CHARS ?>"
                                     placeholder="Type here..."
                                     value="<?= $item ?>"
-                                    min="<?= INPUT_LENGTH['constant_value']['min'] ?>"
-                                    max="<?= INPUT_LENGTH['constant_value']['max'] ?>"
                                     size="<?= strlen($item) ?>"
                                     data-default-size="12"
                                     data-error-invalid="INVALID ITEM"
