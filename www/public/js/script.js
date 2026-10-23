@@ -5098,6 +5098,58 @@ customElements.define('text-editor-component', TextEditorComponent);
 
 
 
+
+/* IMPORT: /js/utilities/input-error.utility.js */
+
+/**
+ * @param {InputErrors[]} errors 
+ * @param {HTMLCollectionOf<HTMLInputElement>} inputs 
+ * @returns {boolean}
+ */
+function handleInputErrors(errors, inputs) {
+    if (!errors)
+        console.error('Errors parameter empty');
+
+    if (!Object.hasOwn(errors[0], 'required'))
+        return false;
+    
+    for (const input of inputs) {
+        const error = errors[input.name];
+
+        if (!error)
+            clearInputErrors(input);
+
+        input.classList.toggle('error-required', !!error.required);
+        input.classList.toggle('error-too-short', !!error.tooShort);
+        input.classList.toggle('error-too-long', !!error.tooLong);
+        input.classList.toggle('error-mismatch', !!error.mismatch);
+    }
+
+    return true;
+}
+
+/**
+ * @param {HTMLInputElement} input 
+ */
+function clearInputErrors(input) {
+    if (!input.classList.length)
+        return;
+
+    input.classList.remove('error-required');
+    input.classList.remove('error-too-short');
+    input.classList.remove('error-too-long');
+    input.classList.remove('error-mismatch');
+}
+
+/**
+ * @typedef InputErrors
+ * @type {object}
+ * @property {true=} required
+ * @property {true=} tooShort
+ * @property {true=} tooLong
+ * @property {true=} mismatch
+ */
+
 class BlogFormComponent extends HTMLElement {
     #isPublished = false;
     #publishedPath = ''
@@ -5217,38 +5269,10 @@ class BlogFormComponent extends HTMLElement {
     disconnectedCallback() {}
 
     /**
-     * @param {{ required: boolean, tooShort: boolean, tooLong: boolean, mismatch: boolean }[]} errors 
+     * @param {import("/js/utilities/input-error.utility.js").InputErrors[]} errors 
      * @returns {boolean} Whether there were any valid error objects to handle
      */
-    error(errors) {
-        if (!errors)
-            console.error('Errors parameter empty');
-
-        if (!Object.hasOwn(errors[0], 'required'))
-            return false;
-        
-        for (const input of this.#form.elements) {
-            const error = errors[input.name];
-
-            if (!error) {
-                if (!input.classList.length)
-                    continue;
-
-                input.classList.remove('error-required');
-                input.classList.remove('error-too-short');
-                input.classList.remove('error-too-long');
-                input.classList.remove('error-mismatch');
-                continue;
-            }
-
-            input.classList.toggle('error-required', !!error.required);
-            input.classList.toggle('error-too-short', !!error.tooShort);
-            input.classList.toggle('error-too-long', !!error.tooLong);
-            input.classList.toggle('error-mismatch', !!error.mismatch);
-        }
-
-        return true;
-    }
+    error(errors) { return handleInputErrors(errors, this.#form.elements); }
 
     getFormData() {
         const content = this.#textEditor.content.html;
@@ -5294,15 +5318,8 @@ class BlogFormComponent extends HTMLElement {
         
         this.#form.reset();
 
-        for (const input of this.#form.elements) {
-            if (!input.classList.length)
-                continue;
-
-            input.classList.remove('error-required');
-            input.classList.remove('error-too-short');
-            input.classList.remove('error-too-long');
-            input.classList.remove('error-mismatch');
-        }
+        for (const input of this.#form.elements)
+            clearInputErrors(input);
     }
 
     /** @param {BlogPost} blogPost  */
