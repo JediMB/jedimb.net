@@ -2,11 +2,10 @@
     "compilerOptions": {
         "module": "CommonJS",
         "target": "ES2022",
-        "baseUrl": ".",
         "paths": {
             "/js/*": ["./assets/js/*"],
         },
         "noImplicitAny": true
     },
-    "include": ["www/**/*", "assets/js/**/*"]
+    "include": ["./www/**/*", "./assets/js/**/*"]
 }
