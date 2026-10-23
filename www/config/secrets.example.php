@@ -14,5 +14,3 @@ define('DB_SOURCE', DB_SOURCES[DB_ID]);
 define('MASTODON_HOST', '[instance url]');
 define('MASTODON_USER', '[username]');
 define('MASTODON_TOKEN', '[application token]');
-
-?>

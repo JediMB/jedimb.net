@@ -176,5 +176,3 @@ define('META_CONSTANTS', [
     'cookieValidatorKey' => COOKIE_VALIDATOR_KEY,
     'imageGalleryPath' => '/' . PATH_IMAGE_GALLERY . '/'
 ]);
-
-?>
