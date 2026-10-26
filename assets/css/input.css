@@ -613,7 +613,7 @@ header::before {
     content: '';
 } */
 
-.btn {
+/* .btn {
     padding: 0.5em 1.5em;
     border: 1px solid currentColor;
     display: inline-block;
@@ -622,24 +622,24 @@ header::before {
     user-select: none;
     -webkit-user-select: none;
     -moz-user-select: none;
-}
+} */
 
-.btn:not(:disabled):not(.disabled) {
+/* .btn:not(:disabled):not(.disabled) {
     cursor: pointer;
-}
+} */
 
 /* .btn:disabled, .btn.disabled {
     background-color: var(--hsl-gray-300);
     color: var(--hsl-gray-100);
 } */
 
-.btn-login:not(:disabled):not(.disabled):hover {
+/* .btn-login:not(:disabled):not(.disabled):hover {
     background-color: hsl(var(--hsl-hotpink-500));
     color: black;
 
-}
+} */
 
-input.error {
+/* input.error {
     background-color: hsl(var(--hsl-hotpink-200));
     color: black;
 }
@@ -652,7 +652,7 @@ input.error::selection {
 div.error {
     display: list-item;
     list-style-position: inside;
-}
+} */
 
 .links a img {
     transition:

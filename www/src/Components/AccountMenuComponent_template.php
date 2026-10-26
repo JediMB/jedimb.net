@@ -52,7 +52,7 @@ use App\Components\AccountMenuComponent;
                         Remember me
                     </label>
                 </div>
-                <button type="submit" class="btn btn-login" disabled>Login</button>
+                <button type="submit" class="btn-login btn-secondary" disabled>Login</button>
                 <div id="login-errors"></div>
             </form>
         </div>

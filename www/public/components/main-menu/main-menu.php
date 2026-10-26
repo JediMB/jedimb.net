@@ -16,7 +16,7 @@ Component::renderCSS();
             <li>
                 <a id="menu-button-<?= $id ?>"
                     tabindex="0"
-                    class="btn btn-menu"
+                    class="btn-menu"
                     <?php if (count($item->children) > 0): ?>
                         <?php $jsFunction = "toggleSubMenu($id, this)" ?>
                         <?= MenuLink::onClick($jsFunction) ?>
