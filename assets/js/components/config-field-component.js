@@ -1,4 +1,5 @@
 import configurationService from "/js/services/configuration.service.js";
+import { handleInputErrors } from "/js/utilities/input-error.utility.js";
 
 export default class ConfigFieldComponent extends HTMLElement {
     /** @type {HTMLButtonElement} */ #buttonAdd;
@@ -148,8 +149,11 @@ export default class ConfigFieldComponent extends HTMLElement {
                 this.#startingUseDefault = response.isInactive;
                 this.#buttonSave.removeAttribute('btn-loading');
             },
-            error => {
-                this.addError(error.message);
+            errors => {
+                if (typeof errors === 'string')
+                    this.addError(errors.message);
+                else if (typeof errors === 'object')
+                    handleInputErrors(errors, this.#input);
 
                 this.#setUndoButtonStatus();
                 this.#buttonSave.removeAttribute('btn-loading');

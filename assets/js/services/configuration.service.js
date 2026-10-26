@@ -11,23 +11,25 @@ class ConfigurationService {
     /** 
      * @param {Configuration} configuration
      * @param {(value: Configuration) => void} next
-     * @param {(error: ConfigError) => void} error
+     * @param {(errors: Object.<string, string|InputErrors>) => void} error
      */
     async saveConfiguration(configuration, next, error) {
         const response = configuration.id === 0
             ? await this.#service.createConfigurations([configuration])
             : await this.#service.updateConfigurations([configuration]);
 
-        if (!response.success)
-            return error?.call(this, response.errors.at(0));
+        const errors = response.errors[configuration.name];
 
-        next?.call(this, response.value.at(0));
+        if (!response.success || errors)
+            return error?.call(this, errors);
+
+        next?.call(this, response.value);
     }
 
     /** 
      * @param {Configuration[]} configurations
      * @param {(value: Configuration[]) => void} next
-     * @param {(errors: ConfigError[]) => void} error
+     * @param {(errors: Object.<string, string|Object.<string, InputErrors>>) => void} error
      */
     async saveConfigurations(configurations, next, error) {
         const newConfigs = configurations.filter(config => config.id === 0);
@@ -44,12 +46,12 @@ class ConfigurationService {
         Promise.all(promises).then(responses => {
             /** @type {Configuration[]} */
             const returnedConfigurations = [];
-            /** @type {ConfigError[]} */
-            const returnedErrors = [];
+            /** @type {Object.<string, string|InputErrors>} */
+            let returnedErrors = {};
 
             for (const response of responses) {
                 returnedConfigurations.push(...response.value);
-                returnedErrors.push(...response.errors);
+                returnedErrors = { ...returnedErrors, ...response.errors };
             }
 
             if (returnedConfigurations.length)

@@ -26,42 +26,33 @@ $configService = ConfigurationService::getInstance(); /** @var ConfigurationServ
 try {
     switch ( $_SERVER['REQUEST_METHOD'] ) {
         case 'POST':
-            $configDTOs = array_map(fn($config) => new ConfigurationDTO($config), $input);
+            foreach ($input as $key => $config) {
+                try {
+                    $configDTO = new ConfigurationDTO($config);
 
-            foreach ($configDTOs as $configDTO) {
-                if (!ConfigurationService::isConfigurable($configDTO->name)) {
-                    $errors[] = [
-                        'name' => $configDTO->name,
-                        'message' => 'Attempted to create new configuration for disallowed constant'
-                    ];
-                    continue;
+                    if (!ConfigurationService::isConfigurable($configDTO->name)) {
+                        $errors[$configDTO->name] = 'Attempted to create new configuration for disallowed constant';
+                        continue;
+                    }
+
+                    if ($configDTO->id !== 0) {
+                        $errors[$configDTO->name] = 'Attempted to create new configuration with non-zero id';
+                        continue;
+                    }
+
+                    if (empty( ($config = $configService->createConfiguration($configDTO)) )) {
+                        $errors[$configDTO->name] = 'No created configuration returned from database';
+                        continue;
+                    }
+
+                    $result[] = $config;
                 }
+                catch (InputException $e) {
+                    $name = $config['name']
+                        ?? throw new InvalidArgumentException("No name provided for input $key");
 
-                if ($configDTO->id !== 0) {
-                    $errors[] = [
-                        'name' => $configDTO->name,
-                        'message' => 'Attempted to create new configuration with non-zero id'
-                    ];
-                    continue;
+                    $errors[$name] = $e->getErrors();
                 }
-
-                if (is_int($configDTO->value) && $configDTO->value < 1) {
-                    $errors[] = [
-                        'name' => $configDTO->name,
-                        'message' => 'Attempted to create a new configuration with a non-positive integer value'
-                    ];
-                    continue;
-                }
-
-                if (empty( ($config = $configService->createConfiguration($configDTO)) )) {
-                    $errors[] = [
-                        'name' => $configDTO->name,
-                        'message' => 'No created configuration returned from database'
-                    ];
-                    continue;
-                }
-
-                $result[] = $config;
             }
 
             if ($errors) {
@@ -75,38 +66,38 @@ try {
             
 
         case 'PATCH':
-            $configDTOs = array_map(fn($config) => new ConfigurationDTO($config), $input);
+            foreach ($input as $key => $config) {
+                try {
+                    $configDTO = new ConfigurationDTO($config);
 
-            foreach ($configDTOs as $configDTO) {
-                if (!ConfigurationService::isConfigurable($configDTO->name)) {
-                    $errors[] = [
-                        'name' => $configDTO->name,
-                        'message' => 'Attempted to create new configuration for disallowed constant'
-                    ];
-                    continue;
+
+                    if (!ConfigurationService::isConfigurable($configDTO->name)) {
+                        $errors[$configDTO->name] = 'Attempted to create new configuration for disallowed constant';
+                        continue;
+                    }
+
+                    if ($configDTO->id < 1) {
+                        $errors[$configDTO->name] = 'Attempted to patch configuration with invalid id';
+                        continue;
+                    }
+                    
+                    $configDB = $configService->getConfiguration($configDTO->name);
+
+                    ConfigurationDTO::update($configDB, $configDTO);
+
+                    if (empty( ($config = $configService->updateConfiguration($configDB)) )) {
+                        $errors[$configDTO->name] = 'No updated configuration returned from database';
+                        continue;
+                    }
+
+                    $result[] = $config;
                 }
+                catch (InputException $e) {
+                    $name = $config['name']
+                        ?? throw new InvalidArgumentException("No name provided for input $key");
 
-                if (is_int($configDTO->value) && $configDTO->value < 1) {
-                    $errors[] = [
-                        'name' => $configDTO->name,
-                        'message' => 'Attempted to create a new configuration with a non-positive integer value'
-                    ];
-                    continue;
+                    $errors[$name] = $e->getErrors();
                 }
-                
-                $configDB = $configService->getConfiguration($configDTO->name);
-
-                ConfigurationDTO::update($configDB, $configDTO);
-
-                if (empty( ($config = $configService->updateConfiguration($configDB)) )) {
-                    $errors[] = [
-                        'name' => $configDTO->name,
-                        'message' => 'No updated configuration returned from database'
-                    ];
-                    continue;
-                }
-
-                $result[] = $config;
             }
 
             if ($errors) {
@@ -121,9 +112,6 @@ try {
         default:
             return Response::InvalidRequest();
     }
-}
-catch (InputException $e) {
-    return Response::InputException($e->getErrors());
 }
 catch (InvalidArgumentException $e) {
     return Response::BadRequest('Malformed request body: ' . $e->getMessage());

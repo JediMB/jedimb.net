@@ -1,7 +1,7 @@
 import { TextEditorComponent } from "/js/components/text-editor.js";
 import BlogPost from "/js/models/blog/blog-post.model.js";
 import Emitter from "/js/utilities/emitter.js";
-import { handleInputErrors, clearInputErrors } from "/js/utilities/input-error.utility.js";
+import { handleInputCollectionErrors, handleInputErrors } from "/js/utilities/input-error.utility.js";
 
 export default class BlogFormComponent extends HTMLElement {
     #isPublished = false;
@@ -122,10 +122,10 @@ export default class BlogFormComponent extends HTMLElement {
     disconnectedCallback() {}
 
     /**
-     * @param {import("/js/utilities/input-error.utility.js").InputErrors[]} errors 
+     * @param {Object.<string, string|InputErrors>} errors 
      * @returns {boolean} Whether there were any valid error objects to handle
      */
-    error(errors) { return handleInputErrors(errors, this.#form.elements); }
+    error(errors) { return handleInputCollectionErrors(errors, this.#form.elements); }
 
     getFormData() {
         const content = this.#textEditor.content.html;

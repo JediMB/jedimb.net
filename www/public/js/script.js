@@ -1363,7 +1363,7 @@ class ConfigurationApiService {
 
     /**
      * @param {Configuration[]} configs 
-     * @returns {Promise<({success: boolean, errors?: ConfigError[], value?: Configuration[]})>}
+     * @returns {Promise<({success: boolean, errors?: Object.<string, string|Object.<string, InputErrors>>, value?: Configuration[]})>}
      */
     async createConfigurations(configs) {
         const response = await this.#httpClient.post(this.#api, configs);
@@ -1379,7 +1379,7 @@ class ConfigurationApiService {
 
     /**
      * @param {Configuration[]} configs 
-     * @returns {Promise<({success: boolean, errors?: ConfigError[], value?: Configuration[]})>}
+     * @returns {Promise<({success: boolean, errors?: Object.<string, string|InputErrors>, value?: Configuration[]})>}
      */
     async updateConfigurations(configs) {
         const response = await this.#httpClient.patch(this.#api, configs);
@@ -1395,13 +1395,6 @@ class ConfigurationApiService {
 }
 const configurationApiService = new ConfigurationApiService();
 
-/**
- * @typedef ConfigError
- * @type {object}
- * @property {string} name
- * @property {string} message
- */
-
 
 
 class ConfigurationService {
@@ -1412,23 +1405,25 @@ class ConfigurationService {
     /** 
      * @param {Configuration} configuration
      * @param {(value: Configuration) => void} next
-     * @param {(error: ConfigError) => void} error
+     * @param {(errors: Object.<string, string|InputErrors>) => void} error
      */
     async saveConfiguration(configuration, next, error) {
         const response = configuration.id === 0
             ? await this.#service.createConfigurations([configuration])
             : await this.#service.updateConfigurations([configuration]);
 
-        if (!response.success)
-            return error?.call(this, response.errors.at(0));
+        const errors = response.errors[configuration.name];
 
-        next?.call(this, response.value.at(0));
+        if (!response.success || errors)
+            return error?.call(this, errors);
+
+        next?.call(this, response.value);
     }
 
     /** 
      * @param {Configuration[]} configurations
      * @param {(value: Configuration[]) => void} next
-     * @param {(errors: ConfigError[]) => void} error
+     * @param {(errors: Object.<string, string|Object.<string, InputErrors>>) => void} error
      */
     async saveConfigurations(configurations, next, error) {
         const newConfigs = configurations.filter(config => config.id === 0);
@@ -1445,12 +1440,12 @@ class ConfigurationService {
         Promise.all(promises).then(responses => {
             /** @type {Configuration[]} */
             const returnedConfigurations = [];
-            /** @type {ConfigError[]} */
-            const returnedErrors = [];
+            /** @type {Object.<string, string|InputErrors>} */
+            let returnedErrors = {};
 
             for (const response of responses) {
                 returnedConfigurations.push(...response.value);
-                returnedErrors.push(...response.errors);
+                returnedErrors = { ...returnedErrors, ...response.errors };
             }
 
             if (returnedConfigurations.length)
@@ -5102,30 +5097,49 @@ customElements.define('text-editor-component', TextEditorComponent);
 /* IMPORT: /js/utilities/input-error.utility.js */
 
 /**
- * @param {InputErrors[]} errors 
+ * @param {Object.<string, Object.<string, InputErrors>|string>} errors 
  * @param {HTMLCollectionOf<HTMLInputElement>} inputs 
  * @returns {boolean}
  */
-function handleInputErrors(errors, inputs) {
-    if (!errors)
-        console.error('Errors parameter empty');
+function handleInputCollectionErrors(errors, inputs) {
+    // if (!errors)
+    //     console.error('Errors parameter empty');
 
-    if (!Object.hasOwn(errors[0], 'required'))
-        return false;
+    // if (!Object.hasOwn(errors[0], 'required'))
+    //     return false;
     
     for (const input of inputs) {
-        const error = errors[input.name];
-
-        if (!error)
-            clearInputErrors(input);
-
-        input.classList.toggle('error-required', !!error.required);
-        input.classList.toggle('error-too-short', !!error.tooShort);
-        input.classList.toggle('error-too-long', !!error.tooLong);
-        input.classList.toggle('error-mismatch', !!error.mismatch);
+        handleInputErrors(errors[input.name], input);
     }
 
     return true;
+}
+
+/**
+ * @param {Object.<string, InputErrors>|string} errors 
+ * @param {InputErrors} errors.value
+ * @param {HTMLInputElement} input 
+ */
+function handleInputErrors(errors, input) {
+    if (!errors)
+        return clearInputErrors(input);
+
+    if (typeof errors === 'string') {
+        // TODO: Print error message to page;
+        return;
+    }
+
+    for (const property in errors) {
+        if (property === 'value') {
+            // These exist only to trigger class|=error- styling?
+            input.classList.toggle('error-required', !!errors[property].required);
+            input.classList.toggle('error-too-short', !!errors[property].tooShort);
+            input.classList.toggle('error-too-long', !!errors[property].tooLong);
+            input.classList.toggle('error-mismatch', !!errors[property].mismatch);
+        }
+
+        // TODO: Print error message to page
+    }
 }
 
 /**
@@ -5269,10 +5283,10 @@ class BlogFormComponent extends HTMLElement {
     disconnectedCallback() {}
 
     /**
-     * @param {import("/js/utilities/input-error.utility.js").InputErrors[]} errors 
+     * @param {Object.<string, string|InputErrors>} errors 
      * @returns {boolean} Whether there were any valid error objects to handle
      */
-    error(errors) { return handleInputErrors(errors, this.#form.elements); }
+    error(errors) { return handleInputCollectionErrors(errors, this.#form.elements); }
 
     getFormData() {
         const content = this.#textEditor.content.html;
@@ -6889,6 +6903,11 @@ customElements.define('blog-view-component', BlogViewComponent);
 
 
 
+
+/* IMPORT: /js/utilities/input-error.utility.js */
+
+
+
 class ConfigFieldComponent extends HTMLElement {
     /** @type {HTMLButtonElement} */ #buttonAdd;
     /** @type {HTMLButtonElement} */ #buttonSave;
@@ -7037,8 +7056,11 @@ class ConfigFieldComponent extends HTMLElement {
                 this.#startingUseDefault = response.isInactive;
                 this.#buttonSave.removeAttribute('btn-loading');
             },
-            error => {
-                this.addError(error.message);
+            errors => {
+                if (typeof errors === 'string')
+                    this.addError(errors.message);
+                else if (typeof errors === 'object')
+                    handleInputErrors(errors, this.#input);
 
                 this.#setUndoButtonStatus();
                 this.#buttonSave.removeAttribute('btn-loading');

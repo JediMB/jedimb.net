@@ -13,7 +13,7 @@ class ConfigurationApiService {
 
     /**
      * @param {Configuration[]} configs 
-     * @returns {Promise<({success: boolean, errors?: ConfigError[], value?: Configuration[]})>}
+     * @returns {Promise<({success: boolean, errors?: Object.<string, string|Object.<string, InputErrors>>, value?: Configuration[]})>}
      */
     async createConfigurations(configs) {
         const response = await this.#httpClient.post(this.#api, configs);
@@ -29,7 +29,7 @@ class ConfigurationApiService {
 
     /**
      * @param {Configuration[]} configs 
-     * @returns {Promise<({success: boolean, errors?: ConfigError[], value?: Configuration[]})>}
+     * @returns {Promise<({success: boolean, errors?: Object.<string, string|InputErrors>, value?: Configuration[]})>}
      */
     async updateConfigurations(configs) {
         const response = await this.#httpClient.patch(this.#api, configs);
@@ -44,10 +44,3 @@ class ConfigurationApiService {
     }
 }
 const configurationApiService = new ConfigurationApiService();
-
-/**
- * @typedef ConfigError
- * @type {object}
- * @property {string} name
- * @property {string} message
- */
