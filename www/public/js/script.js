@@ -7245,7 +7245,6 @@ class ConfigFieldComponent extends HTMLElement {
 customElements.define('config-field-component', ConfigFieldComponent);
 
 
-
 /* IMPORT: ./components/gallery-manager.js */
 
 
