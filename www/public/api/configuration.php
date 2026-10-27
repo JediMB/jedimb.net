@@ -59,7 +59,7 @@ try {
                 if ($result)
                     return Response::Mixed($result, $errors);
 
-                return Response::Error($errors);
+                return Response::InputException($errors);
             }
 
             return Response::Success($result);
@@ -104,7 +104,7 @@ try {
                 if ($result)
                     return Response::Mixed($result, $errors);
 
-                return Response::Error($errors);
+                return Response::InputException($errors);
             }
             
             return Response::Success($result);
@@ -117,5 +117,5 @@ catch (InvalidArgumentException $e) {
     return Response::BadRequest('Malformed request body: ' . $e->getMessage());
 }
 catch (Exception $e) {
-    return Response::Error($errors + [$e->getMessage()]);
+    return Response::Error([$e->getMessage()]);
 }
