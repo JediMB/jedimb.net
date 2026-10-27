@@ -8,6 +8,7 @@ use PDOException;
 use App\Abstract\BaseDbService;
 use App\Models\DB\Configuration;
 use App\Models\DTO\ConfigurationDTO;
+use App\Models\Exceptions\DatabaseException;
 
 class ConfigurationDbService extends BaseDbService {
     protected function __construct() {
@@ -21,7 +22,7 @@ class ConfigurationDbService extends BaseDbService {
             return $result;
         }
         catch (PDOException $e) {
-            throw new Exception('Database error: ' . $e->getMessage());
+            throw new DatabaseException($e->getMessage());
         }
 
         return false;
@@ -41,7 +42,7 @@ class ConfigurationDbService extends BaseDbService {
             return $return;
         }
         catch (PDOException $e) {
-            throw new Exception('Database error: ' . $e->getMessage());
+            throw new DatabaseException($e->getMessage());
         }
 
         return [];
@@ -60,7 +61,7 @@ class ConfigurationDbService extends BaseDbService {
             return new Configuration($result);
         }
         catch (PDOException $e) {
-            throw new Exception('Database error: ' . $e->getMessage());
+            throw new DatabaseException($e->getMessage());
         }
     }
 
@@ -79,7 +80,7 @@ class ConfigurationDbService extends BaseDbService {
             return new Configuration($result);
         }
         catch (PDOException $e) {
-            throw new Exception('Database error: ' . $e->getMessage());
+            throw new DatabaseException($e->getMessage());
         }
     }
 }

@@ -1,5 +1,7 @@
 <?php declare(strict_types=1);
 
+define('DEBUG_VERBOSE_DB_ERRORS', true);
+
 define('PATH_HOMEPAGE', 'pages/blog.php');
 define('PATH_BLOG_PREFIX', 'blog');
 define('PATH_API_DIR', 'api');
