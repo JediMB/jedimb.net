@@ -22,7 +22,7 @@ $uid = $data->uid;
                 case ConfigType::Number: ?>
                     type="number"
                     min="1"
-                    title="Whole positive numbers only"
+                    title="Positive whole numbers only"
                 <?php break;
                 default: ?>
                     type="text"
@@ -30,10 +30,10 @@ $uid = $data->uid;
                     title="<?= TEXT_CONFIG_CHARS ?>"
                     minlength="<?= INPUT_LENGTH['constant_value']['min'] ?>"
                     maxlength="<?= INPUT_LENGTH['constant_value']['max'] ?>"
-                    data-error-pattern-mismatch="<?= TEXT_CONFIG_CHARS ?>"
+                    data-error-mismatch="Invalid characters found. Valid characters: <?= TEXT_CONFIG_CHARS ?>"
                 <?php break ?>
             <?php endswitch ?>
-            data-error-value-missing="Field can't be empty"
+            data-error-required="Field can't be empty"
             value="<?= $data->value ?>"
             data-default-value="<?= $data->defaultValue ?>"
             data-id="<?= $data->dbId ?>"
