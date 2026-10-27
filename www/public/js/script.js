@@ -1363,7 +1363,7 @@ class ConfigurationApiService {
 
     /**
      * @param {Configuration[]} configs 
-     * @returns {Promise<({success: boolean, errors?: Object.<string, string|Object.<string, InputErrors>>, value?: Configuration[]})>}
+     * @returns {Promise<({success: boolean, errors?: string[]|Object.<string, string|Object.<string, InputErrors>>, value?: Configuration[]})>}
      */
     async createConfigurations(configs) {
         const response = await this.#httpClient.post(this.#api, configs);
@@ -1379,7 +1379,7 @@ class ConfigurationApiService {
 
     /**
      * @param {Configuration[]} configs 
-     * @returns {Promise<({success: boolean, errors?: Object.<string, string|InputErrors>, value?: Configuration[]})>}
+     * @returns {Promise<({success: boolean, errors?: string[]|Object.<string, string|InputErrors>, value?: Configuration[]})>}
      */
     async updateConfigurations(configs) {
         const response = await this.#httpClient.patch(this.#api, configs);
@@ -1404,20 +1404,36 @@ class ConfigurationService {
 
     /** 
      * @param {Configuration} configuration
-     * @param {(value: Configuration) => void} next
-     * @param {(errors: Object.<string, string|InputErrors>) => void} error
+     * @param {(value?: Configuration) => void} next
+     * @param {(errors?: string|Object.<string, InputErrors>) => void} error
      */
     async saveConfiguration(configuration, next, error) {
         const response = configuration.id === 0
             ? await this.#service.createConfigurations([configuration])
             : await this.#service.updateConfigurations([configuration]);
 
-        const errors = response.errors[configuration.name];
+        let errors = false;
+        
+        switch (typeof response.errors) {
+            case 'object':
+                if (Array.isArray(response.errors) && response.errors.length) {
+                    errors = response.errors.join("\n");
+                    break;
+                }
+
+                if (Object.hasOwn(response.errors, configuration.name))
+                    errors = response.errors[configuration.name];
+                break;
+
+            case 'string':
+                errors = response.errors;
+                break;
+        }
 
         if (!response.success || errors)
             return error?.call(this, errors);
 
-        next?.call(this, response.value);
+        next?.call(this, response.value.at(0));
     }
 
     /** 
@@ -3365,6 +3381,138 @@ class ImgWrapperElement extends HTMLElement {
 customElements.define(imgWrapperTag, ImgWrapperElement);
 
 
+/* IMPORT: /js/custom-elements/input-errors.element.js */
+
+
+
+/* IMPORT: /js/utilities/string.utility.js */
+
+/**
+ * Returns an identical string with the first character changed to uppercase
+ * @param {string} text 
+ * @returns {string}
+ */
+function fcToLowerCase(text) {
+    return text.charAt(0).toLowerCase() + text.slice(1);
+}
+
+/**
+ * Returns an identical string with the first character changed to uppercase
+ * @param {string} text 
+ * @returns {string}
+ */
+function fcToUpperCase(text) {
+    return text.charAt(0).toUpperCase() + text.slice(1);
+}
+
+/**
+ * @param {string} text 
+ * @param {'pascal' | 'snake' | 'kebab'} oldCase 
+ * @returns {string}
+ */
+function toCamelCase(text, oldCase) {
+    switch (oldCase) {
+        case 'kebab':
+            return text.toLowerCase().replaceAll(/\-([a-z0-9])/g, (_, char) => char.toUpperCase());
+
+        case 'pascal':
+            return fcToLowerCase(text);
+
+        case 'snake':
+            return text.toLowerCase().replaceAll(/\_([a-z0-9])/g, (_, char) => char.toUpperCase());
+
+        default:
+            throw new Error('Invalid old case type argument');
+    }
+}
+
+class InputErrorsElement extends HTMLElement {
+    static #errorClasses = Object.freeze({
+        required: 'error-required',
+        tooShort: 'error-too-short',
+        tooLong: 'error-too-long',
+        mismatch: 'error-mismatch',
+        other: 'error-other'
+    });
+
+    /** @type {HTMLInputElement} */ #input;
+    /** @type {HTMLDivElement} */ #output;
+
+    constructor() { super(); }
+
+    connectedCallback() {
+        this.#input = this.querySelector('input');
+        this.#output = this.querySelector('.errors');
+
+        if (!this.#input) {
+            console.error(`No input element found in InputErrors element: ${this}`);
+            return;
+        }
+
+        if (!this.#output) {
+            this.#output = document.createElement('div');
+            this.#output.classList.add('errors');
+            this.appendChild(this.#output);
+        }
+    }
+
+    connectedMoveCallback() {}
+    disconnectedCallback() {}
+
+    get name() { return this.#input.name; }
+
+    /** @param {string|InputErrors} errorData */
+    set(errorData) {
+        if (typeof errorData === 'string') {
+            this.#addErrorMessage(errorData);
+            this.#input.classList.add(InputErrorsElement.#errorClasses.other);
+            return;
+        }
+
+        for (const error in errorData) {
+            const errorClass = InputErrorsElement.#errorClasses[error];
+
+            if (!errorClass) {
+                console.error('Unsupported error from backend in InputErrors');
+                continue;
+            }
+            
+            this.#input.classList.add(errorClass);
+
+            const message = this.#input.dataset[toCamelCase(errorClass, 'kebab')];
+
+            if (message)
+                this.#addErrorMessage(message);
+        }
+
+    }
+
+    clear() {
+        for (const error in InputErrorsElement.#errorClasses)
+            this.#input.classList.remove(InputErrorsElement.#errorClasses[error]);
+        
+        this.#output.textContent = '';
+    }
+
+    /** @param {string} text  */
+    #addErrorMessage(text) {
+        const div = document.createElement('div');
+        div.textContent = text;
+        this.#output.appendChild(div);
+    }
+}
+customElements.define('input-errors', InputErrorsElement);
+
+/**
+ * @typedef InputErrors
+ * @type {object}
+ * @property {true=} required
+ * @property {true=} tooShort
+ * @property {true=} tooLong
+ * @property {true=} mismatch
+ */
+
+
 /* IMPORT: /js/custom-elements/input-file.element.js */
 
 class InputFileElement extends HTMLElement {
@@ -5093,77 +5241,6 @@ customElements.define('text-editor-component', TextEditorComponent);
 
 
 
-
-/* IMPORT: /js/utilities/input-error.utility.js */
-
-/**
- * @param {Object.<string, Object.<string, InputErrors>|string>} errors 
- * @param {HTMLCollectionOf<HTMLInputElement>} inputs 
- * @returns {boolean}
- */
-function handleInputCollectionErrors(errors, inputs) {
-    // if (!errors)
-    //     console.error('Errors parameter empty');
-
-    // if (!Object.hasOwn(errors[0], 'required'))
-    //     return false;
-    
-    for (const input of inputs) {
-        handleInputErrors(errors[input.name], input);
-    }
-
-    return true;
-}
-
-/**
- * @param {Object.<string, InputErrors>|string} errors 
- * @param {InputErrors} errors.value
- * @param {HTMLInputElement} input 
- */
-function handleInputErrors(errors, input) {
-    if (!errors)
-        return clearInputErrors(input);
-
-    if (typeof errors === 'string') {
-        // TODO: Print error message to page;
-        return;
-    }
-
-    for (const property in errors) {
-        if (property === 'value') {
-            // These exist only to trigger class|=error- styling?
-            input.classList.toggle('error-required', !!errors[property].required);
-            input.classList.toggle('error-too-short', !!errors[property].tooShort);
-            input.classList.toggle('error-too-long', !!errors[property].tooLong);
-            input.classList.toggle('error-mismatch', !!errors[property].mismatch);
-        }
-
-        // TODO: Print error message to page
-    }
-}
-
-/**
- * @param {HTMLInputElement} input 
- */
-function clearInputErrors(input) {
-    if (!input.classList.length)
-        return;
-
-    input.classList.remove('error-required');
-    input.classList.remove('error-too-short');
-    input.classList.remove('error-too-long');
-    input.classList.remove('error-mismatch');
-}
-
-/**
- * @typedef InputErrors
- * @type {object}
- * @property {true=} required
- * @property {true=} tooShort
- * @property {true=} tooLong
- * @property {true=} mismatch
- */
-
 class BlogFormComponent extends HTMLElement {
     #isPublished = false;
     #publishedPath = ''
@@ -5286,7 +5363,9 @@ class BlogFormComponent extends HTMLElement {
      * @param {Object.<string, string|InputErrors>} errors 
      * @returns {boolean} Whether there were any valid error objects to handle
      */
-    error(errors) { return handleInputCollectionErrors(errors, this.#form.elements); }
+    error(errors) {
+        // TODO: New mass error handling
+    }
 
     getFormData() {
         const content = this.#textEditor.content.html;
@@ -6899,12 +6978,12 @@ customElements.define('blog-view-component', BlogViewComponent);
 
 
 
+/* IMPORT: /js/custom-elements/input-errors.element.js */
+
+
+
+
 /* IMPORT: /js/services/configuration.service.js */
-
-
-
-
-/* IMPORT: /js/utilities/input-error.utility.js */
 
 
 
@@ -6914,7 +6993,7 @@ class ConfigFieldComponent extends HTMLElement {
     /** @type {HTMLButtonElement} */ #buttonUndo;
     /** @type {HTMLFieldSetElement} */ #fieldset;
     /** @type {HTMLInputElement} */ #input;
-    /** @type {HTMLElement} */ #inputErrors;
+    /** @type {InputErrorsElement} */ #inputErrors;
     /** @type {HTMLInputElement[]|undefined} */ #inputsCSV;
     /** @type {HTMLLIElement} */ #itemAdd;
     /** @type {HTMLUListElement} */ #listCSV;
@@ -6974,17 +7053,6 @@ class ConfigFieldComponent extends HTMLElement {
 
     disconnectedCallback() {}
 
-    /** @param {string} message  */
-    addError(message) {
-        const div = document.createElement('div');
-        div.textContent = message;
-        this.#inputErrors.appendChild(div);
-    }
-
-    clearErrors() {
-        this.#inputErrors.textContent = '';
-    }
-
     #addCSVItem(inputValue = '') {
         /** @type {DocumentFragment} */
         const fragment = this.#itemTemplate.content.cloneNode(true);
@@ -7011,7 +7079,7 @@ class ConfigFieldComponent extends HTMLElement {
         this.#setSaveButtonStatus(true);
         this.#buttonSave.setAttribute('btn-loading', 'true');
         this.#setUndoButtonStatus(true);
-        this.clearErrors();
+        this.#inputErrors.clear();
 
         const value = !this.#currentUseDefault && this.#hasChangedValue
             ? this.#currentValue
@@ -7058,9 +7126,9 @@ class ConfigFieldComponent extends HTMLElement {
             },
             errors => {
                 if (typeof errors === 'string')
-                    this.addError(errors.message);
+                    this.#inputErrors.set(errors);
                 else if (typeof errors === 'object')
-                    handleInputErrors(errors, this.#input);
+                    this.#inputErrors.set(errors.value);
 
                 this.#setUndoButtonStatus();
                 this.#buttonSave.removeAttribute('btn-loading');

@@ -1,5 +1,5 @@
+import InputErrorsElement from "/js/custom-elements/input-errors.element.js";
 import configurationService from "/js/services/configuration.service.js";
-import { handleInputErrors } from "/js/utilities/input-error.utility.js";
 
 export default class ConfigFieldComponent extends HTMLElement {
     /** @type {HTMLButtonElement} */ #buttonAdd;
@@ -7,7 +7,7 @@ export default class ConfigFieldComponent extends HTMLElement {
     /** @type {HTMLButtonElement} */ #buttonUndo;
     /** @type {HTMLFieldSetElement} */ #fieldset;
     /** @type {HTMLInputElement} */ #input;
-    /** @type {HTMLElement} */ #inputErrors;
+    /** @type {InputErrorsElement} */ #inputErrors;
     /** @type {HTMLInputElement[]|undefined} */ #inputsCSV;
     /** @type {HTMLLIElement} */ #itemAdd;
     /** @type {HTMLUListElement} */ #listCSV;
@@ -67,17 +67,6 @@ export default class ConfigFieldComponent extends HTMLElement {
 
     disconnectedCallback() {}
 
-    /** @param {string} message  */
-    addError(message) {
-        const div = document.createElement('div');
-        div.textContent = message;
-        this.#inputErrors.appendChild(div);
-    }
-
-    clearErrors() {
-        this.#inputErrors.textContent = '';
-    }
-
     #addCSVItem(inputValue = '') {
         /** @type {DocumentFragment} */
         const fragment = this.#itemTemplate.content.cloneNode(true);
@@ -104,7 +93,7 @@ export default class ConfigFieldComponent extends HTMLElement {
         this.#setSaveButtonStatus(true);
         this.#buttonSave.setAttribute('btn-loading', 'true');
         this.#setUndoButtonStatus(true);
-        this.clearErrors();
+        this.#inputErrors.clear();
 
         const value = !this.#currentUseDefault && this.#hasChangedValue
             ? this.#currentValue
@@ -151,9 +140,9 @@ export default class ConfigFieldComponent extends HTMLElement {
             },
             errors => {
                 if (typeof errors === 'string')
-                    this.addError(errors.message);
+                    this.#inputErrors.set(errors);
                 else if (typeof errors === 'object')
-                    handleInputErrors(errors, this.#input);
+                    this.#inputErrors.set(errors.value);
 
                 this.#setUndoButtonStatus();
                 this.#buttonSave.removeAttribute('btn-loading');

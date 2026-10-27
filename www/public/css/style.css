@@ -447,6 +447,26 @@ button, select, input {
 
 /* :END */
 
+.errors {
+    display: block flex;
+    flex-direction: column;
+    gap: var(--size-s);
+    margin-top: var(--size-s);
+    border: 2px dashed var(--clr-warn);
+    border-radius: var(--size-s);
+    padding: var(--size-s) var(--size-m);
+
+    &:empty {
+        display: none;
+    }
+
+    > * {
+        display: block list-item;
+        list-style-position: inside;
+        font-size: var(--size-m);
+    }
+}
+
 input[type="email"],
 input[type="number"],
 input[type="password"],

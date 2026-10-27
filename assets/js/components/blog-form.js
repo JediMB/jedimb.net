@@ -1,7 +1,6 @@
 import { TextEditorComponent } from "/js/components/text-editor.js";
 import BlogPost from "/js/models/blog/blog-post.model.js";
 import Emitter from "/js/utilities/emitter.js";
-import { handleInputCollectionErrors, handleInputErrors } from "/js/utilities/input-error.utility.js";
 
 export default class BlogFormComponent extends HTMLElement {
     #isPublished = false;
@@ -125,7 +124,9 @@ export default class BlogFormComponent extends HTMLElement {
      * @param {Object.<string, string|InputErrors>} errors 
      * @returns {boolean} Whether there were any valid error objects to handle
      */
-    error(errors) { return handleInputCollectionErrors(errors, this.#form.elements); }
+    error(errors) {
+        // TODO: New mass error handling
+    }
 
     getFormData() {
         const content = this.#textEditor.content.html;

@@ -10,20 +10,36 @@ class ConfigurationService {
 
     /** 
      * @param {Configuration} configuration
-     * @param {(value: Configuration) => void} next
-     * @param {(errors: Object.<string, string|InputErrors>) => void} error
+     * @param {(value?: Configuration) => void} next
+     * @param {(errors?: string|Object.<string, InputErrors>) => void} error
      */
     async saveConfiguration(configuration, next, error) {
         const response = configuration.id === 0
             ? await this.#service.createConfigurations([configuration])
             : await this.#service.updateConfigurations([configuration]);
 
-        const errors = response.errors[configuration.name];
+        let errors = false;
+        
+        switch (typeof response.errors) {
+            case 'object':
+                if (Array.isArray(response.errors) && response.errors.length) {
+                    errors = response.errors.join("\n");
+                    break;
+                }
+
+                if (Object.hasOwn(response.errors, configuration.name))
+                    errors = response.errors[configuration.name];
+                break;
+
+            case 'string':
+                errors = response.errors;
+                break;
+        }
 
         if (!response.success || errors)
             return error?.call(this, errors);
 
-        next?.call(this, response.value);
+        next?.call(this, response.value.at(0));
     }
 
     /** 
