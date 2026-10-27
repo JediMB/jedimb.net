@@ -17,19 +17,15 @@ class ConfigurationDTO extends DbBase {
     public ConfigType $configType;
     public ?bool $isInactive;
 
+    /** @param (array{id: int, name: string, value: string, configType: string, isInactive: boolean}) $input */
     public function __construct(array $input) {
         parent::__construct($input);
 
         $errors =  [];
 
-        $this->name = Input::verifyRequiredTextInput('name', $input, INPUT_LENGTH['constant_name'], $errors, REGEX_PHP['constant_name']);
+        $this->name = $input['name'];
         $this->value = Input::verifyOptionalTextInput('value', $input, INPUT_LENGTH['constant_value'], $errors, REGEX_PHP['default_text']);
-        try {
-            $this->configType = ConfigType::from($input['configType']);
-        }
-        catch (TypeError) {
-            $errors['configType'][InputError::Mismatch->value] = true;
-        }
+        $this->configType = ConfigType::from($input['configType']);
         $this->isInactive = $input['isInactive'] ?? null;
 
         if (!empty($errors))
