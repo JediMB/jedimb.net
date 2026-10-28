@@ -1404,7 +1404,7 @@ class ConfigurationService {
 
     /** 
      * @param {Configuration} configuration
-     * @param {(value?: Configuration) => void} next
+     * @param {(value: Configuration) => void} next
      * @param {(errors?: string|Object.<string, InputErrors>) => void} error
      */
     async saveConfiguration(configuration, next, error) {
@@ -1439,7 +1439,7 @@ class ConfigurationService {
     /** 
      * @param {Configuration[]} configurations
      * @param {(value: Configuration[]) => void} next
-     * @param {(errors: Object.<string, string|Object.<string, InputErrors>>) => void} error
+     * @param {(errors: string|Object.<string, string|Object.<string, InputErrors>>) => void} error
      */
     async saveConfigurations(configurations, next, error) {
         const newConfigs = configurations.filter(config => config.id === 0);
@@ -1458,6 +1458,8 @@ class ConfigurationService {
             const returnedConfigurations = [];
             /** @type {Object.<string, string|InputErrors>} */
             let returnedErrors = {};
+
+            // TODO: Needs to take into account string, object->string, and object->inputError errors
 
             for (const response of responses) {
                 returnedConfigurations.push(...response.value);
@@ -6983,6 +6985,11 @@ customElements.define('blog-view-component', BlogViewComponent);
 
 
 
+/* IMPORT: /js/models/configuration.model.js */
+
+
+
+
 /* IMPORT: /js/services/configuration.service.js */
 
 
@@ -7021,11 +7028,17 @@ class ConfigFieldComponent extends HTMLElement {
     #hasChangedChecked = false;
     #hasChangedValue = false;
 
+    #saveable = new Emitter(false);
+    #undoable = new Emitter(false);
+
+    get name() { return this.#name; }
+    get saveable() { return this.#saveable.getValue(); }
+
     constructor() { super(); }
 
     connectedCallback() {
         const inputRow = this.querySelector('input-row');
-
+        
         this.#input = inputRow.querySelector('[input-config]');
 
         const listCSV = this.querySelector('[list-csv]');
@@ -7053,6 +7066,57 @@ class ConfigFieldComponent extends HTMLElement {
 
     disconnectedCallback() {}
 
+    
+
+    /** @returns {Configuration} */
+    getConfiguration() {
+        const value = !this.#currentUseDefault && this.#hasChangedValue
+            ? this.#currentValue
+            : null;
+
+        const isInactive = this.#hasChangedChecked
+            ? this.#currentUseDefault
+            : null;
+        
+        return new Configuration({
+            id: this.#id,
+            name: this.#name,
+            value: value,
+            configType: this.#configType,
+            isInactive: isInactive
+        });
+    }
+
+    /** @param {(status: boolean) => void} callbackFn */
+    onSaveableChange(callbackFn) { return this.#saveable.subscribe({ next: callbackFn }); }
+
+    /** @param {Configuration} configuration */
+    updateConfiguration(configuration) {
+        this.#id = configuration.id;
+        const value = configuration.value;
+        this.#currentValue = value;
+        this.#startingValue = value;
+
+        if (this.#listCSV) {
+            this.#input.defaultValue = this.#defaultValue;
+            this.#input.value = this.#defaultValue;
+
+            this.#listCSV.textContent = '';
+
+            const values = value.split(',').map(v => v.trim());
+            for (const csv of values)
+                this.#addCSVItem(csv);
+
+            this.#startingList = this.#listCSV.cloneNode(true);
+        }
+        else {
+            this.#input.defaultValue = value;
+            this.#input.value = value;
+        }
+
+        this.#startingUseDefault = response.isInactive;
+    }
+
     #addCSVItem(inputValue = '') {
         /** @type {DocumentFragment} */
         const fragment = this.#itemTemplate.content.cloneNode(true);
@@ -7075,53 +7139,15 @@ class ConfigFieldComponent extends HTMLElement {
     }
 
     async #save() {
-        // TODO: Loading animation
-        this.#setSaveButtonStatus(true);
+        this.#updateStatus({forceSaveable: false, forceUndoable: false});
         this.#buttonSave.setAttribute('btn-loading', 'true');
-        this.#setUndoButtonStatus(true);
         this.#inputErrors.clear();
 
-        const value = !this.#currentUseDefault && this.#hasChangedValue
-            ? this.#currentValue
-            : null;
-
-        const isInactive = this.#hasChangedChecked
-            ? this.#currentUseDefault
-            : null;
-        
-        const config = new Configuration({
-            id: this.#id,
-            name: this.#name,
-            value: value,
-            configType: this.#configType,
-            isInactive: isInactive
-        });
+        const config = this.getConfiguration();
 
         configurationService.saveConfiguration(config,
             response => {
-                this.#id = response.id;
-                const value = response.value;
-                this.#currentValue = value;
-                this.#startingValue = value;
-                
-                if (this.#listCSV) {
-                    this.#input.defaultValue = this.#defaultValue;
-                    this.#input.value = this.#defaultValue;
-
-                    this.#listCSV.textContent = '';
-
-                    const values = value.split(',').map(v => v.trim());
-                    for (const csv of values)
-                        this.#addCSVItem(csv);
-
-                    this.#startingList = this.#listCSV.cloneNode(true);
-                }
-                else {
-                    this.#input.defaultValue = value;
-                    this.#input.value = value;
-                }
-
-                this.#startingUseDefault = response.isInactive;
+                this.updateConfiguration(response);
                 this.#buttonSave.removeAttribute('btn-loading');
             },
             errors => {
@@ -7130,37 +7156,26 @@ class ConfigFieldComponent extends HTMLElement {
                 else if (typeof errors === 'object')
                     this.#inputErrors.set(errors.value);
 
-                this.#setUndoButtonStatus();
+                this.#updateStatus({forceSaveable: false});
                 this.#buttonSave.removeAttribute('btn-loading');
             }
         );
     }
 
-    #setSaveButtonStatus(forceDisable = false) {
-        if (forceDisable) {
-            this.#buttonSave.disabled = true;
-            this.#buttonSave.title = this.#saveDisabledTitle;
-            return;
-        }
+    /** @param {boolean} disabled  */
+    #setSaveButtonStatus(disabled) {
+        this.#buttonSave.disabled = disabled;
 
-        this.#buttonSave.disabled = !this.#isValid
-            || (this.#currentUseDefault && !this.#hasChangedChecked)
-            || (!this.#currentUseDefault && !this.#hasChangedValue);
-
-        this.#buttonSave.title = this.#buttonSave.disabled
+        this.#buttonSave.title = disabled
             ? this.#saveDisabledTitle
             : this.#saveEnabledTitle;
     }
 
-    #setUndoButtonStatus(forceDisable = false) {
-        if (forceDisable) {
-            this.#buttonUndo.disabled = true;
-            this.#buttonUndo.title = this.#undoDisabledTitle;
-            return;
-        }
+    /** @param {boolean} disabled  */
+    #setUndoButtonStatus(disabled) {
+        this.#buttonUndo.disabled = disabled;
 
-        this.#buttonUndo.disabled = this.#currentUseDefault || !this.#hasChangedValue;
-        this.#buttonUndo.title = this.#buttonUndo.disabled
+        this.#buttonUndo.title = disabled
             ? this.#undoDisabledTitle
             : this.#undoEnabledTitle;
     }
@@ -7185,20 +7200,21 @@ class ConfigFieldComponent extends HTMLElement {
 
         this.#buttonSave.addEventListener('click', () => this.#save());
 
+        this.#saveable.subscribe({ next: (saveable) => { this.#setSaveButtonStatus(!saveable) }});
+        this.#undoable.subscribe({ next: (undoable) => { this.#setUndoButtonStatus(!undoable) }})
+
         if (setupCSV)
             return this.#setupCSV();
         
         this.#input.addEventListener('input', () => {
             this.#currentValue = this.#input.value;
-            this.#hasChangedValue = this.#currentValue !== this.#defaultValue;
+            this.#hasChangedValue = this.#currentValue !== this.#startingValue;
             this.#isValid = this.#input.checkValidity();
-            this.#setSaveButtonStatus();
-            this.#setUndoButtonStatus();
+            this.#updateStatus();
         });
 
         this.#buttonUndo.addEventListener('click', () => {
-            this.#setSaveButtonStatus(true);
-            this.#setUndoButtonStatus(true);
+            this.#updateStatus({ forceSaveable: false, forceUndoable: false });
 
             this.#currentValue = this.#startingValue;
             this.#input.defaultValue = this.#startingValue;
@@ -7220,8 +7236,7 @@ class ConfigFieldComponent extends HTMLElement {
             this.#input.value = isDefault
                 ? this.#defaultValue
                 : this.#currentValue;
-            this.#setSaveButtonStatus();
-            this.#setUndoButtonStatus();
+            this.#updateStatus();
         });
     }
 
@@ -7236,8 +7251,7 @@ class ConfigFieldComponent extends HTMLElement {
 
             this.#input.hidden = !isDefault;
             this.#fieldset.hidden = isDefault;
-            this.#setSaveButtonStatus();
-            this.#setUndoButtonStatus();
+            this.#updateStatus();
         });
 
         const listItems = this.#listCSV.querySelectorAll('[item-csv]');
@@ -7250,8 +7264,7 @@ class ConfigFieldComponent extends HTMLElement {
         });
 
         this.#buttonUndo.addEventListener('click', () => {
-            this.#setSaveButtonStatus(true);
-            this.#setUndoButtonStatus(true);
+            this.#updateStatus({forceSaveable: false, forceUndoable: false});
 
             this.#currentValue = this.#startingValue;
             this.#hasChangedValue = false;
@@ -7288,8 +7301,7 @@ class ConfigFieldComponent extends HTMLElement {
             this.#currentValue = this.#getCSVString();
             this.#hasChangedValue = this.#currentValue !== this.#startingValue;
             this.#isValid = this.#fieldset.checkValidity();
-            this.#setSaveButtonStatus();
-            this.#setUndoButtonStatus();
+            this.#updateStatus();
         });
 
         if (addInputToList) {
@@ -7304,9 +7316,26 @@ class ConfigFieldComponent extends HTMLElement {
             this.#currentValue = this.#getCSVString();
             this.#hasChangedValue = this.#currentValue !== this.#startingValue;
             this.#isValid = this.#fieldset.checkValidity();
-            this.#setSaveButtonStatus();
-            this.#setUndoButtonStatus();
+            this.#updateStatus();
         });
+    }
+
+    /** @param {{ forceSaveable?: boolean, forceUndoable?: boolean}} force */
+    #updateStatus({forceSaveable, forceUndoable} = {}) {
+        if (typeof forceSaveable === 'boolean')
+            this.#saveable.setValue(forceSaveable);
+        else
+            this.#saveable.setValue(
+                this.#isValid
+                && (!this.#currentUseDefault || this.#hasChangedChecked )
+                && (this.#currentUseDefault || this.#hasChangedValue)
+            );
+
+        if (typeof forceUndoable === 'boolean')
+            this.#undoable.setValue(forceUndoable);
+        else
+            this.#undoable.setValue(!this.#currentUseDefault && this.#hasChangedValue);
+            
     }
 }
 
@@ -8461,6 +8490,90 @@ customElements.define('modal-popup-component', ModalPopupContainer);
 
 
 
+/* IMPORT: /js/components/site-configuration-component.js */
+
+
+
+/* IMPORT: /js/components/config-field-component.js */
+
+
+
+
+/* IMPORT: /js/services/configuration.service.js */
+
+
+
+class SiteConfigurationComponent extends HTMLElement {
+    /** @type {ConfigFieldComponent[]} */ #configFields;
+    #saveable = false;
+
+    constructor() { super(); }
+
+    connectedCallback() {
+        this.#configFields = Array.from(this.querySelectorAll(customElements.getName(ConfigFieldComponent)));
+
+        /** @type {HTMLButtonElement} */
+        const saveAllButton = this.querySelector('[btn-save-all]');
+
+        saveAllButton.addEventListener('click', event => {
+            event.preventDefault();
+            this.#save();
+        });
+        
+        for (const configField of this.#configFields) {
+            configField.onSaveableChange((status) => {
+                if (status === this.#saveable)
+                    return;
+
+                this.#saveable = this.#configFields.some(field => field.saveable);
+                saveAllButton.disabled = !this.#saveable;
+            });
+        }
+    }
+
+    connectedMoveCallback() {}
+
+    disconnectedCallback() {}
+
+    async #save() {
+        const saveableFields = this.#configFields.filter(field => field.saveable);
+
+        const configurations = saveableFields.map(field => field.getConfiguration());
+
+        console.log(configurations);
+
+        configurationService.saveConfigurations(configurations,
+            response => {
+                for (const field of saveableFields) {
+                    const config = response.find(c => c.name === field.name);
+
+                    if (!config)
+                        continue;
+
+                    field.updateConfiguration(config);
+                }
+            },
+            errors => {
+                // TODO: Check if string errors (such as database errors) were returned. Display above form?
+
+                for (const field of saveableFields) {
+                    const error = errors[field.name];
+
+                    if (!error)
+                        continue;
+
+                    // TODO: Tell field to display its errors
+                }
+            }
+        )
+
+    }
+}
+
+customElements.define('site-configuration-component', SiteConfigurationComponent);
+
+
+
 /* IMPORT: ./components/tabs.js */
 
 class TabsComponent extends HTMLElement {
@@ -8641,77 +8754,6 @@ function closeMobileMenu() {
         body.removeEventListener('keydown', menuFocusTrap);
     }
 }
-
-
-/* IMPORT: ./components/non-elemental/site-configuration.js */
-
-
-
-/* IMPORT: /js/services/api/configuration-api.service.js */
-
-
-
-class SiteConfiguration {
-    #configApiService;
-    #fieldsUnchanged = true;
-    #csvUnchanged = true;
-
-    constructor() {
-        this.#configApiService = configurationApiService;
-        const component = document.querySelector('site-configuration-component');
-
-        // TODO: This should be a custom element so its code doesn't try to execute when it doesn't exist
-        if (!component)
-            return;
-
-        const form = component.querySelector('form');
-        const fieldset = form.querySelector('fieldset');
-        const saveButton = fieldset.querySelector('button[type="submit"]');
-        const isLoading = fieldset.querySelector('[is-loading]');
-
-        // configField.onChanges((hasChanges, isValid) => {
-        //     this.#fieldsUnchanged = !hasChanges;
-        //     saveButton.disabled = !isValid || (this.#fieldsUnchanged && this.#csvUnchanged);
-        // });
-
-        // configCSV.onChanges((hasChanges, isValid) => {
-        //     this.#csvUnchanged = !hasChanges;
-        //     saveButton.disabled = !isValid || (this.#fieldsUnchanged && this.#csvUnchanged);
-        // })
-
-        // form.addEventListener('submit', event => {
-        //     event.preventDefault();
-        //     this.#save(fieldset);
-        // });
-
-        isLoading.remove();
-    }
-
-    async #save(fieldset) {
-        fieldset.disabled = true;
-
-        let changes = await configField.getChanges();
-        changes = [...changes, ...await configCSV.getChanges()];
-
-        const newConfigs = changes.filter(c => c.id === 0);
-        const updatedConfigs = changes.filter(c => c.id > 0);
-
-        const responses = [];
-
-        if (newConfigs.length > 0)
-            responses.push(this.#configApiService.createConfigurations(newConfigs));
-
-        if (updatedConfigs.length > 0)
-            responses.push(this.#configApiService.updateConfigurations(updatedConfigs));
-
-        Promise.all(responses).then(() => {
-            setTimeout(() => location.reload(), 1000);
-        }, reason => {
-            console.error(reason);
-        });
-    }
-}
-const siteConfiguration = new SiteConfiguration();
 
 
 /* IMPORT: ./components/non-elemental/sub-menu.js */

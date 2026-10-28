@@ -10,7 +10,7 @@ class ConfigurationService {
 
     /** 
      * @param {Configuration} configuration
-     * @param {(value?: Configuration) => void} next
+     * @param {(value: Configuration) => void} next
      * @param {(errors?: string|Object.<string, InputErrors>) => void} error
      */
     async saveConfiguration(configuration, next, error) {
@@ -45,7 +45,7 @@ class ConfigurationService {
     /** 
      * @param {Configuration[]} configurations
      * @param {(value: Configuration[]) => void} next
-     * @param {(errors: Object.<string, string|Object.<string, InputErrors>>) => void} error
+     * @param {(errors: string|Object.<string, string|Object.<string, InputErrors>>) => void} error
      */
     async saveConfigurations(configurations, next, error) {
         const newConfigs = configurations.filter(config => config.id === 0);
@@ -64,6 +64,8 @@ class ConfigurationService {
             const returnedConfigurations = [];
             /** @type {Object.<string, string|InputErrors>} */
             let returnedErrors = {};
+
+            // TODO: Needs to take into account string, object->string, and object->inputError errors
 
             for (const response of responses) {
                 returnedConfigurations.push(...response.value);

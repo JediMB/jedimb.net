@@ -1,5 +1,6 @@
 <?php declare(strict_types=1);
 
+use App\Components\Admin\SiteConfigurationComponent;
 use App\Enums\UserPermission;
 use App\Models\App\Page;
 use App\Services\SessionService;
@@ -23,9 +24,7 @@ $page->title = PAGE_ADMIN_TITLE;
 ]) ?>
 
 <div id="admin__content">
-    <?php Component::include('admin/site-configuration', [
-        'attributes' => [ 'id' => 'admin-site' ]
-    ]) ?>
+    <?php new SiteConfigurationComponent('admin-site') ?>
     <?php Component::include('admin/blog-post-administration', [
         'page' => $page,
         'attributes' => ['id' => 'admin-posts', 'hidden' => '' ]

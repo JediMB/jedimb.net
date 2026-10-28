@@ -62,10 +62,10 @@ import ImageGalleryComponent from './components/image-gallery.js';
 import ImageManagerComponent from './components/image-manager.js'
 import ModalPopupContainer from './components/modal-popup.js';
 import PageSelectorComponent from '/js/components/page-selector-component.js';
+import SiteConfigurationComponent from '/js/components/site-configuration-component.js';
 import TabsComponent from './components/tabs.js';
 import TextEditorComponent from './components/text-editor.js';
 
 /* Non-elemental components */
 import mobileMenu from './components/non-elemental/mobile-menu.js';
-import siteConfiguration from './components/non-elemental/site-configuration.js';
 import subMenu from './components/non-elemental/sub-menu.js';
