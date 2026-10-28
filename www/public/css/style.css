@@ -357,7 +357,9 @@ body {
     --size-xxs: 0.125rem;
     --size-xs: 0.25rem;
     --size-s: 0.5rem;
-    --size-m: 1rem; 
+    --size-ms: 0.75rem;
+    --size-m: 1rem;
+    --size-ml: 1.5rem;
     --size-l: 2rem;
     --size-xl: 4rem;
     --size-xxl: 8rem;
@@ -886,14 +888,18 @@ img-wrapper {
     --_align: center;
 }
 
-.flex-wrap  { --_wrap: wrap; }
-.gap-xxs    { --_gap: var(--size-xxs); }
-.gap-xs     { --_gap: var(--size-xs); }
-.gap-s      { --_gap: var(--size-s); }
-.gap-m      { --_gap: var(--size-m); }
-.gap-l      { --_gap: var(--size-l); }
-.gap-xl     { --_gap: var(--size-xl); }
-.gap-xxl    { --_gap: var(--size-xxl); }
+.align-between      { --_align: space-between; }
+.flex-wrap          { --_wrap: wrap; }
+.gap-xxs            { --_gap: var(--size-xxs); }
+.gap-xs             { --_gap: var(--size-xs); }
+.gap-s              { --_gap: var(--size-s); }
+.gap-ms             { --_gap: var(--size-ms); }
+.gap-m              { --_gap: var(--size-m); }
+.gap-ml             { --_gap: var(--size-ml); }
+.gap-l              { --_gap: var(--size-l); }
+.gap-xl             { --_gap: var(--size-xl); }
+.gap-xxl            { --_gap: var(--size-xxl); }
+.justify-between    { --_justify: space-between; }
 
 .flex-grow  { flex-grow: 1; }
 

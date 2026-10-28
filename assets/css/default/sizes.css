@@ -8,7 +8,9 @@ body {
     --size-xxs: 0.125rem;
     --size-xs: 0.25rem;
     --size-s: 0.5rem;
-    --size-m: 1rem; 
+    --size-ms: 0.75rem;
+    --size-m: 1rem;
+    --size-ml: 1.5rem;
     --size-l: 2rem;
     --size-xl: 4rem;
     --size-xxl: 8rem;
