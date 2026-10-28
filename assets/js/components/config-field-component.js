@@ -1,4 +1,5 @@
 import InputErrorsElement from "/js/custom-elements/input-errors.element.js";
+import Configuration from "/js/models/configuration.model.js";
 import configurationService from "/js/services/configuration.service.js";
 
 export default class ConfigFieldComponent extends HTMLElement {
@@ -35,11 +36,17 @@ export default class ConfigFieldComponent extends HTMLElement {
     #hasChangedChecked = false;
     #hasChangedValue = false;
 
+    #saveable = new Emitter(false);
+    #undoable = new Emitter(false);
+
+    get name() { return this.#name; }
+    get saveable() { return this.#saveable.getValue(); }
+
     constructor() { super(); }
 
     connectedCallback() {
         const inputRow = this.querySelector('input-row');
-
+        
         this.#input = inputRow.querySelector('[input-config]');
 
         const listCSV = this.querySelector('[list-csv]');
@@ -67,6 +74,57 @@ export default class ConfigFieldComponent extends HTMLElement {
 
     disconnectedCallback() {}
 
+    
+
+    /** @returns {Configuration} */
+    getConfiguration() {
+        const value = !this.#currentUseDefault && this.#hasChangedValue
+            ? this.#currentValue
+            : null;
+
+        const isInactive = this.#hasChangedChecked
+            ? this.#currentUseDefault
+            : null;
+        
+        return new Configuration({
+            id: this.#id,
+            name: this.#name,
+            value: value,
+            configType: this.#configType,
+            isInactive: isInactive
+        });
+    }
+
+    /** @param {(status: boolean) => void} callbackFn */
+    onSaveableChange(callbackFn) { return this.#saveable.subscribe({ next: callbackFn }); }
+
+    /** @param {Configuration} configuration */
+    updateConfiguration(configuration) {
+        this.#id = configuration.id;
+        const value = configuration.value;
+        this.#currentValue = value;
+        this.#startingValue = value;
+
+        if (this.#listCSV) {
+            this.#input.defaultValue = this.#defaultValue;
+            this.#input.value = this.#defaultValue;
+
+            this.#listCSV.textContent = '';
+
+            const values = value.split(',').map(v => v.trim());
+            for (const csv of values)
+                this.#addCSVItem(csv);
+
+            this.#startingList = this.#listCSV.cloneNode(true);
+        }
+        else {
+            this.#input.defaultValue = value;
+            this.#input.value = value;
+        }
+
+        this.#startingUseDefault = response.isInactive;
+    }
+
     #addCSVItem(inputValue = '') {
         /** @type {DocumentFragment} */
         const fragment = this.#itemTemplate.content.cloneNode(true);
@@ -89,53 +147,15 @@ export default class ConfigFieldComponent extends HTMLElement {
     }
 
     async #save() {
-        // TODO: Loading animation
-        this.#setSaveButtonStatus(true);
+        this.#updateStatus({forceSaveable: false, forceUndoable: false});
         this.#buttonSave.setAttribute('btn-loading', 'true');
-        this.#setUndoButtonStatus(true);
         this.#inputErrors.clear();
 
-        const value = !this.#currentUseDefault && this.#hasChangedValue
-            ? this.#currentValue
-            : null;
-
-        const isInactive = this.#hasChangedChecked
-            ? this.#currentUseDefault
-            : null;
-        
-        const config = new Configuration({
-            id: this.#id,
-            name: this.#name,
-            value: value,
-            configType: this.#configType,
-            isInactive: isInactive
-        });
+        const config = this.getConfiguration();
 
         configurationService.saveConfiguration(config,
             response => {
-                this.#id = response.id;
-                const value = response.value;
-                this.#currentValue = value;
-                this.#startingValue = value;
-                
-                if (this.#listCSV) {
-                    this.#input.defaultValue = this.#defaultValue;
-                    this.#input.value = this.#defaultValue;
-
-                    this.#listCSV.textContent = '';
-
-                    const values = value.split(',').map(v => v.trim());
-                    for (const csv of values)
-                        this.#addCSVItem(csv);
-
-                    this.#startingList = this.#listCSV.cloneNode(true);
-                }
-                else {
-                    this.#input.defaultValue = value;
-                    this.#input.value = value;
-                }
-
-                this.#startingUseDefault = response.isInactive;
+                this.updateConfiguration(response);
                 this.#buttonSave.removeAttribute('btn-loading');
             },
             errors => {
@@ -144,37 +164,26 @@ export default class ConfigFieldComponent extends HTMLElement {
                 else if (typeof errors === 'object')
                     this.#inputErrors.set(errors.value);
 
-                this.#setUndoButtonStatus();
+                this.#updateStatus({forceSaveable: false});
                 this.#buttonSave.removeAttribute('btn-loading');
             }
         );
     }
 
-    #setSaveButtonStatus(forceDisable = false) {
-        if (forceDisable) {
-            this.#buttonSave.disabled = true;
-            this.#buttonSave.title = this.#saveDisabledTitle;
-            return;
-        }
+    /** @param {boolean} disabled  */
+    #setSaveButtonStatus(disabled) {
+        this.#buttonSave.disabled = disabled;
 
-        this.#buttonSave.disabled = !this.#isValid
-            || (this.#currentUseDefault && !this.#hasChangedChecked)
-            || (!this.#currentUseDefault && !this.#hasChangedValue);
-
-        this.#buttonSave.title = this.#buttonSave.disabled
+        this.#buttonSave.title = disabled
             ? this.#saveDisabledTitle
             : this.#saveEnabledTitle;
     }
 
-    #setUndoButtonStatus(forceDisable = false) {
-        if (forceDisable) {
-            this.#buttonUndo.disabled = true;
-            this.#buttonUndo.title = this.#undoDisabledTitle;
-            return;
-        }
+    /** @param {boolean} disabled  */
+    #setUndoButtonStatus(disabled) {
+        this.#buttonUndo.disabled = disabled;
 
-        this.#buttonUndo.disabled = this.#currentUseDefault || !this.#hasChangedValue;
-        this.#buttonUndo.title = this.#buttonUndo.disabled
+        this.#buttonUndo.title = disabled
             ? this.#undoDisabledTitle
             : this.#undoEnabledTitle;
     }
@@ -199,20 +208,21 @@ export default class ConfigFieldComponent extends HTMLElement {
 
         this.#buttonSave.addEventListener('click', () => this.#save());
 
+        this.#saveable.subscribe({ next: (saveable) => { this.#setSaveButtonStatus(!saveable) }});
+        this.#undoable.subscribe({ next: (undoable) => { this.#setUndoButtonStatus(!undoable) }})
+
         if (setupCSV)
             return this.#setupCSV();
         
         this.#input.addEventListener('input', () => {
             this.#currentValue = this.#input.value;
-            this.#hasChangedValue = this.#currentValue !== this.#defaultValue;
+            this.#hasChangedValue = this.#currentValue !== this.#startingValue;
             this.#isValid = this.#input.checkValidity();
-            this.#setSaveButtonStatus();
-            this.#setUndoButtonStatus();
+            this.#updateStatus();
         });
 
         this.#buttonUndo.addEventListener('click', () => {
-            this.#setSaveButtonStatus(true);
-            this.#setUndoButtonStatus(true);
+            this.#updateStatus({ forceSaveable: false, forceUndoable: false });
 
             this.#currentValue = this.#startingValue;
             this.#input.defaultValue = this.#startingValue;
@@ -234,8 +244,7 @@ export default class ConfigFieldComponent extends HTMLElement {
             this.#input.value = isDefault
                 ? this.#defaultValue
                 : this.#currentValue;
-            this.#setSaveButtonStatus();
-            this.#setUndoButtonStatus();
+            this.#updateStatus();
         });
     }
 
@@ -250,8 +259,7 @@ export default class ConfigFieldComponent extends HTMLElement {
 
             this.#input.hidden = !isDefault;
             this.#fieldset.hidden = isDefault;
-            this.#setSaveButtonStatus();
-            this.#setUndoButtonStatus();
+            this.#updateStatus();
         });
 
         const listItems = this.#listCSV.querySelectorAll('[item-csv]');
@@ -264,8 +272,7 @@ export default class ConfigFieldComponent extends HTMLElement {
         });
 
         this.#buttonUndo.addEventListener('click', () => {
-            this.#setSaveButtonStatus(true);
-            this.#setUndoButtonStatus(true);
+            this.#updateStatus({forceSaveable: false, forceUndoable: false});
 
             this.#currentValue = this.#startingValue;
             this.#hasChangedValue = false;
@@ -302,8 +309,7 @@ export default class ConfigFieldComponent extends HTMLElement {
             this.#currentValue = this.#getCSVString();
             this.#hasChangedValue = this.#currentValue !== this.#startingValue;
             this.#isValid = this.#fieldset.checkValidity();
-            this.#setSaveButtonStatus();
-            this.#setUndoButtonStatus();
+            this.#updateStatus();
         });
 
         if (addInputToList) {
@@ -318,9 +324,26 @@ export default class ConfigFieldComponent extends HTMLElement {
             this.#currentValue = this.#getCSVString();
             this.#hasChangedValue = this.#currentValue !== this.#startingValue;
             this.#isValid = this.#fieldset.checkValidity();
-            this.#setSaveButtonStatus();
-            this.#setUndoButtonStatus();
+            this.#updateStatus();
         });
+    }
+
+    /** @param {{ forceSaveable?: boolean, forceUndoable?: boolean}} force */
+    #updateStatus({forceSaveable, forceUndoable} = {}) {
+        if (typeof forceSaveable === 'boolean')
+            this.#saveable.setValue(forceSaveable);
+        else
+            this.#saveable.setValue(
+                this.#isValid
+                && (!this.#currentUseDefault || this.#hasChangedChecked )
+                && (this.#currentUseDefault || this.#hasChangedValue)
+            );
+
+        if (typeof forceUndoable === 'boolean')
+            this.#undoable.setValue(forceUndoable);
+        else
+            this.#undoable.setValue(!this.#currentUseDefault && this.#hasChangedValue);
+            
     }
 }
 
