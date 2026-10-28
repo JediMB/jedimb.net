@@ -29,7 +29,7 @@ class RoutingService extends Singleton {
         $this->rejectBots();
     }
 
-    private function getAssettMatch() : string|false {
+    private function getAssetMatch() : string|false {
         if ($this->isPHP($this->requestPath))
             return false;
 
@@ -98,7 +98,7 @@ class RoutingService extends Singleton {
         $this->handleVirtualPages();
         $this->handleBlogRequests();
         
-        if ($this->getAssettMatch()) {
+        if ($this->getAssetMatch()) {
             if ($this->isForbidden)
                 $this->serveForbidden();
 
