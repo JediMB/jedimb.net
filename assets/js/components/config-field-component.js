@@ -20,8 +20,9 @@ export default class ConfigFieldComponent extends HTMLElement {
     /** @type {string} */ #name;
     /** @type {string} */ #configType;
 
-    /** @type {boolean} */ #startingUseDefault;
-    /** @type {boolean} */ #currentUseDefault;
+    /** @type {boolean} */ #startingDefaultMode;
+    /** @type {boolean} */ #currentDefaultMode;
+
     /** @type {string} */ #currentValue;
     /** @type {string} */ #defaultValue;
     /** @type {string} */ #startingValue;
@@ -34,8 +35,10 @@ export default class ConfigFieldComponent extends HTMLElement {
     /** @type {string} */ #undoDisabledTitle;
 
     #isValid = true;
-    #hasChangedChecked = false;
-    #hasChangedValue = false;
+    get #hasChangedMode() { return this.#currentDefaultMode !== this.#startingDefaultMode; }
+    get #hasChangedValue() { return this.#currentValue !== this.#startingValue; }
+    get #hasDefaultValue() { return this.#currentValue === this.#defaultValue; }
+    get #hasNewActiveValue() { return !this.#currentDefaultMode && this.#hasChangedValue }
 
     #saveable = new Emitter(false);
     #undoable = new Emitter(false);
@@ -78,12 +81,12 @@ export default class ConfigFieldComponent extends HTMLElement {
 
     /** @returns {Configuration} */
     getConfiguration() {
-        const value = !this.#currentUseDefault && this.#hasChangedValue
+        const value = this.#hasNewActiveValue
             ? this.#currentValue
             : null;
 
-        const isInactive = this.#hasChangedChecked
-            ? this.#currentUseDefault
+        const isInactive = this.#hasChangedMode
+            ? this.#currentDefaultMode
             : null;
         
         return new Configuration({
@@ -197,8 +200,8 @@ if (inputValue.length)
         this.#name = this.#input.name;
         this.#configType = this.#input.dataset.configType;
 
-        this.#startingUseDefault = this.#toggleUseDefault.checked;
-        this.#currentUseDefault = this.#toggleUseDefault.checked;
+        this.#startingDefaultMode = this.#toggleUseDefault.checked;
+        this.#currentDefaultMode = this.#toggleUseDefault.checked;
 
         this.#startingValue = this.#input.value;
         this.#currentValue = this.#input.value;
@@ -219,8 +222,7 @@ if (inputValue.length)
         
         this.#input.addEventListener('input', () => {
             this.#currentValue = this.#input.value;
-            this.#hasChangedValue = this.#currentValue !== this.#startingValue;
-            this.#isValid = this.#input.checkValidity();
+                        this.#isValid = this.#input.checkValidity();
             this.#updateStatus();
         });
 
@@ -230,16 +232,14 @@ if (inputValue.length)
             this.#currentValue = this.#startingValue;
             this.#input.defaultValue = this.#startingValue;
             this.#input.value = this.#currentValue;
-            this.#hasChangedValue = false;
-            this.#isValid = this.#input.checkValidity();
+                        this.#isValid = this.#input.checkValidity();
         });
 
         this.#toggleUseDefault.addEventListener('change', event => {
             const isDefault = event.currentTarget.checked;
 
-            this.#currentUseDefault = isDefault;
-            this.#hasChangedChecked = this.#currentUseDefault !== this.#startingUseDefault;
-            
+            this.#currentDefaultMode = isDefault;
+                        
             this.#input.disabled = isDefault;
             this.#input.defaultValue = isDefault
                 ? this.#defaultValue
@@ -257,9 +257,8 @@ if (inputValue.length)
         this.#toggleUseDefault.addEventListener('change', event => {
             const isDefault = event.currentTarget.checked;
 
-            this.#currentUseDefault = isDefault;
-            this.#hasChangedChecked = this.#currentUseDefault !== this.#startingUseDefault;
-
+            this.#currentDefaultMode = isDefault;
+            
             this.#input.hidden = !isDefault;
             this.#fieldset.hidden = isDefault;
             this.#updateStatus();
@@ -278,8 +277,7 @@ if (inputValue.length)
             this.#updateStatus({forceSaveable: false, forceUndoable: false});
 
             this.#currentValue = this.#startingValue;
-            this.#hasChangedValue = false;
-
+            
             const listClone = this.#startingList.cloneNode(true);
             this.#listCSV.replaceWith(listClone);
             this.#listCSV = listClone;
@@ -310,8 +308,7 @@ if (inputValue.length)
                 : Number(itemInput.dataset.defaultSize);
             
             this.#currentValue = this.#getCSVString();
-            this.#hasChangedValue = this.#currentValue !== this.#startingValue;
-            this.#isValid = this.#fieldset.checkValidity();
+                        this.#isValid = this.#fieldset.checkValidity();
             this.#updateStatus();
         });
 
@@ -325,8 +322,7 @@ if (inputValue.length)
             listItem.remove();
 
             this.#currentValue = this.#getCSVString();
-            this.#hasChangedValue = this.#currentValue !== this.#startingValue;
-            this.#isValid = this.#fieldset.checkValidity();
+                        this.#isValid = this.#fieldset.checkValidity();
             this.#updateStatus();
         });
     }
@@ -335,17 +331,19 @@ if (inputValue.length)
     #updateStatus({forceSaveable, forceUndoable} = {}) {
         if (typeof forceSaveable === 'boolean')
             this.#saveable.setValue(forceSaveable);
-        else
-            this.#saveable.setValue(
-                this.#isValid
-                && (!this.#currentUseDefault || this.#hasChangedChecked )
-                && (this.#currentUseDefault || this.#hasChangedValue)
-            );
+        else {
+            const customValueDeactivated = this.#currentDefaultMode && this.#hasChangedMode;
+            const nondefaultValueActivated = !this.#currentDefaultMode && this.#hasChangedMode && !this.#hasDefaultValue;
+
+            this.#saveable.setValue(this.#isValid && (
+                customValueDeactivated || this.#hasNewActiveValue || nondefaultValueActivated
+            ));
+        }
 
         if (typeof forceUndoable === 'boolean')
             this.#undoable.setValue(forceUndoable);
         else
-            this.#undoable.setValue(!this.#currentUseDefault && this.#hasChangedValue);
+            this.#undoable.setValue(!this.#currentDefaultMode && this.#hasChangedValue);
             
     }
 }
