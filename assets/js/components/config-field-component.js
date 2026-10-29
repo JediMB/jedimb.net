@@ -126,7 +126,7 @@ this.#inputsCSV = [];
             this.#input.value = value;
         }
 
-        this.#startingUseDefault = response.isInactive;
+        this.#startingDefaultMode = configuration.isInactive;
     }
 
     #addCSVItem(inputValue = '') {
