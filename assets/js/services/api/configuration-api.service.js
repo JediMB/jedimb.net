@@ -13,7 +13,7 @@ class ConfigurationApiService {
 
     /**
      * @param {Configuration[]} configs 
-     * @returns {Promise<({success: boolean, errors?: string[]|Object.<string, string|Object.<string, InputErrors>>, value?: Configuration[]})>}
+     * @returns {Promise<({success: boolean, errors?: string[]|Object.<string, string|InputErrors>, value?: Configuration[]})>}
      */
     async createConfigurations(configs) {
         const response = await this.#httpClient.post(this.#api, configs);

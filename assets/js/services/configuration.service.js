@@ -11,33 +11,25 @@ class ConfigurationService {
     /** 
      * @param {Configuration} configuration
      * @param {(value: Configuration) => void} next
-     * @param {(errors?: string|Object.<string, InputErrors>) => void} error
+     * @param {(errors?: string[]|InputErrors) => void} error
      */
     async saveConfiguration(configuration, next, error) {
         const response = configuration.id === 0
             ? await this.#service.createConfigurations([configuration])
             : await this.#service.updateConfigurations([configuration]);
 
-        let errors = false;
-        
-        switch (typeof response.errors) {
-            case 'object':
-                if (Array.isArray(response.errors) && response.errors.length) {
-                    errors = response.errors.join("\n");
-                    break;
-                }
+        let errors;
 
-                if (Object.hasOwn(response.errors, configuration.name))
-                    errors = response.errors[configuration.name];
-                break;
+        if (!response.success) {
+            if (Array.isArray(response.errors))
+                return error?.call(this, response.errors);
 
-            case 'string':
-                errors = response.errors;
-                break;
+            if (Object.hasOwn(response.errors, configuration.name))
+                return error?.call(this, response.errors[configuration.name]);
+
+            console.error('Unknown error in saveConfiguration', response.errors);
+            return;
         }
-
-        if (!response.success || errors)
-            return error?.call(this, errors);
 
         next?.call(this, response.value.at(0));
     }
@@ -45,7 +37,7 @@ class ConfigurationService {
     /** 
      * @param {Configuration[]} configurations
      * @param {(value: Configuration[]) => void} next
-     * @param {(errors: string|Object.<string, string|Object.<string, InputErrors>>) => void} error
+     * @param {(errors: Object.<string, string|InputErrors>) => void} error
      */
     async saveConfigurations(configurations, next, error) {
         const newConfigs = configurations.filter(config => config.id === 0);
@@ -68,14 +60,23 @@ class ConfigurationService {
             // TODO: Needs to take into account string, object->string, and object->inputError errors
 
             for (const response of responses) {
-                returnedConfigurations.push(...response.value);
-                returnedErrors = { ...returnedErrors, ...response.errors };
+                if (response.value)
+                    returnedConfigurations.push(...response.value);
+
+                if (Array.isArray(response.errors)) {
+                    // TODO: Notification
+                    console.error(...response.errors);
+                    continue;
+                }
+
+                if (typeof response.errors === 'object')
+                    returnedErrors = { ...returnedErrors, ...response.errors };
             }
 
             if (returnedConfigurations.length)
                 next?.call(this, returnedConfigurations);
 
-            if (returnedErrors.length)
+            if (Object.keys(returnedErrors).length)
                 error?.call(this, returnedErrors);
             },
             reason => {

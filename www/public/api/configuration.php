@@ -35,7 +35,7 @@ try {
                     $name = $config['name']
                         ?? throw new InvalidArgumentException("No name provided for input $key");
 
-                    $errors[$name] = $e->getErrors();
+                    $errors[$name] = $e->getErrors()['value'];
                     continue;
                 }
 
@@ -81,7 +81,7 @@ try {
                     $name = $config['name']
                         ?? throw new InvalidArgumentException("No name provided for input $key");
 
-                    $errors[$name] = $e->getErrors();
+                    $errors[$name] = $e->getErrors()['value'];
                     continue;
                 }
 
