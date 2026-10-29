@@ -17,7 +17,12 @@ use App\Components\Admin\SiteConfigurationComponent;
                     class="btn-primary btn-safe"
                     disabled
                     >
-                    Save all changes
+                    <svg is-loading width="1em" height="1em">
+                        <use xlink:href="#svg-loading" href="#svg-loading"></use>
+                    </svg>
+                    <span has-loaded>
+                        Save all changes
+                    </span>
                 </button>
             </div>
 

@@ -5,6 +5,8 @@ export default class SiteConfigurationComponent extends HTMLElement {
     /** @type {ConfigFieldComponent[]} */ #configFields;
     #saveable = false;
 
+    /** @type {HTMLButtonElement} */ #saveAllButton;
+
     constructor() { super(); }
 
     connectedCallback() {
@@ -12,6 +14,7 @@ export default class SiteConfigurationComponent extends HTMLElement {
 
         /** @type {HTMLButtonElement} */
         const saveAllButton = this.querySelector('[btn-save-all]');
+this.#saveAllButton = saveAllButton;
 
         saveAllButton.addEventListener('click', event => {
             event.preventDefault();
@@ -34,6 +37,7 @@ export default class SiteConfigurationComponent extends HTMLElement {
     disconnectedCallback() {}
 
     async #save() {
+        this.#saveAllButton.setAttribute('btn-loading', 'true');
         const saveableFields = this.#configFields.filter(field => field.saveable);
 
         const configurations = saveableFields.map(field => field.getConfiguration());
@@ -50,6 +54,7 @@ export default class SiteConfigurationComponent extends HTMLElement {
 
                     field.updateConfiguration(config);
                 }
+this.#saveAllButton.removeAttribute('btn-loading');
             },
             errors => {
                 // TODO: Check if string errors (such as database errors) were returned. Display above form?
@@ -62,6 +67,7 @@ export default class SiteConfigurationComponent extends HTMLElement {
 
                     // TODO: Tell field to display its errors
                 }
+this.#saveAllButton.removeAttribute('btn-loading');
             }
         )
 
