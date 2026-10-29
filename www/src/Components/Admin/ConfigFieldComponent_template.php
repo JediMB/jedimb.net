@@ -40,9 +40,10 @@ $uid = $data->uid;
                 data-id="<?= $data->dbId ?>"
                 data-config-type="<?= $data->configType->value ?>"
                 placeholder="<?= $data->label ?>"
-                <?php if ($data->isDefaultValue): ?>
+                <?php if ($data->isDefaultValue || $data->values): ?>
                     disabled
-                <?php elseif ($data->values): ?>
+                <?php endif ?>
+                <?php if (!$data->isDefaultValue && $data->values): ?>
                     hidden
                 <?php endif ?>
                 required
