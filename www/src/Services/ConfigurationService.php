@@ -46,8 +46,8 @@ class ConfigurationService extends Singleton {
     public function createConfiguration(ConfigurationDTO $object) : Configuration {
         if (!isset($this->constants[$object->name]))
             throw new Exception("Trying to create a configuration for a non-eligible constant name {$object->name}");
-
-        if (gettype($object->value) !== gettype($this->constants[$object->name]))
+        
+        if (gettype($this->constants[$object->name]) !== 'string' && !is_numeric($object->value))
             throw new Exception("Submitted configuration value type does not match constant value type for {$object->name}");
 
         return $this->configDbService->createConfiguration($object);
@@ -73,7 +73,12 @@ class ConfigurationService extends Singleton {
         if ($this->noActiveConfiguration($name))
             return $this->constants[$name];
 
-        return $this->configuration[$name]->value;
+        $configuration = $this->configuration[$name];
+
+        if ($configuration->configType === ConfigType::Number)
+            return (int)$configuration->value;
+
+        return $configuration->value;
     }
 
     /**
