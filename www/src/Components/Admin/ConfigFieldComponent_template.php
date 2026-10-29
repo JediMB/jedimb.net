@@ -54,34 +54,36 @@ $uid = $data->uid;
                         hidden
                     <?php endif ?>
                     >
-                    <ul list-csv class="flex-row flex-grow">
-                        <?php foreach ($data->values as $key => $item): ?>
-                            <li item-csv>
-                                <input-container>
-                                    <input input-csv
-                                        type="text"
-                                        title="<?= TEXT_CONFIG_ITEM_CHARS ?>"
-                                        placeholder="Type here..."
-                                        value="<?= $item ?>"
-                                        size="<?= strlen($item) ?>"
-                                        data-default-size="12"
-                                        data-error-invalid="INVALID ITEM"
-                                        pattern="<?= REGEX_HTML['config_item'] ?>"
-                                        required
-                                        >
-                                    <button btn-remove
-                                        type="button"
-                                        class="link-svg hidden-unhovered"
-                                        title="Remove item"
-                                        >
-                                        <svg width="1rem" height="1rem">
-                                            <use xlink:href="#svg-close" href="#svg-close"></use>
-                                        </svg>
-                                    </button>
-                                </input-container>
-                            </li>
-                        <?php endforeach ?>
-                        <li item-add>
+                    <ul class="flex-row flex-wrap flex-grow">
+                        <ul list-csv class="display-contents">
+                            <?php foreach ($data->values as $key => $item): ?>
+                                <li item-csv>
+                                    <input-container>
+                                        <input input-csv
+                                            type="text"
+                                            title="<?= TEXT_CONFIG_ITEM_CHARS ?>"
+                                            placeholder="Type here..."
+                                            value="<?= $item ?>"
+                                            size="<?= strlen($item) ?>"
+                                            data-default-size="12"
+                                            data-error-invalid="INVALID ITEM"
+                                            pattern="<?= REGEX_HTML['config_item'] ?>"
+                                            required
+                                            >
+                                        <button btn-remove
+                                            type="button"
+                                            class="link-svg hidden-unhovered"
+                                            title="Remove item"
+                                            >
+                                            <svg width="1rem" height="1rem">
+                                                <use xlink:href="#svg-close" href="#svg-close"></use>
+                                            </svg>
+                                        </button>
+                                    </input-container>
+                                </li>
+                            <?php endforeach ?>
+                        </ul>
+                        <li>
                             <button btn-add
                                 type="button"
                                 class="btn-secondary"

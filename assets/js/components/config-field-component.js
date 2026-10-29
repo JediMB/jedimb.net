@@ -9,10 +9,11 @@ export default class ConfigFieldComponent extends HTMLElement {
     /** @type {HTMLFieldSetElement} */ #fieldset;
     /** @type {HTMLInputElement} */ #input;
     /** @type {InputErrorsElement} */ #inputErrors;
-    /** @type {HTMLInputElement[]|undefined} */ #inputsCSV;
-    /** @type {HTMLLIElement} */ #itemAdd;
+
     /** @type {HTMLUListElement} */ #listCSV;
-    /** @type {HTMLTemplateElement} */ #itemTemplate;
+    /** @type {HTMLInputElement[]|undefined} */ #inputsCSV;
+        /** @type {HTMLTemplateElement} */ #itemTemplate;
+
     /** @type {HTMLInputElement} */ #toggleUseDefault;
 
     /** @type {number} */ #id;
@@ -55,9 +56,8 @@ export default class ConfigFieldComponent extends HTMLElement {
         if (listCSV) {
             this.#fieldset = this.querySelector('fieldset');
             this.#inputsCSV = Array.from(listCSV.querySelectorAll('[input-csv'));
-            this.#itemAdd = listCSV.querySelector('[item-add]');
-            this.#buttonAdd = this.#itemAdd.querySelector('[btn-add]');
-            this.#itemTemplate = listCSV.querySelector('template');
+                        this.#buttonAdd = this.#fieldset.querySelector('[btn-add]');
+            this.#itemTemplate = this.#fieldset.querySelector('template');
         }
 
         this.#buttonSave = inputRow.querySelector('[btn-save');
@@ -110,6 +110,7 @@ export default class ConfigFieldComponent extends HTMLElement {
             this.#input.value = this.#defaultValue;
 
             this.#listCSV.textContent = '';
+this.#inputsCSV = [];
 
             const values = value.split(',').map(v => v.trim());
             for (const csv of values)
@@ -130,8 +131,10 @@ export default class ConfigFieldComponent extends HTMLElement {
         const fragment = this.#itemTemplate.content.cloneNode(true);
         const input = fragment.querySelector('input');
         input.defaultValue = inputValue;
-        this.#listCSV.insertBefore(fragment, this.#itemAdd);
-        const item = this.#itemAdd.previousElementSibling;
+if (inputValue.length)
+            input.size = inputValue.length;
+        this.#listCSV.append(fragment);
+        const item = this.#listCSV.lastElementChild;
         this.#setupCSVItem(item, { addInputToList: true });
     }
 
@@ -312,9 +315,9 @@ export default class ConfigFieldComponent extends HTMLElement {
             this.#updateStatus();
         });
 
-        if (addInputToList) {
+        if (addInputToList)
             this.#inputsCSV.push(itemInput);
-        }
+        
         itemButton.addEventListener('click', () => {
             this.#inputsCSV = this.#inputsCSV.filter(
                 input => input !== itemInput
