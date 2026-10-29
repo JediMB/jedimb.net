@@ -3,10 +3,8 @@
 namespace App\Models\DTO;
 
 use InvalidArgumentException;
-use TypeError;
 use App\Abstract\DbBase;
 use App\Enums\ConfigType;
-use App\Enums\InputError;
 use App\Models\DB\Configuration;
 use App\Models\Exceptions\InputException;
 use App\Utils\Input;
