@@ -21,6 +21,10 @@ img-wrapper {
     display: none;
 }
 
+.display-contents {
+    display: contents;
+}
+
 .flex-col,
 .flex-row {
     --_align: normal;

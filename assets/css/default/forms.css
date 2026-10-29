@@ -84,12 +84,12 @@ textarea,
     }
 
     &:enabled:user-invalid,
-    &[aria-invalid="true"] {
+    &[aria-invalid="true"],
+    &[class~="error" i] {
         background-color: var(--clr-warn-light);
     }
     
-    /* TODO: Use a wrapper element that handles error messages via data attributes */
-    &[class|="error" i] {
+    &[class~="error" i] {
         border: 2px solid var(--clr-warn);
     }
 }
