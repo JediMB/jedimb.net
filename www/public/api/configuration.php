@@ -2,6 +2,7 @@
 
 use App\Enums\UserPermission;
 use App\Models\DTO\ConfigurationDTO;
+use App\Models\Exceptions\DatabaseException;
 use App\Models\Exceptions\InputException;
 use App\Services\ConfigurationService;
 use App\Services\SessionService;
@@ -29,7 +30,16 @@ try {
             foreach ($input as $key => $config) {
                 try {
                     $configDTO = new ConfigurationDTO($config);
+                }
+                catch (InputException $e) {
+                    $name = $config['name']
+                        ?? throw new InvalidArgumentException("No name provided for input $key");
 
+                    $errors[$name] = $e->getErrors();
+                    continue;
+                }
+
+                try {
                     if (!ConfigurationService::isConfigurable($configDTO->name)) {
                         $errors[$configDTO->name] = 'Attempted to create new configuration for disallowed constant';
                         continue;
@@ -47,11 +57,8 @@ try {
 
                     $result[] = $config;
                 }
-                catch (InputException $e) {
-                    $name = $config['name']
-                        ?? throw new InvalidArgumentException("No name provided for input $key");
-
-                    $errors[$name] = $e->getErrors();
+                catch (DatabaseException $e) {
+                    $errors[$configDTO->name] = $e->getMessage();
                 }
             }
 
@@ -69,8 +76,16 @@ try {
             foreach ($input as $key => $config) {
                 try {
                     $configDTO = new ConfigurationDTO($config);
+                }
+                catch (InputException $e) {
+                    $name = $config['name']
+                        ?? throw new InvalidArgumentException("No name provided for input $key");
 
+                    $errors[$name] = $e->getErrors();
+                    continue;
+                }
 
+                try {
                     if (!ConfigurationService::isConfigurable($configDTO->name)) {
                         $errors[$configDTO->name] = 'Attempted to create new configuration for disallowed constant';
                         continue;
@@ -92,11 +107,8 @@ try {
 
                     $result[] = $config;
                 }
-                catch (InputException $e) {
-                    $name = $config['name']
-                        ?? throw new InvalidArgumentException("No name provided for input $key");
-
-                    $errors[$name] = $e->getErrors();
+                catch (DatabaseException $e) {
+                    $errors[$configDTO->name] = $e->getMessage();
                 }
             }
 
