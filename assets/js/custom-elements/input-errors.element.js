@@ -35,11 +35,19 @@ export default class InputErrorsElement extends HTMLElement {
 
     get name() { return this.#input.name; }
 
-    /** @param {string|InputErrors} errorData */
+    /** @param {string|string[]|InputErrors} errorData */
     set(errorData) {
         if (typeof errorData === 'string') {
             this.#addErrorMessage(errorData);
             this.#input.classList.add(InputErrorsElement.#errorClasses.other);
+            return;
+        }
+
+        if (Array.isArray(errorData)) {
+            for (const error of errorData) {
+                this.#addErrorMessage(error);
+                this.#input.classList.add(InputErrorsElement.#errorClasses.other);
+            }
             return;
         }
 

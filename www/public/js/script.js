@@ -1363,7 +1363,7 @@ class ConfigurationApiService {
 
     /**
      * @param {Configuration[]} configs 
-     * @returns {Promise<({success: boolean, errors?: string[]|Object.<string, string|Object.<string, InputErrors>>, value?: Configuration[]})>}
+     * @returns {Promise<({success: boolean, errors?: string[]|Object.<string, string|InputErrors>, value?: Configuration[]})>}
      */
     async createConfigurations(configs) {
         const response = await this.#httpClient.post(this.#api, configs);
@@ -1405,33 +1405,25 @@ class ConfigurationService {
     /** 
      * @param {Configuration} configuration
      * @param {(value: Configuration) => void} next
-     * @param {(errors?: string|Object.<string, InputErrors>) => void} error
+     * @param {(errors?: string[]|InputErrors) => void} error
      */
     async saveConfiguration(configuration, next, error) {
         const response = configuration.id === 0
             ? await this.#service.createConfigurations([configuration])
             : await this.#service.updateConfigurations([configuration]);
 
-        let errors = false;
-        
-        switch (typeof response.errors) {
-            case 'object':
-                if (Array.isArray(response.errors) && response.errors.length) {
-                    errors = response.errors.join("\n");
-                    break;
-                }
+        let errors;
 
-                if (Object.hasOwn(response.errors, configuration.name))
-                    errors = response.errors[configuration.name];
-                break;
+        if (!response.success) {
+            if (Array.isArray(response.errors))
+                return error?.call(this, response.errors);
 
-            case 'string':
-                errors = response.errors;
-                break;
+            if (Object.hasOwn(response.errors, configuration.name))
+                return error?.call(this, response.errors[configuration.name]);
+
+            console.error('Unknown error in saveConfiguration', response.errors);
+            return;
         }
-
-        if (!response.success || errors)
-            return error?.call(this, errors);
 
         next?.call(this, response.value.at(0));
     }
@@ -1439,7 +1431,7 @@ class ConfigurationService {
     /** 
      * @param {Configuration[]} configurations
      * @param {(value: Configuration[]) => void} next
-     * @param {(errors: string|Object.<string, string|Object.<string, InputErrors>>) => void} error
+     * @param {(errors: Object.<string, string|InputErrors>) => void} error
      */
     async saveConfigurations(configurations, next, error) {
         const newConfigs = configurations.filter(config => config.id === 0);
@@ -1462,14 +1454,23 @@ class ConfigurationService {
             // TODO: Needs to take into account string, object->string, and object->inputError errors
 
             for (const response of responses) {
-                returnedConfigurations.push(...response.value);
-                returnedErrors = { ...returnedErrors, ...response.errors };
+                if (response.value)
+                    returnedConfigurations.push(...response.value);
+
+                if (Array.isArray(response.errors)) {
+                    // TODO: Notification
+                    console.error(...response.errors);
+                    continue;
+                }
+
+                if (typeof response.errors === 'object')
+                    returnedErrors = { ...returnedErrors, ...response.errors };
             }
 
             if (returnedConfigurations.length)
                 next?.call(this, returnedConfigurations);
 
-            if (returnedErrors.length)
+            if (Object.keys(returnedErrors).length)
                 error?.call(this, returnedErrors);
             },
             reason => {
@@ -3463,11 +3464,19 @@ class InputErrorsElement extends HTMLElement {
 
     get name() { return this.#input.name; }
 
-    /** @param {string|InputErrors} errorData */
+    /** @param {string|string[]|InputErrors} errorData */
     set(errorData) {
         if (typeof errorData === 'string') {
             this.#addErrorMessage(errorData);
             this.#input.classList.add(InputErrorsElement.#errorClasses.other);
+            return;
+        }
+
+        if (Array.isArray(errorData)) {
+            for (const error of errorData) {
+                this.#addErrorMessage(error);
+                this.#input.classList.add(InputErrorsElement.#errorClasses.other);
+            }
             return;
         }
 
@@ -7001,18 +7010,20 @@ class ConfigFieldComponent extends HTMLElement {
     /** @type {HTMLFieldSetElement} */ #fieldset;
     /** @type {HTMLInputElement} */ #input;
     /** @type {InputErrorsElement} */ #inputErrors;
-    /** @type {HTMLInputElement[]|undefined} */ #inputsCSV;
-    /** @type {HTMLLIElement} */ #itemAdd;
+
     /** @type {HTMLUListElement} */ #listCSV;
+    /** @type {HTMLInputElement[]|undefined} */ #inputsCSV;
     /** @type {HTMLTemplateElement} */ #itemTemplate;
+
     /** @type {HTMLInputElement} */ #toggleUseDefault;
 
     /** @type {number} */ #id;
     /** @type {string} */ #name;
     /** @type {string} */ #configType;
 
-    /** @type {boolean} */ #startingUseDefault;
-    /** @type {boolean} */ #currentUseDefault;
+    /** @type {boolean} */ #startingDefaultMode;
+    /** @type {boolean} */ #currentDefaultMode;
+
     /** @type {string} */ #currentValue;
     /** @type {string} */ #defaultValue;
     /** @type {string} */ #startingValue;
@@ -7025,8 +7036,10 @@ class ConfigFieldComponent extends HTMLElement {
     /** @type {string} */ #undoDisabledTitle;
 
     #isValid = true;
-    #hasChangedChecked = false;
-    #hasChangedValue = false;
+    get #hasChangedMode() { return this.#currentDefaultMode !== this.#startingDefaultMode; }
+    get #hasChangedValue() { return this.#currentValue !== this.#startingValue; }
+    get #hasDefaultValue() { return this.#currentValue === this.#defaultValue; }
+    get #hasNewActiveValue() { return !this.#currentDefaultMode && this.#hasChangedValue }
 
     #saveable = new Emitter(false);
     #undoable = new Emitter(false);
@@ -7047,9 +7060,8 @@ class ConfigFieldComponent extends HTMLElement {
         if (listCSV) {
             this.#fieldset = this.querySelector('fieldset');
             this.#inputsCSV = Array.from(listCSV.querySelectorAll('[input-csv'));
-            this.#itemAdd = listCSV.querySelector('[item-add]');
-            this.#buttonAdd = this.#itemAdd.querySelector('[btn-add]');
-            this.#itemTemplate = listCSV.querySelector('template');
+            this.#buttonAdd = this.#fieldset.querySelector('[btn-add]');
+            this.#itemTemplate = this.#fieldset.querySelector('template');
         }
 
         this.#buttonSave = inputRow.querySelector('[btn-save');
@@ -7066,16 +7078,14 @@ class ConfigFieldComponent extends HTMLElement {
 
     disconnectedCallback() {}
 
-    
-
     /** @returns {Configuration} */
     getConfiguration() {
-        const value = !this.#currentUseDefault && this.#hasChangedValue
+        const value = this.#hasNewActiveValue
             ? this.#currentValue
             : null;
 
-        const isInactive = this.#hasChangedChecked
-            ? this.#currentUseDefault
+        const isInactive = this.#hasChangedMode
+            ? this.#currentDefaultMode
             : null;
         
         return new Configuration({
@@ -7102,6 +7112,7 @@ class ConfigFieldComponent extends HTMLElement {
             this.#input.value = this.#defaultValue;
 
             this.#listCSV.textContent = '';
+            this.#inputsCSV = [];
 
             const values = value.split(',').map(v => v.trim());
             for (const csv of values)
@@ -7114,7 +7125,20 @@ class ConfigFieldComponent extends HTMLElement {
             this.#input.value = value;
         }
 
-        this.#startingUseDefault = response.isInactive;
+        this.#startingDefaultMode = configuration.isInactive;
+    }
+
+    /**
+     * @param {string|string[]|InputErrors?} errors 
+     */
+    updateErrors(errors = null) {
+        this.#inputErrors.clear();
+
+        if (!errors)
+            return;
+
+        this.#inputErrors.set(errors);
+        this.#updateStatus({forceSaveable: false});
     }
 
     #addCSVItem(inputValue = '') {
@@ -7122,8 +7146,10 @@ class ConfigFieldComponent extends HTMLElement {
         const fragment = this.#itemTemplate.content.cloneNode(true);
         const input = fragment.querySelector('input');
         input.defaultValue = inputValue;
-        this.#listCSV.insertBefore(fragment, this.#itemAdd);
-        const item = this.#itemAdd.previousElementSibling;
+        if (inputValue.length)
+            input.size = inputValue.length;
+        this.#listCSV.append(fragment);
+        const item = this.#listCSV.lastElementChild;
         this.#setupCSVItem(item, { addInputToList: true });
     }
 
@@ -7151,12 +7177,7 @@ class ConfigFieldComponent extends HTMLElement {
                 this.#buttonSave.removeAttribute('btn-loading');
             },
             errors => {
-                if (typeof errors === 'string')
-                    this.#inputErrors.set(errors);
-                else if (typeof errors === 'object')
-                    this.#inputErrors.set(errors.value);
-
-                this.#updateStatus({forceSaveable: false});
+                this.updateErrors(errors);
                 this.#buttonSave.removeAttribute('btn-loading');
             }
         );
@@ -7186,8 +7207,8 @@ class ConfigFieldComponent extends HTMLElement {
         this.#name = this.#input.name;
         this.#configType = this.#input.dataset.configType;
 
-        this.#startingUseDefault = this.#toggleUseDefault.checked;
-        this.#currentUseDefault = this.#toggleUseDefault.checked;
+        this.#startingDefaultMode = this.#toggleUseDefault.checked;
+        this.#currentDefaultMode = this.#toggleUseDefault.checked;
 
         this.#startingValue = this.#input.value;
         this.#currentValue = this.#input.value;
@@ -7208,7 +7229,6 @@ class ConfigFieldComponent extends HTMLElement {
         
         this.#input.addEventListener('input', () => {
             this.#currentValue = this.#input.value;
-            this.#hasChangedValue = this.#currentValue !== this.#startingValue;
             this.#isValid = this.#input.checkValidity();
             this.#updateStatus();
         });
@@ -7219,15 +7239,13 @@ class ConfigFieldComponent extends HTMLElement {
             this.#currentValue = this.#startingValue;
             this.#input.defaultValue = this.#startingValue;
             this.#input.value = this.#currentValue;
-            this.#hasChangedValue = false;
             this.#isValid = this.#input.checkValidity();
         });
 
         this.#toggleUseDefault.addEventListener('change', event => {
             const isDefault = event.currentTarget.checked;
 
-            this.#currentUseDefault = isDefault;
-            this.#hasChangedChecked = this.#currentUseDefault !== this.#startingUseDefault;
+            this.#currentDefaultMode = isDefault;
             
             this.#input.disabled = isDefault;
             this.#input.defaultValue = isDefault
@@ -7246,8 +7264,7 @@ class ConfigFieldComponent extends HTMLElement {
         this.#toggleUseDefault.addEventListener('change', event => {
             const isDefault = event.currentTarget.checked;
 
-            this.#currentUseDefault = isDefault;
-            this.#hasChangedChecked = this.#currentUseDefault !== this.#startingUseDefault;
+            this.#currentDefaultMode = isDefault;
 
             this.#input.hidden = !isDefault;
             this.#fieldset.hidden = isDefault;
@@ -7267,7 +7284,6 @@ class ConfigFieldComponent extends HTMLElement {
             this.#updateStatus({forceSaveable: false, forceUndoable: false});
 
             this.#currentValue = this.#startingValue;
-            this.#hasChangedValue = false;
 
             const listClone = this.#startingList.cloneNode(true);
             this.#listCSV.replaceWith(listClone);
@@ -7299,14 +7315,13 @@ class ConfigFieldComponent extends HTMLElement {
                 : Number(itemInput.dataset.defaultSize);
             
             this.#currentValue = this.#getCSVString();
-            this.#hasChangedValue = this.#currentValue !== this.#startingValue;
             this.#isValid = this.#fieldset.checkValidity();
             this.#updateStatus();
         });
 
-        if (addInputToList) {
+        if (addInputToList)
             this.#inputsCSV.push(itemInput);
-        }
+        
         itemButton.addEventListener('click', () => {
             this.#inputsCSV = this.#inputsCSV.filter(
                 input => input !== itemInput
@@ -7314,7 +7329,6 @@ class ConfigFieldComponent extends HTMLElement {
             listItem.remove();
 
             this.#currentValue = this.#getCSVString();
-            this.#hasChangedValue = this.#currentValue !== this.#startingValue;
             this.#isValid = this.#fieldset.checkValidity();
             this.#updateStatus();
         });
@@ -7324,17 +7338,19 @@ class ConfigFieldComponent extends HTMLElement {
     #updateStatus({forceSaveable, forceUndoable} = {}) {
         if (typeof forceSaveable === 'boolean')
             this.#saveable.setValue(forceSaveable);
-        else
-            this.#saveable.setValue(
-                this.#isValid
-                && (!this.#currentUseDefault || this.#hasChangedChecked )
-                && (this.#currentUseDefault || this.#hasChangedValue)
-            );
+        else {
+            const customValueDeactivated = this.#currentDefaultMode && this.#hasChangedMode;
+            const nondefaultValueActivated = !this.#currentDefaultMode && this.#hasChangedMode && !this.#hasDefaultValue;
+
+            this.#saveable.setValue(this.#isValid && (
+                customValueDeactivated || this.#hasNewActiveValue || nondefaultValueActivated
+            ));
+        }
 
         if (typeof forceUndoable === 'boolean')
             this.#undoable.setValue(forceUndoable);
         else
-            this.#undoable.setValue(!this.#currentUseDefault && this.#hasChangedValue);
+            this.#undoable.setValue(!this.#currentDefaultMode && this.#hasChangedValue);
             
     }
 }
@@ -8507,6 +8523,8 @@ class SiteConfigurationComponent extends HTMLElement {
     /** @type {ConfigFieldComponent[]} */ #configFields;
     #saveable = false;
 
+    /** @type {HTMLButtonElement} */ #saveAllButton;
+
     constructor() { super(); }
 
     connectedCallback() {
@@ -8514,6 +8532,7 @@ class SiteConfigurationComponent extends HTMLElement {
 
         /** @type {HTMLButtonElement} */
         const saveAllButton = this.querySelector('[btn-save-all]');
+        this.#saveAllButton = saveAllButton;
 
         saveAllButton.addEventListener('click', event => {
             event.preventDefault();
@@ -8536,11 +8555,9 @@ class SiteConfigurationComponent extends HTMLElement {
     disconnectedCallback() {}
 
     async #save() {
+        this.#saveAllButton.setAttribute('btn-loading', 'true');
         const saveableFields = this.#configFields.filter(field => field.saveable);
-
         const configurations = saveableFields.map(field => field.getConfiguration());
-
-        console.log(configurations);
 
         configurationService.saveConfigurations(configurations,
             response => {
@@ -8552,18 +8569,18 @@ class SiteConfigurationComponent extends HTMLElement {
 
                     field.updateConfiguration(config);
                 }
+                this.#saveAllButton.removeAttribute('btn-loading');
             },
             errors => {
-                // TODO: Check if string errors (such as database errors) were returned. Display above form?
-
                 for (const field of saveableFields) {
                     const error = errors[field.name];
 
                     if (!error)
                         continue;
 
-                    // TODO: Tell field to display its errors
+                    field.updateErrors(error);
                 }
+                this.#saveAllButton.removeAttribute('btn-loading');
             }
         )
 

@@ -12,7 +12,7 @@ export default class ConfigFieldComponent extends HTMLElement {
 
     /** @type {HTMLUListElement} */ #listCSV;
     /** @type {HTMLInputElement[]|undefined} */ #inputsCSV;
-        /** @type {HTMLTemplateElement} */ #itemTemplate;
+    /** @type {HTMLTemplateElement} */ #itemTemplate;
 
     /** @type {HTMLInputElement} */ #toggleUseDefault;
 
@@ -59,7 +59,7 @@ export default class ConfigFieldComponent extends HTMLElement {
         if (listCSV) {
             this.#fieldset = this.querySelector('fieldset');
             this.#inputsCSV = Array.from(listCSV.querySelectorAll('[input-csv'));
-                        this.#buttonAdd = this.#fieldset.querySelector('[btn-add]');
+            this.#buttonAdd = this.#fieldset.querySelector('[btn-add]');
             this.#itemTemplate = this.#fieldset.querySelector('template');
         }
 
@@ -76,8 +76,6 @@ export default class ConfigFieldComponent extends HTMLElement {
     connectedMoveCallback() {}
 
     disconnectedCallback() {}
-
-    
 
     /** @returns {Configuration} */
     getConfiguration() {
@@ -113,7 +111,7 @@ export default class ConfigFieldComponent extends HTMLElement {
             this.#input.value = this.#defaultValue;
 
             this.#listCSV.textContent = '';
-this.#inputsCSV = [];
+            this.#inputsCSV = [];
 
             const values = value.split(',').map(v => v.trim());
             for (const csv of values)
@@ -129,12 +127,25 @@ this.#inputsCSV = [];
         this.#startingDefaultMode = configuration.isInactive;
     }
 
+    /**
+     * @param {string|string[]|InputErrors?} errors 
+     */
+    updateErrors(errors = null) {
+        this.#inputErrors.clear();
+
+        if (!errors)
+            return;
+
+        this.#inputErrors.set(errors);
+        this.#updateStatus({forceSaveable: false});
+    }
+
     #addCSVItem(inputValue = '') {
         /** @type {DocumentFragment} */
         const fragment = this.#itemTemplate.content.cloneNode(true);
         const input = fragment.querySelector('input');
         input.defaultValue = inputValue;
-if (inputValue.length)
+        if (inputValue.length)
             input.size = inputValue.length;
         this.#listCSV.append(fragment);
         const item = this.#listCSV.lastElementChild;
@@ -165,12 +176,7 @@ if (inputValue.length)
                 this.#buttonSave.removeAttribute('btn-loading');
             },
             errors => {
-                if (typeof errors === 'string')
-                    this.#inputErrors.set(errors);
-                else if (typeof errors === 'object')
-                    this.#inputErrors.set(errors.value);
-
-                this.#updateStatus({forceSaveable: false});
+                this.updateErrors(errors);
                 this.#buttonSave.removeAttribute('btn-loading');
             }
         );
@@ -222,7 +228,7 @@ if (inputValue.length)
         
         this.#input.addEventListener('input', () => {
             this.#currentValue = this.#input.value;
-                        this.#isValid = this.#input.checkValidity();
+            this.#isValid = this.#input.checkValidity();
             this.#updateStatus();
         });
 
@@ -232,14 +238,14 @@ if (inputValue.length)
             this.#currentValue = this.#startingValue;
             this.#input.defaultValue = this.#startingValue;
             this.#input.value = this.#currentValue;
-                        this.#isValid = this.#input.checkValidity();
+            this.#isValid = this.#input.checkValidity();
         });
 
         this.#toggleUseDefault.addEventListener('change', event => {
             const isDefault = event.currentTarget.checked;
 
             this.#currentDefaultMode = isDefault;
-                        
+            
             this.#input.disabled = isDefault;
             this.#input.defaultValue = isDefault
                 ? this.#defaultValue
@@ -258,7 +264,7 @@ if (inputValue.length)
             const isDefault = event.currentTarget.checked;
 
             this.#currentDefaultMode = isDefault;
-            
+
             this.#input.hidden = !isDefault;
             this.#fieldset.hidden = isDefault;
             this.#updateStatus();
@@ -277,7 +283,7 @@ if (inputValue.length)
             this.#updateStatus({forceSaveable: false, forceUndoable: false});
 
             this.#currentValue = this.#startingValue;
-            
+
             const listClone = this.#startingList.cloneNode(true);
             this.#listCSV.replaceWith(listClone);
             this.#listCSV = listClone;
@@ -308,7 +314,7 @@ if (inputValue.length)
                 : Number(itemInput.dataset.defaultSize);
             
             this.#currentValue = this.#getCSVString();
-                        this.#isValid = this.#fieldset.checkValidity();
+            this.#isValid = this.#fieldset.checkValidity();
             this.#updateStatus();
         });
 
@@ -322,7 +328,7 @@ if (inputValue.length)
             listItem.remove();
 
             this.#currentValue = this.#getCSVString();
-                        this.#isValid = this.#fieldset.checkValidity();
+            this.#isValid = this.#fieldset.checkValidity();
             this.#updateStatus();
         });
     }

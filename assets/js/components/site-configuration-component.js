@@ -14,7 +14,7 @@ export default class SiteConfigurationComponent extends HTMLElement {
 
         /** @type {HTMLButtonElement} */
         const saveAllButton = this.querySelector('[btn-save-all]');
-this.#saveAllButton = saveAllButton;
+        this.#saveAllButton = saveAllButton;
 
         saveAllButton.addEventListener('click', event => {
             event.preventDefault();
@@ -39,10 +39,7 @@ this.#saveAllButton = saveAllButton;
     async #save() {
         this.#saveAllButton.setAttribute('btn-loading', 'true');
         const saveableFields = this.#configFields.filter(field => field.saveable);
-
         const configurations = saveableFields.map(field => field.getConfiguration());
-
-        console.log(configurations);
 
         configurationService.saveConfigurations(configurations,
             response => {
@@ -54,20 +51,18 @@ this.#saveAllButton = saveAllButton;
 
                     field.updateConfiguration(config);
                 }
-this.#saveAllButton.removeAttribute('btn-loading');
+                this.#saveAllButton.removeAttribute('btn-loading');
             },
             errors => {
-                // TODO: Check if string errors (such as database errors) were returned. Display above form?
-
                 for (const field of saveableFields) {
                     const error = errors[field.name];
 
                     if (!error)
                         continue;
 
-                    // TODO: Tell field to display its errors
+                    field.updateErrors(error);
                 }
-this.#saveAllButton.removeAttribute('btn-loading');
+                this.#saveAllButton.removeAttribute('btn-loading');
             }
         )
 
