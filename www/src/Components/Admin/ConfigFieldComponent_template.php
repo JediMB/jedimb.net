@@ -67,7 +67,7 @@ $uid = $data->uid;
                                             size="<?= strlen($item) ?>"
                                             data-default-size="12"
                                             data-error-invalid="INVALID ITEM"
-                                            pattern="<?= REGEX_HTML['config_item'] ?>"
+                                            pattern="<?= REGEX_HTML['keyword'] ?>"
                                             required
                                             >
                                         <button btn-remove
@@ -104,7 +104,7 @@ $uid = $data->uid;
                                         size="12"
                                         data-default-size="12"
                                         data-error-invalid="INVALID ITEM"
-                                        pattern="<?= REGEX_HTML['config_item'] ?>"
+                                        pattern="<?= REGEX_HTML['keyword'] ?>"
                                         required
                                         >
                                     <button btn-remove
