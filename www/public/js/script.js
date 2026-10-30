@@ -7020,6 +7020,7 @@ class ConfigFieldComponent extends HTMLElement {
     /** @type {number} */ #id;
     /** @type {string} */ #name;
     /** @type {string} */ #configType;
+    /** @type {boolean} */ #required;
 
     /** @type {boolean} */ #startingDefaultMode;
     /** @type {boolean} */ #currentDefaultMode;
@@ -7153,6 +7154,11 @@ class ConfigFieldComponent extends HTMLElement {
         this.#setupCSVItem(item, { addInputToList: true });
     }
 
+    #checkValidityCSV() {
+        return this.#inputsCSV?.every(input => input.checkValidity())
+            && ( !this.#required || !!this.#currentValue.trim() );
+    }
+
     /** @returns {string} */
     #getCSVString() {
         return String.prototype.concat(
@@ -7206,6 +7212,7 @@ class ConfigFieldComponent extends HTMLElement {
         this.#id = Number(this.#input.dataset.id);
         this.#name = this.#input.name;
         this.#configType = this.#input.dataset.configType;
+        this.#required = this.#input.required;
 
         this.#startingDefaultMode = this.#toggleUseDefault.checked;
         this.#currentDefaultMode = this.#toggleUseDefault.checked;
@@ -7288,13 +7295,14 @@ class ConfigFieldComponent extends HTMLElement {
             const listClone = this.#startingList.cloneNode(true);
             this.#listCSV.replaceWith(listClone);
             this.#listCSV = listClone;
+            this.#inputsCSV = [];
 
             const listItems = this.#listCSV.querySelectorAll('[item-csv]');
             for (const item of listItems) {
-                this.#setupCSVItem(item);
+                this.#setupCSVItem(item, { addInputToList: true });
             }
 
-            this.#isValid = this.#fieldset.checkValidity();
+            this.#isValid = this.#checkValidityCSV();
         });
     }
 
@@ -7315,7 +7323,7 @@ class ConfigFieldComponent extends HTMLElement {
                 : Number(itemInput.dataset.defaultSize);
             
             this.#currentValue = this.#getCSVString();
-            this.#isValid = this.#fieldset.checkValidity();
+            this.#isValid = this.#checkValidityCSV();
             this.#updateStatus();
         });
 
@@ -7329,7 +7337,7 @@ class ConfigFieldComponent extends HTMLElement {
             listItem.remove();
 
             this.#currentValue = this.#getCSVString();
-            this.#isValid = this.#fieldset.checkValidity();
+            this.#isValid = this.#checkValidityCSV();
             this.#updateStatus();
         });
     }
