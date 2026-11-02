@@ -1,10 +1,12 @@
 <?php declare(strict_types=1);
 
+use App\Components\Admin\BlogPostAdministrationComponent;
 use App\Components\Admin\SiteConfigurationComponent;
+use App\Components\TabbedContentComponent;
 use App\Enums\UserPermission;
 use App\Models\App\Page;
+use App\Models\App\TabbedContent;
 use App\Services\SessionService;
-use App\Utils\Component;
 
 /** @var Page $page */
 
@@ -15,18 +17,15 @@ $page->title = PAGE_ADMIN_TITLE;
 
 ?>
 
-<?php Component::include('tabs', [
-    'containerId' => 'admin__content',
-    'tabs' => [
-        [ 'title' => 'Site settings', 'targetId' => 'admin-site', 'active' => '' ],
-        [ 'title' => 'Posts', 'targetId' => 'admin-posts' ]
-    ]
-]) ?>
-
-<div id="admin__content">
-    <?= new SiteConfigurationComponent() ?>
-    <?php Component::include('admin/blog-post-administration', [
-        'page' => $page,
-        'attributes' => ['id' => 'admin-posts', 'hidden' => '' ]
-    ]) ?>
-</div>
+<?= new TabbedContentComponent(
+        new TabbedContent(
+            'Site settings',
+            'admin-site',
+            new SiteConfigurationComponent()
+        ),
+        new TabbedContent(
+            'Posts',
+            'admin-posts',
+            new BlogPostAdministrationComponent('test')
+        )
+) ?>

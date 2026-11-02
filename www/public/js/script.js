@@ -6051,7 +6051,23 @@ class BlogHeadComponent extends HTMLElement {
 customElements.define('blog-head-component', BlogHeadComponent);
 
 
-/* IMPORT: ./components/blog-post-administration.js */
+/* IMPORT: /js/components/blog-post-administration-component.js */
+
+class BlogPostAdministrationComponent extends HTMLElement {
+    constructor() { super(); }
+
+    connectedCallback() {}
+
+    connectedMoveCallback() {}
+
+    disconnectedCallback() {}
+}
+
+customElements.define('blog-post-administration-component', BlogPostAdministrationComponent);
+
+
+
+/* IMPORT: ./components/blog-view.js */
 
 
 
@@ -6435,282 +6451,6 @@ customElements.define('page-selector-component', PageSelectorComponent);
  * @param {() => void} next
  * @returns {void}
  */
-
-
-/* IMPORT: /js/constants/markup-constants.js */
-
-
-
-
-/* IMPORT: /js/models/blog/blog-post.model.js */
-
-
-
-
-/* IMPORT: /js/services/blog-post.service.js */
-
-
-
-class BlogPostAdministrationComponent extends HTMLElement {
-    /** @type {HTMLFormElement} */ #statusForm;
-    /** @type {{start: HTMLSpanElement, end: HTMLSpanElement, total: HTMLSpanElement}} */ #itemCounters = {};
-    /** @type {HTMLUListElement} */ #list;
-    /** @type {HTMLTemplateElement} */ #template;
-    /** @type {PageSelectorComponent} */ #pageSelector;
-
-    /** @type {{published: '0'|'1'|'2', visibility: '0'|'1'|'2'}} */ #statuses = {};
-
-    constructor() { super(); }
-
-    connectedCallback() {
-        const statusRow = this.querySelector('.admin__blog-post__status-row');
-        this.#statusForm = statusRow.querySelector('#admin__blog-post__status-form');
-        this.#itemCounters.start = statusRow.querySelector('#admin__blog-post__items-start');
-        this.#itemCounters.end = statusRow.querySelector('#admin__blog-post__items-end');
-        this.#itemCounters.total = statusRow.querySelector('#admin__blog-post__items-total');
-
-        this.#list = this.querySelector('#admin__blog-post__list');
-        this.#template = this.querySelector('#admin__blog-post__template');
-        this.#pageSelector = this.querySelector(customElements.getName(PageSelectorComponent));
-        
-        this.#statusForm.addEventListener('change', event => {
-            this.#statuses[event.target.name] = event.target.value;
-
-            this.#loadPageContent();
-        });
-
-        const actionButtons = this.#list.querySelectorAll('[post-action]');
-        this.#assignButtonActions(actionButtons);
-
-        this.#pageSelector.onDataUpdate = data => {
-            const counters = this.#itemCounters;
-            counters.start.textContent = data.offset + 1;
-            counters.end.textContent = data.offset + Number(this.#list.childElementCount);
-            counters.total.textContent = data.itemCount;
-        };
-
-        this.#pageSelector.onPageChange = (page, doUpdateHistory = true, next = undefined) => {
-            this.#list.innerHTML = `<li>${MarkupConstants.loadingSpinner}</li>`;
-
-            this.#loadPageContent(page, doUpdateHistory, next);
-        };
-    }
-
-    connectedMoveCallback() {}
-
-    disconnectedCallback() {}
-
-    /**
-     * @param {HTMLButtonElement[]} buttons 
-     * @param {number} [id=null] 
-     */
-    #assignButtonActions(buttons, id = null) {
-        for (const button of buttons) {
-            const postId = id ?? Number(button.dataset.id);
-            
-            if (isNaN(postId)) {
-                console.error('Post ID for button is not a number', button);
-                continue;
-            }
-
-            switch (button.getAttribute('post-action')) {
-                case 'delete':
-                    // TODO: Use a modal web component instead of confirm()
-                    button.addEventListener('click', () => {
-                        const message = button.dataset.prompt ?? 'Permanently delete this post?';
-
-                        if (confirm(message)) {
-                            button.toggleAttribute('btn-loading', true);
-                            blogPostService.deleteBlogPost(postId,
-                                next => {
-                                    // TODO: Success notification
-                                    this.#loadPageContent();
-                                },
-                                error => {
-                                    // TODO: Error notification
-                                    button.toggleAttribute('btn-loading', false);
-                                }
-                            );
-                        }
-                    });
-                    break;
-
-                case 'hide':
-                    button.addEventListener('click', () => {
-                        button.toggleAttribute('btn-loading', true);
-                        blogPostService.hideBlogPost(postId,
-                            () => {
-                                // TODO: Success notification
-                                this.#loadPageContent();
-                            },
-                            error => {
-                                // TODO: Error notification
-                                button.toggleAttribute('btn-loading', false);
-                            }
-                        );
-                    });
-                    break;
-
-                case 'pin':
-                    button.addEventListener('click', () => {
-                        button.toggleAttribute('btn-loading', true);
-                        blogPostService.pinBlogPost(postId,
-                            () => {
-                                // TODO: Success notification
-                                this.#loadPageContent();
-                            },
-                            error => {
-                                // TODO: Error notification
-                                button.toggleAttribute('btn-loading', false);
-                            }
-                        );
-                    });
-                    break;
-
-                case 'publish':
-                    // TODO: Use a modal web component instead of confirm()
-                    button.addEventListener('click', () => {
-                        const message = button.dataset.prompt ?? 'Publish this post?';
-                        
-                        if (confirm(message)) {
-                            button.toggleAttribute('btn-loading', true);
-                            blogPostService.publishBlogPost(postId,
-                                () => {
-                                    // TODO: Success notification
-                                    this.#loadPageContent();
-                                },
-                                error => {
-                                    // TODO: Error notification
-                                    button.toggleAttribute('btn-loading', false);
-                                }
-                            );
-                        }
-                    });
-                    break;
-
-                case 'unhide':
-                    button.addEventListener('click', () => {
-                        button.toggleAttribute('btn-loading', true);
-                        blogPostService.unhideBlogPost(postId,
-                            () => {
-                                // TODO: Success notification
-                                this.#loadPageContent();
-                            },
-                            error => {
-                                // TODO: Error notification
-                                button.toggleAttribute('btn-loading', false);
-                            }
-                        );
-                    });
-                    break;
-
-                case 'unpin':
-                    button.addEventListener('click', () => {
-                        button.toggleAttribute('btn-loading', true);
-                        blogPostService.unpinBlogPost(postId,
-                            () => {
-                                // TODO: Success notification
-                                this.#loadPageContent();
-                            },
-                            error => {
-                                // TODO: Error notification
-                                button.toggleAttribute('btn-loading', false);
-                            }
-                        );
-                    });
-                    break;
-            }
-
-            button.removeAttribute('btn-loading');
-        }
-    }
-
-    /**
-     * @param {BlogPost} newBlogPost 
-     * @returns {DocumentFragment} */
-    #createBlogPostItem(newBlogPost) {
-        /** @type {DocumentFragment} */
-        const clone = this.#template.content.cloneNode(true);
-
-        const id = newBlogPost.id;
-
-        /** @type {HTMLAnchorElement} */
-        const link = clone.querySelector('.admin__blog-post__link');
-        link.href += id;
-        link.prepend(document.createTextNode(newBlogPost.title));
-
-        /** @type {HTMLDivElement} */
-        const description = clone.querySelector('.admin__blog-post__description');
-        description.textContent = newBlogPost.description;
-
-        const buttons = clone.querySelectorAll('button');
-        for (const button of buttons) {
-            const postAction = button.getAttribute('post-action');
-
-            if (postAction === 'hide' && newBlogPost.isHidden) {
-                button.parentElement.remove();
-                continue;
-            }
-
-            if (postAction === 'pin' && newBlogPost.isPinned) {
-                button.parentElement.remove();
-                continue;
-            }
-
-            if (postAction === 'publish') {
-                if (newBlogPost.publishedOn) {
-                    button.remove();
-                    continue;
-                }
-
-                button.nextElementSibling?.remove();
-            }
-
-            if (postAction === 'unhide' && !newBlogPost.isHidden) {
-                button.parentElement.remove();
-                continue;
-            }
-
-            if (postAction === 'unpin' && !newBlogPost.isPinned) {
-                button.parentElement.remove();
-                continue;
-            }
-
-            button.dataset.id = id;
-        }
-        this.#assignButtonActions(buttons, id);
-
-        return clone;
-    }
-
-    /**
-     * @param {number} page 
-     * @param {boolean} doUpdateHistory
-     * @param {() =>  void} next 
-     */
-    #loadPageContent(page = this.#pageSelector.getData().page, doUpdateHistory = true, next = undefined) {
-        blogPostService.getBlogPostsAdminData(page, this.#pageSelector.getData().pageSize, this.#statuses,
-            (blogPosts, paginationData) => {
-                const templateItems = blogPosts.map(post => this.#createBlogPostItem(post));
-                this.#list.replaceChildren(...templateItems);
-                this.#pageSelector.setData(paginationData, doUpdateHistory);
-                next?.call(this);
-            }
-        );
-    }
-}
-
-customElements.define('blog-post-administration-component', BlogPostAdministrationComponent);
-
-
-
-/* IMPORT: ./components/blog-view.js */
-
-
-
-/* IMPORT: /js/components/page-selector-component.js */
-
-
 
 
 /* IMPORT: /js/models/blog/blog-post.model.js */
@@ -8599,29 +8339,36 @@ customElements.define('site-configuration-component', SiteConfigurationComponent
 
 
 
-/* IMPORT: ./components/tabs.js */
+/* IMPORT: /js/components/tabbed-content-component.js */
 
-class TabsComponent extends HTMLElement {
-    /** @type {HTMLElement} */ #container;
+class TabbedContentComponent extends HTMLElement {
     constructor() { super(); }
 
     connectedCallback() {
-        const containerId = this.getAttribute('container-target');
-        this.#container = document.querySelector(containerId);
+        const tablist = this.querySelector('[role="tablist"]');
+        /** @type {HTMLLabelElement[]} */
+        const tabLabels = Array.from(tablist.querySelectorAll('[role="tab"]'));
+        const tabPanels = tabLabels.map(lbl => lbl.ariaControlsElements.at(0));
 
-        /** @type {NodeListOf<HTMLButtonElement>} */
-        const buttons = this.querySelectorAll('[tab-target]');
+        for (const label of tabLabels) {
+            /** @type {HTMLInputElement} */
+            const input = label.querySelector(`#${label.htmlFor}`);
+            const panel = label.ariaControlsElements.at(0);
+            
+            label.addEventListener('keypress', event => {
+                if (event.key !== 'Enter' && event.key !== ' ')
+                    return false;
 
-        for (const button of buttons) {
-            const target = this.#container.querySelector(button.getAttribute('tab-target'));
+                event.preventDefault();
 
-            button.addEventListener('click', () => {
-                buttons.forEach(btn => btn.disabled = btn === button);
+                input.click();
+            });
 
-                const children = this.#container.children;
-                for (const child of children) {
-                    child.toggleAttribute('hidden', child !== target);
-                }
+            input.addEventListener('change', event => {
+                tabLabels.forEach(lbl => lbl.ariaSelected = lbl === label);
+                tabPanels.forEach(pnl => {
+                    // TODO: Update hidden and aria-expanded attributes
+                });
             });
         }
     }
@@ -8631,7 +8378,7 @@ class TabsComponent extends HTMLElement {
     disconnectedCallback() {}
 }
 
-customElements.define('tabs-component', TabsComponent);
+customElements.define('tabbed-content-component', TabbedContentComponent);
 
 
 

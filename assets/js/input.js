@@ -54,7 +54,7 @@ import AccountMenuComponent from '/js/components/account-menu-component.js';
 import BlogEditorComponent from './components/blog-editor.js';
 import BlogFormComponent from './components/blog-form.js';
 import BlogHeadComponent from './components/blog-head.js';
-import BlogPostAdministrationComponent from './components/blog-post-administration.js';
+import BlogPostAdministrationComponent from '/js/components/blog-post-administration-component.js';
 import BlogViewComponent from './components/blog-view.js';
 import ConfigFieldComponent from '/js/components/config-field-component.js';
 import GalleryManagerComponent from './components/gallery-manager.js';
@@ -63,7 +63,7 @@ import ImageManagerComponent from './components/image-manager.js'
 import ModalPopupContainer from './components/modal-popup.js';
 import PageSelectorComponent from '/js/components/page-selector-component.js';
 import SiteConfigurationComponent from '/js/components/site-configuration-component.js';
-import TabsComponent from './components/tabs.js';
+import TabbedContentComponent from '/js/components/tabbed-content-component.js';
 import TextEditorComponent from './components/text-editor.js';
 
 /* Non-elemental components */
