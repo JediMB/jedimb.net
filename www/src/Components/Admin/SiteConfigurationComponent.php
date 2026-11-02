@@ -6,12 +6,10 @@ use App\Abstract\Component;
 use App\Services\ConfigurationService;
 
 class SiteConfigurationComponent extends Component {
-    public readonly string $attributeId;
     /** @var (array{label: string, name: string}[]) */
     public readonly array $constants;
 
-    public function __construct(string $attributeId) {
-        $this->attributeId = $attributeId;
+    public function __construct() {
 
         $this->constants = array_map(function($constantName) {
             return [

@@ -7,7 +7,7 @@ use App\Components\Admin\SiteConfigurationComponent;
 
 ?>
 
-<site-configuration-component id="<?= $data->attributeId ?>">
+<site-configuration-component>
     <form autocomplete="off">
         <fieldset class="flex-col gap-ml">
             <div class="flex-row justify-between">
@@ -29,7 +29,6 @@ use App\Components\Admin\SiteConfigurationComponent;
             <?php foreach ($data->constants as $constant): ?>
                 <?= new ConfigFieldComponent($constant['label'], $constant['name']) ?>
             <?php endforeach ?>
-            ?>
         </fieldset>
     </form>
 </site-configuration-component>
