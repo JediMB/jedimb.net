@@ -24,12 +24,11 @@ $configService = ConfigurationService::getInstance(); /** @var ConfigurationServ
             <use xlink:href="#svg-loading" href="#svg-loading"></use>
         </svg>
 
-        <?php
-        foreach (ConfigurationService::$CONFIGURABLE_CONSTANTS as $constantName => $_) {
-            $label =  ucwords(strtolower(str_replace('_', ' ', $constantName)));
-
-            new ConfigFieldComponent($label, $constantName);
-        } 
-        ?>
+        <?php foreach (ConfigurationService::$CONFIGURABLE_CONSTANTS as $constantName => $_): ?>
+            <?= new ConfigFieldComponent(
+                ucwords(strtolower(str_replace('_', ' ', $constantName))),
+                $constantName
+            ) ?>
+        <?php endforeach ?>
     </fieldset>
 </form>

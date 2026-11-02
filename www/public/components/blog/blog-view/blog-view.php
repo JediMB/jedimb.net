@@ -49,7 +49,7 @@ Component::renderOnce();
                         <title>Hidden</title>
                         <use xlink:href="#svg-hidden" href="#svg-hidden"></use>
                     </svg>
-                    <?php new ContentTimestampsComponent($post->publishedOn, $post->modifiedOn) ?>
+                    <?= new ContentTimestampsComponent($post->publishedOn, $post->modifiedOn) ?>
                 </article-byline>
                 <article-toolbar
                     <?= !$editPermissions ? 'hidden' : null ?>
@@ -127,7 +127,7 @@ Component::renderOnce();
                         <title>Pinned</title>
                         <use xlink:href="#svg-pinned" href="#svg-pinned"></use>
                     </svg>
-                <?php new ContentTimestampsComponent(new \DateTime(), new \DateTime()) ?>
+                <?= new ContentTimestampsComponent(new \DateTime(), new \DateTime()) ?>
             </article-byline>
             <article-toolbar hidden>
                 <button post-action="delete"
@@ -183,4 +183,4 @@ Component::renderOnce();
     </article>
 </template>
 
-<?php new PageSelectorComponent($pagination) ?>
+<?= new PageSelectorComponent($pagination) ?>

@@ -24,7 +24,7 @@ $page->title = PAGE_ADMIN_TITLE;
 ]) ?>
 
 <div id="admin__content">
-    <?php new SiteConfigurationComponent('admin-site') ?>
+    <?= new SiteConfigurationComponent('admin-site') ?>
     <?php Component::include('admin/blog-post-administration', [
         'page' => $page,
         'attributes' => ['id' => 'admin-posts', 'hidden' => '' ]

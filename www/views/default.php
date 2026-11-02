@@ -60,7 +60,7 @@ $links = !empty($links);
     <header>
         <header-container>
             <account-container>
-                <?php new AccountMenuComponent($isLoggedIn) ?>
+                <?= new AccountMenuComponent($isLoggedIn) ?>
             </account-container>
             <header-links>
                 <home-wrapper>
@@ -72,7 +72,7 @@ $links = !empty($links);
                     </a>
                 </home-wrapper>
                 <social-container>
-                    <?php new SocialLinksComponent(
+                    <?= new SocialLinksComponent(
                         SocialLinkService::getInstance()->getVisibleSocialLinks()
                     ) ?>
                 </social-container>
@@ -108,7 +108,7 @@ $links = !empty($links);
                 <h2><?= $page->title ?></h2>
             <?php endif ?>
             <?php if ($page->pageType === PageType::BlogPost): ?>
-                <div><?php new ContentTimestampsComponent($page->createdOn, $page->modifiedOn) ?></div>
+                <div><?= new ContentTimestampsComponent($page->createdOn, $page->modifiedOn) ?></div>
             <?php endif ?>
             <div><?= $page->content ?></div>
         </main>
@@ -120,11 +120,11 @@ $links = !empty($links);
     </content-container>
 
     <?php if ($page->pageType === PageType::BlogPost && isset($mastolink)): ?>
-        <?php new MastodonCommentsComponent($mastolink) ?>
+        <?= new MastodonCommentsComponent($mastolink) ?>
     <?php endif ?>
 
     <footer>
-        <?php new CopyrightComponent($siteAuthor,
+        <?= new CopyrightComponent($siteAuthor,
             $page->pageType === PageType::PHP ? $page->realPath : ( $page->modifiedOn ?: $page->createdOn )
         ) ?>
         <br/>

@@ -26,10 +26,9 @@ use App\Components\Admin\SiteConfigurationComponent;
                 </button>
             </div>
 
-            <?php
-            foreach ($data->constants as $constant) {
-                new ConfigFieldComponent($constant['label'], $constant['name']);
-            }
+            <?php foreach ($data->constants as $constant): ?>
+                <?= new ConfigFieldComponent($constant['label'], $constant['name']) ?>
+            <?php endforeach ?>
             ?>
         </fieldset>
     </form>

@@ -60,4 +60,4 @@ Component::renderCSS();
     <?php Component::include('admin/blog-post', [ 'template' => true ]) ?>
 </template>
 
-<?php new PageSelectorComponent($pagination) ?>
+<?= new PageSelectorComponent($pagination) ?>

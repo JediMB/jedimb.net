@@ -7,17 +7,23 @@ use function pathFromClass;
 abstract class Component {
     public readonly string $uid;
     private readonly string $template;
+    private readonly string $body;
 
-    public function __construct() {
+    protected function __construct() {
         $this->uid = uniqid();
         $this->template = pathFromClass(static::class, "_template");
 
-        $this->render();
+        $data = $this;
+        ob_start();
+        include $this->template;
+        $this->body = ob_get_clean();
     }
 
     public function render() {
-        $data = $this;
+        echo $this->body;
+    }
 
-        include $this->template;
+    public function __toString() {
+        return $this->body;
     }
 }

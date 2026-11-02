@@ -55,7 +55,7 @@ $links = !empty($links);
                 <h2><?= $page->title ?></h2>
             <?php endif ?>
             <?php if ($page->pageType === PageType::BlogPost): ?>
-                <div><?php new ContentTimestampsComponent($page->createdOn, $page->modifiedOn) ?></div>
+                <div><?= new ContentTimestampsComponent($page->createdOn, $page->modifiedOn) ?></div>
             <?php endif ?>
             <div><?= $page->content ?></div>
         </main>

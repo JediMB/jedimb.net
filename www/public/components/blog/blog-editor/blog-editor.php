@@ -26,12 +26,12 @@ Component::renderOnce();
 
 <div>
     Created on 
-    <?php new ContentTimestampsComponent($post->createdOn, $post->modifiedOn) ?>
+    <?= new ContentTimestampsComponent($post->createdOn, $post->modifiedOn) ?>
 </div>
 <?php if ($post->publishedOn): ?>
     <div>
         Published on 
-        <?php new ContentTimestampsComponent($post->publishedOn) ?>
+        <?= new ContentTimestampsComponent($post->publishedOn) ?>
     </div>
 <?php endif ?>
 
