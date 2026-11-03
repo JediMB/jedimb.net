@@ -1425,7 +1425,7 @@ main h2::before {
 [class^="h3" i] {
     font-size: 1.5em;
     font-weight: 600;
-    margin-block: 1.4em 0.667em;
+    margin-block-end: var(--size-ms);
 }
 
 p {
