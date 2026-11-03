@@ -36,7 +36,7 @@ use App\Components\TabbedContentComponent;
             <div role="tabpanel"
                 id="<?= "{$tab->id}-{$data->uid}" ?>"
                 aria-expanded="<?= $tab->active ? 'true' : 'false' ?>"
-                <?= $tab->active ? null : 'hidden' ?>"
+                <?= $tab->active ? null : 'hidden' ?>
                 >
                 <?= $tab->content ?>
             </div>
