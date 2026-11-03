@@ -25,7 +25,7 @@ use App\Components\TabbedContentComponent;
         <?php endforeach ?>
     </ul>
 
-    <div>
+    <div class="tabpanels">
         <?php foreach ($data->tabs as $tab): ?>
             <div role="tabpanel"
                 id="<?= "{$tab->id}-{$data->uid}" ?>"

@@ -1004,6 +1004,14 @@ a[disabled] {
     }
 }
 
+.tabpanels {
+    min-height: 1rem;
+    margin-top: -1px;
+    border: 1px solid var(--clr-light);
+    border-radius: 0 var(--size-s) var(--size-s) var(--size-s);;
+    padding: var(--size-m);
+}
+
 *, ::before, ::after {
     --tw-border-spacing-x: 0;
     --tw-border-spacing-y: 0;
