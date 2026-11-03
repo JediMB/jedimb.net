@@ -51,6 +51,7 @@ img-wrapper {
 
 .align-between      { --_align: space-between; }
 .flex-wrap          { --_wrap: wrap; }
+.gap-0              { --_gap: 0; }
 .gap-xxs            { --_gap: var(--size-xxs); }
 .gap-xs             { --_gap: var(--size-xs); }
 .gap-s              { --_gap: var(--size-s); }
@@ -122,6 +123,34 @@ a[disabled] {
 
 .margin-auto {
     margin: auto;
+}
+
+.tablist {
+    position: relative;
+    display: block flex;
+    flex-direction: row;
+    
+    & > * {
+        margin-right: calc(var(--size-ms) * -1);
+    }
+}
+
+.tab {
+    position: relative;
+    z-index: 1;
+    border: 1px solid white;
+    border-radius: var(--size-s) var(--size-s) 0 0;
+    background-color: var(--clr-bg);
+    padding: var(--size-s) var(--size-m);
+
+    &.active {
+        z-index: 2;
+        cursor: default;
+        pointer-events: none;
+        background-color: var(--clr-primary);
+        color: var(--clr-dark);
+        font-weight: bold;
+    }
 }
 
 *, ::before, ::after {
