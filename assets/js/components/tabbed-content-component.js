@@ -1,5 +1,5 @@
 export default class TabbedContentComponent extends HTMLElement {
-    /** @type {HTMLLabelElement} */ #activeTab;
+    /** @type {HTMLButtonElement} */ #activeTab;
 
     constructor() { super(); }
 
@@ -16,22 +16,19 @@ export default class TabbedContentComponent extends HTMLElement {
 
         this.#activeTab = tablist.querySelector('.active');
 
-        /** @type {HTMLLabelElement[]} */
-        const tabLabels = Array.from(tablist.querySelectorAll('[role="tab"]'));
+        /** @type {HTMLButtonElement[]} */
+        const tabButtons = Array.from(tablist.querySelectorAll('[role="tab"]'));
         /** @type {HTMLDivElement[]} */
-        const tabPanels = tabLabels.map(lbl => lbl.ariaControlsElements.at(0));
+        const tabPanels = tabButtons.map(btn => btn.ariaControlsElements.at(0));
 
-        const firstTab = tabLabels.at(0);
-        const lastTab = tabLabels.at(-1);
+        const firstTab = tabButtons.at(0);
+        const lastTab = tabButtons.at(-1);
 
-        for (let i = 0; i < tabLabels.length; i++) {
-            const label = tabLabels[i];
-
-            /** @type {HTMLInputElement} */
-            const input = label.querySelector(`#${label.htmlFor}`);
-            const panel = label.ariaControlsElements.at(0);
+        for (let i = 0; i < tabButtons.length; i++) {
+            const button = tabButtons[i];
+            const panel = button.ariaControlsElements.at(0);
             
-            label.addEventListener('keydown', event => {
+            button.addEventListener('keydown', event => {
                 switch (event.key) {
                     case 'Home':
                         firstTab.focus();
@@ -39,11 +36,11 @@ export default class TabbedContentComponent extends HTMLElement {
                         break;
 
                     case 'ArrowLeft':
-                        this.#changeTab(tabLabels, i, -1);
+                        this.#changeTab(tabButtons, i, -1);
                         break;
 
                     case 'ArrowRight':
-                        this.#changeTab(tabLabels, i, 1);
+                        this.#changeTab(tabButtons, i, 1);
                         break;
 
                     case 'End':
@@ -51,28 +48,25 @@ export default class TabbedContentComponent extends HTMLElement {
                         lastTab.click();
                         break;
 
-                    case 'Return':
-                    case 'Enter':
-                    case ' ':
-                        input.click();
-                        break;
-
                     default:
-                        return false;
+                        return;
                 }
 
                 event.preventDefault();
                 event.stopPropagation();
             });
 
-            input.addEventListener('change', event => {
+            button.addEventListener('click', event => {
                 event.stopPropagation();
-                this.#activeTab = label;
+                if (this.#activeTab === button)
+                    return;
 
-                tabLabels.forEach(lbl => {
-                    const active = (lbl === label);
-                    lbl.ariaSelected = active;
-                    lbl.classList.toggle('active', active);
+                this.#activeTab = button;
+
+                tabButtons.forEach(btn => {
+                    const active = (btn === button);
+                    btn.ariaSelected = active;
+                    btn.classList.toggle('active', active);
                 });
                 tabPanels.forEach(pnl => {
                     const active = (pnl === panel);
@@ -88,7 +82,7 @@ export default class TabbedContentComponent extends HTMLElement {
     disconnectedCallback() {}
 
     /**
-     * @param {HTMLLabelElement[]} list 
+     * @param {HTMLButtonElement[]} list 
      * @param {number} index 
      * @param {-1|1} direction
      */

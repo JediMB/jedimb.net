@@ -13,21 +13,14 @@ use App\Components\TabbedContentComponent;
         >
         <?php foreach ($data->tabs as $tab): ?>
             <li>
-                <label for="<?= "tab-{$tab->id}-{$data->uid}" ?>"
+                <button type="button"
                     role="tab"
                     class="tab <?= $tab->active ? 'active' : null ?>"
                     aria-selected="<?= $tab->active ? 'true' : 'false' ?>"
                     aria-controls="<?= "{$tab->id}-{$data->uid}" ?>"
-                    tabindex="0"
                     >
-                    <input
-                        hidden
-                        type="radio"
-                        id="<?= "tab-{$tab->id}-{$data->uid}" ?>"
-                        name="<?= "tabs-{$data->uid}" ?>"
-                        >
                     <?= $tab->title ?>
-                </label>
+                </button>
             </li>
         <?php endforeach ?>
     </ul>
