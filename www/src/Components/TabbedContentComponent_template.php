@@ -8,13 +8,14 @@ use App\Components\TabbedContentComponent;
 
 <tabbed-content-component>
     <ul role="tablist"
+        class="tablist"
         tabindex="-1"
-        class="flex-row"
         >
         <?php foreach ($data->tabs as $tab): ?>
             <li>
                 <label for="<?= "tab-{$tab->id}-{$data->uid}" ?>"
                     role="tab"
+                    class="tab <?= $tab->active ? 'active' : null ?>"
                     aria-selected="<?= $tab->active ? 'true' : 'false' ?>"
                     aria-controls="<?= "{$tab->id}-{$data->uid}" ?>"
                     tabindex="0"
