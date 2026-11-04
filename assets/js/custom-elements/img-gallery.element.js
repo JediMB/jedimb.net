@@ -15,7 +15,6 @@ class ImgGalleryElement extends HTMLElement {
         'wait-time'
     ];
 
-    /** @type {ImgGalleryElement} */ #self;
     #service;
     #listener;
 
@@ -46,8 +45,7 @@ class ImgGalleryElement extends HTMLElement {
     #transitionTimeout;
 
     constructor() {
-        const element = super();
-        this.#self = element;
+        super();
         this.#service = imageGalleryService;
     }
 
@@ -85,8 +83,8 @@ class ImgGalleryElement extends HTMLElement {
 
     connectedCallback() {
         this.toggleAttribute('display-contents', true);
-
-        this.#shadow = self.attachShadow({ mode: 'open' });
+        
+        this.#shadow = this.attachShadow({ mode: 'open' });
         this.#shadow.adoptedStyleSheets = [
             this.#cssBase,
             this.#cssAspectRatio,
@@ -119,7 +117,7 @@ class ImgGalleryElement extends HTMLElement {
 
         this.#shadow.appendChild(this.#galleryContainer);
 
-        this.#processGalleryId(self.getAttribute('gallery-id'));
+        this.#processGalleryId(this.getAttribute('gallery-id'));
         this.setupDefaults();
 
         this.#listener = this.#service.galleries.subscribe({
@@ -416,15 +414,13 @@ class ImgGalleryElement extends HTMLElement {
     }
 
     setupDefaults() {
-        const self = this.#self;
-
-        if (!self.hasAttribute('aspect-ratio'))
+        if (!this.hasAttribute('aspect-ratio'))
             this.#processAspectRatio(null);
-        if (!self.hasAttribute('width'))
+        if (!this.hasAttribute('width'))
             this.#processWidth(null);
-        if (!self.hasAttribute('wait-time'))
+        if (!this.hasAttribute('wait-time'))
             this.#processWaitTime(null);
-        if (!self.hasAttribute('transition-time'))
+        if (!this.hasAttribute('transition-time'))
             this.#processTransitionTime(null);
     }
 
