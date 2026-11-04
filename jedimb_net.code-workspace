@@ -8,6 +8,7 @@
 		"cssVariables.languages": [
 			"css",
 			"html",
+			"php",
 			"javascript",
 		],
 		"cssVariables.lookupFiles": [
