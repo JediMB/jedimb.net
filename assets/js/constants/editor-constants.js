@@ -41,8 +41,8 @@ export const allowedAttributes = Object.freeze({
     h4: textAlignAttributes,
     h5: textAlignAttributes,
     a: [ 'href', 'target', 'title' ],
-    'img-gallery': [ 'gallery-id', 'aspect-ratio', 'width', 'transition-time', 'wait-time' ],
-    'img-wrapper': [ 'image-id', 'aspect-ratio', 'width', 'height', 'fullscreen-click' ]
+    'img-gallery': [ 'gallery-id', 'aspect-ratio', 'width', 'transition-time', 'wait-time', 'display-contents' ],
+    'img-wrapper': [ 'image-id', 'aspect-ratio', 'width', 'height', 'fullscreen-click', 'display-contents' ]
 });
 
 /** @type {Object.<string, string[]>} */

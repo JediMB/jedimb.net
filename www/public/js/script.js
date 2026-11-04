@@ -46,8 +46,8 @@ const allowedAttributes = Object.freeze({
     h4: textAlignAttributes,
     h5: textAlignAttributes,
     a: [ 'href', 'target', 'title' ],
-    'img-gallery': [ 'gallery-id', 'aspect-ratio', 'width', 'transition-time', 'wait-time' ],
-    'img-wrapper': [ 'image-id', 'aspect-ratio', 'width', 'height', 'fullscreen-click' ]
+    'img-gallery': [ 'gallery-id', 'aspect-ratio', 'width', 'transition-time', 'wait-time', 'display-contents' ],
+    'img-wrapper': [ 'image-id', 'aspect-ratio', 'width', 'height', 'fullscreen-click', 'display-contents' ]
 });
 
 /** @type {Object.<string, string[]>} */
@@ -2651,6 +2651,7 @@ class FullscreenImageElement extends HTMLElement {
 
     connectedCallback() {
         this.toggleAttribute('hidden', true);
+        this.toggleAttribute('display-contents', true);
         const shadow = this.attachShadow({ mode: 'open' });
 
         const fullscreenContainer = document.createElement('fullscreen-container');
@@ -2847,7 +2848,7 @@ class ImgGalleryElement extends HTMLElement {
     }
 
     connectedCallback() {
-        const self = this.#self;
+        this.toggleAttribute('display-contents', true);
 
         this.#shadow = self.attachShadow({ mode: 'open' });
         this.#shadow.adoptedStyleSheets = [
@@ -3295,6 +3296,8 @@ class ImgWrapperElement extends HTMLElement {
     }
 
     connectedCallback() {
+        this.toggleAttribute('display-contents', true);
+
         this.#listener = this.#service.images.subscribe({
             nextIndexed: (_, image) => {
                 if (image.id === this.#imageId)

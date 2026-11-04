@@ -68,6 +68,8 @@ class ImgWrapperElement extends HTMLElement {
     }
 
     connectedCallback() {
+        this.toggleAttribute('display-contents', true);
+
         this.#listener = this.#service.images.subscribe({
             nextIndexed: (_, image) => {
                 if (image.id === this.#imageId)

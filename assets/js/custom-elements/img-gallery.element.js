@@ -84,7 +84,7 @@ class ImgGalleryElement extends HTMLElement {
     }
 
     connectedCallback() {
-        const self = this.#self;
+        this.toggleAttribute('display-contents', true);
 
         this.#shadow = self.attachShadow({ mode: 'open' });
         this.#shadow.adoptedStyleSheets = [

@@ -12,6 +12,7 @@ class FullscreenImageElement extends HTMLElement {
 
     connectedCallback() {
         this.toggleAttribute('hidden', true);
+        this.toggleAttribute('display-contents', true);
         const shadow = this.attachShadow({ mode: 'open' });
 
         const fullscreenContainer = document.createElement('fullscreen-container');

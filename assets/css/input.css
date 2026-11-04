@@ -6,13 +6,6 @@
 
 @import url('components.css');
 
-/* Custom elements */
-fullscreen-image,
-img-gallery,
-img-wrapper {
-    display: contents;
-}
-
 .invisible {
     visibility: hidden;
 }
@@ -21,7 +14,8 @@ img-wrapper {
     display: none;
 }
 
-.display-contents {
+.display-contents,
+[display-contents] {
     display: contents;
 }
 
