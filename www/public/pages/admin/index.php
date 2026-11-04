@@ -24,8 +24,8 @@ $page->title = PAGE_ADMIN_TITLE;
             new SiteConfigurationComponent()
         ),
         new TabbedContent(
-            'Posts',
+            'Blog posts',
             'admin-posts',
-            new BlogPostAdministrationComponent('test')
+            new BlogPostAdministrationComponent($page->pageNumber),
         )
 ) ?>
