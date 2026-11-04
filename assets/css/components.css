@@ -1,2 +1,9 @@
 @import url('components/account-menu-component.css');
 @import url('components/page-selector-component.css');
+
+config-field-component {
+    background-color: hsl(var(--hsl-text) / 5%);
+    color: var(--clr-text);
+    border-radius: var(--size-s);
+    padding: var(--size-s) var(--size-m);
+}
