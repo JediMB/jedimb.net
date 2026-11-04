@@ -7,6 +7,10 @@ use App\Models\App\Pagination;
 use App\Models\DB\BlogPost;
 use App\Services\BlogPostService;
 
+/**
+ * @property-read BlogPost[] $posts 
+ * @property-read Pagination $pagination 
+ */
 class BlogPostAdministrationComponent extends Component {
     public readonly array $posts;
     public readonly Pagination $pagination;
