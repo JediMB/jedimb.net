@@ -27,5 +27,6 @@ $page->title = PAGE_ADMIN_TITLE;
             'Blog posts',
             'admin-posts',
             new BlogPostAdministrationComponent($page->pageNumber),
+            true
         )
 ) ?>
