@@ -973,6 +973,7 @@ a[disabled] {
     display: block flex;
     flex-direction: row;
     align-items: end;
+    margin-inline-start: var(--size-m);
     
     & > * {
         margin-right: calc(var(--size-ms) * -1);
@@ -982,9 +983,12 @@ a[disabled] {
 .tab {
     position: relative;
     z-index: 1;
-    border: 1px solid var(--clr-light);;
+    border-width: 1px 1px 0 1px;
+    border-style: solid;
+    border-color: transparent;
     border-radius: var(--size-s) var(--size-s) 0 0;
-    background-color: var(--clr-bg);
+    background-color: hsl(var(--hsl-gray-100));
+    color: var(--clr-light);
     padding: var(--size-s) var(--size-m);
     overflow: hidden;
 
@@ -998,6 +1002,7 @@ a[disabled] {
         z-index: 2;
         cursor: default;
         pointer-events: none;
+        border-color: var(--clr-light);
         background-color: var(--clr-primary-light);
         color: var(--clr-dark);
         font-weight: bold;
@@ -1006,9 +1011,8 @@ a[disabled] {
 
 .tabpanels {
     min-height: 1rem;
-    margin-top: -1px;
     border: 1px solid var(--clr-light);
-    border-radius: 0 var(--size-s) var(--size-s) var(--size-s);;
+    border-radius: var(--size-s);
     padding: var(--size-m);
 }
 
