@@ -1,6 +1,7 @@
 <?php declare(strict_types=1);
 
 use App\Components\Admin\BlogPostAdministrationComponent;
+use App\Components\Admin\BlogPostComponent;
 use App\Components\PageSelectorComponent;
 use App\Components\PageStatsComponent;
 use App\Enums\Published;
@@ -58,12 +59,14 @@ $visibilityId = "{$baseId}__status-visibility";
         class="<?= "{$prefix}__list" ?>"
         >
         <?php foreach ($data->posts as $post): ?>
-            <?php Component::include('admin/blog-post', [ 'post' => $post]) ?>
+            <li class="display-contents">
+                <?= new BlogPostComponent($post) ?>
+            </li>
         <?php endforeach ?>
     </ul>
 
     <template id="<?= "{$baseId}__template" ?>">
-        <?php Component::include('admin/blog-post', ['template' => true]) ?>
+        <?= new BlogPostComponent(false) ?>
     </template>
 
     <?= new PageSelectorComponent($data->pagination) ?>
