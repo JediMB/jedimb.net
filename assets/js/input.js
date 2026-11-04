@@ -62,6 +62,7 @@ import ImageGalleryComponent from './components/image-gallery.js';
 import ImageManagerComponent from './components/image-manager.js'
 import ModalPopupContainer from './components/modal-popup.js';
 import PageSelectorComponent from '/js/components/page-selector-component.js';
+import PageStatsComponent from '/js/components/page-stats-component.js';
 import SiteConfigurationComponent from '/js/components/site-configuration-component.js';
 import TabbedContentComponent from '/js/components/tabbed-content-component.js';
 import TextEditorComponent from './components/text-editor.js';
