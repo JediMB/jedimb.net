@@ -3,8 +3,10 @@
 use App\Components{namespace}\{pascal_name}Component;
 
 /** @var {pascal_name}Component $data */
+/** @var string $baseClass */
+/** @var string $baseId */
 
 ?>
 
-<{base_name}-component>
-</{base_name}-component>
+<{kebab_name}-component>
+</{kebab_name}-component>

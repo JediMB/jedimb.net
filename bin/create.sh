@@ -161,9 +161,9 @@ function prepare() {
     split_name=($name)
     IFS=$old_ifs
 
-    base_name=${split_name[-1]}
+    kebab_name=${split_name[-1]}
     make_namespace ${split_name[@]}
-    make_name_variants $base_name
+    make_name_variants $kebab_name
 
     if [[ $use_pascal_path == true ]]; then
         dir_path=$type_dir
@@ -198,7 +198,7 @@ function file_from_template() {
     fi
 
     template=$(<$1)
-    template=${template//'{base_name}'/"$base_name"}
+    template=${template//'{kebab_name}'/"$kebab_name"}
     template=${template//'{pascal_name}'/"$pascal_name"}
     template=${template//'{camel_name}'/"$camel_name"}
     template=${template//'{snake_name}'/"$snake_name"}
@@ -211,14 +211,14 @@ function file_from_template() {
 case $type in
     'a' | 'api')
         prepare 'api' $api_dir
-        file_from_template $api_php_template_file "$dir_path/$base_name.php"
+        file_from_template $api_php_template_file "$dir_path/$kebab_name.php"
         ;;
     'c' | 'component')
         prepare 'component' $components_php_dir true
         file_from_template $component_class_template_file "$dir_path/${pascal_name}Component.php"
         file_from_template $component_markup_template_file "$dir_path/${pascal_name}Component_template.php"
         # TODO: Function that makes sure that components directory and any necessary subdirectory exists
-        file_from_template $component_js_template_file "$components_js_dir/$base_name-component.js"
+        file_from_template $component_js_template_file "$components_js_dir/$kebab_name-component.js"
         ;;
     'm' | 'model')
         prepare 'model' $models_app_dir true

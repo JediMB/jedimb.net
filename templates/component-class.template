@@ -7,6 +7,8 @@ use App\Abstract\Component;
 class {pascal_name}Component extends Component {
     public readonly string $property;
 
+    public static string $baseClass = '{kebab_name}';
+
     public function __construct(string $param) {
         $this->property = $param;
 
