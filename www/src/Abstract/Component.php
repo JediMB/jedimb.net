@@ -9,11 +9,16 @@ abstract class Component {
     private readonly string $template;
     private readonly string $body;
 
-    protected function __construct() {
-        $this->uid = uniqid();
-        $this->template = pathFromClass(static::class, "_template");
+    public static string $baseClass = '';
 
+    protected function __construct() {
+        $this->template = pathFromClass(static::class, "_template");
+        $this->uid = uniqid();
+
+        $baseClass = static::$baseClass;
+        $baseId = "$baseClass-{$this->uid}";
         $data = $this;
+        
         ob_start();
         include $this->template;
         $this->body = ob_get_clean();
