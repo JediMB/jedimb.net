@@ -7,6 +7,7 @@ use App\Enums\PageType;
 use App\Models\App\Page;
 use App\Services\ConfigurationService;
 use App\Utils\Asset;
+use App\Utils\CSSRenderer;
 
 /** @var Page $page */
 
@@ -47,6 +48,10 @@ $links = !empty($links);
     
     <script type="text/javascript" src="/js/purify.min.js"></script>
     <script type="module" src="/js/script.js"></script>
+    
+    <style>
+        <?= CSSRenderer::get() ?>
+    </style>
 </head>
 <body>
     <content-container class="mb-3 <?= $links ? 'grid-cols-sidebar-right' : null ?>">

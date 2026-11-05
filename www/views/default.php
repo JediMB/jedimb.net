@@ -14,6 +14,7 @@ use App\Services\SessionService;
 use App\Services\SocialLinkService;
 use App\Utils\Asset;
 use App\Utils\Component;
+use App\Utils\CSSRenderer;
 
 /** @var Page $page */
 
@@ -55,6 +56,10 @@ $links = !empty($links);
     
     <script type="text/javascript" src="/js/purify.min.js"></script>
     <script type="module" src="/js/script.js"></script>
+    
+    <style>
+        <?= CSSRenderer::get() ?>
+    </style>
 </head>
 <body>
     <header>
