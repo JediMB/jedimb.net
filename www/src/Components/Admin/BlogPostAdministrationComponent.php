@@ -15,6 +15,8 @@ class BlogPostAdministrationComponent extends Component {
     public readonly array $posts;
     public readonly Pagination $pagination;
 
+    public static string $baseClass = 'blog-post-admin';
+
     /** @param positive-int $pageNumber */
     public function __construct(int $pageNumber) {
         $service = BlogPostService::getInstance();
@@ -26,33 +28,3 @@ class BlogPostAdministrationComponent extends Component {
         return parent::__construct();
     }
 }
-
-?>
-
-<style>
-    .blog-post-admin__list {
-        display: block grid;
-        grid-template-columns: 1.5em 1fr auto;
-        grid-auto-rows: 1fr;
-        gap: var(--size-m);
-        margin-block: var(--size-l);
-        align-items: center;
-    }
-
-    .admin__blog-post {
-        display: contents;
-    }
-
-    .admin__blog-post__buttons {
-        display: inline flex;
-        flex-direction: row;
-        gap: var(--size-s);
-    }
-
-    .admin__blog-post__link {
-        display: inline flex;
-        flex-direction: row;
-        gap: 0.75ch;
-        align-items: center;
-    }
-</style>

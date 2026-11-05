@@ -6,12 +6,12 @@ use App\Components\PageSelectorComponent;
 use App\Components\PageStatsComponent;
 use App\Enums\Published;
 use App\Enums\Visibility;
-use App\Utils\Component;
+use App\Utils\CSSRenderer;
 
 /** @var BlogPostAdministrationComponent $data */
+/** @var string $baseClass */
+/** @var string $baseId */
 
-$prefix = "blog-post-admin";
-$baseId = "$prefix-{$data->uid}";
 $publishedId = "{$baseId}__status-published";
 $visibilityId = "{$baseId}__status-visibility";
 
@@ -56,7 +56,7 @@ $visibilityId = "{$baseId}__status-visibility";
     </div>
 
     <ul id="<?= "{$baseId}__list" ?>"
-        class="<?= "{$prefix}__list" ?>"
+        class="<?= "{$baseClass}__list" ?>"
         >
         <?php foreach ($data->posts as $post): ?>
             <li class="display-contents">
@@ -71,3 +71,14 @@ $visibilityId = "{$baseId}__status-visibility";
 
     <?= new PageSelectorComponent($data->pagination) ?>
 </blog-post-administration-component>
+
+<?php CSSRenderer::add($baseClass, <<<CSS
+    .{$baseClass}__list {
+        display: block grid;
+        grid-template-columns: 1.5em 1fr auto;
+        grid-auto-rows: 1fr;
+        gap: var(--size-m);
+        margin-block: var(--size-l);
+        align-items: center;
+    }
+CSS) ?>
