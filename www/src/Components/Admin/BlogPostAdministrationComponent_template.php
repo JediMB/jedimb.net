@@ -66,7 +66,9 @@ $visibilityId = "{$baseId}__status-visibility";
     </ul>
 
     <template id="<?= "{$baseId}__template" ?>">
-        <?= new BlogPostComponent(false) ?>
+        <li class="display-contents">
+            <?= new BlogPostComponent(false) ?>
+        </li>
     </template>
 
     <?= new PageSelectorComponent($data->pagination) ?>
