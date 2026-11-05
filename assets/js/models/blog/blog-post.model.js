@@ -1,4 +1,20 @@
 export default class BlogPost {
+    /**
+     * @param {object} blogPost 
+     * @param {number} blogPost.id 
+     * @param {number} blogPost.userId 
+     * @param {string} blogPost.permalink 
+     * @param {string} blogPost.title 
+     * @param {string} blogPost.description 
+     * @param {string} blogPost.contentShort 
+     * @param {string} blogPost.contentRest 
+     * @param {string} blogPost.mastolink 
+     * @param {boolean} blogPost.isHidden 
+     * @param {boolean} blogPost.isPinned 
+     * @param {{date: string, timezone: string}} blogPost.publishedOn
+     * @param {{date: string, timezone: string}} blogPost.createdOn
+     * @param {{date: string, timezone: string}} blogPost.modifiedOn
+     */
     constructor({
         id, userId, permalink, title, description, contentShort, contentRest,
         mastolink, isHidden, isPinned, publishedOn,

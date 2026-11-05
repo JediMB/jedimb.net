@@ -2,6 +2,7 @@ import PageSelectorComponent from "/js/components/page-selector-component.js";
 import PageStatsComponent from "/js/components/page-stats-component.js";
 import MarkupConstants from "/js/constants/markup-constants.js";
 import BlogPost from "/js/models/blog/blog-post.model.js";
+import BlogPostComponent from "/js/components/blog-post-component.js";
 import blogPostService from "/js/services/blog-post.service.js";
 
 export default class BlogPostAdministrationComponent extends HTMLElement {
@@ -18,7 +19,7 @@ export default class BlogPostAdministrationComponent extends HTMLElement {
     connectedCallback() {
         this.#statusForm = this.querySelector(`#${this.id}__status-form`);
         this.#pageStats = this.querySelector(customElements.getName(PageStatsComponent));
-        this.#list = this.querySelector(`#${this.id}__list`);
+        this.#list = this.querySelector(`#${this.id}__list`);        
         this.#template = this.querySelector(`#${this.id}__template`);
         this.#pageSelector = this.querySelector(customElements.getName(PageSelectorComponent));
 
@@ -28,9 +29,17 @@ export default class BlogPostAdministrationComponent extends HTMLElement {
             this.#loadPageContent();
         });
 
-        // TODO: Handle this via a component
-        const actionButtons = this.#list.querySelectorAll('[post-action]');
-        this.#assignButtonActions(actionButtons);
+        const pageNumber = this.#pageSelector.getData().page;
+        /** @type {NodeListOf<BlogPostComponent>} */
+        const blogPostComponents = this.#list.querySelectorAll(customElements.getName(BlogPostComponent));
+        blogPostComponents.forEach(component => {
+            component.ondelete = (_) => {
+                this.#loadPageContent(pageNumber, false);
+            };
+            component.onupdate = (_) => {
+                this.#loadPageContent(pageNumber, false);
+            };
+        });
 
         this.#pageSelector.onDataUpdate = data => {
             this.#pageStats.updateStats(data, this.#list.childElementCount);
@@ -47,184 +56,20 @@ export default class BlogPostAdministrationComponent extends HTMLElement {
     disconnectedCallback() {}
 
     /**
-     * @param {HTMLButtonElement[]} buttons 
-     * @param {number} [id=null] 
-     */
-    #assignButtonActions(buttons, id = null) {
-        for (const button of buttons) {
-            const postId = id ?? Number(button.dataset.id);
-            
-            if (isNaN(postId)) {
-                console.error('Post ID for button is not a number', button);
-                continue;
-            }
-
-            switch (button.getAttribute('post-action')) {
-                case 'delete':
-                    // TODO: Use a modal web component instead of confirm()
-                    button.addEventListener('click', () => {
-                        const message = button.dataset.prompt ?? 'Permanently delete this post?';
-
-                        if (confirm(message)) {
-                            button.toggleAttribute('btn-loading', true);
-                            blogPostService.deleteBlogPost(postId,
-                                next => {
-                                    // TODO: Success notification
-                                    this.#loadPageContent();
-                                },
-                                error => {
-                                    // TODO: Error notification
-                                    button.toggleAttribute('btn-loading', false);
-                                }
-                            );
-                        }
-                    });
-                    break;
-
-                case 'hide':
-                    button.addEventListener('click', () => {
-                        button.toggleAttribute('btn-loading', true);
-                        blogPostService.hideBlogPost(postId,
-                            () => {
-                                // TODO: Success notification
-                                this.#loadPageContent();
-                            },
-                            error => {
-                                // TODO: Error notification
-                                button.toggleAttribute('btn-loading', false);
-                            }
-                        );
-                    });
-                    break;
-
-                case 'pin':
-                    button.addEventListener('click', () => {
-                        button.toggleAttribute('btn-loading', true);
-                        blogPostService.pinBlogPost(postId,
-                            () => {
-                                // TODO: Success notification
-                                this.#loadPageContent();
-                            },
-                            error => {
-                                // TODO: Error notification
-                                button.toggleAttribute('btn-loading', false);
-                            }
-                        );
-                    });
-                    break;
-
-                case 'publish':
-                    // TODO: Use a modal web component instead of confirm()
-                    button.addEventListener('click', () => {
-                        const message = button.dataset.prompt ?? 'Publish this post?';
-                        
-                        if (confirm(message)) {
-                            button.toggleAttribute('btn-loading', true);
-                            blogPostService.publishBlogPost(postId,
-                                () => {
-                                    // TODO: Success notification
-                                    this.#loadPageContent();
-                                },
-                                error => {
-                                    // TODO: Error notification
-                                    button.toggleAttribute('btn-loading', false);
-                                }
-                            );
-                        }
-                    });
-                    break;
-
-                case 'unhide':
-                    button.addEventListener('click', () => {
-                        button.toggleAttribute('btn-loading', true);
-                        blogPostService.unhideBlogPost(postId,
-                            () => {
-                                // TODO: Success notification
-                                this.#loadPageContent();
-                            },
-                            error => {
-                                // TODO: Error notification
-                                button.toggleAttribute('btn-loading', false);
-                            }
-                        );
-                    });
-                    break;
-
-                case 'unpin':
-                    button.addEventListener('click', () => {
-                        button.toggleAttribute('btn-loading', true);
-                        blogPostService.unpinBlogPost(postId,
-                            () => {
-                                // TODO: Success notification
-                                this.#loadPageContent();
-                            },
-                            error => {
-                                // TODO: Error notification
-                                button.toggleAttribute('btn-loading', false);
-                            }
-                        );
-                    });
-                    break;
-            }
-
-            button.removeAttribute('btn-loading');
-        }
-    }
-
-    /**
      * @param {BlogPost} newBlogPost 
      * @returns {DocumentFragment} */
     #createBlogPostItem(newBlogPost) {
         /** @type {DocumentFragment} */
         const clone = this.#template.content.cloneNode(true);
+        /** @type {BlogPostComponent?} */
+        const blogPostComponent = clone?.querySelector(customElements.getName(BlogPostComponent));
 
-        const id = newBlogPost.id;
-
-        /** @type {HTMLAnchorElement} */
-        const link = clone.querySelector('.admin__blog-post__link');
-        link.href += id;
-        link.prepend(document.createTextNode(newBlogPost.title));
-
-        /** @type {HTMLDivElement} */
-        const description = clone.querySelector('.admin__blog-post__description');
-        description.textContent = newBlogPost.description;
-
-        const buttons = clone.querySelectorAll('button');
-        for (const button of buttons) {
-            const postAction = button.getAttribute('post-action');
-
-            if (postAction === 'hide' && newBlogPost.isHidden) {
-                button.parentElement.remove();
-                continue;
-            }
-
-            if (postAction === 'pin' && newBlogPost.isPinned) {
-                button.parentElement.remove();
-                continue;
-            }
-
-            if (postAction === 'publish') {
-                if (newBlogPost.publishedOn) {
-                    button.remove();
-                    continue;
-                }
-
-                button.nextElementSibling?.remove();
-            }
-
-            if (postAction === 'unhide' && !newBlogPost.isHidden) {
-                button.parentElement.remove();
-                continue;
-            }
-
-            if (postAction === 'unpin' && !newBlogPost.isPinned) {
-                button.parentElement.remove();
-                continue;
-            }
-
-            button.dataset.id = id;
+        if (!blogPostComponent) {
+            console.error('Failed to create new blog post item');
+            return;
         }
-        this.#assignButtonActions(buttons, id);
+
+        blogPostComponent.dataset.id = newBlogPost.id;
 
         return clone;
     }
@@ -239,6 +84,19 @@ export default class BlogPostAdministrationComponent extends HTMLElement {
             (blogPosts, paginationData) => {
                 const templateItems = blogPosts.map(post => this.#createBlogPostItem(post));
                 this.#list.replaceChildren(...templateItems);
+
+                /** @type {NodeListOf<BlogPostComponent>} */
+                const blogPostComponents = this.#list.querySelectorAll(customElements.getName(BlogPostComponent));
+                blogPostComponents.forEach((component, index) => {
+                    component.setup(blogPosts[index]);
+                    component.ondelete = (_) => {
+                        this.#loadPageContent(page, false);
+                    };
+                    component.onupdate = (_) => {
+                        this.#loadPageContent(page, false);
+                    };
+                });
+
                 this.#pageSelector.setData(paginationData, doUpdateHistory);
                 next?.call(this);
             }

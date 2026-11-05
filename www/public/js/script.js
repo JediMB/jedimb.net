@@ -307,6 +307,22 @@ class BlogPostDTO {
 /* IMPORT: /js/models/blog/blog-post.model.js */
 
 class BlogPost {
+    /**
+     * @param {object} blogPost 
+     * @param {number} blogPost.id 
+     * @param {number} blogPost.userId 
+     * @param {string} blogPost.permalink 
+     * @param {string} blogPost.title 
+     * @param {string} blogPost.description 
+     * @param {string} blogPost.contentShort 
+     * @param {string} blogPost.contentRest 
+     * @param {string} blogPost.mastolink 
+     * @param {boolean} blogPost.isHidden 
+     * @param {boolean} blogPost.isPinned 
+     * @param {{date: string, timezone: string}} blogPost.publishedOn
+     * @param {{date: string, timezone: string}} blogPost.createdOn
+     * @param {{date: string, timezone: string}} blogPost.modifiedOn
+     */
     constructor({
         id, userId, permalink, title, description, contentShort, contentRest,
         mastolink, isHidden, isPinned, publishedOn,
@@ -6491,65 +6507,109 @@ customElements.define('page-stats-component', PageStatsComponent);
 
 
 
+/* IMPORT: /js/components/blog-post-component.js */
+
+
+
+/* IMPORT: /js/models/blog/blog-post.model.js */
+
+
+
+
 /* IMPORT: /js/services/blog-post.service.js */
 
 
 
-class BlogPostAdministrationComponent extends HTMLElement {
-    /** @type {HTMLFormElement} */ #statusForm;
-    /** @type {PageStatsComponent} */ #pageStats;
-    /** @type {HTMLUListElement} */ #list;
-    /** @type {HTMLTemplateElement} */ #template;
-    /** @type {PageSelectorComponent} */ #pageSelector;
+class BlogPostComponent extends HTMLElement {
+    /** @type {boolean} */ #isSetup = false;
+    /** @type {number} */ #id;
+    /** @type {NodeListOf<HTMLButtonElement>} */ #buttons;
 
-    /** @type {{published: '0'|'1'|'2', visibility: '0'|'1'|'2'}} */ #statuses = {};
+    /** @type {((id: number) => void)?} */ #ondelete;
+    /** @type {((id: number) => void)?} */ #onupdate;
+
+    /** @param {((id: number) => void)?} callbackFn  */
+    set ondelete(callbackFn) { this.#ondelete = callbackFn; }
+    /** @param {((id: number) => void)?} callbackFn  */
+    set onupdate(callbackFn) { this.#onupdate = callbackFn; }
 
     constructor() { super(); }
 
     connectedCallback() {
-        this.#statusForm = this.querySelector(`#${this.id}__status-form`);
-        this.#pageStats = this.querySelector(customElements.getName(PageStatsComponent));
-        this.#list = this.querySelector(`#${this.id}__list`);
-        this.#template = this.querySelector(`#${this.id}__template`);
-        this.#pageSelector = this.querySelector(customElements.getName(PageSelectorComponent));
+        this.#id = Number(this.dataset.id);
+        this.#buttons = this.querySelectorAll('[post-action]');
 
-        this.#statusForm.addEventListener('change', event => {
-            this.#statuses[event.target.name] = event.target.value;
+        if (this.#id)
+            this.#isSetup = true;
 
-            this.#loadPageContent();
-        });
-
-        // TODO: Handle this via a component
-        const actionButtons = this.#list.querySelectorAll('[post-action]');
-        this.#assignButtonActions(actionButtons);
-
-        this.#pageSelector.onDataUpdate = data => {
-            this.#pageStats.updateStats(data, this.#list.childElementCount);
-        };
-
-        this.#pageSelector.onPageChange = (page, doUpdateHistory = true, next = undefined) => {
-            this.#list.innerHTML = `<li>${MarkupConstants.loadingSpinner}</li>`;
-            this.#loadPageContent(page, doUpdateHistory, next);
-        }
+        this.#assignButtonActions();
     }
 
     connectedMoveCallback() {}
 
     disconnectedCallback() {}
 
-    /**
-     * @param {HTMLButtonElement[]} buttons 
-     * @param {number} [id=null] 
-     */
-    #assignButtonActions(buttons, id = null) {
-        for (const button of buttons) {
-            const postId = id ?? Number(button.dataset.id);
-            
-            if (isNaN(postId)) {
-                console.error('Post ID for button is not a number', button);
-                continue;
-            }
+    /** @param {BlogPost} blogPost  */
+    setup(blogPost) {
+        if (!blogPost || !blogPost.id) {
+            console.error('No blog post data provided');
+            return;
+        }
 
+        const id = blogPost.id;
+
+        const link = this.querySelector('a');
+        link.href += id;
+        link.prepend(blogPost.title);
+
+        const description = this.querySelector('[class$="__description"');
+        description.textContent = blogPost.description;
+
+        for (const button of this.#buttons) {
+            const postAction = button.getAttribute('post-action');
+
+            switch (postAction) {
+                case 'publish':
+                    if (blogPost.publishedOn)
+                        button.remove();
+                    else
+                        button.nextElementSibling?.remove();
+                    continue;
+
+                case 'hide':
+                    if (blogPost.isHidden)
+                        button.parentElement.remove();
+                    continue;
+
+                case 'pin':
+                    if (blogPost.isPinned)
+                        button.parentElement.remove();
+                    continue;
+
+                case 'unhide':
+                    if (!blogPost.isHidden)
+                        button.parentElement.remove();
+                    continue;
+
+                case 'unpin':
+                    if (!blogPost.isPinned)
+                        button.parentElement.remove();
+                    continue;
+            }
+        }
+
+        this.#buttons = this.querySelectorAll('[post-action]');
+        this.#assignButtonActions();
+    }
+
+    #assignButtonActions() {
+        if (!this.#id)
+            return;
+
+        const postId = this.#id;
+        const buttons = this.#buttons;
+
+        for (const button of buttons) {
             switch (button.getAttribute('post-action')) {
                 case 'delete':
                     // TODO: Use a modal web component instead of confirm()
@@ -6561,7 +6621,8 @@ class BlogPostAdministrationComponent extends HTMLElement {
                             blogPostService.deleteBlogPost(postId,
                                 next => {
                                     // TODO: Success notification
-                                    this.#loadPageContent();
+                                    button.toggleAttribute('btn-loading', false);
+                                    this.#ondelete?.call(this);
                                 },
                                 error => {
                                     // TODO: Error notification
@@ -6578,7 +6639,8 @@ class BlogPostAdministrationComponent extends HTMLElement {
                         blogPostService.hideBlogPost(postId,
                             () => {
                                 // TODO: Success notification
-                                this.#loadPageContent();
+                                button.toggleAttribute('btn-loading', false);
+                                this.#onupdate?.call(this);
                             },
                             error => {
                                 // TODO: Error notification
@@ -6594,7 +6656,8 @@ class BlogPostAdministrationComponent extends HTMLElement {
                         blogPostService.pinBlogPost(postId,
                             () => {
                                 // TODO: Success notification
-                                this.#loadPageContent();
+                                button.toggleAttribute('btn-loading', false);
+                                this.#onupdate?.call(this);
                             },
                             error => {
                                 // TODO: Error notification
@@ -6614,7 +6677,8 @@ class BlogPostAdministrationComponent extends HTMLElement {
                             blogPostService.publishBlogPost(postId,
                                 () => {
                                     // TODO: Success notification
-                                    this.#loadPageContent();
+                                    button.toggleAttribute('btn-loading', false);
+                                    this.#onupdate?.call(this);
                                 },
                                 error => {
                                     // TODO: Error notification
@@ -6631,7 +6695,8 @@ class BlogPostAdministrationComponent extends HTMLElement {
                         blogPostService.unhideBlogPost(postId,
                             () => {
                                 // TODO: Success notification
-                                this.#loadPageContent();
+                                button.toggleAttribute('btn-loading', false);
+                                this.#onupdate?.call(this);
                             },
                             error => {
                                 // TODO: Error notification
@@ -6647,7 +6712,8 @@ class BlogPostAdministrationComponent extends HTMLElement {
                         blogPostService.unpinBlogPost(postId,
                             () => {
                                 // TODO: Success notification
-                                this.#loadPageContent();
+                                button.toggleAttribute('btn-loading', false);
+                                this.#onupdate?.call(this);
                             },
                             error => {
                                 // TODO: Error notification
@@ -6657,10 +6723,66 @@ class BlogPostAdministrationComponent extends HTMLElement {
                     });
                     break;
             }
-
-            button.removeAttribute('btn-loading');
         }
     }
+}
+
+customElements.define('blog-post-component', BlogPostComponent);
+
+
+/* IMPORT: /js/services/blog-post.service.js */
+
+
+
+class BlogPostAdministrationComponent extends HTMLElement {
+    /** @type {HTMLFormElement} */ #statusForm;
+    /** @type {PageStatsComponent} */ #pageStats;
+    /** @type {HTMLUListElement} */ #list;
+    /** @type {HTMLTemplateElement} */ #template;
+    /** @type {PageSelectorComponent} */ #pageSelector;
+
+    /** @type {{published: '0'|'1'|'2', visibility: '0'|'1'|'2'}} */ #statuses = {};
+
+    constructor() { super(); }
+
+    connectedCallback() {
+        this.#statusForm = this.querySelector(`#${this.id}__status-form`);
+        this.#pageStats = this.querySelector(customElements.getName(PageStatsComponent));
+        this.#list = this.querySelector(`#${this.id}__list`);        
+        this.#template = this.querySelector(`#${this.id}__template`);
+        this.#pageSelector = this.querySelector(customElements.getName(PageSelectorComponent));
+
+        this.#statusForm.addEventListener('change', event => {
+            this.#statuses[event.target.name] = event.target.value;
+
+            this.#loadPageContent();
+        });
+
+        const pageNumber = this.#pageSelector.getData().page;
+        /** @type {NodeListOf<BlogPostComponent>} */
+        const blogPostComponents = this.#list.querySelectorAll(customElements.getName(BlogPostComponent));
+        blogPostComponents.forEach(component => {
+            component.ondelete = (_) => {
+                this.#loadPageContent(pageNumber, false);
+            };
+            component.onupdate = (_) => {
+                this.#loadPageContent(pageNumber, false);
+            };
+        });
+
+        this.#pageSelector.onDataUpdate = data => {
+            this.#pageStats.updateStats(data, this.#list.childElementCount);
+        };
+
+        this.#pageSelector.onPageChange = (page, doUpdateHistory = true, next = undefined) => {
+            this.#list.innerHTML = `<li>${MarkupConstants.loadingSpinner}</li>`;
+            this.#loadPageContent(page, doUpdateHistory, next);
+        }
+    }
+
+    connectedMoveCallback() {}
+
+    disconnectedCallback() {}
 
     /**
      * @param {BlogPost} newBlogPost 
@@ -6668,54 +6790,15 @@ class BlogPostAdministrationComponent extends HTMLElement {
     #createBlogPostItem(newBlogPost) {
         /** @type {DocumentFragment} */
         const clone = this.#template.content.cloneNode(true);
+        /** @type {BlogPostComponent?} */
+        const blogPostComponent = clone?.querySelector(customElements.getName(BlogPostComponent));
 
-        const id = newBlogPost.id;
-
-        /** @type {HTMLAnchorElement} */
-        const link = clone.querySelector('.admin__blog-post__link');
-        link.href += id;
-        link.prepend(document.createTextNode(newBlogPost.title));
-
-        /** @type {HTMLDivElement} */
-        const description = clone.querySelector('.admin__blog-post__description');
-        description.textContent = newBlogPost.description;
-
-        const buttons = clone.querySelectorAll('button');
-        for (const button of buttons) {
-            const postAction = button.getAttribute('post-action');
-
-            if (postAction === 'hide' && newBlogPost.isHidden) {
-                button.parentElement.remove();
-                continue;
-            }
-
-            if (postAction === 'pin' && newBlogPost.isPinned) {
-                button.parentElement.remove();
-                continue;
-            }
-
-            if (postAction === 'publish') {
-                if (newBlogPost.publishedOn) {
-                    button.remove();
-                    continue;
-                }
-
-                button.nextElementSibling?.remove();
-            }
-
-            if (postAction === 'unhide' && !newBlogPost.isHidden) {
-                button.parentElement.remove();
-                continue;
-            }
-
-            if (postAction === 'unpin' && !newBlogPost.isPinned) {
-                button.parentElement.remove();
-                continue;
-            }
-
-            button.dataset.id = id;
+        if (!blogPostComponent) {
+            console.error('Failed to create new blog post item');
+            return;
         }
-        this.#assignButtonActions(buttons, id);
+
+        blogPostComponent.dataset.id = newBlogPost.id;
 
         return clone;
     }
@@ -6730,6 +6813,19 @@ class BlogPostAdministrationComponent extends HTMLElement {
             (blogPosts, paginationData) => {
                 const templateItems = blogPosts.map(post => this.#createBlogPostItem(post));
                 this.#list.replaceChildren(...templateItems);
+
+                /** @type {NodeListOf<BlogPostComponent>} */
+                const blogPostComponents = this.#list.querySelectorAll(customElements.getName(BlogPostComponent));
+                blogPostComponents.forEach((component, index) => {
+                    component.setup(blogPosts[index]);
+                    component.ondelete = (_) => {
+                        this.#loadPageContent(page, false);
+                    };
+                    component.onupdate = (_) => {
+                        this.#loadPageContent(page, false);
+                    };
+                });
+
                 this.#pageSelector.setData(paginationData, doUpdateHistory);
                 next?.call(this);
             }
@@ -6738,6 +6834,11 @@ class BlogPostAdministrationComponent extends HTMLElement {
 }
 
 customElements.define('blog-post-administration-component', BlogPostAdministrationComponent);
+
+
+
+/* IMPORT: /js/components/blog-post-component.js */
+
 
 
 
