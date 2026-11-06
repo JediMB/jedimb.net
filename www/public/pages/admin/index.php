@@ -26,7 +26,6 @@ $page->title = PAGE_ADMIN_TITLE;
         new TabbedContent(
             'Blog posts',
             'admin-posts',
-            new BlogPostAdministrationComponent($page->pageNumber),
-            true
+            new BlogPostAdministrationComponent($page->pageNumber)
         )
 ) ?>
