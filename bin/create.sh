@@ -146,6 +146,28 @@ function make_name_variants() { # arg1 = hyphen-delimited string
     done
 }
 
+function prepare_dir() {
+    local type_dir=$1
+    local use_pascal_path=$2
+
+    if [[ $use_pascal_path == true ]]; then
+        dir_path=$type_dir
+
+        dir_path+=${namespace//\\/\/}
+    else
+        dir_path=$type_dir
+        
+        local arr_length=${#split_name[@]}
+        for (( i=0; i<arr_length-1; i++)); do
+            dir_path+="/${split_name[$i]}"
+        done
+    fi
+    echo "$dir_path"
+    if ! [ -d $dir_path ]; then
+        mkdir $dir_path --parents --verbose
+    fi
+}
+
 function prepare() {
     local type_name=$1
     local type_dir=$2
@@ -164,23 +186,7 @@ function prepare() {
     kebab_name=${split_name[-1]}
     make_namespace ${split_name[@]}
     make_name_variants $kebab_name
-
-    if [[ $use_pascal_path == true ]]; then
-        dir_path=$type_dir
-
-        dir_path+=${namespace//\\/\/}
-    else
-        dir_path=$type_dir
-        
-        local arr_length=${#split_name[@]}
-        for (( i=0; i<arr_length-1; i++)); do
-            dir_path+="/${split_name[$i]}"
-        done
-    fi
-    echo "$dir_path"
-    if ! [ -d $dir_path ]; then
-        mkdir $dir_path --parents --verbose
-    fi
+    prepare_dir $type_dir $use_pascal_path
 }
 
 function file_from_template() {
@@ -217,8 +223,8 @@ case $type in
         prepare 'component' $components_php_dir true
         file_from_template $component_class_template_file "$dir_path/${pascal_name}Component.php"
         file_from_template $component_markup_template_file "$dir_path/${pascal_name}Component_template.php"
-        # TODO: Function that makes sure that components directory and any necessary subdirectory exists
-        file_from_template $component_js_template_file "$components_js_dir/$kebab_name-component.js"
+        prepare_dir $components_js_dir false
+        file_from_template $component_js_template_file "$dir_path/$kebab_name-component.js"
         ;;
     'm' | 'model')
         prepare 'model' $models_app_dir true
