@@ -6835,7 +6835,7 @@ customElements.define('blog-post-administration-component', BlogPostAdministrati
 
 
 
-/* IMPORT: ./components/blog-view-component.js */
+/* IMPORT: ./components/blog/blog-view-component.js */
 
 
 
