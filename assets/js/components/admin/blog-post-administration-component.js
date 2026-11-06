@@ -56,25 +56,6 @@ export default class BlogPostAdministrationComponent extends HTMLElement {
     disconnectedCallback() {}
 
     /**
-     * @param {BlogPost} newBlogPost 
-     * @returns {DocumentFragment} */
-    #createBlogPostItem(newBlogPost) {
-        /** @type {DocumentFragment} */
-        const clone = this.#template.content.cloneNode(true);
-        /** @type {BlogPostComponent?} */
-        const blogPostComponent = clone?.querySelector(customElements.getName(BlogPostComponent));
-
-        if (!blogPostComponent) {
-            console.error('Failed to create new blog post item');
-            return;
-        }
-
-        blogPostComponent.dataset.id = newBlogPost.id;
-
-        return clone;
-    }
-
-    /**
      * @param {number} page 
      * @param {boolean} doUpdateHistory
      * @param {() =>  void} next 
@@ -82,7 +63,7 @@ export default class BlogPostAdministrationComponent extends HTMLElement {
     #loadPageContent(page = this.#pageSelector.getData().page, doUpdateHistory = true, next = undefined) {
         blogPostService.getBlogPostsAdminData(page, this.#pageSelector.getData().pageSize, this.#statuses,
             (blogPosts, paginationData) => {
-                const templateItems = blogPosts.map(post => this.#createBlogPostItem(post));
+                const templateItems = blogPosts.map(_ => this.#template.content.cloneNode(true));
                 this.#list.replaceChildren(...templateItems);
 
                 /** @type {NodeListOf<BlogPostComponent>} */

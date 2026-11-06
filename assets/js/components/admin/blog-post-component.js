@@ -38,10 +38,11 @@ export default class BlogPostComponent extends HTMLElement {
             return false;
         }
 
-        const id = blogPost.id;
+        this.#id = blogPost.id;
+        this.dataset.id = this.#id;
 
         const link = this.querySelector('a');
-        link.href += id;
+        link.href += this.#id;
         link.prepend(blogPost.title);
 
         const description = this.querySelector('[class$="__description"');
