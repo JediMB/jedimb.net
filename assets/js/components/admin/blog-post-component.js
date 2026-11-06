@@ -1,5 +1,6 @@
 import BlogPost from "/js/models/blog/blog-post.model.js";
 import blogPostService from "/js/services/blog-post.service.js";
+import { formatDate } from "/js/utilities/format-date.utility.js";
 
 export default class BlogPostComponent extends HTMLElement {
     /** @type {boolean} */ #isSetup = false;
@@ -51,8 +52,12 @@ export default class BlogPostComponent extends HTMLElement {
 
             switch (postAction) {
                 case 'publish':
-                    if (blogPost.publishedOn)
+                    if (blogPost.publishedOn) {
+                        const title = button.nextElementSibling?.querySelector('title');
+                        if (title)
+                            title.textContent += formatDate(blogPost.publishedOn);
                         button.remove();
+                    }
                     else
                         button.nextElementSibling?.remove();
                     continue;
@@ -114,7 +119,7 @@ export default class BlogPostComponent extends HTMLElement {
                             );
                         }
                     });
-                    break;
+                    continue;
 
                 case 'hide':
                     button.addEventListener('click', () => {
@@ -131,7 +136,7 @@ export default class BlogPostComponent extends HTMLElement {
                             }
                         );
                     });
-                    break;
+                    continue;
 
                 case 'pin':
                     button.addEventListener('click', () => {
@@ -148,7 +153,7 @@ export default class BlogPostComponent extends HTMLElement {
                             }
                         );
                     });
-                    break;
+                    continue;
 
                 case 'publish':
                     // TODO: Use a modal web component instead of confirm()
@@ -170,7 +175,7 @@ export default class BlogPostComponent extends HTMLElement {
                             );
                         }
                     });
-                    break;
+                    continue;
 
                 case 'unhide':
                     button.addEventListener('click', () => {
@@ -187,7 +192,7 @@ export default class BlogPostComponent extends HTMLElement {
                             }
                         );
                     });
-                    break;
+                    continue;
 
                 case 'unpin':
                     button.addEventListener('click', () => {
@@ -204,7 +209,7 @@ export default class BlogPostComponent extends HTMLElement {
                             }
                         );
                     });
-                    break;
+                    continue;
             }
         }
     }
