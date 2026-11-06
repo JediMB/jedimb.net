@@ -20,9 +20,6 @@ export default class BlogPostComponent extends HTMLElement {
         this.#id = Number(this.dataset.id);
         this.#buttons = this.querySelectorAll('[post-action]');
 
-        if (this.#id)
-            this.#isSetup = true;
-
         this.#assignButtonActions();
     }
 
@@ -32,9 +29,12 @@ export default class BlogPostComponent extends HTMLElement {
 
     /** @param {BlogPost} blogPost  */
     setup(blogPost) {
+        if (this.#isSetup)
+            return false;
+
         if (!blogPost || !blogPost.id) {
             console.error('No blog post data provided');
-            return;
+            return false;
         }
 
         const id = blogPost.id;
@@ -81,6 +81,8 @@ export default class BlogPostComponent extends HTMLElement {
 
         this.#buttons = this.querySelectorAll('[post-action]');
         this.#assignButtonActions();
+        this.#isSetup = true;
+        return true;
     }
 
     #assignButtonActions() {

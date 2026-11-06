@@ -1,4 +1,4 @@
-import ConfigFieldComponent from "/js/components/config-field-component.js";
+import ConfigFieldComponent from "/js/components/admin/config-field-component.js";
 import configurationService from "/js/services/configuration.service.js";
 
 export default class SiteConfigurationComponent extends HTMLElement {

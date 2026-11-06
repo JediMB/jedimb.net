@@ -2,7 +2,7 @@ import PageSelectorComponent from "/js/components/page-selector-component.js";
 import PageStatsComponent from "/js/components/page-stats-component.js";
 import MarkupConstants from "/js/constants/markup-constants.js";
 import BlogPost from "/js/models/blog/blog-post.model.js";
-import BlogPostComponent from "/js/components/blog-post-component.js";
+import BlogPostComponent from "/js/components/admin/blog-post-component.js";
 import blogPostService from "/js/services/blog-post.service.js";
 
 export default class BlogPostAdministrationComponent extends HTMLElement {
