@@ -2,6 +2,7 @@
 
 namespace Pages;
 
+use App\Components\Blog\BlogViewComponent;
 use App\Enums\UserPermission;
 use App\Models\App\Page;
 use App\Services\BlogPostService;
@@ -26,8 +27,4 @@ $editPermissions = $sessionService->hasPermissions([ UserPermission::Editing ]);
     <?php Component::include('blog/blog-head') ?>
 <?php endif ?>
 
-<?php Component::include('blog/blog-view', [
-    'posts' => $posts,
-    'pagination' => $pagination,
-    'editPermissions' => $editPermissions
-]) ?>
+<?= new BlogViewComponent($posts, $pagination, $editPermissions) ?>
