@@ -56,7 +56,7 @@ import BlogFormComponent from './components/blog-form.js';
 import BlogHeadComponent from './components/blog-head.js';
 import BlogPostAdministrationComponent from '/js/components/blog-post-administration-component.js';
 import BlogPostComponent from '/js/components/blog-post-component.js';
-import BlogViewComponent from './components/blog-view.js';
+import BlogViewComponent from '/js/components/blog-view-component.js';
 import ConfigFieldComponent from '/js/components/config-field-component.js';
 import GalleryManagerComponent from './components/gallery-manager.js';
 import ImageGalleryComponent from './components/image-gallery.js';
