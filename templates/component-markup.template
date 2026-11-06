@@ -1,6 +1,7 @@
 <?php declare(strict_types=1);
 
 use App\Components{namespace}\{pascal_name}Component;
+use App\Utils\CSSRenderer;
 
 /** @var {pascal_name}Component $data */
 /** @var string $baseClass */
@@ -10,3 +11,9 @@ use App\Components{namespace}\{pascal_name}Component;
 
 <{kebab_name}-component>
 </{kebab_name}-component>
+
+<?php CSSRenderer::add($baseClass, <<<CSS
+    .{$baseClass} {
+
+    }
+CSS) ?>
