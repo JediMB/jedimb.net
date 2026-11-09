@@ -1,7 +1,7 @@
 <?php declare(strict_types=1);
 
 use App\Components\Admin\BlogPostAdministrationComponent;
-use App\Components\Admin\BlogPostComponent;
+use App\Components\Admin\BlogPostItemComponent;
 use App\Components\PageSelectorComponent;
 use App\Components\PageStatsComponent;
 use App\Enums\Published;
@@ -60,14 +60,14 @@ $visibilityId = "{$baseId}__status-visibility";
         >
         <?php foreach ($data->posts as $post): ?>
             <li class="display-contents">
-                <?= new BlogPostComponent($post) ?>
+                <?= new BlogPostItemComponent($post) ?>
             </li>
         <?php endforeach ?>
     </ul>
 
     <template id="<?= "{$baseId}__template" ?>">
         <li class="display-contents">
-            <?= new BlogPostComponent(false) ?>
+            <?= new BlogPostItemComponent(false) ?>
         </li>
     </template>
 

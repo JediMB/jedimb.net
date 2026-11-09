@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-use App\Components\Blog\BlogPostShortComponent;
+use App\Components\Blog\BlogPostPreviewComponent;
 use App\Components\Blog\BlogViewComponent;
 use App\Components\PageSelectorComponent;
 use App\Components\PageStatsComponent;
@@ -18,12 +18,12 @@ use App\Utils\CSSRenderer;
     </div>
     <blog-posts class="<?= "{$baseClass}__posts" ?>">
         <?php foreach ($data->posts as $post): ?>
-            <?= new BlogPostShortComponent($post, $data->hasEditPermissions) ?>
+            <?= new BlogPostPreviewComponent($post, $data->hasEditPermissions) ?>
         <?php endforeach ?>
     </blog-posts>
 
     <template>
-        <?= new BlogPostShortComponent(false) ?>
+        <?= new BlogPostPreviewComponent(false) ?>
     </template>
 
     <?= new PageSelectorComponent($data->pagination) ?>

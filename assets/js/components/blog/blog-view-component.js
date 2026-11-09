@@ -1,5 +1,5 @@
 import blogPostService from "/js/services/blog-post.service.js";
-import BlogPostShortComponent from "/js/components/blog/blog-post-short-component.js";
+import BlogPostPreviewComponent from "/js/components/blog/blog-post-preview-component.js";
 import MarkupConstants from "/js/constants/markup-constants.js";
 import PageSelectorComponent from "/js/components/page-selector-component.js";
 import PageStatsComponent from "/js/components/page-stats-component.js";
@@ -37,8 +37,8 @@ export default class BlogViewComponent extends HTMLElement {
         this.#pageSelector = this.querySelector(customElements.getName(PageSelectorComponent));
 
         const pageNumber = this.#pageSelector.getData().page;
-        /** @type {NodeListOf<BlogPostShortComponent>} */
-        const blogPostShortComponents = this.#blogPosts.querySelectorAll(customElements.getName(BlogPostShortComponent));
+        /** @type {NodeListOf<BlogPostPreviewComponent>} */
+        const blogPostShortComponents = this.#blogPosts.querySelectorAll(customElements.getName(BlogPostPreviewComponent));
         blogPostShortComponents.forEach(component => {
             component.ondelete = (_) => {
                 this.#loadPageContent(pageNumber, false);
@@ -70,7 +70,7 @@ export default class BlogViewComponent extends HTMLElement {
                 }
                 
                 this.#blogPosts.prepend(this.#template.content.cloneNode(true));
-                /** @type {BlogPostShortComponent} */
+                /** @type {BlogPostPreviewComponent} */
                 const blogPostShortComponent = this.#blogPosts.firstElementChild;
                 blogPostShortComponent.setup(newBlogPost);
 
@@ -99,7 +99,7 @@ export default class BlogViewComponent extends HTMLElement {
                 const templateItems = blogPosts.map(_ => this.#template.content.cloneNode(true));
                 this.#blogPosts.replaceChildren(...templateItems);
 
-                /** @type {BlogPostShortComponent[]} */
+                /** @type {BlogPostPreviewComponent[]} */
                 const blogPostShortComponents = Array.from(this.#blogPosts.children);
                 blogPostShortComponents.forEach((component, index) => {
                     component.setup(blogPosts[index], this.#editingPermissions);

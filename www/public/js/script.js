@@ -6502,12 +6502,7 @@ customElements.define('page-stats-component', PageStatsComponent);
 
 
 
-/* IMPORT: /js/models/blog/blog-post.model.js */
-
-
-
-
-/* IMPORT: /js/components/admin/blog-post-component.js */
+/* IMPORT: /js/components/admin/blog-post-item-component.js */
 
 
 
@@ -6525,7 +6520,7 @@ customElements.define('page-stats-component', PageStatsComponent);
 
 
 
-class BlogPostComponent extends HTMLElement {
+class BlogPostItemComponent extends HTMLElement {
     /** @type {boolean} */ #isSetup = false;
     /** @type {number} */ #id;
     /** @type {NodeListOf<HTMLButtonElement>} */ #buttons;
@@ -6739,7 +6734,7 @@ class BlogPostComponent extends HTMLElement {
     }
 }
 
-customElements.define('blog-post-component', BlogPostComponent);
+customElements.define('blog-post-component', BlogPostItemComponent);
 
 
 /* IMPORT: /js/services/blog-post.service.js */
@@ -6771,8 +6766,8 @@ class BlogPostAdministrationComponent extends HTMLElement {
         });
 
         const pageNumber = this.#pageSelector.getData().page;
-        /** @type {NodeListOf<BlogPostComponent>} */
-        const blogPostComponents = this.#list.querySelectorAll(customElements.getName(BlogPostComponent));
+        /** @type {NodeListOf<BlogPostItemComponent>} */
+        const blogPostComponents = this.#list.querySelectorAll(customElements.getName(BlogPostItemComponent));
         blogPostComponents.forEach(component => {
             component.ondelete = (_) => {
                 this.#loadPageContent(pageNumber, false);
@@ -6807,8 +6802,8 @@ class BlogPostAdministrationComponent extends HTMLElement {
                 const templateItems = blogPosts.map(_ => this.#template.content.cloneNode(true));
                 this.#list.replaceChildren(...templateItems);
 
-                /** @type {NodeListOf<BlogPostComponent>} */
-                const blogPostComponents = this.#list.querySelectorAll(customElements.getName(BlogPostComponent));
+                /** @type {NodeListOf<BlogPostItemComponent>} */
+                const blogPostComponents = this.#list.querySelectorAll(customElements.getName(BlogPostItemComponent));
                 blogPostComponents.forEach((component, index) => {
                     component.setup(blogPosts[index]);
                     component.ondelete = (_) => {
@@ -6830,7 +6825,7 @@ customElements.define('blog-post-administration-component', BlogPostAdministrati
 
 
 
-/* IMPORT: ./components/admin/blog-post-component.js */
+/* IMPORT: ./components/admin/blog-post-item-component.js */
 
 
 
@@ -6844,7 +6839,7 @@ customElements.define('blog-post-administration-component', BlogPostAdministrati
 
 
 
-/* IMPORT: /js/components/blog/blog-post-short-component.js */
+/* IMPORT: /js/components/blog/blog-post-preview-component.js */
 
 
 
@@ -6857,7 +6852,7 @@ customElements.define('blog-post-administration-component', BlogPostAdministrati
 
 
 
-class BlogPostShortComponent extends HTMLElement {
+class BlogPostPreviewComponent extends HTMLElement {
     #isSetup = false;
     /** @type {number} */ #id;
     /** @type {NodeListOf<HTMLButtonElement} */ #buttons;
@@ -7019,7 +7014,7 @@ class BlogPostShortComponent extends HTMLElement {
     }
 }
 
-customElements.define('blog-post-short-component', BlogPostShortComponent);
+customElements.define('blog-post-short-component', BlogPostPreviewComponent);
 
 
 
@@ -7078,8 +7073,8 @@ class BlogViewComponent extends HTMLElement {
         this.#pageSelector = this.querySelector(customElements.getName(PageSelectorComponent));
 
         const pageNumber = this.#pageSelector.getData().page;
-        /** @type {NodeListOf<BlogPostShortComponent>} */
-        const blogPostShortComponents = this.#blogPosts.querySelectorAll(customElements.getName(BlogPostShortComponent));
+        /** @type {NodeListOf<BlogPostPreviewComponent>} */
+        const blogPostShortComponents = this.#blogPosts.querySelectorAll(customElements.getName(BlogPostPreviewComponent));
         blogPostShortComponents.forEach(component => {
             component.ondelete = (_) => {
                 this.#loadPageContent(pageNumber, false);
@@ -7111,7 +7106,7 @@ class BlogViewComponent extends HTMLElement {
                 }
                 
                 this.#blogPosts.prepend(this.#template.content.cloneNode(true));
-                /** @type {BlogPostShortComponent} */
+                /** @type {BlogPostPreviewComponent} */
                 const blogPostShortComponent = this.#blogPosts.firstElementChild;
                 blogPostShortComponent.setup(newBlogPost);
 
@@ -7140,7 +7135,7 @@ class BlogViewComponent extends HTMLElement {
                 const templateItems = blogPosts.map(_ => this.#template.content.cloneNode(true));
                 this.#blogPosts.replaceChildren(...templateItems);
 
-                /** @type {BlogPostShortComponent[]} */
+                /** @type {BlogPostPreviewComponent[]} */
                 const blogPostShortComponents = Array.from(this.#blogPosts.children);
                 blogPostShortComponents.forEach((component, index) => {
                     component.setup(blogPosts[index], this.#editingPermissions);

@@ -5,7 +5,7 @@ namespace App\Components\Admin;
 use App\Abstract\Component;
 use App\Models\DB\BlogPost;
 
-class BlogPostComponent extends Component {
+class BlogPostItemComponent extends Component {
     public readonly BlogPost|null $post;
 
     public static string $baseClass = 'blog-post';

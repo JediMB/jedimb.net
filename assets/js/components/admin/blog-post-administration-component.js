@@ -1,8 +1,7 @@
 import PageSelectorComponent from "/js/components/page-selector-component.js";
 import PageStatsComponent from "/js/components/page-stats-component.js";
 import MarkupConstants from "/js/constants/markup-constants.js";
-import BlogPost from "/js/models/blog/blog-post.model.js";
-import BlogPostComponent from "/js/components/admin/blog-post-component.js";
+import BlogPostItemComponent from "/js/components/admin/blog-post-item-component.js";
 import blogPostService from "/js/services/blog-post.service.js";
 
 export default class BlogPostAdministrationComponent extends HTMLElement {
@@ -30,8 +29,8 @@ export default class BlogPostAdministrationComponent extends HTMLElement {
         });
 
         const pageNumber = this.#pageSelector.getData().page;
-        /** @type {NodeListOf<BlogPostComponent>} */
-        const blogPostComponents = this.#list.querySelectorAll(customElements.getName(BlogPostComponent));
+        /** @type {NodeListOf<BlogPostItemComponent>} */
+        const blogPostComponents = this.#list.querySelectorAll(customElements.getName(BlogPostItemComponent));
         blogPostComponents.forEach(component => {
             component.ondelete = (_) => {
                 this.#loadPageContent(pageNumber, false);
@@ -66,8 +65,8 @@ export default class BlogPostAdministrationComponent extends HTMLElement {
                 const templateItems = blogPosts.map(_ => this.#template.content.cloneNode(true));
                 this.#list.replaceChildren(...templateItems);
 
-                /** @type {NodeListOf<BlogPostComponent>} */
-                const blogPostComponents = this.#list.querySelectorAll(customElements.getName(BlogPostComponent));
+                /** @type {NodeListOf<BlogPostItemComponent>} */
+                const blogPostComponents = this.#list.querySelectorAll(customElements.getName(BlogPostItemComponent));
                 blogPostComponents.forEach((component, index) => {
                     component.setup(blogPosts[index]);
                     component.ondelete = (_) => {

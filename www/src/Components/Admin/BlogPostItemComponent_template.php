@@ -1,10 +1,10 @@
 <?php declare(strict_types=1);
 
-use App\Components\Admin\BlogPostComponent;
+use App\Components\Admin\BlogPostItemComponent;
 use App\Utils\CSSRenderer;
 use App\Utils\DateTime;
 
-/** @var BlogPostComponent $data */
+/** @var BlogPostItemComponent $data */
 /** @var string $baseClass */
 /** @var string $baseId */
 

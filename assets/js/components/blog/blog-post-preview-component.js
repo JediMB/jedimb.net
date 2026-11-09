@@ -1,7 +1,7 @@
 import BlogPost from "/js/models/blog/blog-post.model.js";
 import { formatDate } from "/js/utilities/format-date.utility.js";
 
-export default class BlogPostShortComponent extends HTMLElement {
+export default class BlogPostPreviewComponent extends HTMLElement {
     #isSetup = false;
     /** @type {number} */ #id;
     /** @type {NodeListOf<HTMLButtonElement} */ #buttons;
@@ -163,4 +163,4 @@ export default class BlogPostShortComponent extends HTMLElement {
     }
 }
 
-customElements.define('blog-post-short-component', BlogPostShortComponent);
+customElements.define('blog-post-short-component', BlogPostPreviewComponent);

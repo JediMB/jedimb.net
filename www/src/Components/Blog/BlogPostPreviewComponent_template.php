@@ -1,10 +1,10 @@
 <?php declare(strict_types=1);
 
-use App\Components\Blog\BlogPostShortComponent;
+use App\Components\Blog\BlogPostPreviewComponent;
 use App\Components\ContentTimestampsComponent;
 use App\Utils\CSSRenderer;
 
-/** @var BlogPostShortComponent $data */
+/** @var BlogPostPreviewComponent $data */
 /** @var string $baseClass */
 /** @var string $baseId */
 

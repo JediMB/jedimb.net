@@ -2,7 +2,7 @@ import BlogPost from "/js/models/blog/blog-post.model.js";
 import blogPostService from "/js/services/blog-post.service.js";
 import { formatDate } from "/js/utilities/format-date.utility.js";
 
-export default class BlogPostComponent extends HTMLElement {
+export default class BlogPostItemComponent extends HTMLElement {
     /** @type {boolean} */ #isSetup = false;
     /** @type {number} */ #id;
     /** @type {NodeListOf<HTMLButtonElement>} */ #buttons;
@@ -216,4 +216,4 @@ export default class BlogPostComponent extends HTMLElement {
     }
 }
 
-customElements.define('blog-post-component', BlogPostComponent);
+customElements.define('blog-post-component', BlogPostItemComponent);

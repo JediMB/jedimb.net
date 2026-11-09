@@ -5,7 +5,7 @@ namespace App\Components\Blog;
 use App\Abstract\Component;
 use App\Models\DB\BlogPost;
 
-class BlogPostShortComponent extends Component {
+class BlogPostPreviewComponent extends Component {
     public readonly ?BlogPost $post;
     public readonly bool $hasEditPermissions;
 
