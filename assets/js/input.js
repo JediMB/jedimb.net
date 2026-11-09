@@ -52,7 +52,7 @@ import InputFileElement from '/js/custom-elements/input-file.element.js';
 /* Components */
 import AccountMenuComponent from '/js/components/account-menu-component.js';
 import BlogEditorComponent from './components/blog-editor.js';
-import BlogFormComponent from './components/blog-form.js';
+import BlogFormComponent from './components/blog/blog-form-component.js';
 import BlogHeadComponent from './components/blog-head.js';
 import BlogPostAdministrationComponent from './components/admin/blog-post-administration-component.js';
 import BlogPostItemComponent from './components/admin/blog-post-item-component.js';

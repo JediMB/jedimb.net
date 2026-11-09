@@ -128,8 +128,8 @@ Component::renderCSS();
         value="<?= $post?->mastolink ?>">
 </label>
 
-<blog-form-options class="form-spaced-row">
-    <options-group class="form-row-group">
+<blog-form-options class="flex-row gap-m justify-between">
+    <options-group class="flex-row gap-m">
         <label>
             <input id="<?= $formId ?>__toggle-pinned"
                 type="checkbox"
@@ -151,7 +151,7 @@ Component::renderCSS();
             </label>
         <?php endif ?>
     </options-group>
-    <options-group class="form-row-group">
+    <options-group class="flex-row gap-m">
         <?php if (!$post?->publishedOn): ?>
             <input <?= $schedule ? null : 'disabled hidden'  ?>
                 id="<?= $formId ?>__scheduled-date"
