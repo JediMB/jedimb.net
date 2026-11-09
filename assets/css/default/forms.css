@@ -186,15 +186,21 @@ button[btn-loading] [has-loaded] {
     opacity: 0;
 }
 
+button.active .inactive-content,
+button:not(.active) .active-content {
+    display: none;
+}
+
 [class|="btn" i],
 [class|="select" i] {
     --_clr-border: transparent;
     --_clr-bg: transparent;
     --_clr-text: var(--clr-text, #000);
+    --_size-radius: var(--size-xs);
     background-color: var(--_clr-bg);
     color: var(--_clr-text);
     padding: var(--size-s) calc(var(--size-s) * 2);
-    border-radius: var(--size-xs);
+    border-radius: var(--_size-radius);
     border: 2px solid var(--_clr-border);
 
 }
@@ -216,6 +222,10 @@ button[btn-loading] [has-loaded] {
 .btn-hover-heavy:focus-visible {
     --_clr-border: var(--clr-text);
     font-weight: 600;
+}
+
+.btn-pill {
+    --_size-radius: 9999px;
 }
 
 .btn-safe {

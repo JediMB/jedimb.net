@@ -45,6 +45,22 @@
 
 .align-between      { --_align: space-between; }
 .flex-wrap          { --_wrap: wrap; }
+.justify-between    { --_justify: space-between; }
+
+.flex-grow  { flex-grow: 1; }
+
+.equal-columns {
+    --_gap: var(--size-s);
+    display: block grid;
+    grid-auto-columns: 1fr;
+    gap: var(--_gap);
+
+    & > * {
+        grid-row: 1;
+        min-width: fit-content;
+    }
+}
+
 .gap-0              { --_gap: 0; }
 .gap-xxs            { --_gap: var(--size-xxs); }
 .gap-xs             { --_gap: var(--size-xs); }
@@ -55,9 +71,6 @@
 .gap-l              { --_gap: var(--size-l); }
 .gap-xl             { --_gap: var(--size-xl); }
 .gap-xxl            { --_gap: var(--size-xxl); }
-.justify-between    { --_justify: space-between; }
-
-.flex-grow  { flex-grow: 1; }
 
 a[disabled] {
     pointer-events: none;
