@@ -2,6 +2,7 @@
 
 namespace Pages;
 
+use App\Components\Blog\BlogHeadComponent;
 use App\Components\Blog\BlogViewComponent;
 use App\Enums\UserPermission;
 use App\Models\App\Page;
@@ -24,6 +25,7 @@ $editPermissions = $sessionService->hasPermissions([ UserPermission::Editing ]);
 ?>
 
 <?php if ($sessionService->hasPermissions([ UserPermission::Publishing ])): ?>
+    <?= new BlogHeadComponent() ?>
     <?php Component::include('blog/blog-head') ?>
 <?php endif ?>
 

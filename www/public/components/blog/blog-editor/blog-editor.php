@@ -42,14 +42,14 @@ Component::renderOnce();
         'post' => $post
     ]) ?>
 
-    <edit-buttons class="form-spaced-row">
+    <edit-buttons class="flex-row gap-m justify-between">
         <button id="blog-editor__btn-cancel"
             class="btn-warn btn-hover-heavy"
             disabled>
                 Cancel
         </button>
 
-        <div class="form-spaced-row">
+        <div class="flex-row gap-m justify-between">
             <div class="form-save-time" hidden>
                 <span>Last saved:</span>
                 <?php $lastSaved = DateTime::toString($post->modifiedOn ?? $post->createdOn) ?>

@@ -11,7 +11,7 @@ $sessionService->enforcePermissions([UserPermission::Publishing]);
 
 $formId = 'blog-head__form';
 
-Component::addAttributes(['class' => 'form-column']);
+Component::addAttributes(['class' => 'flex-col gap-l']);
 Component::renderOnce();
 Component::renderCSS();
 
@@ -39,26 +39,26 @@ Component::renderCSS();
 </button>
 
 <blog-head-content id="blog-head__content"
-    class="form-column"
-    hidden
+    class="flex-col gap-l"
     >
+    <!--hidden-->
     <?php Component::include('blog/blog-form', [
         'attributes' => [ 'id' => 'blog-head__editor' ],
         'formId' => $formId
     ]) ?>
 
-    <blog-head-buttons class="form-spaced-row">
+    <blog-head-buttons class="flex-row gap-m justify-between">
         <button id="blog-head__btn-cancel"
             class="btn-warn btn-hover-heavy">
                 Cancel
         </button>
 
-        <div class="form-spaced-row">
-            <div class="form-save-time" hidden>
+        <div class="flex-row gap-m justify-between">
+            <div class="flex-row flex-wrap" hidden>
                 <span>Last saved:</span>
                 <span save-time></span>
             </div>
-            <buttons-save class="form-matching-buttons">
+            <buttons-save class="equal-columns">
                 <button id="blog-head__btn-save"
                     class="btn-secondary"
                     disabled

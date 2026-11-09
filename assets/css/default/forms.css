@@ -1,23 +1,6 @@
 /* TODO: Move and change these to something more general-purpose (not forms)
 START: */
 
-.form-column {
-    display: block flex;
-    flex-direction: column;
-    gap: var(--size-l);
-}
-
-.form-spaced-row,
-.form-row-group {
-    display: block flex;
-    flex-direction: row;
-    gap: var(--size-m);
-}
-
-.form-spaced-row {
-    justify-content: space-between;
-}
-
 .form-matching-buttons {
     display: block grid;
     grid-auto-columns: 1fr;

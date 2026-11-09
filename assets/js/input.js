@@ -53,7 +53,7 @@ import InputFileElement from '/js/custom-elements/input-file.element.js';
 import AccountMenuComponent from '/js/components/account-menu-component.js';
 import BlogEditorComponent from './components/blog-editor.js';
 import BlogFormComponent from './components/blog/blog-form-component.js';
-import BlogHeadComponent from './components/blog-head.js';
+import BlogHeadComponent from './components/blog/blog-head-component.js';
 import BlogPostAdministrationComponent from './components/admin/blog-post-administration-component.js';
 import BlogPostItemComponent from './components/admin/blog-post-item-component.js';
 import BlogViewComponent from './components/blog/blog-view-component.js';
