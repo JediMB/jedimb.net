@@ -21,4 +21,4 @@
 - Tracking of what images/galleries are used on what posts/pages
 - Support for adding manual page links to menu
 - Switch to httpOnly cookies via Set-Cookie header (cookie names start with __Http-)
-- Implement spl_autoload_register()
+- <s>Implement spl_autoload_register()</s> ✅
