@@ -2575,6 +2575,95 @@ const userApiService = new UserApiService();
 /* Custom elements */
 
 
+/* IMPORT: /js/custom-elements/content-editor/content-add-element.js */
+
+class ContentAddElement extends HTMLElement {
+    constructor() { super(); }
+
+    connectedCallback() {
+        const shadow = this.attachShadow({ mode: 'open'});
+        
+        const button = document.createElement('button');
+        button.type = 'button';
+
+        const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+        svg.setAttribute('viewBox', '0 -960 960 960');
+        svg.setAttribute('fill', 'currentColor');
+        svg.setAttribute('width', '2em');
+        svg.setAttribute('height', '2em');
+
+        const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+        path.setAttribute('d', 'M440-440H200v-80h240v-240h80v240h240v80H520v240h-80v-240Z');
+
+        svg.appendChild(path);
+        button.appendChild(svg);
+        shadow.appendChild(button);
+
+        button.addEventListener('click', () => {
+            this.dispatchEvent(new CustomEvent('addcontent', { bubbles: true, detail: this }));
+        });
+
+        const css = new CSSStyleSheet();
+        css.replaceSync(`
+            button {
+                display: inline flex;
+                flex-direction: row;
+                justify-content: center;
+                align-items: center;
+            }
+        `);
+        shadow.adoptedStyleSheets.push(css);
+    }
+
+    connectedMoveCallback() {}
+
+    disconnectedCallback() {}
+}
+
+customElements.define('content-add', ContentAddElement);
+
+
+/* IMPORT: /js/custom-elements/content-editor/content-div-element.js */
+
+
+
+/* IMPORT: /js/custom-elements/content-editor/content-add-element.js */
+
+
+
+class ContentDivElement extends HTMLElement {
+    constructor() { super(); }
+
+    connectedCallback() {
+        this.setAttribute('tabindex', '0');
+
+        const contentAdd = document.createElement(customElements.getName(ContentAddElement));
+        contentAdd.hidden = true;
+        this.appendChild(contentAdd);
+
+        this.addEventListener('mouseenter', () => {
+            contentAdd.hidden = false;
+        });
+        this.addEventListener('mouseleave', () => {
+            if (!this.contains(document.activeElement))
+                contentAdd.hidden = true;
+        });
+        this.addEventListener('focusin', () => {
+            contentAdd.hidden = false;
+        });
+        this.addEventListener('focusout', () => {
+            contentAdd.hidden = true;
+        });
+    }
+
+    connectedMoveCallback() {}
+
+    disconnectedCallback() {}
+}
+
+customElements.define('content-div', ContentDivElement);
+
+
 /* IMPORT: /js/custom-elements/date-time.element.js */
 
 
@@ -5559,10 +5648,24 @@ customElements.define('config-field-component', ConfigFieldComponent);
 
 /* IMPORT: /js/components/content-editor-component.js */
 
+
+
+/* IMPORT: /js/custom-elements/content-editor/content-div-element.js */
+
+
+
 class ContentEditorComponent extends HTMLElement {
     constructor() { super(); }
 
-    connectedCallback() {}
+    connectedCallback() {
+        if (!this.childElementCount)
+            this.appendChild(document.createElement(customElements.getName(ContentDivElement)));
+
+        this.addEventListener('addcontent', event => {
+            event.stopPropagation();
+            console.log(event);
+        });
+    }
 
     connectedMoveCallback() {}
 

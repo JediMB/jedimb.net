@@ -42,6 +42,8 @@ import tableModifiedApiService from '/js/services/api/table-modified-api.service
 import userApiService from '/js/services/api/user-api.service.js';
 
 /* Custom elements */
+import ContentAddElement from '/js/custom-elements/content-editor/content-add-element.js';
+import ContentDivElement from '/js/custom-elements/content-editor/content-div-element.js';
 import DateTimeElement from '/js/custom-elements/date-time.element.js';
 import fullscreenImage from '/js/custom-elements/fullscreen-image.element.js';
 import ImgGalleryElement from '/js/custom-elements/img-gallery.element.js';
