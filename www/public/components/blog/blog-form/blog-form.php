@@ -18,8 +18,7 @@ $schedule = !$post || $post->publishedOn
     ? false
     : BlogPostScheduleService::getInstance()->getBlogPostSchedule($post->id);
 
-Component::addAttributes(['form-id' => $formId, 'role' => 'form']);
-Component::renderCSS();
+Component::addAttributes(['form-id' => $formId, 'role' => 'form', 'class' => 'flex-col gap-m']);
 
 ?>
 
@@ -43,7 +42,7 @@ Component::renderCSS();
         required>
 </label>
 
-<blog-form-permalink>
+<blog-form-permalink class="flex-row gap-0">
     <?php if ($post?->publishedOn): ?>
         <?php echo $permalink = '/' . PATH_BLOG_PREFIX . $post->permalink ?>
         <input id="<?= $formId ?>__is-published"
@@ -71,6 +70,7 @@ Component::renderCSS();
         <span>/</span>
         </span>
         <input id="<?= $formId ?>__permalink"
+            class="flex-grow"
             type="text"
             form="<?= $formId ?>"
             name="permalink"
@@ -79,6 +79,7 @@ Component::renderCSS();
             aria-label="Customizable part of the post's URL (i.e. address)"
             value="<?= $permalinkTitle ?>">
         <button id="<?= $formId ?>__reset-permalink"
+            class="padding-s"
             title="Restore default permalink"
             aria-label="Restore default permalink"
             >

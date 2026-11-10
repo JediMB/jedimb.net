@@ -13,13 +13,12 @@ $formId = 'blog-head__form';
 
 Component::addAttributes(['class' => 'flex-col gap-l']);
 Component::renderOnce();
-Component::renderCSS();
 
 ?>
 
 <button id="blog-head__btn-add"
     type="button"
-    class="btn-primary"
+    class="btn-primary btn-pill"
     aria-pressed="false"
     aria-controls="blog-head__content"
     title="Loading..."

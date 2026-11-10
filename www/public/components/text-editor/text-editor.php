@@ -11,10 +11,10 @@ Component::renderCSS();
 
 ?>
 
-<fieldset class="text-editor__toolbar">
+<fieldset class="flex-row gap-m flex-wrap">
     <select select-blocktype class="select-toolbar"></select>
 
-    <div class="text-editor__toolbar-group">
+    <toolbar-group class="flex-row gap-xs">
         <button btn-bold
             data-shortcut="B"
             data-tag="B"
@@ -45,9 +45,9 @@ Component::renderCSS();
                 <use xlink:href="#svg-text-underline" href="#svg-text-underline"></use>
             </svg>
         </button>
-    </div>
+    </toolbar-group>
 
-    <div class="text-editor__toolbar-group">
+    <toolbar-group class="flex-row gap-xs">
         <button btn-link
             data-tag="A"
             data-text-query="Please input display text:"
@@ -60,9 +60,9 @@ Component::renderCSS();
                 <use xlink:href="#svg-link-add" href="#svg-link-add"></use>
             </svg>
         </button>
-    </div>
+    </toolbar-group>
     
-    <div class="text-editor__toolbar-group">
+    <toolbar-group class="flex-row gap-xs">
         <button btn-align-left
             data-block-attribute="text-left"
             title="Text align left"
@@ -99,9 +99,9 @@ Component::renderCSS();
                 <use xlink:href="#svg-text-align-justify" href="#svg-text-align-justify"></use>
             </svg>
         </button>
-    </div>
+    </toolbar-group>
     
-    <div class="text-editor__toolbar-group">
+    <toolbar-group class="flex-row gap-xs">
         <button modal-target="modal-images-<?= $cId ?>"
             title="Insert an image or gallery"
             class="btn-toolbar"
@@ -118,7 +118,7 @@ Component::renderCSS();
                 <use xlink:href="#svg-page-break" href="#svg-page-break"></use>
             </svg>
         </button>
-    </div>
+    </toolbar-group>
 </fieldset>
 <label>
     <input type="checkbox" checkbox-html>
