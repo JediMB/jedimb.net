@@ -59,8 +59,8 @@ textarea,
 [contenteditable] {
     border-radius: var(--size-xs);
     padding: var(--size-xs) calc(var(--size-xs) * 2);
-    background-color: var(--clr-text);
-    color: var(--clr-bg);
+    background-color: var(--clr-light);
+    color: var(--clr-dark);
 
     &:enabled:user-valid {
         background-color: var(--clr-safe-light);

@@ -72,6 +72,28 @@
 .gap-xl             { --_gap: var(--size-xl); }
 .gap-xxl            { --_gap: var(--size-xxl); }
 
+.padding-0              { padding: 0; }
+.padding-xxs            { padding: var(--size-xxs); }
+.padding-xs             { padding: var(--size-xs); }
+.padding-s              { padding: var(--size-s); }
+.padding-ms             { padding: var(--size-ms); }
+.padding-m              { padding: var(--size-m); }
+.padding-ml             { padding: var(--size-ml); }
+.padding-l              { padding: var(--size-l); }
+.padding-xl             { padding: var(--size-xl); }
+.padding-xxl            { padding: var(--size-xxl); }
+
+.margin-0              { margin: 0; }
+.margin-xxs            { margin: var(--size-xxs); }
+.margin-xs             { margin: var(--size-xs); }
+.margin-s              { margin: var(--size-s); }
+.margin-ms             { margin: var(--size-ms); }
+.margin-m              { margin: var(--size-m); }
+.margin-ml             { margin: var(--size-ml); }
+.margin-l              { margin: var(--size-l); }
+.margin-xl             { margin: var(--size-xl); }
+.margin-xxl            { margin: var(--size-xxl); }
+
 a[disabled] {
     pointer-events: none;
 }
