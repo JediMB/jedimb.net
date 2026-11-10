@@ -5557,6 +5557,22 @@ class ConfigFieldComponent extends HTMLElement {
 customElements.define('config-field-component', ConfigFieldComponent);
 
 
+/* IMPORT: /js/components/content-editor-component.js */
+
+class ContentEditorComponent extends HTMLElement {
+    constructor() { super(); }
+
+    connectedCallback() {}
+
+    connectedMoveCallback() {}
+
+    disconnectedCallback() {}
+}
+
+customElements.define('content-editor-component', ContentEditorComponent);
+
+
+
 /* IMPORT: ./components/gallery-manager.js */
 
 

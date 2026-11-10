@@ -1,6 +1,7 @@
 <?php declare(strict_types=1);
 
 use App\Components\Blog\BlogFormComponent;
+use App\Components\ContentEditorComponent;
 use App\Utils\CSSRenderer;
 
 /** @var BlogFormComponent $data */
@@ -70,7 +71,7 @@ $schedule = $data->schedule;
         <?php endif ?>
     </blog-form-permalink>
 
-    <!-- Text Editor -->
+    <?= new ContentEditorComponent($formId, $post?->contentShort, $post?->contentRest) ?>
 
     <input id="<?= "{$formId}__content-short" ?>"
         type="hidden"
