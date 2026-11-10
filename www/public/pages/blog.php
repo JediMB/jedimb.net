@@ -26,7 +26,7 @@ $editPermissions = $sessionService->hasPermissions([ UserPermission::Editing ]);
 
 <?php if ($sessionService->hasPermissions([ UserPermission::Publishing ])): ?>
     <?= new BlogHeadComponent() ?>
-    <?php Component::include('blog/blog-head') ?>
+    <?php //Component::include('blog/blog-head') ?>
 <?php endif ?>
 
 <?= new BlogViewComponent($posts, $pagination, $editPermissions) ?>

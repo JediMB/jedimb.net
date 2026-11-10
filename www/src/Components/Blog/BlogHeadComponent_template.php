@@ -75,7 +75,7 @@ $formId = "{$baseId}__form";
 </blog-head-component>
 
 <?php CSSRenderer::add($baseClass, <<<CSS
-    .{$baseClass} {
-
+    blog-head-component {
+        margin-bottom: var(--size-l);
     }
 CSS) ?>
