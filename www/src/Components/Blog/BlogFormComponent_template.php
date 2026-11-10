@@ -14,7 +14,7 @@ $schedule = $data->schedule;
 
 ?>
 
-<blog-form-component role="form">
+<blog-form-component role="form" class="flex-col gap-m">
     <form id="<?= $formId ?>" autocomplete="off">
         <input id="<?= "{$formId}__id" ?>"
             type="hidden"
@@ -38,7 +38,7 @@ $schedule = $data->schedule;
             >
     </label>
 
-    <blog-form-permalink>
+    <blog-form-permalink class="flex-row gap-0">
         <?php if ($post?->publishedOn): ?>
             <?= $permalink ?>
             <input id="<?= "{$formId}__is-published" ?>"
@@ -53,6 +53,7 @@ $schedule = $data->schedule;
             </span>
             <span>/</span>
             <input id="<?= "{$formId}__permatitle" ?>"
+                class="flex-grow"
                 type="text"
                 form="<?= $formId ?>"
                 name="permatitle"
@@ -61,6 +62,7 @@ $schedule = $data->schedule;
                 aria-label="Customizable part of the post's URL (i.e. address)"
                 value="<?= $permalink->title ?>">
             <button id="<?= "{$formId}__reset-permalink" ?>"
+                class="padding-s"
                 title="Restore default permalink"
                 aria-label="Restore default permalink"
                 >
