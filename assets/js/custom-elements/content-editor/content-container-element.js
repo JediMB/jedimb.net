@@ -1,6 +1,6 @@
 import ContentAddElement from "/js/custom-elements/content-editor/content-add-element.js";
 
-export default class ContentDivElement extends HTMLElement {
+export default class ContentContainerElement extends HTMLElement {
     constructor() { super(); }
 
     connectedCallback() {
@@ -15,4 +15,4 @@ export default class ContentDivElement extends HTMLElement {
     disconnectedCallback() {}
 }
 
-customElements.define('content-div', ContentDivElement);
+customElements.define('content-container', ContentContainerElement);

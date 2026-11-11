@@ -1,17 +1,17 @@
-import ContentDivElement from "/js/custom-elements/content-editor/content-div-element.js";
+import ContentContainerElement from "/js/custom-elements/content-editor/content-container-element.js";
 
 export default class ContentEditorComponent extends HTMLElement {
     constructor() { super(); }
 
     connectedCallback() {
         if (!this.childElementCount)
-            this.appendChild(document.createElement(customElements.getName(ContentDivElement)));
+            this.appendChild(document.createElement(customElements.getName(ContentContainerElement)));
 
         console.log(this);
 
         this.addEventListener('content-add', event => {
             event.stopPropagation();
-            const contentDiv = document.createElement(customElements.getName(ContentDivElement));
+            const contentDiv = document.createElement(customElements.getName(ContentContainerElement));
             
             /** @type {HTMLElement} */
             const contentAdd = event.target;

@@ -2694,7 +2694,7 @@ class ContentAddElement extends HTMLElement {
 customElements.define('content-add', ContentAddElement);
 
 
-/* IMPORT: /js/custom-elements/content-editor/content-div-element.js */
+/* IMPORT: /js/custom-elements/content-editor/content-container-element.js */
 
 
 
@@ -2702,7 +2702,7 @@ customElements.define('content-add', ContentAddElement);
 
 
 
-class ContentDivElement extends HTMLElement {
+class ContentContainerElement extends HTMLElement {
     constructor() { super(); }
 
     connectedCallback() {
@@ -2717,7 +2717,7 @@ class ContentDivElement extends HTMLElement {
     disconnectedCallback() {}
 }
 
-customElements.define('content-div', ContentDivElement);
+customElements.define('content-container', ContentContainerElement);
 
 
 /* IMPORT: /js/custom-elements/date-time.element.js */
@@ -5706,7 +5706,7 @@ customElements.define('config-field-component', ConfigFieldComponent);
 
 
 
-/* IMPORT: /js/custom-elements/content-editor/content-div-element.js */
+/* IMPORT: /js/custom-elements/content-editor/content-container-element.js */
 
 
 
@@ -5715,13 +5715,13 @@ class ContentEditorComponent extends HTMLElement {
 
     connectedCallback() {
         if (!this.childElementCount)
-            this.appendChild(document.createElement(customElements.getName(ContentDivElement)));
+            this.appendChild(document.createElement(customElements.getName(ContentContainerElement)));
 
         console.log(this);
 
         this.addEventListener('content-add', event => {
             event.stopPropagation();
-            const contentDiv = document.createElement(customElements.getName(ContentDivElement));
+            const contentDiv = document.createElement(customElements.getName(ContentContainerElement));
             
             /** @type {HTMLElement} */
             const contentAdd = event.target;
