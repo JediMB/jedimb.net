@@ -54,7 +54,7 @@ $links = !empty($links);
     </style>
 </head>
 <body>
-    <content-container class="mb-3 <?= $links ? 'grid-cols-sidebar-right' : null ?>">
+    <main-wrapper class="mb-3 <?= $links ? 'grid-cols-sidebar-right' : null ?>">
         <main>
             <?php if ($page->title): ?>
                 <h2><?= $page->title ?></h2>
@@ -64,7 +64,7 @@ $links = !empty($links);
             <?php endif ?>
             <div><?= $page->content ?></div>
         </main>
-    </content-container>
+    </main-wrapper>
     
     <?php include "../templates/svg-library.php" ?>
 </body>

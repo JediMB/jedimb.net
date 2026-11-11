@@ -525,7 +525,7 @@ menu-container {
     font-style: italic;
 }
 
-content-container {
+main-wrapper {
     display: block;
     padding-inline: var(--size-s);
 }
@@ -880,7 +880,7 @@ about-me-content section {
         justify-content: end;
     }
 
-    content-container {
+    main-wrapper {
         margin-block: var(--size-l);
         padding-inline: var(--size-m);
     }

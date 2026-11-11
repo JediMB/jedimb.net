@@ -107,7 +107,7 @@ $links = !empty($links);
         </sub-menu>
     </header>
     
-    <content-container class="mb-3 <?= $links ? 'grid-cols-sidebar-right' : null ?>">
+    <main-wrapper class="mb-3 <?= $links ? 'grid-cols-sidebar-right' : null ?>">
         <main>
             <?php if ($page->title): ?>
                 <h2><?= $page->title ?></h2>
@@ -122,7 +122,7 @@ $links = !empty($links);
                 <?php include('../templates/button-links.php') ?>
             </aside>
         <?php endif ?>
-    </content-container>
+    </main-wrapper>
 
     <?php if ($page->pageType === PageType::BlogPost && isset($mastolink)): ?>
         <?= new MastodonCommentsComponent($mastolink) ?>
