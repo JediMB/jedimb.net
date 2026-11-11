@@ -35,8 +35,10 @@ use App\Utils\CSSRenderer;
         color: var(--clr-dark);
     }
 
-    content-add {
+    content-toolbar {
         display: block flex;
+        width: fit-content;
+        margin-inline: auto;
         padding: var(--size-s);
         gap: var(--size-xs);
     }
@@ -49,12 +51,12 @@ use App\Utils\CSSRenderer;
         min-height: 1em;
         border: 1px dashed red;
 
-        & content-add { flex-direction: row; }
+        & > content-toolbar { flex-direction: row; }
         
         &[content-direction="row"] {
             flex-direction: row;
 
-            & content-add { flex-direction: column; }
+            & > content-toolbar { flex-direction: column; }
         }
     }
 CSS) ?>

@@ -7,15 +7,13 @@ export default class ContentEditorComponent extends HTMLElement {
         if (!this.childElementCount)
             this.appendChild(document.createElement(customElements.getName(ContentContainerElement)));
 
-        console.log(this);
-
         this.addEventListener('content-add', event => {
             event.stopPropagation();
             const contentDiv = document.createElement(customElements.getName(ContentContainerElement));
             
             /** @type {HTMLElement} */
-            const contentAdd = event.target;
-            contentAdd.insertAdjacentElement('beforebegin', contentDiv);
+            const toolbar = event.target;
+            toolbar.insertAdjacentElement('beforebegin', contentDiv);
         });
 
         this.addEventListener('content-text', event => {
@@ -24,9 +22,8 @@ export default class ContentEditorComponent extends HTMLElement {
             contentText.textContent = 'This is a text element';
 
             /** @type {HTMLElement} */
-            const contentAdd = event.target;
-            contentAdd.insertAdjacentElement('beforebegin', contentText);
-            
+            const toolbar = event.target;
+            toolbar.insertAdjacentElement('beforebegin', contentText);
         });
 
         this.addEventListener('content-direction', event => {

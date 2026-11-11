@@ -1,4 +1,4 @@
-import ContentAddElement from "/js/custom-elements/content-editor/content-add-element.js";
+import ContentToolbarElement from "./content-toolbar-element.js";
 
 export default class ContentContainerElement extends HTMLElement {
     constructor() { super(); }
@@ -6,7 +6,7 @@ export default class ContentContainerElement extends HTMLElement {
     connectedCallback() {
         this.setAttribute('tabindex', '0');
 
-        const contentAdd = document.createElement(customElements.getName(ContentAddElement));
+        const contentAdd = document.createElement(customElements.getName(ContentToolbarElement));
         this.appendChild(contentAdd);
     }
 

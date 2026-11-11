@@ -2575,10 +2575,9 @@ const userApiService = new UserApiService();
 /* Custom elements */
 
 
-/* IMPORT: /js/custom-elements/content-editor/content-add-element.js */
+/* IMPORT: /js/custom-elements/content-editor/content-toolbar-element.js */
 
-// TODO: change to content-changer?
-class ContentAddElement extends HTMLElement {
+class ContentToolbarElement extends HTMLElement {
     /** @type {ShadowRoot} */ #shadowRoot;
     #svgCount = 0;
 
@@ -2596,17 +2595,13 @@ class ContentAddElement extends HTMLElement {
         const directionButton = this.#attachNewSvgButton('Toggle content flow direction',
             '#svg-content-columns', '#svg-content-rows'
         );
-        directionButton.addEventListener('click', () => {
+        this.#addClickEvent(directionButton, 'content-direction', () => {
             const [ newMode, detail ] = directionButton.dataset.mode === '2'
                 ? [ 1, 'column' ]
                 : [ 2, 'row' ];
 
-            this.dispatchEvent(new CustomEvent('content-direction', {
-                bubbles: true,
-                detail: detail
-            }));
-
             directionButton.dataset.mode = newMode;
+            return detail;
         });
 
         const css = new CSSStyleSheet();
@@ -2638,13 +2633,13 @@ class ContentAddElement extends HTMLElement {
     /**
      * @param {HTMLButtonElement} button 
      * @param {string} eventName 
-     * @param {any} [detail] 
+     * @param {() => any} [detail] Returns the value that goes into the detail property
      */
     #addClickEvent(button, eventName, detail = null) {
         button.addEventListener('click', () =>
             this.dispatchEvent(new CustomEvent(eventName, {
                 bubbles: true,
-                detail: detail
+                detail: detail?.call(this)
             }))
         );
     }
@@ -2691,14 +2686,14 @@ class ContentAddElement extends HTMLElement {
     }
 }
 
-customElements.define('content-add', ContentAddElement);
+customElements.define('content-toolbar', ContentToolbarElement);
 
 
 /* IMPORT: /js/custom-elements/content-editor/content-container-element.js */
 
 
 
-/* IMPORT: /js/custom-elements/content-editor/content-add-element.js */
+/* IMPORT: ./content-toolbar-element.js */
 
 
 
@@ -2708,7 +2703,7 @@ class ContentContainerElement extends HTMLElement {
     connectedCallback() {
         this.setAttribute('tabindex', '0');
 
-        const contentAdd = document.createElement(customElements.getName(ContentAddElement));
+        const contentAdd = document.createElement(customElements.getName(ContentToolbarElement));
         this.appendChild(contentAdd);
     }
 
@@ -5717,15 +5712,13 @@ class ContentEditorComponent extends HTMLElement {
         if (!this.childElementCount)
             this.appendChild(document.createElement(customElements.getName(ContentContainerElement)));
 
-        console.log(this);
-
         this.addEventListener('content-add', event => {
             event.stopPropagation();
             const contentDiv = document.createElement(customElements.getName(ContentContainerElement));
             
             /** @type {HTMLElement} */
-            const contentAdd = event.target;
-            contentAdd.insertAdjacentElement('beforebegin', contentDiv);
+            const toolbar = event.target;
+            toolbar.insertAdjacentElement('beforebegin', contentDiv);
         });
 
         this.addEventListener('content-text', event => {
@@ -5734,9 +5727,8 @@ class ContentEditorComponent extends HTMLElement {
             contentText.textContent = 'This is a text element';
 
             /** @type {HTMLElement} */
-            const contentAdd = event.target;
-            contentAdd.insertAdjacentElement('beforebegin', contentText);
-            
+            const toolbar = event.target;
+            toolbar.insertAdjacentElement('beforebegin', contentText);
         });
 
         this.addEventListener('content-direction', event => {

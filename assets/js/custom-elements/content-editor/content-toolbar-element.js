@@ -1,5 +1,4 @@
-// TODO: change to content-changer?
-export default class ContentAddElement extends HTMLElement {
+export default class ContentToolbarElement extends HTMLElement {
     /** @type {ShadowRoot} */ #shadowRoot;
     #svgCount = 0;
 
@@ -17,17 +16,13 @@ export default class ContentAddElement extends HTMLElement {
         const directionButton = this.#attachNewSvgButton('Toggle content flow direction',
             '#svg-content-columns', '#svg-content-rows'
         );
-        directionButton.addEventListener('click', () => {
+        this.#addClickEvent(directionButton, 'content-direction', () => {
             const [ newMode, detail ] = directionButton.dataset.mode === '2'
                 ? [ 1, 'column' ]
                 : [ 2, 'row' ];
 
-            this.dispatchEvent(new CustomEvent('content-direction', {
-                bubbles: true,
-                detail: detail
-            }));
-
             directionButton.dataset.mode = newMode;
+            return detail;
         });
 
         const css = new CSSStyleSheet();
@@ -59,13 +54,13 @@ export default class ContentAddElement extends HTMLElement {
     /**
      * @param {HTMLButtonElement} button 
      * @param {string} eventName 
-     * @param {any} [detail] 
+     * @param {() => any} [detail] Returns the value that goes into the detail property
      */
     #addClickEvent(button, eventName, detail = null) {
         button.addEventListener('click', () =>
             this.dispatchEvent(new CustomEvent(eventName, {
                 bubbles: true,
-                detail: detail
+                detail: detail?.call(this)
             }))
         );
     }
@@ -112,4 +107,4 @@ export default class ContentAddElement extends HTMLElement {
     }
 }
 
-customElements.define('content-add', ContentAddElement);
+customElements.define('content-toolbar', ContentToolbarElement);
