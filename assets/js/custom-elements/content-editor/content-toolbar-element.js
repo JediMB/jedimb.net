@@ -1,27 +1,40 @@
+import ContentContainerElement from "/js/custom-elements/content-editor/content-container-element.js";
+
 export default class ContentToolbarElement extends HTMLElement {
+    static CONTAINER_NAME = customElements.getName(ContentContainerElement);
+
     /** @type {ShadowRoot} */ #shadowRoot;
+    /** @type {HTMLButtonElement} */ #btnContainer;
+    /** @type {HTMLButtonElement} */ #btnText;
+    /** @type {HTMLButtonElement} */ #btnDirection;
+
     #svgCount = 0;
 
     constructor() { super(); }
 
     connectedCallback() {
+        if (this.#shadowRoot) {
+            this.#updateVisibility();
+            return;
+        }
+
         this.#shadowRoot = this.attachShadow({ mode: 'closed'});
         
-        const addButton = this.#attachNewSvgButton('Add content box', '#svg-add-box');
-        this.#addClickEvent(addButton, 'content-add');
+        this.#btnContainer = this.#attachNewSvgButton('Add content box', '#svg-add-box');
+        this.#addClickEvent(this.#btnContainer, 'content-add');
 
-        const textButton = this.#attachNewSvgButton('Add text', '#svg-text-snippet');
-        this.#addClickEvent(textButton, 'content-text');
+        this.#btnText = this.#attachNewSvgButton('Add text', '#svg-text-snippet');
+        this.#addClickEvent(this.#btnText, 'content-text');
 
-        const directionButton = this.#attachNewSvgButton('Toggle content flow direction',
+        this.#btnDirection = this.#attachNewSvgButton('Toggle content flow direction',
             '#svg-content-columns', '#svg-content-rows'
         );
-        this.#addClickEvent(directionButton, 'content-direction', () => {
-            const [ newMode, detail ] = directionButton.dataset.mode === '2'
+        this.#addClickEvent(this.#btnDirection, 'content-direction', () => {
+            const [ newMode, detail ] = this.#btnDirection.dataset.mode === '2'
                 ? [ 1, 'column' ]
                 : [ 2, 'row' ];
 
-            directionButton.dataset.mode = newMode;
+            this.#btnDirection.dataset.mode = newMode;
             return detail;
         });
 
@@ -30,6 +43,10 @@ export default class ContentToolbarElement extends HTMLElement {
             &[data-mode="${index+1}"] svg:nth-of-type(${index+1})`).join('')}`;
 
         css.replaceSync(`
+            [hidden] {
+                display: none;
+            }
+
             button {
                 display: inline flex;
                 flex-direction: row;
@@ -45,6 +62,7 @@ export default class ContentToolbarElement extends HTMLElement {
             }
         `);
         this.#shadowRoot.adoptedStyleSheets.push(css);
+        this.#updateVisibility();
     }
 
     connectedMoveCallback() {}
@@ -104,6 +122,13 @@ export default class ContentToolbarElement extends HTMLElement {
 
         this.#shadowRoot.appendChild(button);
         return button;
+    }
+
+    #updateVisibility() {
+        const inContainer = this.parentElement.localName === ContentToolbarElement.CONTAINER_NAME;
+
+        this.#btnText.hidden = !inContainer;
+        this.#btnDirection.hidden = !inContainer;
     }
 }
 
