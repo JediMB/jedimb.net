@@ -3,8 +3,6 @@ export default class {pascal_name}Component extends HTMLElement {
 
     connectedCallback() {}
 
-    connectedMoveCallback() {}
-
     disconnectedCallback() {}
 }
 

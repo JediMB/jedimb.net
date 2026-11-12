@@ -37,8 +37,6 @@ export default class AccountMenuComponent extends HTMLElement {
         this.#loginFormSetup();
     }
 
-    connectedMoveCallback() {}
-
     disconnectedCallback() {}
 
     /**

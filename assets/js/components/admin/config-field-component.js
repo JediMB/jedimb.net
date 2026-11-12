@@ -74,8 +74,6 @@ export default class ConfigFieldComponent extends HTMLElement {
         this.#setup(!!listCSV);
     }
 
-    connectedMoveCallback() {}
-
     disconnectedCallback() {}
 
     /** @returns {Configuration} */

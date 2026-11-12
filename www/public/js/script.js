@@ -2581,20 +2581,12 @@ const userApiService = new UserApiService();
 
 /* IMPORT: /js/custom-elements/content-editor/content-container-element.js */
 
-
-
-/* IMPORT: ./content-toolbar-element.js */
-
-
-
 class ContentContainerElement extends HTMLElement {
     constructor() { super(); }
 
     connectedCallback() {
         this.setAttribute('tabindex', '0');
     }
-
-    connectedMoveCallback() {}
 
     disconnectedCallback() {}
 }
@@ -2665,8 +2657,6 @@ class ContentToolbarElement extends HTMLElement {
         this.#shadowRoot.adoptedStyleSheets.push(css);
         this.#updateVisibility();
     }
-
-    connectedMoveCallback() {}
 
     disconnectedCallback() {}
 
@@ -2762,8 +2752,6 @@ class DateTimeElement extends HTMLElement {
     }
 
     disconnectedCallback() {}
-
-    connectedMoveCallback() {}
 
     /** @param {Date} date  */
     setDateTime(date) {
@@ -2900,8 +2888,6 @@ class FullscreenImageElement extends HTMLElement {
         `);
         shadow.adoptedStyleSheets.push(baseCSS);
     }
-
-    connectedMoveCallback() {}
 
     disconnectedCallback() {}
 
@@ -3191,8 +3177,6 @@ class ImgGalleryElement extends HTMLElement {
             }
         `);
     }
-
-    connectedMoveCallback() {}
 
     disconnectedCallback() {
         this.#listener.unsubscribe();
@@ -3484,8 +3468,6 @@ class ImgWrapperElement extends HTMLElement {
         });
     }
 
-    connectedMoveCallback() {}
-
     disconnectedCallback() {
         this.#listener.unsubscribe();
     }
@@ -3640,7 +3622,6 @@ class InputErrorsElement extends HTMLElement {
         }
     }
 
-    connectedMoveCallback() {}
     disconnectedCallback() {}
 
     get name() { return this.#input.name; }
@@ -3748,8 +3729,6 @@ class InputFileElement extends HTMLElement {
 
     disconnectedCallback() {}
 
-    connectedMoveCallback() {}
-
     /** @returns {FileList} */
     get files() { return this.#input.files; }
 
@@ -3812,8 +3791,6 @@ class AccountMenuComponent extends HTMLElement {
 
         this.#loginFormSetup();
     }
-
-    connectedMoveCallback() {}
 
     disconnectedCallback() {}
 
@@ -3932,8 +3909,6 @@ class BlogFormComponent extends HTMLElement {
 
     connectedCallback() {}
 
-    connectedMoveCallback() {}
-
     disconnectedCallback() {}
 }
 
@@ -4038,8 +4013,6 @@ class BlogEditorComponent extends HTMLElement {
             this.#btnCancel.disabled = false;
         });
     }
-
-    connectedMoveCallback() {}
 
     disconnectedCallback() {}
 
@@ -4225,8 +4198,6 @@ class BlogHeadComponent extends HTMLElement {
         this.#btnAddPost.addEventListener('click', () => this.#toggleMode());
     }
 
-    connectedMoveCallback() {}
-
     disconnectedCallback() {}
 
     #toggleMode() {
@@ -4348,8 +4319,6 @@ class PageSelectorComponent extends HTMLElement {
         });
 
     }
-
-    connectedMoveCallback() {}
 
     disconnectedCallback() {}
 
@@ -4663,8 +4632,6 @@ class PageStatsComponent extends HTMLElement {
         this.#itemsTotal = this.querySelector('items-total');
     }
 
-    connectedMoveCallback() {}
-
     disconnectedCallback() {}
 
     /**
@@ -4726,8 +4693,6 @@ class BlogPostItemComponent extends HTMLElement {
 
         this.#assignButtonActions();
     }
-
-    connectedMoveCallback() {}
 
     disconnectedCallback() {}
 
@@ -4972,8 +4937,6 @@ class BlogPostAdministrationComponent extends HTMLElement {
         }
     }
 
-    connectedMoveCallback() {}
-
     disconnectedCallback() {}
 
     /**
@@ -5058,8 +5021,6 @@ class BlogPostPreviewComponent extends HTMLElement {
 
         this.#assignButtonActions();
     }
-
-    connectedMoveCallback() {}
 
     disconnectedCallback() {}
 
@@ -5305,8 +5266,6 @@ class BlogViewComponent extends HTMLElement {
         });
     }
 
-    connectedMoveCallback() {}
-
     disconnectedCallback() {}
 
     /**
@@ -5431,8 +5390,6 @@ class ConfigFieldComponent extends HTMLElement {
 
         this.#setup(!!listCSV);
     }
-
-    connectedMoveCallback() {}
 
     disconnectedCallback() {}
 
@@ -5780,8 +5737,6 @@ class ContentEditorComponent extends HTMLElement {
         });
     }
 
-    connectedMoveCallback() {}
-
     disconnectedCallback() {}
 
     /** 
@@ -6119,8 +6074,6 @@ class GalleryManagerComponent extends HTMLElement {
     }
 
     disconnectedCallback() {}
-
-    connectedMoveCallback() {}
 
     async #deleteGallery() {
         this.#btnDeleteGallery.disabled = true;
@@ -6736,8 +6689,6 @@ class ImageManagerComponent extends HTMLElement {
 
     disconnectedCallback() {}
 
-    connectedMoveCallback() {}
-
     async #deleteImage(event) {
         event.stopPropagation();
         this.#deleteButton.disabled = true;
@@ -7103,8 +7054,6 @@ class SiteConfigurationComponent extends HTMLElement {
         }
     }
 
-    connectedMoveCallback() {}
-
     disconnectedCallback() {}
 
     async #save() {
@@ -7224,8 +7173,6 @@ class TabbedContentComponent extends HTMLElement {
             });
         }
     }
-
-    connectedMoveCallback() {}
 
     disconnectedCallback() {}
 
@@ -7616,8 +7563,6 @@ class TextEditorComponent extends HTMLElement {
     disconnectedCallback() {
         document.removeEventListener('selectionchange', this.#onSelectionChange);
     }
-
-    connectedMoveCallback() {}
 
     /** Gives outside access to the text-box content */
     get content() {

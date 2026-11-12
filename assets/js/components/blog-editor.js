@@ -83,8 +83,6 @@ export default class BlogEditorComponent extends HTMLElement {
         });
     }
 
-    connectedMoveCallback() {}
-
     disconnectedCallback() {}
 
     #onCancel() {

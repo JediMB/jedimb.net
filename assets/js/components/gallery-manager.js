@@ -194,8 +194,6 @@ export default class GalleryManagerComponent extends HTMLElement {
 
     disconnectedCallback() {}
 
-    connectedMoveCallback() {}
-
     async #deleteGallery() {
         this.#btnDeleteGallery.disabled = true;
         this.#btnSaveGalleryImages.disabled = true;

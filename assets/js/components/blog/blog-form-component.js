@@ -3,8 +3,6 @@ export default class BlogFormComponent extends HTMLElement {
 
     connectedCallback() {}
 
-    connectedMoveCallback() {}
-
     disconnectedCallback() {}
 }
 

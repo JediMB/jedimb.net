@@ -45,8 +45,6 @@ export default class ContentEditorComponent extends HTMLElement {
         });
     }
 
-    connectedMoveCallback() {}
-
     disconnectedCallback() {}
 
     /** 

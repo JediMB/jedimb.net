@@ -22,8 +22,6 @@ export default class PageStatsComponent extends HTMLElement {
         this.#itemsTotal = this.querySelector('items-total');
     }
 
-    connectedMoveCallback() {}
-
     disconnectedCallback() {}
 
     /**

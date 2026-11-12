@@ -65,8 +65,6 @@ export default class ContentToolbarElement extends HTMLElement {
         this.#updateVisibility();
     }
 
-    connectedMoveCallback() {}
-
     disconnectedCallback() {}
 
     /**

@@ -75,8 +75,6 @@ export default class BlogHeadComponent extends HTMLElement {
         });
     }
 
-    connectedMoveCallback() {}
-
     disconnectedCallback() {}
 
     /** @param {BlogPostDTO} post  */

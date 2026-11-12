@@ -131,8 +131,6 @@ export default class ImageManagerComponent extends HTMLElement {
 
     disconnectedCallback() {}
 
-    connectedMoveCallback() {}
-
     async #deleteImage(event) {
         event.stopPropagation();
         this.#deleteButton.disabled = true;

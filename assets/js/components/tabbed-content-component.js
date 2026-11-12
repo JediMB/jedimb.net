@@ -77,8 +77,6 @@ export default class TabbedContentComponent extends HTMLElement {
         }
     }
 
-    connectedMoveCallback() {}
-
     disconnectedCallback() {}
 
     /**

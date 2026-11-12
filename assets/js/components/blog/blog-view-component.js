@@ -84,8 +84,6 @@ export default class BlogViewComponent extends HTMLElement {
         });
     }
 
-    connectedMoveCallback() {}
-
     disconnectedCallback() {}
 
     /**

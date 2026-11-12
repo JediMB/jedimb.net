@@ -41,8 +41,6 @@ class InputFileElement extends HTMLElement {
 
     disconnectedCallback() {}
 
-    connectedMoveCallback() {}
-
     /** @returns {FileList} */
     get files() { return this.#input.files; }
 

@@ -206,8 +206,6 @@ export default class TextEditorComponent extends HTMLElement {
         document.removeEventListener('selectionchange', this.#onSelectionChange);
     }
 
-    connectedMoveCallback() {}
-
     /** Gives outside access to the text-box content */
     get content() {
         const self = this;

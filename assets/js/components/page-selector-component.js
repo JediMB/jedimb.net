@@ -86,8 +86,6 @@ export default class PageSelectorComponent extends HTMLElement {
 
     }
 
-    connectedMoveCallback() {}
-
     disconnectedCallback() {}
 
     getData() {

@@ -80,8 +80,6 @@ class FullscreenImageElement extends HTMLElement {
         shadow.adoptedStyleSheets.push(baseCSS);
     }
 
-    connectedMoveCallback() {}
-
     disconnectedCallback() {}
 
     /** 

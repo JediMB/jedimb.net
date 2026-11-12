@@ -24,8 +24,6 @@ export default class BlogPostItemComponent extends HTMLElement {
         this.#assignButtonActions();
     }
 
-    connectedMoveCallback() {}
-
     disconnectedCallback() {}
 
     /** @param {BlogPost} blogPost  */

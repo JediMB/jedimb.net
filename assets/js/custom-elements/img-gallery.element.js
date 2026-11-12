@@ -246,8 +246,6 @@ class ImgGalleryElement extends HTMLElement {
         `);
     }
 
-    connectedMoveCallback() {}
-
     disconnectedCallback() {
         this.#listener.unsubscribe();
     }

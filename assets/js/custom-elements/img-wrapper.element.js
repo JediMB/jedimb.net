@@ -78,8 +78,6 @@ class ImgWrapperElement extends HTMLElement {
         });
     }
 
-    connectedMoveCallback() {}
-
     disconnectedCallback() {
         this.#listener.unsubscribe();
     }

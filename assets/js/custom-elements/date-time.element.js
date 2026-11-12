@@ -14,8 +14,6 @@ export default class DateTimeElement extends HTMLElement {
 
     disconnectedCallback() {}
 
-    connectedMoveCallback() {}
-
     /** @param {Date} date  */
     setDateTime(date) {
         this.setAttribute('date-string', formatDate(date));

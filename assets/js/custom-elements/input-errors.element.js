@@ -30,7 +30,6 @@ export default class InputErrorsElement extends HTMLElement {
         }
     }
 
-    connectedMoveCallback() {}
     disconnectedCallback() {}
 
     get name() { return this.#input.name; }

@@ -14,8 +14,6 @@ export default class BlogHeadComponent extends HTMLElement {
         this.#btnAddPost.addEventListener('click', () => this.#toggleMode());
     }
 
-    connectedMoveCallback() {}
-
     disconnectedCallback() {}
 
     #toggleMode() {

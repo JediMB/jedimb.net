@@ -32,8 +32,6 @@ export default class SiteConfigurationComponent extends HTMLElement {
         }
     }
 
-    connectedMoveCallback() {}
-
     disconnectedCallback() {}
 
     async #save() {

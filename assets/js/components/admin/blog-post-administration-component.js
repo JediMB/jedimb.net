@@ -50,8 +50,6 @@ export default class BlogPostAdministrationComponent extends HTMLElement {
         }
     }
 
-    connectedMoveCallback() {}
-
     disconnectedCallback() {}
 
     /**

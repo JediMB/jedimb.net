@@ -23,8 +23,6 @@ export default class BlogPostPreviewComponent extends HTMLElement {
         this.#assignButtonActions();
     }
 
-    connectedMoveCallback() {}
-
     disconnectedCallback() {}
 
     /** 
