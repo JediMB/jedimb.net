@@ -28,21 +28,15 @@ use App\Utils\CSSRenderer;
         color: var(--clr-dark);
     }
 
-    content-toolbar {
-        display: block flex;
-        width: fit-content;
-        margin-inline: auto;
-        padding: var(--size-s);
-        gap: var(--size-xs);
-    }
-
     content-container {
         display: block flex;
         flex-direction: column;
         gap: var(--size-s);
         flex-shrink: 0;
+        box-sizing: content-box;
         min-height: 1em;
         min-width: 1em;
+        padding: 1em;
         border: 1px dashed red;
 
         & > content-toolbar { flex-direction: row; }
@@ -65,4 +59,11 @@ use App\Utils\CSSRenderer;
         }
     }
 
+    content-toolbar {
+        display: block flex;
+        width: fit-content;
+        height: fit-content;
+        padding: var(--size-s);
+        gap: var(--size-xs);
+    }
 CSS) ?>

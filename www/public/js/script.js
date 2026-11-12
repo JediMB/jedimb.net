@@ -2663,6 +2663,7 @@ class ContentToolbarElement extends HTMLElement {
                 flex-direction: row;
                 justify-content: center;
                 align-items: center;
+                cursor: pointer;
 
                 & svg {
                     display: none;
