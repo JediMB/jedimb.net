@@ -5,9 +5,6 @@ export default class ContentContainerElement extends HTMLElement {
 
     connectedCallback() {
         this.setAttribute('tabindex', '0');
-
-        const contentAdd = document.createElement(customElements.getName(ContentToolbarElement));
-        this.appendChild(contentAdd);
     }
 
     connectedMoveCallback() {}

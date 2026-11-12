@@ -2577,30 +2577,65 @@ const userApiService = new UserApiService();
 
 /* IMPORT: /js/custom-elements/content-editor/content-toolbar-element.js */
 
+
+
+/* IMPORT: /js/custom-elements/content-editor/content-container-element.js */
+
+
+
+/* IMPORT: ./content-toolbar-element.js */
+
+
+
+class ContentContainerElement extends HTMLElement {
+    constructor() { super(); }
+
+    connectedCallback() {
+        this.setAttribute('tabindex', '0');
+    }
+
+    connectedMoveCallback() {}
+
+    disconnectedCallback() {}
+}
+
+customElements.define('content-container', ContentContainerElement);
+
 class ContentToolbarElement extends HTMLElement {
+    static CONTAINER_NAME = customElements.getName(ContentContainerElement);
+
     /** @type {ShadowRoot} */ #shadowRoot;
+    /** @type {HTMLButtonElement} */ #btnContainer;
+    /** @type {HTMLButtonElement} */ #btnText;
+    /** @type {HTMLButtonElement} */ #btnDirection;
+
     #svgCount = 0;
 
     constructor() { super(); }
 
     connectedCallback() {
+        if (this.#shadowRoot) {
+            this.#updateVisibility();
+            return;
+        }
+
         this.#shadowRoot = this.attachShadow({ mode: 'closed'});
         
-        const addButton = this.#attachNewSvgButton('Add content box', '#svg-add-box');
-        this.#addClickEvent(addButton, 'content-add');
+        this.#btnContainer = this.#attachNewSvgButton('Add content box', '#svg-add-box');
+        this.#addClickEvent(this.#btnContainer, 'content-add');
 
-        const textButton = this.#attachNewSvgButton('Add text', '#svg-text-snippet');
-        this.#addClickEvent(textButton, 'content-text');
+        this.#btnText = this.#attachNewSvgButton('Add text', '#svg-text-snippet');
+        this.#addClickEvent(this.#btnText, 'content-text');
 
-        const directionButton = this.#attachNewSvgButton('Toggle content flow direction',
+        this.#btnDirection = this.#attachNewSvgButton('Toggle content flow direction',
             '#svg-content-columns', '#svg-content-rows'
         );
-        this.#addClickEvent(directionButton, 'content-direction', () => {
-            const [ newMode, detail ] = directionButton.dataset.mode === '2'
+        this.#addClickEvent(this.#btnDirection, 'content-direction', () => {
+            const [ newMode, detail ] = this.#btnDirection.dataset.mode === '2'
                 ? [ 1, 'column' ]
                 : [ 2, 'row' ];
 
-            directionButton.dataset.mode = newMode;
+            this.#btnDirection.dataset.mode = newMode;
             return detail;
         });
 
@@ -2609,6 +2644,10 @@ class ContentToolbarElement extends HTMLElement {
             &[data-mode="${index+1}"] svg:nth-of-type(${index+1})`).join('')}`;
 
         css.replaceSync(`
+            [hidden] {
+                display: none;
+            }
+
             button {
                 display: inline flex;
                 flex-direction: row;
@@ -2624,6 +2663,7 @@ class ContentToolbarElement extends HTMLElement {
             }
         `);
         this.#shadowRoot.adoptedStyleSheets.push(css);
+        this.#updateVisibility();
     }
 
     connectedMoveCallback() {}
@@ -2684,6 +2724,13 @@ class ContentToolbarElement extends HTMLElement {
         this.#shadowRoot.appendChild(button);
         return button;
     }
+
+    #updateVisibility() {
+        const inContainer = this.parentElement.localName === ContentToolbarElement.CONTAINER_NAME;
+
+        this.#btnText.hidden = !inContainer;
+        this.#btnDirection.hidden = !inContainer;
+    }
 }
 
 customElements.define('content-toolbar', ContentToolbarElement);
@@ -2692,27 +2739,6 @@ customElements.define('content-toolbar', ContentToolbarElement);
 /* IMPORT: /js/custom-elements/content-editor/content-container-element.js */
 
 
-
-/* IMPORT: ./content-toolbar-element.js */
-
-
-
-class ContentContainerElement extends HTMLElement {
-    constructor() { super(); }
-
-    connectedCallback() {
-        this.setAttribute('tabindex', '0');
-
-        const contentAdd = document.createElement(customElements.getName(ContentToolbarElement));
-        this.appendChild(contentAdd);
-    }
-
-    connectedMoveCallback() {}
-
-    disconnectedCallback() {}
-}
-
-customElements.define('content-container', ContentContainerElement);
 
 
 /* IMPORT: /js/custom-elements/date-time.element.js */
@@ -5705,16 +5731,32 @@ customElements.define('config-field-component', ConfigFieldComponent);
 
 
 
+
+/* IMPORT: /js/custom-elements/content-editor/content-toolbar-element.js */
+
+
+
 class ContentEditorComponent extends HTMLElement {
+    static CONTAINER_NAME = customElements.getName(ContentContainerElement);
+    static TOOLBAR_NAME = customElements.getName(ContentToolbarElement);
+
+    /** @type {ContentToolbarElement} */ #toolbar;
+    /** @type {HTMLElement} */ #previousTarget;
+
     constructor() { super(); }
 
     connectedCallback() {
-        if (!this.childElementCount)
-            this.appendChild(document.createElement(customElements.getName(ContentContainerElement)));
+        this.setAttribute('tabindex', '0');
+
+        this.#toolbar = document.createElement(ContentEditorComponent.TOOLBAR_NAME);
+        this.appendChild(this.#toolbar);
+
+        this.addEventListener('mouseover', event => this.#toolbarControl(event));
+        this.addEventListener('focusin', event => this.#toolbarControl(event));
 
         this.addEventListener('content-add', event => {
             event.stopPropagation();
-            const contentDiv = document.createElement(customElements.getName(ContentContainerElement));
+            const contentDiv = document.createElement(ContentEditorComponent.CONTAINER_NAME);
             
             /** @type {HTMLElement} */
             const toolbar = event.target;
@@ -5741,6 +5783,123 @@ class ContentEditorComponent extends HTMLElement {
     connectedMoveCallback() {}
 
     disconnectedCallback() {}
+
+    /** 
+     * @param {HTMLElement} element  
+     * @returns {(ContentEditorComponent|ContentContainerElement)?}
+     */
+    #findContainer(element) {
+        while (element) {
+            if (element === this || element.localName === ContentEditorComponent.CONTAINER_NAME)
+                return element;
+
+            element = element.parentElement;
+        }
+
+        return null;
+    }
+
+    /**
+     * @param {ContentContainerElement} directionSource 
+     * @param {HTMLElement} anchorElement 
+     * @param {MouseEvent} mouseEvent 
+     * @param {number} mouseEvent.clientX 
+     * @param {number} mouseEvent.clientY 
+     * @returns {'beforebegin'|'afterend'}
+     */
+    #getAdjacency(directionSource, anchorElement, { clientX, clientY }) {
+        const rect = anchorElement.getBoundingClientRect();
+
+        switch (getComputedStyle(directionSource).flexDirection) {
+            case 'row':
+                return (rect.left + (0.5 * rect.width)) < clientX
+                    ? 'afterend' : 'beforebegin';
+            case 'row-reverse':
+                return (rect.left + (0.5 * rect.width)) > clientX
+                    ? 'afterend' : 'beforebegin';
+            case 'column':
+                return (rect.top + (0.5 * rect.height)) < clientY
+                    ? 'afterend' : 'beforebegin';
+            case 'column-reverse':
+                return (rect.top + (0.5 * rect.height)) > clientY
+                    ? 'afterend' : 'beforebegin';
+        }
+
+        console.error('Unexpected flexDirection value');
+        return 'afterend';
+    }
+
+    /**
+     * 
+     * @param {ContentEditorComponent|ContentContainerElement} container 
+     * @param {'beforebegin'|'afterend'} adjacency 
+     */
+    #putToolbarFirstOrLast(container, adjacency) {
+        if (adjacency === 'beforebegin')
+            container.prepend(this.#toolbar);
+        else
+            container.append(this.#toolbar);
+    }
+
+    /**
+     * @param {FocusEvent} event 
+     * @param {HTMLElement} target 
+     * @param {ContentContainerElement} container 
+     */
+    #setToolbarPositionByFocus(event, target, container) {
+
+    }
+
+    /**
+     * @param {MouseEvent} event 
+     * @param {HTMLElement} target 
+     * @param {ContentContainerElement} container 
+     */
+    #setToolbarPositionByMouse(event, target, container) {
+        if (target !== container) {
+            target.insertAdjacentElement(this.#getAdjacency(container, target, event), this.#toolbar);
+            return;
+        }
+
+        if (container.contains(this.#previousTarget)) {
+            if (this.#previousTarget === this) {
+                this.#putToolbarFirstOrLast(this, this.#getAdjacency(this, this, event));
+                return
+            }
+            
+            this.#previousTarget?.insertAdjacentElement(this.#getAdjacency(container, this.#previousTarget, event), this.#toolbar);
+            return;
+        }
+
+        this.#putToolbarFirstOrLast(container, this.#getAdjacency(container, container, event));
+    }
+
+    /** @param {MouseEvent|FocusEvent} event */
+    #toolbarControl(event) {
+        /** @type {HTMLElement} */
+        const target = event.target;
+        const localName = target.localName;
+
+        if (localName === ContentEditorComponent.TOOLBAR_NAME)
+            return;
+
+        const date = new Date();
+        this.nextElementSibling.textContent = `${date.getSeconds()}.${date.getMilliseconds()} : ${localName}`;
+
+        const container = this.#findContainer(target);
+
+        if (!container) {
+            console.error('No container found');
+            return;
+        }
+
+        if (event.type.includes('mouse'))
+            this.#setToolbarPositionByMouse(event, target, container);
+        else
+            this.#setToolbarPositionByFocus(event, target, container);
+
+        this.#previousTarget = target;
+    }
 }
 
 customElements.define('content-editor-component', ContentEditorComponent);
