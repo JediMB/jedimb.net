@@ -2575,6 +2575,24 @@ const userApiService = new UserApiService();
 /* Custom elements */
 
 
+/* IMPORT: /js/custom-elements/content-editor/content-text-element.js */
+
+class ContentTextElement extends HTMLElement {
+    constructor() { super(); }
+
+    connectedCallback() {
+        this.setAttribute('tabindex', '0');
+
+        this.addEventListener('click', () => this.setAttribute('contenteditable', 'true'));
+        this.addEventListener('blur', () => this.removeAttribute('contenteditable'));
+    }
+
+    disconnectedCallback() {}
+}
+
+customElements.define('content-text', ContentTextElement);
+
+
 /* IMPORT: /js/custom-elements/content-editor/content-toolbar-element.js */
 
 
@@ -5693,9 +5711,15 @@ customElements.define('config-field-component', ConfigFieldComponent);
 
 
 
+
+/* IMPORT: /js/custom-elements/content-editor/content-text-element.js */
+
+
+
 class ContentEditorComponent extends HTMLElement {
     static CONTAINER_NAME = customElements.getName(ContentContainerElement);
     static TOOLBAR_NAME = customElements.getName(ContentToolbarElement);
+    static TEXT_NAME = customElements.getName(ContentTextElement);
 
     /** @type {ContentToolbarElement} */ #toolbar;
     /** @type {HTMLElement} */ #previousTarget;
@@ -5722,7 +5746,7 @@ class ContentEditorComponent extends HTMLElement {
 
         this.addEventListener('content-text', event => {
             event.stopPropagation();
-            const contentText = document.createElement('content-text');
+            const contentText = document.createElement(ContentEditorComponent.TEXT_NAME);
             contentText.textContent = 'This is a text element';
 
             /** @type {HTMLElement} */

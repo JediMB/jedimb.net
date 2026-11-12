@@ -1,9 +1,11 @@
 import ContentContainerElement from "/js/custom-elements/content-editor/content-container-element.js";
 import ContentToolbarElement from "/js/custom-elements/content-editor/content-toolbar-element.js";
+import ContentTextElement from "/js/custom-elements/content-editor/content-text-element.js";
 
 export default class ContentEditorComponent extends HTMLElement {
     static CONTAINER_NAME = customElements.getName(ContentContainerElement);
     static TOOLBAR_NAME = customElements.getName(ContentToolbarElement);
+    static TEXT_NAME = customElements.getName(ContentTextElement);
 
     /** @type {ContentToolbarElement} */ #toolbar;
     /** @type {HTMLElement} */ #previousTarget;
@@ -30,7 +32,7 @@ export default class ContentEditorComponent extends HTMLElement {
 
         this.addEventListener('content-text', event => {
             event.stopPropagation();
-            const contentText = document.createElement('content-text');
+            const contentText = document.createElement(ContentEditorComponent.TEXT_NAME);
             contentText.textContent = 'This is a text element';
 
             /** @type {HTMLElement} */

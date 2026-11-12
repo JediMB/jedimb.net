@@ -53,4 +53,16 @@ use App\Utils\CSSRenderer;
             & > content-toolbar { flex-direction: column; }
         }
     }
+
+    content-text {
+        box-sizing: content-box;
+        min-height: 1em;
+        min-width: 1em;
+        padding: 1em;
+
+        &:not([contenteditable]) {
+            cursor: pointer;
+        }
+    }
+
 CSS) ?>
