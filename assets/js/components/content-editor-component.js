@@ -30,6 +30,28 @@ export default class ContentEditorComponent extends HTMLElement {
             toolbar.insertAdjacentElement('beforebegin', contentDiv);
         });
 
+        this.addEventListener('content-direction', event => {
+            event.stopPropagation();
+
+            event.target.parentElement.setAttribute('content-direction', event.detail);
+        });
+
+        this.addEventListener('content-remove', event => {
+            event.stopPropagation();
+
+            /** @type {HTMLElement} */
+            const container = event.target.parentElement;
+
+            if (container === this || !this.contains(container)) {
+                console.error('Trying to remove something out of bounds');
+                return;
+            }
+            
+            // TODO: Confirmation dialogue
+            this.append(this.#toolbar);
+            container.remove();
+        });
+
         this.addEventListener('content-text', event => {
             event.stopPropagation();
             const contentText = document.createElement(ContentEditorComponent.TEXT_NAME);
@@ -38,12 +60,6 @@ export default class ContentEditorComponent extends HTMLElement {
             /** @type {HTMLElement} */
             const toolbar = event.target;
             toolbar.insertAdjacentElement('beforebegin', contentText);
-        });
-
-        this.addEventListener('content-direction', event => {
-            event.stopPropagation();
-
-            event.target.parentElement.setAttribute('content-direction', event.detail);
         });
     }
 

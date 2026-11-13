@@ -5,8 +5,9 @@ export default class ContentToolbarElement extends HTMLElement {
 
     /** @type {ShadowRoot} */ #shadowRoot;
     /** @type {HTMLButtonElement} */ #btnContainer;
-    /** @type {HTMLButtonElement} */ #btnText;
+    /** @type {HTMLButtonElement} */ #btnRemove;
     /** @type {HTMLButtonElement} */ #btnDirection;
+    /** @type {HTMLButtonElement} */ #btnText;
 
     #svgCount = 0;
 
@@ -37,6 +38,9 @@ export default class ContentToolbarElement extends HTMLElement {
             this.#btnDirection.dataset.mode = newMode;
             return detail;
         });
+
+        this.#btnRemove = this.#attachNewSvgButton('Remove content box', '#svg-delete');
+        this.#addClickEvent(this.#btnRemove, 'content-remove');
 
         const css = new CSSStyleSheet();
         const svgDisplay = `${Array(this.#svgCount).fill('').map((_, index) => `,
@@ -128,6 +132,7 @@ export default class ContentToolbarElement extends HTMLElement {
 
         this.#btnText.hidden = !inContainer;
         this.#btnDirection.hidden = !inContainer;
+        this.#btnRemove.hidden = !inContainer;
     }
 }
 

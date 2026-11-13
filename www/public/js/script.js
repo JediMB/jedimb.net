@@ -2616,8 +2616,9 @@ class ContentToolbarElement extends HTMLElement {
 
     /** @type {ShadowRoot} */ #shadowRoot;
     /** @type {HTMLButtonElement} */ #btnContainer;
-    /** @type {HTMLButtonElement} */ #btnText;
+    /** @type {HTMLButtonElement} */ #btnRemove;
     /** @type {HTMLButtonElement} */ #btnDirection;
+    /** @type {HTMLButtonElement} */ #btnText;
 
     #svgCount = 0;
 
@@ -2648,6 +2649,9 @@ class ContentToolbarElement extends HTMLElement {
             this.#btnDirection.dataset.mode = newMode;
             return detail;
         });
+
+        this.#btnRemove = this.#attachNewSvgButton('Remove content box', '#svg-delete');
+        this.#addClickEvent(this.#btnRemove, 'content-remove');
 
         const css = new CSSStyleSheet();
         const svgDisplay = `${Array(this.#svgCount).fill('').map((_, index) => `,
@@ -2739,6 +2743,7 @@ class ContentToolbarElement extends HTMLElement {
 
         this.#btnText.hidden = !inContainer;
         this.#btnDirection.hidden = !inContainer;
+        this.#btnRemove.hidden = !inContainer;
     }
 }
 
@@ -5745,6 +5750,28 @@ class ContentEditorComponent extends HTMLElement {
             toolbar.insertAdjacentElement('beforebegin', contentDiv);
         });
 
+        this.addEventListener('content-direction', event => {
+            event.stopPropagation();
+
+            event.target.parentElement.setAttribute('content-direction', event.detail);
+        });
+
+        this.addEventListener('content-remove', event => {
+            event.stopPropagation();
+
+            /** @type {HTMLElement} */
+            const container = event.target.parentElement;
+
+            if (container === this || !this.contains(container)) {
+                console.error('Trying to remove something out of bounds');
+                return;
+            }
+            
+            // TODO: Confirmation dialogue
+            this.append(this.#toolbar);
+            container.remove();
+        });
+
         this.addEventListener('content-text', event => {
             event.stopPropagation();
             const contentText = document.createElement(ContentEditorComponent.TEXT_NAME);
@@ -5753,12 +5780,6 @@ class ContentEditorComponent extends HTMLElement {
             /** @type {HTMLElement} */
             const toolbar = event.target;
             toolbar.insertAdjacentElement('beforebegin', contentText);
-        });
-
-        this.addEventListener('content-direction', event => {
-            event.stopPropagation();
-
-            event.target.parentElement.setAttribute('content-direction', event.detail);
         });
     }
 
