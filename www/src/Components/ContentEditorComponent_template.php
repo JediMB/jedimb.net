@@ -57,6 +57,17 @@ use App\Utils\CSSRenderer;
         &:not([contenteditable]) {
             cursor: pointer;
         }
+
+        &[data-placeholder]:empty {
+            &::before {
+                content: attr(data-placeholder);
+                opacity: 0.5;
+            }
+
+            &:focus::before {
+                content: attr(data-placeholder-focused);
+            }
+        }
     }
 
     content-toolbar {

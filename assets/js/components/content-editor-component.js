@@ -55,7 +55,6 @@ export default class ContentEditorComponent extends HTMLElement {
         this.addEventListener('content-text', event => {
             event.stopPropagation();
             const contentText = document.createElement(ContentEditorComponent.TEXT_NAME);
-            contentText.textContent = 'This is a text element';
 
             /** @type {HTMLElement} */
             const toolbar = event.target;
