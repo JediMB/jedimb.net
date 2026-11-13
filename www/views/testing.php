@@ -3,6 +3,7 @@
 namespace Views;
 
 use App\Components\ContentTimestampsComponent;
+use App\Components\ModalPopupComponent;
 use App\Enums\PageType;
 use App\Models\App\Page;
 use App\Services\ConfigurationService;
@@ -54,6 +55,7 @@ $links = !empty($links);
     </style>
 </head>
 <body>
+    <?= new ModalPopupComponent() ?>
     <main-wrapper class="mb-3 <?= $links ? 'grid-cols-sidebar-right' : null ?>">
         <main>
             <?php if ($page->title): ?>

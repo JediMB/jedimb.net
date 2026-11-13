@@ -65,7 +65,8 @@ import ContentEditorComponent from '/js/components/content-editor-component.js';
 import GalleryManagerComponent from './components/gallery-manager.js';
 import ImageGalleryComponent from './components/image-gallery.js';
 import ImageManagerComponent from './components/image-manager.js'
-import ModalPopupContainer from './components/modal-popup.js';
+import ModalPopupComponent from '/js/components/modal-popup-component.js';
+import ModalPopupContainer from './components/modal-popup.js'; // Replace
 import PageSelectorComponent from '/js/components/page-selector-component.js';
 import PageStatsComponent from '/js/components/page-stats-component.js';
 import SiteConfigurationComponent from './components/admin/site-configuration-component.js';

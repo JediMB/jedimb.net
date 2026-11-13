@@ -6,6 +6,7 @@ use App\Components\AccountMenuComponent;
 use App\Components\ContentTimestampsComponent;
 use App\Components\CopyrightComponent;
 use App\Components\MastodonCommentsComponent;
+use App\Components\ModalPopupComponent;
 use App\Components\SocialLinksComponent;
 use App\Enums\PageType;
 use App\Models\App\Page;
@@ -62,6 +63,7 @@ $links = !empty($links);
     </style>
 </head>
 <body>
+    <?= new ModalPopupComponent() ?>
     <header>
         <header-container>
             <account-container>

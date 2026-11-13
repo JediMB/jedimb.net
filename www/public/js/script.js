@@ -7020,6 +7020,22 @@ class ImageManagerComponent extends HTMLElement {
 customElements.define('image-manager-component', ImageManagerComponent);
 
 
+/* IMPORT: /js/components/modal-popup-component.js */
+
+class ModalPopupComponent extends HTMLElement {
+    constructor() { super(); }
+
+    connectedCallback() {
+        document.documentElement.classList.add('disable-scrolling');
+    }
+
+    disconnectedCallback() {}
+}
+
+customElements.define('modal-popup-component', ModalPopupComponent);
+
+
+
 /* IMPORT: ./components/modal-popup.js */
 
 class ModalPopupContainer extends HTMLElement {
@@ -7075,7 +7091,7 @@ class ModalPopupContainer extends HTMLElement {
         this.#body.style.removeProperty('overflow');
     }
 }
-customElements.define('modal-popup-component', ModalPopupContainer);
+customElements.define('modal-popup-container', ModalPopupContainer); // Replace
 
 
 /* IMPORT: /js/components/page-selector-component.js */
