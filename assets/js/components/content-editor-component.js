@@ -158,7 +158,7 @@ export default class ContentEditorComponent extends HTMLElement {
     /** @param {MouseEvent|FocusEvent} event */
     #toolbarControl(event) {
         /** @type {HTMLElement} */
-        const target = event.target;
+        let target = event.target;
         const localName = target.localName;
 
         if (localName === ContentEditorComponent.TOOLBAR_NAME)
@@ -172,6 +172,10 @@ export default class ContentEditorComponent extends HTMLElement {
         if (!container) {
             console.error('No container found');
             return;
+        }
+
+        if (target !== container) {
+            target = Array.from(container.children).find(child => child.contains(target));
         }
 
         if (event.type.includes('mouse'))
