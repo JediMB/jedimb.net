@@ -2908,7 +2908,7 @@ class FullscreenImageElement extends HTMLElement {
                 position: fixed;
                 inset: 0;
                 background-color: #000;
-                z-index: 9999;
+                z-index: 999;
             }
 
             button {
