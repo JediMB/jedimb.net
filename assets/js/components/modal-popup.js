@@ -51,4 +51,4 @@ export default class ModalPopupContainer extends HTMLElement {
         this.#body.style.removeProperty('overflow');
     }
 }
-customElements.define('modal-popup-component', ModalPopupContainer);
+customElements.define('modal-popup-container', ModalPopupContainer);

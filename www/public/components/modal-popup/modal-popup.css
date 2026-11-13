@@ -1,4 +1,4 @@
-modal-popup-component {
+modal-popup-container {
     position: fixed;
     z-index: 9999;
     inset: 0;
