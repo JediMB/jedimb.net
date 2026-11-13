@@ -849,6 +849,17 @@ config-field-component {
     padding: var(--size-s) var(--size-m);
 }
 
+:focus-visible,
+:-moz-focusring {
+    outline: var(--clr-accent) double var(--size-s);
+}
+
+html.disable-scrolling {
+    margin: 0;
+    height: 100%;
+    overflow: hidden;
+}
+
 .invisible {
     visibility: hidden;
 }

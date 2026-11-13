@@ -6,6 +6,11 @@
 
 @import url('components.css');
 
+:focus-visible,
+:-moz-focusring {
+    outline: var(--clr-accent) double var(--size-s);
+}
+
 .invisible {
     visibility: hidden;
 }
