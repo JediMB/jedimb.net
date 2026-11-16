@@ -5987,7 +5987,7 @@ class ContentEditorComponent extends HTMLElement {
                     text: this.dataset.removeContainerYes,
                     type: 'warn',
                     callbackFn: () => {
-                        this.append(this.#toolbar);
+                        container.parentElement.append(this.#toolbar);
                         container.remove();
                     }
                 },
@@ -5995,7 +5995,7 @@ class ContentEditorComponent extends HTMLElement {
                     text: this.dataset.removeContainerKeepContents,
                     type: 'primary',
                     callbackFn: () => {
-                        this.append(this.#toolbar);
+                        container.parentElement.append(this.#toolbar);
                         container.replaceWith(...container.children);
                     }
                 }
