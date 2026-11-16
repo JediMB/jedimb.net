@@ -1,14 +1,17 @@
 import ContentContainerElement from "/js/custom-elements/content-editor/content-container-element.js";
+import ContentDividerElement from "/js/custom-elements/content-editor/content-divider-element.js";
 import ContentToolbarElement from "/js/custom-elements/content-editor/content-toolbar-element.js";
 import ContentTextElement from "/js/custom-elements/content-editor/content-text-element.js";
 import { modalPopupComponent } from "/js/components/modal-popup-component.js";
 
 export default class ContentEditorComponent extends HTMLElement {
     static CONTAINER_NAME = customElements.getName(ContentContainerElement);
+    static DIVIDER_NAME = customElements.getName(ContentDividerElement);
     static TOOLBAR_NAME = customElements.getName(ContentToolbarElement);
     static TEXT_NAME = customElements.getName(ContentTextElement);
 
     /** @type {ContentToolbarElement} */ #toolbar;
+    /** @type {ContentDividerElement} */ #divider;
     /** @type {HTMLElement} */ #previousTarget;
 
     constructor() { super(); }
@@ -18,6 +21,9 @@ export default class ContentEditorComponent extends HTMLElement {
 
         this.#toolbar = document.createElement(ContentEditorComponent.TOOLBAR_NAME);
         this.appendChild(this.#toolbar);
+
+        this.#divider = this.querySelector(ContentEditorComponent.DIVIDER_NAME)
+            ?? document.createElement(ContentEditorComponent.DIVIDER_NAME);
 
         this.addEventListener('mouseover', event => this.#toolbarControl(event));
         this.addEventListener('focusin', event => this.#toolbarControl(event));
@@ -78,6 +84,14 @@ export default class ContentEditorComponent extends HTMLElement {
             /** @type {HTMLElement} */
             const toolbar = event.target;
             toolbar.insertAdjacentElement('beforebegin', contentText);
+        });
+
+        this.addEventListener('content-divide', event => {
+            event.stopPropagation();
+
+            /** @type {HTMLElement} */
+            const toolbar = event.target;
+            toolbar.insertAdjacentElement('beforebegin', this.#divider);
         });
     }
 

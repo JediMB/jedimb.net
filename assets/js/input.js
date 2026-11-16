@@ -42,9 +42,10 @@ import tableModifiedApiService from '/js/services/api/table-modified-api.service
 import userApiService from '/js/services/api/user-api.service.js';
 
 /* Custom elements */
+import ContentContainerElement from '/js/custom-elements/content-editor/content-container-element.js';
+import ContentDividerElement from '/js/custom-elements/content-editor/content-divider-element.js';
 import ContentTextElement from '/js/custom-elements/content-editor/content-text-element.js';
 import ContentToolbarElement from '/js/custom-elements/content-editor/content-toolbar-element.js';
-import ContentContainerElement from '/js/custom-elements/content-editor/content-container-element.js';
 import DateTimeElement from '/js/custom-elements/date-time.element.js';
 import fullscreenImage from '/js/custom-elements/fullscreen-image.element.js';
 import ImgGalleryElement from '/js/custom-elements/img-gallery.element.js';

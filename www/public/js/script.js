@@ -2575,6 +2575,80 @@ const userApiService = new UserApiService();
 /* Custom elements */
 
 
+/* IMPORT: /js/custom-elements/content-editor/content-container-element.js */
+
+class ContentContainerElement extends HTMLElement {
+    constructor() { super(); }
+
+    connectedCallback() {
+        this.setAttribute('tabindex', '0');
+    }
+
+    disconnectedCallback() {}
+}
+
+customElements.define('content-container', ContentContainerElement);
+
+
+/* IMPORT: /js/custom-elements/content-editor/content-divider-element.js */
+
+class ContentDividerElement extends HTMLElement {
+    /** @type {ShadowRoot} */ #shadowRoot;
+    /** @type {HTMLSpanElement} */ #middle;
+
+    constructor() { super(); }
+
+    connectedCallback() {
+        if (this.#shadowRoot)
+            return;
+
+        this.#shadowRoot = this.attachShadow({ mode: 'closed' });
+
+        const container = document.createElement('div');
+
+        const first = document.createElement('span');
+        first.append(document.createElement('hr'));
+        this.#middle = document.createElement('span');
+        this.#middle.append(document.createElement('hr'));
+        const last = document.createElement('span');
+        last.append(document.createElement('hr'));
+
+        container.append(first, this.#middle, last);
+        this.#shadowRoot.append(container);
+
+        const css = new CSSStyleSheet();
+        css.replaceSync(`
+            div {
+                display: block flex;
+                flex-direction: row;
+                gap: 1em;
+                margin-inline: 1em;
+
+                & > * {
+                    flex-grow: 1;
+                }
+            }
+
+            hr {
+                border-width: var(--size-xs);
+                border-radius: var(--size-xxs);
+                border-style: double;
+                border-color: var(--clr-primary-dark) var(--clr-primary-dark) var(--clr-primary);
+            }
+        `);
+        this.#shadowRoot.adoptedStyleSheets.push(css);
+    }
+
+    disconnectedCallback() {}
+
+    setText(text) {
+        // TODO: Replace the contents of #middle with text or an HR element, depending on text falsiness
+    }
+}
+
+customElements.define('content-divider', ContentDividerElement);
+
+
 /* IMPORT: /js/custom-elements/content-editor/content-text-element.js */
 
 class ContentTextElement extends HTMLElement {
@@ -2628,17 +2702,7 @@ customElements.define('content-text', ContentTextElement);
 
 /* IMPORT: /js/custom-elements/content-editor/content-container-element.js */
 
-class ContentContainerElement extends HTMLElement {
-    constructor() { super(); }
 
-    connectedCallback() {
-        this.setAttribute('tabindex', '0');
-    }
-
-    disconnectedCallback() {}
-}
-
-customElements.define('content-container', ContentContainerElement);
 
 class ContentToolbarElement extends HTMLElement {
     static CONTAINER_NAME = customElements.getName(ContentContainerElement);
@@ -2648,6 +2712,7 @@ class ContentToolbarElement extends HTMLElement {
     /** @type {HTMLButtonElement} */ #btnRemove;
     /** @type {HTMLButtonElement} */ #btnDirection;
     /** @type {HTMLButtonElement} */ #btnText;
+    /** @type {HTMLButtonElement} */ #btnDivider;
 
     #svgCount = 0;
 
@@ -2681,6 +2746,9 @@ class ContentToolbarElement extends HTMLElement {
 
         this.#btnRemove = this.#attachNewSvgButton('Remove content box', '#svg-delete');
         this.#addClickEvent(this.#btnRemove, 'content-remove');
+
+        this.#btnDivider = this.#attachNewSvgButton('Content divider', '#svg-page-break');
+        this.#addClickEvent(this.#btnDivider, 'content-divide');
 
         const css = new CSSStyleSheet();
         const svgDisplay = `${Array(this.#svgCount).fill('').map((_, index) => `,
@@ -2773,15 +2841,11 @@ class ContentToolbarElement extends HTMLElement {
         this.#btnText.hidden = !inContainer;
         this.#btnDirection.hidden = !inContainer;
         this.#btnRemove.hidden = !inContainer;
+        this.#btnDivider.hidden = inContainer;
     }
 }
 
 customElements.define('content-toolbar', ContentToolbarElement);
-
-
-/* IMPORT: /js/custom-elements/content-editor/content-container-element.js */
-
-
 
 
 /* IMPORT: /js/custom-elements/date-time.element.js */
@@ -5742,6 +5806,11 @@ customElements.define('config-field-component', ConfigFieldComponent);
 
 
 
+/* IMPORT: /js/custom-elements/content-editor/content-divider-element.js */
+
+
+
+
 /* IMPORT: /js/custom-elements/content-editor/content-toolbar-element.js */
 
 
@@ -5936,10 +6005,12 @@ const modalPopupComponent = document.querySelector('modal-popup-component');
 
 class ContentEditorComponent extends HTMLElement {
     static CONTAINER_NAME = customElements.getName(ContentContainerElement);
+    static DIVIDER_NAME = customElements.getName(ContentDividerElement);
     static TOOLBAR_NAME = customElements.getName(ContentToolbarElement);
     static TEXT_NAME = customElements.getName(ContentTextElement);
 
     /** @type {ContentToolbarElement} */ #toolbar;
+    /** @type {ContentDividerElement} */ #divider;
     /** @type {HTMLElement} */ #previousTarget;
 
     constructor() { super(); }
@@ -5949,6 +6020,9 @@ class ContentEditorComponent extends HTMLElement {
 
         this.#toolbar = document.createElement(ContentEditorComponent.TOOLBAR_NAME);
         this.appendChild(this.#toolbar);
+
+        this.#divider = this.querySelector(ContentEditorComponent.DIVIDER_NAME)
+            ?? document.createElement(ContentEditorComponent.DIVIDER_NAME);
 
         this.addEventListener('mouseover', event => this.#toolbarControl(event));
         this.addEventListener('focusin', event => this.#toolbarControl(event));
@@ -6009,6 +6083,14 @@ class ContentEditorComponent extends HTMLElement {
             /** @type {HTMLElement} */
             const toolbar = event.target;
             toolbar.insertAdjacentElement('beforebegin', contentText);
+        });
+
+        this.addEventListener('content-divide', event => {
+            event.stopPropagation();
+
+            /** @type {HTMLElement} */
+            const toolbar = event.target;
+            toolbar.insertAdjacentElement('beforebegin', this.#divider);
         });
     }
 
