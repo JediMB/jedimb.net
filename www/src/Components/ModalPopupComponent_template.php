@@ -14,6 +14,7 @@ use App\Components\ModalPopupComponent;
             position: fixed;
             overflow: hidden;
             z-index: 9999;
+            pointer-events: all;
             display: block;
             inset: 0;
             backdrop-filter: blur(5px) brightness(30%);

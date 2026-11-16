@@ -1,14 +1,27 @@
 export default class ModalPopupComponent extends HTMLElement {
     /** @type {HTMLTemplateElement} */ #template;
+    /** @type {HTMLButtonElement[]} */ #focusTargets = [];
     /** @type {HTMLElement} */ #currentModal = null;
 
-    constructor() { super(); }
+    constructor() {
+        super();
+        this.#keydownCapture = this.#keydownCapture.bind(this);
+    }
 
     connectedCallback() {
         this.#template = this.querySelector('template');
     }
 
     disconnectedCallback() {}
+
+    close() {
+        this.#currentModal.querySelector('dialog')?.close();
+        this.#currentModal.remove();
+        this.#currentModal = null;
+        this.#focusTargets = [];
+        document.removeEventListener('keydown', this.#keydownCapture);
+        document.documentElement.classList.remove('disable-scrolling');
+    }
 
     /**
      * 
@@ -30,12 +43,13 @@ export default class ModalPopupComponent extends HTMLElement {
         /** @type {DocumentFragment} */
         const clone = this.#template.content.cloneNode(true);
         
-        const modal = clone.firstElementChild;
-        this.#currentModal = modal;
+        this.#currentModal = clone.firstElementChild;
 
-        const heading = modal.querySelector('h1');
-        const body = modal.querySelector('modal-body');
-        const buttonList = modal.querySelector('menu');
+        const dialog = this.#currentModal.querySelector('dialog');
+
+        const heading = dialog.querySelector('h1');
+        const body = dialog.querySelector('modal-body');
+        const buttonList = dialog.querySelector('menu');
 
         if (title)
             heading.textContent = title;
@@ -56,11 +70,12 @@ export default class ModalPopupComponent extends HTMLElement {
             );
         }
 
-        // TODO: Focus trap and the ability to cancel with Esc
+        this.#focusTargets = [ dialog, ...buttonList.querySelectorAll('button') ];
 
-        this.append(clone);
-        this.#currentModal.focus();
         document.documentElement.classList.add('disable-scrolling');
+        document.addEventListener('keydown', this.#keydownCapture);
+        this.append(clone);
+        dialog.focus();
     }
 
     /**
@@ -101,14 +116,60 @@ export default class ModalPopupComponent extends HTMLElement {
         }
 
         button.addEventListener('click', () => {
-            this.#currentModal.querySelector('dialog')?.close();
-            this.#currentModal.remove();
-            this.#currentModal = null;
-            document.documentElement.classList.remove('disable-scrolling');
+            this.close();
             callbackFn?.call(this);
         });
 
         return listItem;
+    }
+
+    /**
+     * @param {KeyboardEvent} event 
+     * @param {boolean} event.shiftKey
+     */
+    #focusTrap({ shiftKey }) {
+        if (!this.#focusTargets?.length)
+            return;
+
+        if (this.#focusTargets.length === 1) {
+            this.#focusTargets[0].focus();
+            return;
+        }
+
+        const activeIndex = this.#focusTargets.indexOf(document.activeElement);
+
+        if (shiftKey) {
+            if (activeIndex < 1) {
+                this.#focusTargets.at(-1).focus();
+                return;
+            }
+
+            this.#focusTargets.at(activeIndex-1).focus();
+            return;
+        }
+
+        if (activeIndex === this.#focusTargets.length - 1) {
+            this.#focusTargets[0].focus();
+            return;
+        }
+
+        this.#focusTargets[activeIndex + 1].focus();
+        return;
+    }
+
+    /** @param {KeyboardEvent} event */
+    #keydownCapture = (event) => {
+        switch (event.key) {
+            case 'Tab':
+                event.preventDefault();
+                this.#focusTrap(event);
+                return;
+
+            case 'Escape':
+                event.preventDefault();
+                this.close();
+                return;
+        }
     }
 }
 
