@@ -9,7 +9,12 @@ use App\Utils\CSSRenderer;
 
 ?>
 
-<content-editor-component></content-editor-component>
+<content-editor-component
+    data-remove-container-prompt="Are you sure you want to remove this container and all its contents?"
+    data-remove-container-yes="Yes"
+    data-remove-container-no="No"
+    data-remove-container-keep-contents="Keep contents"
+></content-editor-component>
 <div></div>
 <div></div>
 
