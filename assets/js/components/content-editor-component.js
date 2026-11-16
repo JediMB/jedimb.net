@@ -65,7 +65,7 @@ export default class ContentEditorComponent extends HTMLElement {
                     type: 'primary',
                     callbackFn: () => {
                         this.append(this.#toolbar);
-                        container.replaceWith(container.children);
+                        container.replaceWith(...container.children);
                     }
                 }
             )
