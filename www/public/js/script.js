@@ -2665,32 +2665,41 @@ class ContentTextElement extends HTMLElement {
 
         this.addEventListener('click', event => {
             event.stopPropagation();
-            this.setAttribute('contenteditable', 'true');
+            this.#activate();
         });
 
         this.addEventListener('keypress', event => {
             event.stopPropagation();
-
-            if (!this.hasAttribute('contenteditable'))
-                this.setAttribute('contenteditable', 'true');
+            this.#activate(true);
         })
 
         this.addEventListener('blur', event => {
             event.stopPropagation();
-
-            if (!this.hasAttribute('contenteditable'))
-                return;
-
-            if (this.textContent.trim() !== '') {
-                this.removeAttribute('contenteditable');
-                return;
-            }
-
-            this.remove();
+            this.#deactivate();
         });
     }
 
     disconnectedCallback() {}
+
+    #activate(keyboardActivation = false) {
+        const contenteditable = this.getAttribute('contenteditable');
+        if (contenteditable === 'true' || contenteditable === '')
+            return;
+
+        this.setAttribute('contenteditable', 'true');
+    }
+
+    #deactivate() {
+        if (!this.hasAttribute('contenteditable'))
+            return;
+
+        if (this.textContent.trim() === '') {
+            this.remove();
+            return;
+        }
+
+        this.removeAttribute('contenteditable');
+    }
 }
 
 customElements.define('content-text', ContentTextElement);
