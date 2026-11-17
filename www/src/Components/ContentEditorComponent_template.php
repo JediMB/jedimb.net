@@ -51,6 +51,10 @@ use App\Utils\CSSRenderer;
 
             & > content-toolbar { flex-direction: column; }
         }
+
+        &:has(> content-toolbar) {
+            background-color: var(--clr-accent);
+        }
     }
 
     content-text {
