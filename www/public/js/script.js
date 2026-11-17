@@ -2714,8 +2714,6 @@ class ContentToolbarElement extends HTMLElement {
     /** @type {HTMLButtonElement} */ #btnText;
     /** @type {HTMLButtonElement} */ #btnDivider;
 
-    #svgCount = 0;
-
     constructor() { super(); }
 
     connectedCallback() {
@@ -2726,33 +2724,40 @@ class ContentToolbarElement extends HTMLElement {
 
         this.#shadowRoot = this.attachShadow({ mode: 'closed'});
         
-        this.#btnContainer = this.#attachNewSvgButton('Add content box', '#svg-add-box');
+        this.#btnContainer = this.#attachNewSvgButton({title: 'Add content box', symbolId: '#svg-add-box'});
         this.#addClickEvent(this.#btnContainer, 'content-add');
 
-        this.#btnText = this.#attachNewSvgButton('Add text', '#svg-text-snippet');
+        this.#btnText = this.#attachNewSvgButton({title: 'Add text', symbolId: '#svg-text-snippet'});
         this.#addClickEvent(this.#btnText, 'content-text');
 
-        this.#btnDirection = this.#attachNewSvgButton('Toggle content flow direction',
-            '#svg-content-columns', '#svg-content-rows'
+        this.#btnDirection = this.#attachNewSvgButton(
+            {title: 'Change content to side-by-side', symbolId: '#svg-content-columns'},
+            {title: 'Change content to above-and-below', symbolId: '#svg-content-rows'}
         );
         this.#addClickEvent(this.#btnDirection, 'content-direction', () => {
-            const [ newMode, detail ] = this.#btnDirection.dataset.mode === '2'
-                ? [ 1, 'column' ]
-                : [ 2, 'row' ];
+            const wasActive = this.#btnDirection.dataset.direction === 'row';
+            
+            this.#btnDirection.classList.toggle('active', !wasActive);
 
-            this.#btnDirection.dataset.mode = newMode;
-            return detail;
+            const newMode = wasActive ? 'column' : 'row';
+            this.#btnDirection.dataset.direction = newMode;
+
+            const newTitle = wasActive
+                ? this.#btnDirection.dataset.titleInactive
+                : this.#btnDirection.dataset.titleActive;
+            this.#btnDirection.title = newTitle;
+            this.#btnDirection.ariaLabel = newTitle;
+
+            return newMode;
         });
 
-        this.#btnRemove = this.#attachNewSvgButton('Remove content box', '#svg-delete');
+        this.#btnRemove = this.#attachNewSvgButton({title: 'Remove content box', symbolId: '#svg-delete'});
         this.#addClickEvent(this.#btnRemove, 'content-remove');
 
-        this.#btnDivider = this.#attachNewSvgButton('Content divider', '#svg-page-break');
+        this.#btnDivider = this.#attachNewSvgButton({title: 'Content divider', symbolId: '#svg-page-break'});
         this.#addClickEvent(this.#btnDivider, 'content-divide');
 
         const css = new CSSStyleSheet();
-        const svgDisplay = `${Array(this.#svgCount).fill('').map((_, index) => `,
-            &[data-mode="${index+1}"] svg:nth-of-type(${index+1})`).join('')}`;
 
         css.replaceSync(`
             [hidden] {
@@ -2766,11 +2771,9 @@ class ContentToolbarElement extends HTMLElement {
                 align-items: center;
                 cursor: pointer;
 
-                & svg {
+                &.active .inactive-content,
+                &:not(.active) .active-content {
                     display: none;
-                }
-                &:not([data-mode]) svg:first-of-type${svgDisplay} {
-                    display: initial;
                 }
             }
         `);
@@ -2795,44 +2798,60 @@ class ContentToolbarElement extends HTMLElement {
     }
 
     /**
-     * @param {string} title
-     * @param {...string} symbolIds 
+     * @param {{title: string, symbolId: string}} defaultState
+     * @param {{title: string, symbolId: string}} activeState
      * @returns {HTMLButtonElement}
      */
-    #attachNewSvgButton(title, ...symbolIds) {
+    #attachNewSvgButton(defaultState, activeState = null) {
         const button = document.createElement('button');
         button.type = 'button';
-        button.title = title;
-        button.ariaLabel = title;
+        button.title = defaultState.title;
+        button.ariaLabel = defaultState.title;
 
-        let svgCount = 0;
+        const defaultSvg = this.#symbolToSvg(defaultState.symbolId)
+        const svgs = [ defaultSvg ];
 
-        for (const symbolId of symbolIds) {
-            /** @type {SVGSymbolElement} */
-            const symbol = document.querySelector(
-                symbolId[0] === '#' ? symbolId : `#${symbolId}`
-            );
+        if (activeState?.title && activeState?.symbolId) {
+            const activeSvg = this.#symbolToSvg(activeState.symbolId);
 
-            if (symbol.localName !== 'symbol')
-                continue;
+            if (activeSvg) {
+                svgs.push(activeSvg);
+                defaultSvg.classList.add('inactive-content');
+                activeSvg.classList.add('active-content');
+            }
 
-            const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-            svg.setAttribute('width', '2em');
-            svg.setAttribute('height', '2em');
-
-            for (const {localName, value} of symbol.attributes)
-                localName !== 'id' && svg.setAttribute(localName, value);
-
-            svg.innerHTML = symbol.innerHTML;
-
-            button.appendChild(svg);
-            svgCount++;
+            button.dataset.titleActive = activeState.title;
+            button.dataset.titleInactive = defaultState.title;
         }
 
-        this.#svgCount = Math.max(this.#svgCount, svgCount);
-
-        this.#shadowRoot.appendChild(button);
+        button.append(...svgs);
+        this.#shadowRoot.append(button);
         return button;
+    }
+
+    /**
+     * @param {string} symbolId 
+     * @returns {SVGSVGElement|null}
+     */
+    #symbolToSvg(symbolId) {
+        /** @type {SVGSymbolElement} */
+        const symbol = document.querySelector(
+            symbolId[0] === '#' ? symbolId : `#${symbolId}`
+        );
+
+        if (symbol.localName !== 'symbol')
+            return null;
+
+        const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+        svg.setAttribute('width', '2em');
+        svg.setAttribute('height', '2em');
+
+        for (const {localName, value} of symbol.attributes)
+            localName !== 'id' && svg.setAttribute(localName, value);
+
+        svg.innerHTML = symbol.innerHTML;
+
+        return svg;
     }
 
     #updateVisibility() {
