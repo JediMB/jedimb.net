@@ -321,6 +321,7 @@ body {
     --clr-secondary: hsl(var(--hsl-bluelotus-500));
     --clr-tertiary: hsl(var(--hsl-lighgreenishblue-500));
     --clr-accent: hsl(var(--hsl-sandyyellow-500));
+    --clr-accent-dark: hsl(var(--hsl-sandyyellow-700));
 
     --clr-safe-light: hsl(120, 100%, 80%);
     --clr-safe: hsl(120, 100%, 30%);
