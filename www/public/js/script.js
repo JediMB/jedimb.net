@@ -2838,7 +2838,6 @@ class ContentToolbarElement extends HTMLElement {
     #updateVisibility() {
         const inContainer = this.parentElement.localName === ContentToolbarElement.CONTAINER_NAME;
 
-        this.#btnText.hidden = !inContainer;
         this.#btnDirection.hidden = !inContainer;
         this.#btnRemove.hidden = !inContainer;
         this.#btnDivider.hidden = inContainer;
@@ -6029,24 +6028,22 @@ class ContentEditorComponent extends HTMLElement {
 
         this.addEventListener('content-add', event => {
             event.stopPropagation();
-            const contentDiv = document.createElement(ContentEditorComponent.CONTAINER_NAME);
+            const container = document.createElement(ContentEditorComponent.CONTAINER_NAME);
             
-            /** @type {HTMLElement} */
-            const toolbar = event.target;
-            toolbar.insertAdjacentElement('beforebegin', contentDiv);
+            this.#toolbar.insertAdjacentElement('beforebegin', container);
         });
 
         this.addEventListener('content-direction', event => {
             event.stopPropagation();
 
-            event.target.parentElement.setAttribute('content-direction', event.detail);
+            this.#toolbar.parentElement.setAttribute('content-direction', event.detail);
         });
 
         this.addEventListener('content-remove', event => {
             event.stopPropagation();
 
             /** @type {HTMLElement} */
-            const container = event.target.parentElement;
+            const container = this.#toolbar.parentElement;
 
             if (container === this || !this.contains(container)) {
                 console.error('Trying to remove something out of bounds');
@@ -6079,18 +6076,21 @@ class ContentEditorComponent extends HTMLElement {
         this.addEventListener('content-text', event => {
             event.stopPropagation();
             const contentText = document.createElement(ContentEditorComponent.TEXT_NAME);
+            
+            if (this.#toolbar.parentElement === this) {
+                const container = document.createElement(ContentEditorComponent.CONTAINER_NAME);
+                container.append(contentText);
+                this.#toolbar.insertAdjacentElement('beforebegin', container);
+                return;
+            }
 
-            /** @type {HTMLElement} */
-            const toolbar = event.target;
-            toolbar.insertAdjacentElement('beforebegin', contentText);
+            this.#toolbar.insertAdjacentElement('beforebegin', contentText);
         });
 
         this.addEventListener('content-divide', event => {
             event.stopPropagation();
 
-            /** @type {HTMLElement} */
-            const toolbar = event.target;
-            toolbar.insertAdjacentElement('beforebegin', this.#divider);
+            this.#toolbar.insertAdjacentElement('beforebegin', this.#divider);
         });
     }
 

@@ -134,7 +134,6 @@ export default class ContentToolbarElement extends HTMLElement {
     #updateVisibility() {
         const inContainer = this.parentElement.localName === ContentToolbarElement.CONTAINER_NAME;
 
-        this.#btnText.hidden = !inContainer;
         this.#btnDirection.hidden = !inContainer;
         this.#btnRemove.hidden = !inContainer;
         this.#btnDivider.hidden = inContainer;
