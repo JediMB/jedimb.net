@@ -2659,7 +2659,10 @@ class ContentTextElement extends HTMLElement {
     /** @type {HTMLElement} */ #content;
     /** @type {HTMLElement} */ #toolbar;
 
-    constructor() { super(); }
+    constructor() {
+        super();
+        this.#handleKeyboardShortcuts = this.#handleKeyboardShortcuts.bind(this);
+    }
 
     connectedCallback() {
         if (this.#shadowRoot)
@@ -2749,6 +2752,7 @@ class ContentTextElement extends HTMLElement {
             return;
 
         content.setAttribute('contenteditable', 'true');
+        content.addEventListener('keydown', this.#handleKeyboardShortcuts);
     }
 
 
@@ -2796,6 +2800,105 @@ class ContentTextElement extends HTMLElement {
         }
 
         content.removeAttribute('contenteditable');
+        content.removeEventListener('keydown', this.#handleKeyboardShortcuts);
+    }
+
+    /**
+     * @param {Node} node
+     * @param {string} localName 
+     * @returns {HTMLElement|null}
+     */
+    #findMatchingParent(node, localName) {
+        while (node && node.localName !== localName) {
+            node = node.parentElement;
+        }
+
+        return node;
+    }
+
+    /**
+     * @param {HTMLElement} parentElement 
+     * @returns {Node|null}
+     */
+    #findFirstTextChild(parentElement) {
+        for (const child of parentElement.childNodes) {
+            if (child.nodeType === Node.TEXT_NODE)
+                return child;
+
+            const descendant = this.#findFirstTextChild(child);
+            if (descendant)
+                return descendant;
+        }
+
+        return null;
+    }
+
+    /**
+     * @param {Selection} selection 
+     * @param {string} localName 
+     */
+    #formatWord(selection, localName) {
+        selection.modify('extend', 'backward', 'word');
+        const newOffset = selection.toString().length;
+        selection.collapseToStart();
+        selection.modify('extend', 'forward', 'word');
+
+        const newNode = document.createElement(localName);
+        const range = document.createRange();
+        range.setStart(selection.anchorNode, selection.anchorOffset);
+        range.setEnd(selection.focusNode, selection.focusOffset);
+        range.surroundContents(newNode);
+        
+        newNode.normalize();
+        const textNode = this.#findFirstTextChild(newNode);
+        if (textNode)
+            selection.setPosition(textNode, newOffset);
+    }
+
+    /** @param {string} localName  */
+    #handleFormatting(localName) {
+        const selection = getSelection();
+
+        const anchorMatch = this.#findMatchingParent(selection.anchorNode, localName);
+        const focusMatch = this.#findMatchingParent(selection.focusNode, localName);
+
+        if (selection.isCollapsed) {
+            if (anchorMatch) {
+                const node = selection.anchorNode;
+                const offset = selection.anchorOffset;
+                anchorMatch.replaceWith(...anchorMatch.childNodes);
+                selection.setPosition(node, offset);
+                return;
+            }
+
+            this.#formatWord(selection, localName);
+            return;
+        }
+
+    }
+
+    /** @param {KeyboardEvent} event  */
+    #handleKeyboardShortcuts = (event) => {
+        if (!event.ctrlKey)
+            return;
+
+        if (event.shiftKey || event.altKey || event.metaKey)
+            return;
+
+        const key = event.key.toLowerCase();
+
+        switch (key) {
+            case 'b':
+            case 'i':
+            case 'u':
+                event.preventDefault();
+                event.stopPropagation();
+                this.#handleFormatting(key);
+                break;
+
+            default:
+                return;
+        }
     }
 
     /**
@@ -2891,6 +2994,14 @@ class ContentToolbarElement extends HTMLElement {
         const css = new CSSStyleSheet();
 
         css.replaceSync(`
+            :host {
+                display: block flex;
+                width: fit-content;
+                height: fit-content;
+                padding: var(--size-s);
+                gap: var(--size-xs);
+            }
+
             [hidden] {
                 display: none;
             }

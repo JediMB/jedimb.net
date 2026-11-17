@@ -14,6 +14,7 @@ use App\Utils\CSSRenderer;
     data-remove-container-yes="Yes"
     data-remove-container-no="No"
     data-remove-container-keep-contents="Keep contents">
+    <content-container><content-text></content-text></content-container>
 </content-editor-component>
 <div></div>
 <div></div>
