@@ -2657,6 +2657,7 @@ class ContentTextElement extends HTMLElement {
 
     /** @type {ShadowRoot} */ #shadowRoot;
     /** @type {HTMLElement} */ #content;
+    /** @type {HTMLElement} */ #toolbar;
 
     constructor() { super(); }
 
@@ -2690,6 +2691,13 @@ class ContentTextElement extends HTMLElement {
             this.#deactivate();
         });
 
+        this.#toolbar = document.createElement('text-toolbar');
+        this.#shadowRoot.append(this.#toolbar);
+
+        this.#attachNewSvgButton({title: 'Bold', symbolId: '#svg-text-bold'});
+        this.#attachNewSvgButton({title: 'Italics', symbolId: '#svg-text-italics'});
+        this.#attachNewSvgButton({title: 'Underline', symbolId: '#svg-text-underline'});
+
         const css = new CSSStyleSheet();
         css.replaceSync(`
             text-content:empty {
@@ -2704,6 +2712,27 @@ class ContentTextElement extends HTMLElement {
             }
 
             text-content:not([contenteditable]) {
+                cursor: pointer;
+            }
+
+            text-toolbar {
+                display: none;
+                width: fit-content;
+                height: fit-content;
+                padding: var(--size-s);
+                gap: var(--size-xs);
+            }
+            
+            text-toolbar:focus-within,
+            text-content:focus-within + text-toolbar {
+                display: block flex;
+            }
+
+            button {
+                display: inline flex;
+                flex-direction: row;
+                justify-content: center;
+                align-items: center;
                 cursor: pointer;
             }
         `);
@@ -2722,6 +2751,39 @@ class ContentTextElement extends HTMLElement {
         content.setAttribute('contenteditable', 'true');
     }
 
+
+    /**
+     * @param {{title: string, symbolId: string}} defaultState
+     * @param {{title: string, symbolId: string}} activeState
+     * @returns {HTMLButtonElement}
+     */
+    #attachNewSvgButton(defaultState, activeState = null) {
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.title = defaultState.title;
+        button.ariaLabel = defaultState.title;
+
+        const defaultSvg = this.#symbolToSvg(defaultState.symbolId)
+        const svgs = [ defaultSvg ];
+
+        if (activeState?.title && activeState?.symbolId) {
+            const activeSvg = this.#symbolToSvg(activeState.symbolId);
+
+            if (activeSvg) {
+                svgs.push(activeSvg);
+                defaultSvg.classList.add('inactive-content');
+                activeSvg.classList.add('active-content');
+            }
+
+            button.dataset.titleActive = activeState.title;
+            button.dataset.titleInactive = defaultState.title;
+        }
+
+        button.append(...svgs);
+        this.#toolbar.append(button);
+        return button;
+    }
+
     #deactivate() {
         const content = this.#content;
 
@@ -2734,6 +2796,31 @@ class ContentTextElement extends HTMLElement {
         }
 
         content.removeAttribute('contenteditable');
+    }
+
+    /**
+     * @param {string} symbolId 
+     * @returns {SVGSVGElement|null}
+     */
+    #symbolToSvg(symbolId) {
+        /** @type {SVGSymbolElement} */
+        const symbol = document.querySelector(
+            symbolId[0] === '#' ? symbolId : `#${symbolId}`
+        );
+
+        if (symbol.localName !== 'symbol')
+            return null;
+
+        const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+        svg.setAttribute('width', '2em');
+        svg.setAttribute('height', '2em');
+
+        for (const {localName, value} of symbol.attributes)
+            localName !== 'id' && svg.setAttribute(localName, value);
+
+        svg.innerHTML = symbol.innerHTML;
+
+        return svg;
     }
 }
 
