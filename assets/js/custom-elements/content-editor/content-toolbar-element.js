@@ -56,6 +56,14 @@ export default class ContentToolbarElement extends HTMLElement {
         const css = new CSSStyleSheet();
 
         css.replaceSync(`
+            :host {
+                display: block flex;
+                width: fit-content;
+                height: fit-content;
+                padding: var(--size-s);
+                gap: var(--size-xs);
+            }
+
             [hidden] {
                 display: none;
             }

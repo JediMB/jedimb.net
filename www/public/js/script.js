@@ -2656,7 +2656,7 @@ class ContentTextElement extends HTMLElement {
     static PLACEHOLDER_FOCUS_TEXT = 'Start typing to input text...';
 
     /** @type {ShadowRoot} */ #shadowRoot;
-    /** @type {HTMLDivElement} */ #content;
+    /** @type {HTMLElement} */ #content;
 
     constructor() { super(); }
 
@@ -2666,7 +2666,7 @@ class ContentTextElement extends HTMLElement {
 
         this.#shadowRoot = this.attachShadow({mode: 'closed'});
 
-        const content = document.createElement('div');
+        const content = document.createElement('text-content');
         content.setAttribute('tabindex', '0');
         this.#content = content;
         this.#shadowRoot.append(content)
@@ -2692,7 +2692,7 @@ class ContentTextElement extends HTMLElement {
 
         const css = new CSSStyleSheet();
         css.replaceSync(`
-            :host > :empty {
+            text-content:empty {
                 &::before {
                     content: attr(data-placeholder);
                     opacity: 0.5;
@@ -2701,6 +2701,10 @@ class ContentTextElement extends HTMLElement {
                 &:focus::before {
                     content: attr(data-placeholder-focused);
                 }
+            }
+
+            text-content:not([contenteditable]) {
+                cursor: pointer;
             }
         `);
         this.#shadowRoot.adoptedStyleSheets.push(css);

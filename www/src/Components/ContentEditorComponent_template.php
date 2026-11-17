@@ -58,18 +58,6 @@ use App\Utils\CSSRenderer;
         min-height: 1em;
         min-width: 1em;
         padding: 1em;
-
-        &:not([contenteditable]) {
-            cursor: pointer;
-        }
-    }
-
-    content-toolbar {
-        display: block flex;
-        width: fit-content;
-        height: fit-content;
-        padding: var(--size-s);
-        gap: var(--size-xs);
     }
 
     content-editor-component {
@@ -85,15 +73,8 @@ use App\Utils\CSSRenderer;
             }
         }
 
-        & content-text[data-placeholder]:empty {
-            &::before {
-                content: attr(data-placeholder);
-                opacity: 0.5;
-            }
-
-            &:focus::before {
-                content: attr(data-placeholder-focused);
-            }
+        & content-text {
+            border: 1px dashed blue;
         }
     }
 CSS) ?>
