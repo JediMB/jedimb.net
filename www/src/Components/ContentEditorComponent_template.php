@@ -42,7 +42,6 @@ use App\Utils\CSSRenderer;
         min-height: 1em;
         min-width: 1em;
         padding: 1em;
-        border: 1px dashed red;
 
         & > content-toolbar { flex-direction: row; }
         
@@ -52,9 +51,6 @@ use App\Utils\CSSRenderer;
             & > content-toolbar { flex-direction: column; }
         }
 
-        &:has(> content-toolbar) {
-            background-color: var(--clr-accent);
-        }
     }
 
     content-text {
@@ -66,8 +62,30 @@ use App\Utils\CSSRenderer;
         &:not([contenteditable]) {
             cursor: pointer;
         }
+    }
 
-        &[data-placeholder]:empty {
+    content-toolbar {
+        display: block flex;
+        width: fit-content;
+        height: fit-content;
+        padding: var(--size-s);
+        gap: var(--size-xs);
+    }
+
+    content-editor-component {
+        & content-container {
+            border: 1px dashed red;
+
+            &:has(> content-toolbar) {
+                background-color: var(--clr-accent);
+
+                & content-container {
+                    background-color: var(--clr-accent-dark);
+                }
+            }
+        }
+
+        & content-text[data-placeholder]:empty {
             &::before {
                 content: attr(data-placeholder);
                 opacity: 0.5;
@@ -77,13 +95,5 @@ use App\Utils\CSSRenderer;
                 content: attr(data-placeholder-focused);
             }
         }
-    }
-
-    content-toolbar {
-        display: block flex;
-        width: fit-content;
-        height: fit-content;
-        padding: var(--size-s);
-        gap: var(--size-xs);
     }
 CSS) ?>
