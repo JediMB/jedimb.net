@@ -8,7 +8,7 @@ export default class ContentTextElement extends HTMLElement {
 
     constructor() {
         super();
-        this.#handleKeyboardShortcuts = this.#handleKeyboardShortcuts.bind(this);
+        this.#handleKeyboardCommands = this.#handleKeyboardCommands.bind(this);
     }
 
     connectedCallback() {
@@ -91,6 +91,18 @@ export default class ContentTextElement extends HTMLElement {
 
     disconnectedCallback() {}
 
+    /** @param {DocumentFragment|null} content  */
+    appendDocumentFragment(content) {
+        if (!content)
+            return;
+
+        this.#content.append(content);
+    }
+
+    focusWithin() {
+        this.#content.focus();
+    }
+
     #activate(keyboardActivation = false) {
         const content = this.#content;
 
@@ -99,7 +111,7 @@ export default class ContentTextElement extends HTMLElement {
             return;
 
         content.setAttribute('contenteditable', 'true');
-        content.addEventListener('keydown', this.#handleKeyboardShortcuts);
+        content.addEventListener('keydown', this.#handleKeyboardCommands);
     }
 
 
@@ -147,7 +159,19 @@ export default class ContentTextElement extends HTMLElement {
         }
 
         content.removeAttribute('contenteditable');
-        content.removeEventListener('keydown', this.#handleKeyboardShortcuts);
+        content.removeEventListener('keydown', this.#handleKeyboardCommands);
+    }
+
+
+    /**
+     * @param {'new'|'previous'|'next'} type  
+     * @param {DocumentFragment} [content=null] 
+     */
+    #dispatchParagraphEvent(type, content = null) {
+        this.dispatchEvent(new CustomEvent('content-paragraph', {
+            bubbles: true,
+            detail: { type, ...(type === 'new' ? {content} : {}) }
+        }));
     }
 
     /**
@@ -225,7 +249,10 @@ export default class ContentTextElement extends HTMLElement {
     }
 
     /** @param {KeyboardEvent} event  */
-    #handleKeyboardShortcuts = (event) => {
+    #handleKeyboardCommands = (event) => {
+        if (this.#interceptedParagraphBreak(event))
+            return;
+
         if (!event.ctrlKey)
             return;
 
@@ -246,6 +273,31 @@ export default class ContentTextElement extends HTMLElement {
             default:
                 return;
         }
+    }
+
+    /**
+     * @param {KeyboardEvent} event 
+     * @returns {boolean}
+     */
+    #interceptedParagraphBreak(event) {
+        if (event.key !== 'Enter' && event.key !== 'Return')
+            return false;
+
+        if (event.ctrlKey || event.altKey || event.shiftKey || event.metaKey)
+            return false;
+
+        event.preventDefault();
+        event.stopPropagation();
+
+        const range = getSelection().getRangeAt(0);
+
+        if (!range.collapsed)
+            range.deleteContents();
+
+        range.setEnd(this.#content, this.#content.childNodes.length);
+        this.#dispatchParagraphEvent('new', range.extractContents());
+
+        return true;
     }
 
     /**

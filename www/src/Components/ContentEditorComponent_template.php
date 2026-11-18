@@ -74,9 +74,5 @@ use App\Utils\CSSRenderer;
                 }
             }
         }
-
-        & content-text {
-            border: 1px dashed blue;
-        }
     }
 CSS) ?>

@@ -90,6 +90,24 @@ export default class ContentEditorComponent extends HTMLElement {
             this.#toolbar.insertAdjacentElement('beforebegin', contentText);
         });
 
+        this.addEventListener('content-paragraph',
+            /** @param {CustomEvent<{ type: 'new'|'previous'|'next', content: DocumentFragment|null }>} event */
+            event => {
+                /** @type {ContentTextElement} */
+                const textElement = event.target;
+
+                switch (event.detail.type) {
+                    case 'new':
+                        /** @type {ContentTextElement} */
+                        const newText = document.createElement(ContentEditorComponent.TEXT_NAME);
+                        textElement.after(newText);
+                        newText.focusWithin();
+                        newText.appendDocumentFragment(event.detail.content);
+                        break;
+                }
+            }
+        );
+
         this.addEventListener('content-divide', event => {
             event.stopPropagation();
 
