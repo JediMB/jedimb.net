@@ -24,6 +24,7 @@ export default class ContentEditorComponent extends HTMLElement {
 
         this.#divider = this.querySelector(ContentEditorComponent.DIVIDER_NAME)
             ?? document.createElement(ContentEditorComponent.DIVIDER_NAME);
+        this.#divider.setText(this.dataset.dividerText);
 
         this.addEventListener('mouseover', event => this.#toolbarControl(event));
         this.addEventListener('focusin', event => this.#toolbarControl(event));

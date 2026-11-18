@@ -2592,11 +2592,22 @@ customElements.define('content-container', ContentContainerElement);
 
 /* IMPORT: /js/custom-elements/content-editor/content-divider-element.js */
 
+
+
+/* IMPORT: /js/utilities/emitter.js */
+
+
+
 class ContentDividerElement extends HTMLElement {
     /** @type {ShadowRoot} */ #shadowRoot;
-    /** @type {HTMLSpanElement} */ #middle;
 
-    constructor() { super(); }
+    #middle;
+
+    constructor() {
+        super();
+        this.#middle = document.createElement('span');
+        this.#middle.append(document.createElement('hr'));
+    }
 
     connectedCallback() {
         if (this.#shadowRoot)
@@ -2608,23 +2619,28 @@ class ContentDividerElement extends HTMLElement {
 
         const first = document.createElement('span');
         first.append(document.createElement('hr'));
-        this.#middle = document.createElement('span');
-        this.#middle.append(document.createElement('hr'));
+
         const last = document.createElement('span');
         last.append(document.createElement('hr'));
 
         container.append(first, this.#middle, last);
         this.#shadowRoot.append(container);
-
+        
         const css = new CSSStyleSheet();
         css.replaceSync(`
+            :host {
+                -webkit-user-select: none;
+                -ms-user-select: none;
+                user-select: none;
+            }
+
             div {
                 display: block flex;
                 flex-direction: row;
                 gap: 1em;
                 margin-inline: 1em;
 
-                & > * {
+                & > :has(hr) {
                     flex-grow: 1;
                 }
             }
@@ -2641,8 +2657,14 @@ class ContentDividerElement extends HTMLElement {
 
     disconnectedCallback() {}
 
+    /** @param {string} text  */
     setText(text) {
-        // TODO: Replace the contents of #middle with text or an HR element, depending on text falsiness
+        if (text?.length) {
+            this.#middle.textContent = text;
+            return;
+        }
+
+        this.#middle.replaceChildren(document.createElement('hr'));
     }
 }
 
@@ -6283,6 +6305,7 @@ class ContentEditorComponent extends HTMLElement {
 
         this.#divider = this.querySelector(ContentEditorComponent.DIVIDER_NAME)
             ?? document.createElement(ContentEditorComponent.DIVIDER_NAME);
+        this.#divider.setText(this.dataset.dividerText);
 
         this.addEventListener('mouseover', event => this.#toolbarControl(event));
         this.addEventListener('focusin', event => this.#toolbarControl(event));
