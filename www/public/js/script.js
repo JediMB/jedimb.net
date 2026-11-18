@@ -2890,12 +2890,11 @@ class ContentTextElement extends HTMLElement {
         selection.modify('extend', 'forward', 'word');
 
         const newNode = document.createElement(localName);
-        const range = document.createRange();
-        range.setStart(selection.anchorNode, selection.anchorOffset);
-        range.setEnd(selection.focusNode, selection.focusOffset);
-        range.surroundContents(newNode);
+        const range = selection.getRangeAt(0);
         
+        range.surroundContents(newNode);
         newNode.normalize();
+        
         const textNode = this.#findFirstTextChild(newNode);
         if (textNode)
             selection.setPosition(textNode, newOffset);
