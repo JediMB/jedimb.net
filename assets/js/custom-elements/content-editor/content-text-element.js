@@ -303,8 +303,10 @@ export default class ContentTextElement extends HTMLElement {
             this.#content.append(afterContent);
             return;
         }
-        
-        
+
+        // If all text nodes in range have matching ancestor, unformat them
+
+        // If some text nodes in range do not having matching ancestor, format them
     }
 
     /** @param {KeyboardEvent} event  */
