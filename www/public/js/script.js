@@ -2835,6 +2835,10 @@ class ContentTextElement extends HTMLElement {
 
         content.removeAttribute('contenteditable');
         content.normalize();
+        content.querySelectorAll('*').forEach(element => {
+            if (!element?.textContent.length)
+                element?.remove();
+        });
         content.removeEventListener('keydown', this.#handleKeyboardCommands);
     }
 
@@ -2889,15 +2893,21 @@ class ContentTextElement extends HTMLElement {
         const newOffset = selection.toString().length;
         selection.collapseToStart();
         selection.modify('extend', 'forward', 'word');
+        const textLength = selection.toString().length;
+
+        const range = selection.getRangeAt(0);
+        const content = range.extractContents();
+
+        content.querySelectorAll(localName)
+            .forEach(match => match.replaceWith(...match.childNodes));
+        content.normalize();
 
         const newNode = document.createElement(localName);
-        const range = selection.getRangeAt(0);
-        
-        range.surroundContents(newNode);
-        newNode.normalize();
+        newNode.append(content);
+        range.insertNode(newNode);
         
         const textNode = this.#findFirstTextChild(newNode);
-        if (textNode)
+        if (textNode.textContent.length === textLength)
             selection.setPosition(textNode, newOffset);
     }
 
@@ -2905,24 +2915,28 @@ class ContentTextElement extends HTMLElement {
     #handleFormatting(localName) {
         const selection = getSelection();
 
-        const { anchorNode, anchorOffset, focusNode, focusOffset } = selection;
+        const isBackward = selection.direction === 'backward';
+        const startNode = isBackward ? selection.focusNode : selection.anchorNode;
+        const startOffset = isBackward ? selection.focusOffset : selection.anchorOffset;
+        const endNode = isBackward ? selection.anchorNode : selection.focusNode;
+        const endOffset = isBackward ? selection.anchorOffset : selection.focusOffset;
 
-        const anchorMatch = this.#findMatchingParent(anchorNode, localName);
-        const focusMatch = this.#findMatchingParent(focusNode, localName);
+        const startMatch = this.#findMatchingParent(startNode, localName);
+        const endMatch = this.#findMatchingParent(endNode, localName);
 
         if (selection.isCollapsed) {
-            if (anchorMatch) {
-                anchorMatch.replaceWith(...anchorMatch.childNodes);
-                selection.setPosition(anchorNode, anchorOffset);
+            if (startMatch) {
+                startMatch.replaceWith(...startMatch.childNodes);
+                selection.setPosition(startNode, startOffset);
                 return;
             }
             
-            const textContent = anchorNode.textContent;
-            const isInsideAWord = anchorNode.nodeType === Node.TEXT_NODE
-                && anchorOffset !== 0
-                && anchorOffset !== textContent.length
-                && textContent[anchorOffset] !== ' '
-                && textContent[anchorOffset-1] !== ' ';
+            const textContent = startNode.textContent;
+            const isInsideAWord = startNode.nodeType === Node.TEXT_NODE
+                && startOffset !== 0
+                && startOffset !== textContent.length
+                && textContent[startOffset] !== ' '
+                && textContent[startOffset-1] !== ' ';
 
             if (isInsideAWord) {
                 this.#formatWord(selection, localName);
@@ -2936,7 +2950,28 @@ class ContentTextElement extends HTMLElement {
             return;       
         }
 
+        const range = selection.getRangeAt(0);
+        const commonAncestor = range.commonAncestorContainer;
+        const matchingParent = this.#findMatchingParent(commonAncestor, localName);
+
+        if (matchingParent) {
+            const afterRange = document.createRange();
+            afterRange.setStart(endNode, endOffset);
+            afterRange.setEnd(this.#content, this.#content.childNodes.length);
+            const afterContent = afterRange.extractContents();
+
+            range.setEnd(this.#content, this.#content.childNodes.length);
+            const selectedContent = range.extractContents();
+            
+            selectedContent.querySelectorAll(localName)
+                .forEach(match => match.replaceWith(...match.childNodes));
+            selectedContent.normalize();
+            
+            range.insertNode(selectedContent);
+            this.#content.append(afterContent);
+        }
         
+
     }
 
     /** @param {KeyboardEvent} event  */
