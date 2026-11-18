@@ -159,6 +159,7 @@ export default class ContentTextElement extends HTMLElement {
         }
 
         content.removeAttribute('contenteditable');
+        content.normalize();
         content.removeEventListener('keydown', this.#handleKeyboardCommands);
     }
 
@@ -229,22 +230,38 @@ export default class ContentTextElement extends HTMLElement {
     #handleFormatting(localName) {
         const selection = getSelection();
 
-        const anchorMatch = this.#findMatchingParent(selection.anchorNode, localName);
-        const focusMatch = this.#findMatchingParent(selection.focusNode, localName);
+        const { anchorNode, anchorOffset, focusNode, focusOffset } = selection;
+
+        const anchorMatch = this.#findMatchingParent(anchorNode, localName);
+        const focusMatch = this.#findMatchingParent(focusNode, localName);
 
         if (selection.isCollapsed) {
             if (anchorMatch) {
-                const node = selection.anchorNode;
-                const offset = selection.anchorOffset;
                 anchorMatch.replaceWith(...anchorMatch.childNodes);
-                selection.setPosition(node, offset);
+                selection.setPosition(anchorNode, anchorOffset);
+                return;
+            }
+            
+            const textContent = anchorNode.textContent;
+            const isInsideAWord = anchorNode.nodeType === Node.TEXT_NODE
+                && anchorOffset !== 0
+                && anchorOffset !== textContent.length
+                && textContent[anchorOffset] !== ' '
+                && textContent[anchorOffset-1] !== ' ';
+
+            if (isInsideAWord) {
+                this.#formatWord(selection, localName);
                 return;
             }
 
-            this.#formatWord(selection, localName);
-            return;
+            const element = document.createElement(localName);
+            const range = selection.getRangeAt(0);
+            range.insertNode(element);
+            selection.setPosition(element, 0);     
+            return;       
         }
 
+        
     }
 
     /** @param {KeyboardEvent} event  */
