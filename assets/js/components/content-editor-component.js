@@ -33,7 +33,7 @@ export default class ContentEditorComponent extends HTMLElement {
             event.stopPropagation();
             const container = document.createElement(ContentEditorComponent.CONTAINER_NAME);
             
-            this.#toolbar.insertAdjacentElement('beforebegin', container);
+            this.#toolbar.before(container);
         });
 
         this.addEventListener('content-direction', event => {
@@ -83,11 +83,11 @@ export default class ContentEditorComponent extends HTMLElement {
             if (this.#toolbar.parentElement === this) {
                 const container = document.createElement(ContentEditorComponent.CONTAINER_NAME);
                 container.append(contentText);
-                this.#toolbar.insertAdjacentElement('beforebegin', container);
+                this.#toolbar.before(container);
                 return;
             }
 
-            this.#toolbar.insertAdjacentElement('beforebegin', contentText);
+            this.#toolbar.before(contentText);
         });
 
         this.addEventListener('content-paragraph',
@@ -111,7 +111,7 @@ export default class ContentEditorComponent extends HTMLElement {
         this.addEventListener('content-divide', event => {
             event.stopPropagation();
 
-            this.#toolbar.insertAdjacentElement('beforebegin', this.#divider);
+            this.#toolbar.before(this.#divider);
         });
     }
 
