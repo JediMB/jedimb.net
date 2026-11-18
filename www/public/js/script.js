@@ -2869,19 +2869,26 @@ class ContentTextElement extends HTMLElement {
 
     /**
      * @param {HTMLElement} parentElement 
-     * @returns {Node|null}
+     * @param {number} [offset=0] Character offset determining which text node is correct
+     * @returns {[Node|null, number]}
      */
-    #findFirstTextChild(parentElement) {
+    #findTextChild(parentElement, offset = 0) {
         for (const child of parentElement.childNodes) {
-            if (child.nodeType === Node.TEXT_NODE)
-                return child;
+            if (child.nodeType === Node.TEXT_NODE) {
+                if (offset <= child.textContent.length)
+                    return [child, offset];
 
-            const descendant = this.#findFirstTextChild(child);
+                offset -= child.textContent.length;
+            }
+
+            let descendant = null;
+            [ descendant, offset ] = this.#findTextChild(child, offset);
+
             if (descendant)
-                return descendant;
+                return [ descendant, offset ];
         }
 
-        return null;
+        return [ null, offset ];
     }
 
     /**
@@ -2890,10 +2897,9 @@ class ContentTextElement extends HTMLElement {
      */
     #formatWord(selection, localName) {
         selection.modify('extend', 'backward', 'word');
-        const newOffset = selection.toString().length;
+        const selectionOffset = selection.toString().length;
         selection.collapseToStart();
         selection.modify('extend', 'forward', 'word');
-        const textLength = selection.toString().length;
 
         const range = selection.getRangeAt(0);
         const content = range.extractContents();
@@ -2906,9 +2912,10 @@ class ContentTextElement extends HTMLElement {
         newNode.append(content);
         range.insertNode(newNode);
         
-        const textNode = this.#findFirstTextChild(newNode);
-        if (textNode.textContent.length === textLength)
-            selection.setPosition(textNode, newOffset);
+        const [ foundNode, foundOffset ] = this.#findTextChild(newNode, selectionOffset);
+        
+        if (foundNode)
+            selection.setPosition(foundNode, foundOffset);
     }
 
     /** @param {string} localName  */
@@ -2969,9 +2976,10 @@ class ContentTextElement extends HTMLElement {
             
             range.insertNode(selectedContent);
             this.#content.append(afterContent);
+            return;
         }
         
-
+        
     }
 
     /** @param {KeyboardEvent} event  */
