@@ -195,7 +195,7 @@ export default class ContentTextElement extends HTMLElement {
     /**
      * @param {HTMLElement} parentElement 
      * @param {number} [offset=0] Character offset determining which text node is correct
-     * @returns {[Node|null, number]}
+     * @returns {[Text|null, number]}
      */
     #findTextChild(parentElement, offset = 0) {
         for (const child of parentElement.childNodes) {
