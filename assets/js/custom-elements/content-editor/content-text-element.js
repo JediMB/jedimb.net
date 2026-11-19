@@ -305,7 +305,13 @@ export default class ContentTextElement extends HTMLElement {
         const commonAncestor = range.commonAncestorContainer;
         const matchingParent = this.#findMatchingParent(commonAncestor, localName);
 
-        if (matchingParent) {
+        const isAllFormatted = !this.#findTextNodeBy(commonAncestor, node => {
+            return (range.isPointInRange(node, 0) || range.isPointInRange(node, node.textContent.length))
+                && node.textContent.trim()
+                && !this.#findMatchingParent(node, localName);
+        });
+
+        if (matchingParent || isAllFormatted) {
             const afterRange = document.createRange();
             afterRange.setStart(endNode, endOffset);
             afterRange.setEnd(this.#content, this.#content.childNodes.length);
