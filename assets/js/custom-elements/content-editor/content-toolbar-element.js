@@ -68,6 +68,12 @@ export default class ContentToolbarElement extends HTMLElement {
                 display: none;
             }
 
+            :focus-visible,
+            :-moz-focusring {
+                --_focus-color: var(--clr-primary-dark);
+                outline: var(--_focus-width) var(--_focus-style) var(--_focus-color);
+            }
+
             button {
                 display: inline flex;
                 flex-direction: row;

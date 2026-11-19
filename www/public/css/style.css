@@ -850,15 +850,22 @@ config-field-component {
     padding: var(--size-s) var(--size-m);
 }
 
-:focus-visible,
-:-moz-focusring {
-    outline: var(--clr-accent) double var(--size-s);
-}
 
 html.disable-scrolling {
     margin: 0;
     height: 100%;
     overflow: hidden;
+}
+
+body {
+    --_focus-width: var(--size-s);
+    --_focus-style: double;
+    --_focus-color: var(--clr-accent);
+}
+
+:focus-visible,
+:-moz-focusring {
+    outline: var(--_focus-width) var(--_focus-style) var(--_focus-color);
 }
 
 .invisible {

@@ -2725,6 +2725,12 @@ class ContentTextElement extends HTMLElement {
 
         const css = new CSSStyleSheet();
         css.replaceSync(`
+            :focus-visible,
+            :-moz-focusring {
+                --_focus-color: var(--clr-primary-dark);
+                outline: var(--_focus-width) var(--_focus-style) var(--_focus-color);
+            }
+
             text-content:empty {
                 &::before {
                     content: attr(data-placeholder);
@@ -3179,6 +3185,12 @@ class ContentToolbarElement extends HTMLElement {
 
             [hidden] {
                 display: none;
+            }
+
+            :focus-visible,
+            :-moz-focusring {
+                --_focus-color: var(--clr-primary-dark);
+                outline: var(--_focus-width) var(--_focus-style) var(--_focus-color);
             }
 
             button {
