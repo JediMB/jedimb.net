@@ -1,3 +1,5 @@
+import ModifierKeys from "/js/utilities/modifier-keys.utility.js";
+
 export default class ContentTextElement extends HTMLElement {
     static PLACEHOLDER_TEXT = 'Click here to input text...';
     static PLACEHOLDER_FOCUS_TEXT = 'Start typing to input text...';
@@ -332,42 +334,37 @@ export default class ContentTextElement extends HTMLElement {
 
     /** @param {KeyboardEvent} event  */
     #handleKeyboardCommands = (event) => {
-        if (this.#interceptedParagraphBreak(event))
-            return;
+        const eventModifiers = ModifierKeys.eventKeys(event);
 
-        if (!event.ctrlKey)
-            return;
-
-        if (event.shiftKey || event.altKey || event.metaKey)
-            return;
-
-        const key = event.key.toLowerCase();
-
-        switch (key) {
-            case 'b':
-            case 'i':
-            case 'u':
-                event.preventDefault();
-                event.stopPropagation();
-                this.#handleFormatting(key);
+        switch (eventModifiers) {
+            case ModifierKeys.NONE:
+                if (event.key === 'Enter' || event.key === 'Return')
+                    return this.#interceptParagraphBreak(event);
                 break;
 
-            default:
-                return;
+            case ModifierKeys.CTRL:
+                const key = event.key.toLowerCase();
+
+                switch (key) {
+                    case 'b':
+                    case 'i':
+                    case 'u':
+                        event.preventDefault();
+                        event.stopPropagation();
+                        this.#handleFormatting(key);
+                        break;
+
+                    default:
+                        return;
+                }
+                break;
         }
     }
 
     /**
      * @param {KeyboardEvent} event 
-     * @returns {boolean}
      */
-    #interceptedParagraphBreak(event) {
-        if (event.key !== 'Enter' && event.key !== 'Return')
-            return false;
-
-        if (event.ctrlKey || event.altKey || event.shiftKey || event.metaKey)
-            return false;
-
+    #interceptParagraphBreak(event) {
         event.preventDefault();
         event.stopPropagation();
 
@@ -378,8 +375,6 @@ export default class ContentTextElement extends HTMLElement {
 
         range.setEnd(this.#content, this.#content.childNodes.length);
         this.#dispatchParagraphEvent('new', range.extractContents());
-
-        return true;
     }
 
     /**
