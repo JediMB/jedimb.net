@@ -1,9 +1,9 @@
 export default class ModifierKeys {
-    static NONE = Object.freeze(0b0);
-    static SHIFT = Object.freeze(0b1);
-    static CTRL = Object.freeze(0b10);
-    static ALT = Object.freeze(0b100);
-    static META = Object.freeze(0b1000);
+    /** @type {0b0} */ static NONE = Object.freeze(0b0);
+    /** @type {0b1} */ static SHIFT = Object.freeze(0b1);
+    /** @type {0b10} */ static CTRL = Object.freeze(0b10);
+    /** @type {0b100} */ static ALT = Object.freeze(0b100);
+    /** @type {0b1000} */ static META = Object.freeze(0b1000);
 
     /**
      * @param {KeyboardEvent} event 
