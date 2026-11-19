@@ -2678,11 +2678,11 @@ customElements.define('content-divider', ContentDividerElement);
 /* IMPORT: /js/utilities/modifier-keys.utility.js */
 
 class ModifierKeys {
-    static NONE = Object.freeze(0b0);
-    static SHIFT = Object.freeze(0b1);
-    static CTRL = Object.freeze(0b10);
-    static ALT = Object.freeze(0b100);
-    static META = Object.freeze(0b1000);
+    /** @type {0b0} */ static NONE = Object.freeze(0b0);
+    /** @type {0b1} */ static SHIFT = Object.freeze(0b1);
+    /** @type {0b10} */ static CTRL = Object.freeze(0b10);
+    /** @type {0b100} */ static ALT = Object.freeze(0b100);
+    /** @type {0b1000} */ static META = Object.freeze(0b1000);
 
     /**
      * @param {KeyboardEvent} event 
@@ -2892,6 +2892,25 @@ class ContentTextElement extends HTMLElement {
         }));
     }
 
+
+    /** 
+     * @param {Range} range  
+     * @param {string} localName 
+     * @param {Node} endNode 
+     * @param {number} endOffset 
+     */
+    #escapeTag(range, localName, endNode, endOffset) {
+        const afterRange = document.createRange();
+        afterRange.setStart(endNode, endOffset);
+        afterRange.setEnd(this.#content, this.#content.childNodes.length);
+        const afterContent = afterRange.extractContents();
+
+        range.setEnd(this.#content, this.#content.childNodes.length);
+        this.#reformatRange(range, localName, 'remove');
+
+        this.#content.append(afterContent);
+    }
+
     /**
      * @param {Node} node
      * @param {string} localName 
@@ -2980,18 +2999,24 @@ class ContentTextElement extends HTMLElement {
         if (selection.isCollapsed) {
             const parentMatch = this.#findMatchingParent(startNode, localName);
             
-            if (parentMatch) {
-                parentMatch.replaceWith(...parentMatch.childNodes);
-                selection.setPosition(startNode, startOffset);
-                return;
-            }
-            
             const textContent = startNode.textContent;
             const isInsideAWord = startNode.nodeType === Node.TEXT_NODE
                 && startOffset !== 0
                 && startOffset !== textContent.length
                 && textContent[startOffset] !== ' '
                 && textContent[startOffset-1] !== ' ';
+
+            if (parentMatch) {
+                if (isInsideAWord) {
+                    parentMatch.replaceWith(...parentMatch.childNodes);
+                    selection.setPosition(startNode, startOffset);
+                    return;
+                }
+
+                const range = selection.getRangeAt(0);
+                this.#escapeTag(range, localName, endNode, endOffset);
+                return;
+            }
 
             if (isInsideAWord) {
                 this.#formatWord(selection, localName);
@@ -3022,15 +3047,7 @@ class ContentTextElement extends HTMLElement {
         });
 
         if (matchingParent || isAllFormatted) {
-            const afterRange = document.createRange();
-            afterRange.setStart(endNode, endOffset);
-            afterRange.setEnd(this.#content, this.#content.childNodes.length);
-            const afterContent = afterRange.extractContents();
-
-            range.setEnd(this.#content, this.#content.childNodes.length);
-            this.#reformatRange(range, localName, 'remove');
-
-            this.#content.append(afterContent);
+            this.#escapeTag(range, localName, endNode, endOffset);
             return;
         }
 
@@ -3043,20 +3060,28 @@ class ContentTextElement extends HTMLElement {
 
         switch (eventModifiers) {
             case ModifierKeys.NONE:
-                if (event.key === 'Enter' || event.key === 'Return')
-                    return this.#interceptParagraphBreak(event);
+                switch (event.key) {
+                    case 'Enter':
+                    case 'Return':
+                        this.#interceptParagraphBreak(event);
+                        break;
+
+                    case 'ArrowUp':
+                        console.log(getSelection());
+                        break;
+                }
                 break;
 
             case ModifierKeys.CTRL:
-                const key = event.key.toLowerCase();
+                const lowerKey = event.key.toLowerCase();
 
-                switch (key) {
+                switch (lowerKey) {
                     case 'b':
                     case 'i':
                     case 'u':
                         event.preventDefault();
                         event.stopPropagation();
-                        this.#handleFormatting(key);
+                        this.#handleFormatting(lowerKey);
                         break;
 
                     default:
