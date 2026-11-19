@@ -84,6 +84,7 @@ export default class ContentEditorComponent extends HTMLElement {
                 const container = document.createElement(ContentEditorComponent.CONTAINER_NAME);
                 container.append(contentText);
                 this.#toolbar.before(container);
+                contentText.focusWithin();
                 return;
             }
 
