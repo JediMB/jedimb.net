@@ -2892,6 +2892,25 @@ class ContentTextElement extends HTMLElement {
     }
 
     /**
+     * @param {HTMLElement} parentElement 
+     * @param {(node: Text) => boolean} callbackFn 
+     * @returns {Text|null}
+     */
+    #findTextNodeBy(parentElement, callbackFn) {
+        for (const child of parentElement.childNodes) {
+            if (child.nodeType === Node.TEXT_NODE && callbackFn(child))
+                return child;
+
+            const descendant = this.#findTextNodeBy(child, callbackFn);
+
+            if (descendant)
+                return descendant;
+        }
+
+        return null;
+    }
+
+    /**
      * @param {Selection} selection 
      * @param {string} localName 
      */
