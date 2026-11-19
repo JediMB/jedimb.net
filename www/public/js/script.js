@@ -2969,14 +2969,13 @@ class ContentTextElement extends HTMLElement {
 
         const range = selection.getRangeAt(0);
         const commonAncestor = range.commonAncestorContainer;
+        const matchingParent = this.#findMatchingParent(commonAncestor, localName);
 
-        if (commonAncestor.nodeType === Node.TEXT_NODE) {
+        if (commonAncestor.nodeType === Node.TEXT_NODE && !matchingParent) {
             const newElement = document.createElement(localName);
             range.surroundContents(newElement);
             return;
         }
-
-        const matchingParent = this.#findMatchingParent(commonAncestor, localName);
 
         const isAllFormatted = !this.#findTextNodeBy(commonAncestor, node => {
             return (range.isPointInRange(node, 0) || range.isPointInRange(node, node.textContent.length))
