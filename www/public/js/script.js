@@ -2921,17 +2921,9 @@ class ContentTextElement extends HTMLElement {
         selection.modify('extend', 'forward', 'word');
 
         const range = selection.getRangeAt(0);
-        const content = range.extractContents();
-
-        content.querySelectorAll(localName)
-            .forEach(match => match.replaceWith(...match.childNodes));
-        content.normalize();
-
-        const newNode = document.createElement(localName);
-        newNode.append(content);
-        range.insertNode(newNode);
+        const newElement = this.#reformatRange(range, localName, 'replace');
         
-        const [ foundNode, foundOffset ] = this.#findTextChild(newNode, selectionOffset);
+        const [ foundNode, foundOffset ] = this.#findTextChild(newElement, selectionOffset);
         
         if (foundNode)
             selection.setPosition(foundNode, foundOffset);
@@ -3000,25 +2992,13 @@ class ContentTextElement extends HTMLElement {
             const afterContent = afterRange.extractContents();
 
             range.setEnd(this.#content, this.#content.childNodes.length);
-            const selectedContent = range.extractContents();
-            
-            selectedContent.querySelectorAll(localName)
-                .forEach(match => match.replaceWith(...match.childNodes));
-            selectedContent.normalize();
-            
-            range.insertNode(selectedContent);
+            this.#reformatRange(range, localName, 'remove');
+
             this.#content.append(afterContent);
             return;
         }
 
-        const content = range.extractContents();
-        content.querySelectorAll(localName)
-            .forEach(match => match.replaceWith(...match.childNodes));
-        content.normalize();
-
-        const newNode = document.createElement(localName);
-        newNode.append(content);
-        range.insertNode(newNode);
+        this.#reformatRange(range, localName, 'replace');
     }
 
     /** @param {KeyboardEvent} event  */
@@ -3071,6 +3051,31 @@ class ContentTextElement extends HTMLElement {
         this.#dispatchParagraphEvent('new', range.extractContents());
 
         return true;
+    }
+
+    /**
+     * 
+     * @param {Range} range 
+     * @param {string} localName 
+     * @param {'replace'|'remove'} formattingMode 
+     * @returns  {HTMLElement|null} Returns the new HTMLElement if formattingMode is 'replace'
+     */
+    #reformatRange(range, localName, formattingMode) {
+        const content = range.extractContents();
+        content.querySelectorAll(localName)
+            .forEach(match => match.replaceWith(...match.childNodes));
+        content.normalize();
+
+        if (formattingMode === 'remove') {
+            range.insertNode(content);
+            return null;
+        }
+
+        const newNode = document.createElement(localName);
+        newNode.append(content);
+        range.insertNode(newNode);
+
+        return newNode;
     }
 
     /**
