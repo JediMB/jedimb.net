@@ -3004,9 +3004,14 @@ class ContentTextElement extends HTMLElement {
             return;
         }
 
-        // If all text nodes in range have matching ancestor, unformat them
+        const content = range.extractContents();
+        content.querySelectorAll(localName)
+            .forEach(match => match.replaceWith(...match.childNodes));
+        content.normalize();
 
-        // If some text nodes in range do not having matching ancestor, format them
+        const newNode = document.createElement(localName);
+        newNode.append(content);
+        range.insertNode(newNode);
     }
 
     /** @param {KeyboardEvent} event  */
