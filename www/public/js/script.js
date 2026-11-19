@@ -2978,6 +2978,13 @@ class ContentTextElement extends HTMLElement {
 
         const range = selection.getRangeAt(0);
         const commonAncestor = range.commonAncestorContainer;
+
+        if (commonAncestor.nodeType === Node.TEXT_NODE) {
+            const newElement = document.createElement(localName);
+            range.surroundContents(newElement);
+            return;
+        }
+
         const matchingParent = this.#findMatchingParent(commonAncestor, localName);
 
         const isAllFormatted = !this.#findTextNodeBy(commonAncestor, node => {
