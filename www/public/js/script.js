@@ -2939,12 +2939,11 @@ class ContentTextElement extends HTMLElement {
         const endNode = isBackward ? selection.anchorNode : selection.focusNode;
         const endOffset = isBackward ? selection.anchorOffset : selection.focusOffset;
 
-        const startMatch = this.#findMatchingParent(startNode, localName);
-        const endMatch = this.#findMatchingParent(endNode, localName);
-
         if (selection.isCollapsed) {
-            if (startMatch) {
-                startMatch.replaceWith(...startMatch.childNodes);
+            const parentMatch = this.#findMatchingParent(startNode, localName);
+            
+            if (parentMatch) {
+                parentMatch.replaceWith(...parentMatch.childNodes);
                 selection.setPosition(startNode, startOffset);
                 return;
             }
