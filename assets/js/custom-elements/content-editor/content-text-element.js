@@ -53,6 +53,7 @@ export default class ContentTextElement extends HTMLElement {
         this.#attachNewSvgButton({title: 'Bold', symbolId: '#svg-text-bold'});
         this.#attachNewSvgButton({title: 'Italics', symbolId: '#svg-text-italics'});
         this.#attachNewSvgButton({title: 'Underline', symbolId: '#svg-text-underline'});
+        this.#attachNewSvgButton({title: 'Strikethrough', symbolId: '#svg-text-strikethrough'});
 
         const css = new CSSStyleSheet();
         css.replaceSync(`
