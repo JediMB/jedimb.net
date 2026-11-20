@@ -172,12 +172,16 @@ export default class ContentTextElement extends HTMLElement {
 
         content.removeAttribute('contenteditable');
         content.querySelectorAll('*').forEach(element => {
-            if (!element?.textContent.length)
-                element?.remove();
-        });
-        content.querySelectorAll('*').forEach(element => {
             if (!element)
                 return;
+            
+            if (element.textContent.length === 0) {
+                element.remove();
+                return;
+            }
+
+            element.querySelectorAll(element.localName)
+                .forEach(match => match.replaceWith(...match.childNodes));
 
             while (element.localName === element.nextElementSibling?.localName) {
                 element.append(...element.nextElementSibling.childNodes);
