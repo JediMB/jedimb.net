@@ -2973,10 +2973,14 @@ class ContentTextElement extends HTMLElement {
         this.#toolbar = document.createElement('text-toolbar');
         this.#shadowRoot.append(this.#toolbar);
 
-        this.#attachNewSvgButton({title: 'Bold', symbolId: '#svg-text-bold'});
-        this.#attachNewSvgButton({title: 'Italics', symbolId: '#svg-text-italics'});
-        this.#attachNewSvgButton({title: 'Underline', symbolId: '#svg-text-underline'});
-        this.#attachNewSvgButton({title: 'Strikethrough', symbolId: '#svg-text-strikethrough'});
+        this.#attachNewSvgButton({title: 'Bold', symbolId: '#svg-text-bold'})
+            .addEventListener('click', () => this.#formatter.toggleTag('b'));
+        this.#attachNewSvgButton({title: 'Italics', symbolId: '#svg-text-italics'})
+            .addEventListener('click', () => this.#formatter.toggleTag('i'));
+        this.#attachNewSvgButton({title: 'Underline', symbolId: '#svg-text-underline'})
+            .addEventListener('click', () => this.#formatter.toggleTag('u'));
+        this.#attachNewSvgButton({title: 'Strikethrough', symbolId: '#svg-text-strikethrough'})
+            .addEventListener('click', () => this.#formatter.toggleTag('s'));
 
         const css = new CSSStyleSheet();
         css.replaceSync(`
@@ -2984,6 +2988,10 @@ class ContentTextElement extends HTMLElement {
             :-moz-focusring {
                 --_focus-color: var(--clr-primary-dark);
                 outline: var(--_focus-width) var(--_focus-style) var(--_focus-color);
+            }
+
+            text-content {
+                display: block;
             }
 
             text-content:empty {
