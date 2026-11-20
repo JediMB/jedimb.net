@@ -235,13 +235,18 @@ export default class ContentTextElement extends HTMLElement {
         event.preventDefault();
         event.stopPropagation();
 
-        const range = getSelection().getRangeAt(0);
+        const selection = getSelection();
+        const ranges = selection.getComposedRanges()
+            .map((_, index) => selection.getRangeAt(index))
+            .reverse();
 
-        if (!range.collapsed)
-            range.deleteContents();
+        for (const range of ranges) {
+            if (!range.collapsed)
+                range.deleteContents();
 
-        range.setEnd(this.#content, this.#content.childNodes.length);
-        this.#dispatchParagraphEvent('new', range.extractContents());
+            range.setEnd(this.#content, this.#content.childNodes.length);
+            this.#dispatchParagraphEvent('new', range.extractContents());
+        }
     }
 
     /**
