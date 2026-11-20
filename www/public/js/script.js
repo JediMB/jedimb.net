@@ -3094,11 +3094,20 @@ class ContentTextElement extends HTMLElement {
         }
 
         content.removeAttribute('contenteditable');
-        content.normalize();
         content.querySelectorAll('*').forEach(element => {
             if (!element?.textContent.length)
                 element?.remove();
         });
+        content.querySelectorAll('*').forEach(element => {
+            if (!element)
+                return;
+
+            while (element.localName === element.nextElementSibling?.localName) {
+                element.append(...element.nextElementSibling.childNodes);
+                element.nextElementSibling.remove();
+            }
+        });
+        content.normalize();
         content.removeEventListener('keydown', this.#handleKeyboardCommands);
     }
 
