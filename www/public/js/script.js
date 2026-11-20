@@ -4596,10 +4596,516 @@ customElements.define('account-menu-component', AccountMenuComponent);
 
 /* IMPORT: /js/components/blog/blog-form-component.js */
 
-class BlogFormComponent extends HTMLElement {
+
+
+/* IMPORT: /js/components/content-editor-component.js */
+
+
+
+/* IMPORT: /js/custom-elements/content-editor/content-container-element.js */
+
+
+
+
+/* IMPORT: /js/custom-elements/content-editor/content-divider-element.js */
+
+
+
+
+/* IMPORT: /js/custom-elements/content-editor/content-toolbar-element.js */
+
+
+
+
+/* IMPORT: /js/custom-elements/content-editor/content-text-element.js */
+
+
+
+
+/* IMPORT: /js/components/modal-popup-component.js */
+
+class ModalPopupComponent extends HTMLElement {
+    /** @type {HTMLTemplateElement} */ #template;
+    /** @type {HTMLButtonElement[]} */ #focusTargets = [];
+    /** @type {HTMLElement} */ #currentModal = null;
+
+    constructor() {
+        super();
+        this.#keydownCapture = this.#keydownCapture.bind(this);
+    }
+
+    connectedCallback() {
+        this.#template = this.querySelector('template');
+    }
+
+    disconnectedCallback() {}
+
+    close() {
+        this.#currentModal.querySelector('dialog')?.close();
+        this.#currentModal.remove();
+        this.#currentModal = null;
+        this.#focusTargets = [];
+        document.removeEventListener('keydown', this.#keydownCapture);
+        document.documentElement.classList.remove('disable-scrolling');
+    }
+
+    /**
+     * 
+     * @param {string} prompt 
+     * @param {string} closeButtonText
+     * @param {string} [title=null] 
+     * @param  {...{ text: string, type: 'default'|'primary'|'warn', callbackFn: () => void}} additionalButtons 
+     */
+    create(prompt, closeButtonText, title = null, ...additionalButtons) {
+        if (!this.#template) {
+            // TODO: Implement proper notification
+            console.error('No modal popup template found');
+            return;
+        }
+
+        if (!prompt) prompt = 'No prompt provided';
+        if (!closeButtonText) closeButtonText = 'Cancel';
+
+        /** @type {DocumentFragment} */
+        const clone = this.#template.content.cloneNode(true);
+        
+        this.#currentModal = clone.firstElementChild;
+
+        const dialog = this.#currentModal.querySelector('dialog');
+
+        const heading = dialog.querySelector('h1');
+        const body = dialog.querySelector('modal-body');
+        const buttonList = dialog.querySelector('menu');
+
+        if (title)
+            heading.textContent = title;
+        else
+            heading.remove();
+
+        body.textContent = prompt;
+
+        buttonList.append(this.#createButtonItem(closeButtonText, () => {}));
+
+        for (const button of additionalButtons) {
+            buttonList.prepend(
+                this.#createButtonItem(
+                    button.text,
+                    button.callbackFn,
+                    button.type
+                )
+            );
+        }
+
+        this.#focusTargets = [ dialog, ...buttonList.querySelectorAll('button') ];
+
+        document.documentElement.classList.add('disable-scrolling');
+        document.addEventListener('keydown', this.#keydownCapture);
+        this.append(clone);
+        dialog.focus();
+    }
+
+    /**
+     * 
+     * @param {string} text 
+     * @param {() => void} callbackFn 
+     * @param {'default'|'primary'|'warn'} [type='default']
+     * @returns {HTMLLIElement}
+     */
+    #createButtonItem(text, callbackFn, type = 'default') {
+        const listItem = document.createElement('li');
+        const button = document.createElement('button');
+        listItem.append(button);
+
+        button.type = 'button';
+
+        if (typeof callbackFn !== 'function') {
+            button.textContent = '[Error]';
+            button.classList.add('btn-warn');
+            return listItem;
+        }
+
+        button.textContent = text;
+        
+        switch (type) {
+            case 'warn':
+                button.classList.add('btn-warn');
+                break;
+
+            case 'primary':
+                button.classList.add('btn-primary');
+                break;
+
+            case 'default':
+            default:
+                button.classList.add('btn-secondary');
+                break;
+        }
+
+        button.addEventListener('click', () => {
+            this.close();
+            callbackFn?.call(this);
+        });
+
+        return listItem;
+    }
+
+    /**
+     * @param {KeyboardEvent} event 
+     * @param {boolean} event.shiftKey
+     */
+    #focusTrap({ shiftKey }) {
+        if (!this.#focusTargets?.length)
+            return;
+
+        if (this.#focusTargets.length === 1) {
+            this.#focusTargets[0].focus();
+            return;
+        }
+
+        const activeIndex = this.#focusTargets.indexOf(document.activeElement);
+
+        if (shiftKey) {
+            if (activeIndex < 1) {
+                this.#focusTargets.at(-1).focus();
+                return;
+            }
+
+            this.#focusTargets.at(activeIndex-1).focus();
+            return;
+        }
+
+        if (activeIndex === this.#focusTargets.length - 1) {
+            this.#focusTargets[0].focus();
+            return;
+        }
+
+        this.#focusTargets[activeIndex + 1].focus();
+        return;
+    }
+
+    /** @param {KeyboardEvent} event */
+    #keydownCapture = (event) => {
+        switch (event.key) {
+            case 'Tab':
+                event.preventDefault();
+                this.#focusTrap(event);
+                return;
+
+            case 'Escape':
+                event.preventDefault();
+                this.close();
+                return;
+        }
+    }
+}
+
+customElements.define('modal-popup-component', ModalPopupComponent);
+
+/** @type {ModalPopupComponent} */
+const modalPopupComponent = document.querySelector('modal-popup-component');
+
+
+/* IMPORT: /js/utilities/emitter.js */
+
+
+
+class ContentEditorComponent extends HTMLElement {
+    static CONTAINER_NAME = customElements.getName(ContentContainerElement);
+    static DIVIDER_NAME = customElements.getName(ContentDividerElement);
+    static TOOLBAR_NAME = customElements.getName(ContentToolbarElement);
+    static TEXT_NAME = customElements.getName(ContentTextElement);
+
+    /** @type {1|2|3|4|5|6} */ #baseHeadingLevel;
+    #headingText = new Emitter('');
+
+    /** @type {HTMLHeadingElement} */ #heading;
+    /** @type {ContentToolbarElement} */ #toolbar;
+    /** @type {ContentDividerElement} */ #divider;
+    /** @type {HTMLElement} */ #previousTarget;
+
     constructor() { super(); }
 
-    connectedCallback() {}
+    connectedCallback() {
+        this.setAttribute('tabindex', '0');
+        
+        this.#baseHeadingLevel = Math.min(Math.max(Math.floor(Number(this.dataset.headingBaseLevel)), 1), 6);
+        this.#heading = document.createElement(`h${this.#baseHeadingLevel}`);
+        this.prepend(this.#heading);
+
+        this.#headingText.subscribe({next: text => {
+            this.#heading.textContent = text;
+        }}, {getCurrent: true});
+
+        this.#toolbar = document.createElement(ContentEditorComponent.TOOLBAR_NAME);
+        this.appendChild(this.#toolbar);
+
+        this.#divider = this.querySelector(ContentEditorComponent.DIVIDER_NAME)
+            ?? document.createElement(ContentEditorComponent.DIVIDER_NAME);
+        this.#divider.setText(this.dataset.dividerText);
+
+        this.addEventListener('mouseover', event => this.#toolbarControl(event));
+        this.addEventListener('focusin', event => this.#toolbarControl(event));
+
+        this.addEventListener('content-add', event => {
+            event.stopPropagation();
+            const container = document.createElement(ContentEditorComponent.CONTAINER_NAME);
+            
+            this.#toolbar.before(container);
+        });
+
+        this.addEventListener('content-direction', event => {
+            event.stopPropagation();
+
+            this.#toolbar.parentElement.setAttribute('content-direction', event.detail);
+        });
+
+        this.addEventListener('content-remove', event => {
+            event.stopPropagation();
+
+            /** @type {HTMLElement} */
+            const container = this.#toolbar.parentElement;
+
+            if (container === this || !this.contains(container)) {
+                console.error('Trying to remove something out of bounds');
+                return;
+            }
+            
+            modalPopupComponent.create(
+                this.dataset.removeContainerPrompt,
+                this.dataset.removeContainerNo,
+                null,
+                {
+                    text: this.dataset.removeContainerYes,
+                    type: 'warn',
+                    callbackFn: () => {
+                        container.parentElement.append(this.#toolbar);
+                        container.remove();
+                    }
+                },
+                {
+                    text: this.dataset.removeContainerKeepContents,
+                    type: 'primary',
+                    callbackFn: () => {
+                        container.parentElement.append(this.#toolbar);
+                        container.replaceWith(...container.children);
+                    }
+                }
+            )
+        });
+
+        this.addEventListener('content-text', event => {
+            event.stopPropagation();
+            /** @type {ContentTextElement} */
+            const contentText = document.createElement(ContentEditorComponent.TEXT_NAME);
+            
+            if (this.#toolbar.parentElement === this) {
+                const container = document.createElement(ContentEditorComponent.CONTAINER_NAME);
+                container.append(contentText);
+                this.#toolbar.before(container);
+                contentText.focusWithin();
+                return;
+            }
+
+            this.#toolbar.before(contentText);
+        });
+
+        this.addEventListener('content-paragraph',
+            /** @param {CustomEvent<{ type: 'new'|'previous'|'next', content: DocumentFragment|null }>} event */
+            event => {
+                /** @type {ContentTextElement} */
+                const textElement = event.target;
+
+                switch (event.detail.type) {
+                    case 'new':
+                        /** @type {ContentTextElement} */
+                        const newText = document.createElement(ContentEditorComponent.TEXT_NAME);
+                        textElement.after(newText);
+                        newText.focusWithin();
+                        newText.appendDocumentFragment(event.detail.content);
+                        break;
+                }
+            }
+        );
+
+        this.addEventListener('content-divide', event => {
+            event.stopPropagation();
+
+            this.#toolbar.before(this.#divider);
+        });
+    }
+
+    disconnectedCallback() {}
+
+
+    setHeading(text = '') {
+        if (typeof text === 'string') {
+            this.#headingText.setValue(text);
+            return;
+        }
+
+        console.error('Parameter "text" is not of string type');
+    }
+
+    /** 
+     * @param {HTMLElement} element  
+     * @returns {(ContentEditorComponent|ContentContainerElement)?}
+     */
+    #findContainer(element) {
+        while (element) {
+            if (element === this || element.localName === ContentEditorComponent.CONTAINER_NAME)
+                return element;
+
+            element = element.parentElement;
+        }
+
+        return null;
+    }
+
+    /**
+     * @param {ContentContainerElement} directionSource 
+     * @param {HTMLElement} anchorElement 
+     * @param {MouseEvent} mouseEvent 
+     * @param {number} mouseEvent.clientX 
+     * @param {number} mouseEvent.clientY 
+     * @returns {'beforebegin'|'afterend'}
+     */
+    #getAdjacency(directionSource, anchorElement, { clientX, clientY }) {
+        const rect = anchorElement.getBoundingClientRect();
+
+        switch (getComputedStyle(directionSource).flexDirection) {
+            case 'row':
+                return (rect.left + (0.5 * rect.width)) < clientX
+                    ? 'afterend' : 'beforebegin';
+            case 'row-reverse':
+                return (rect.left + (0.5 * rect.width)) > clientX
+                    ? 'afterend' : 'beforebegin';
+            case 'column':
+                return (rect.top + (0.5 * rect.height)) < clientY
+                    ? 'afterend' : 'beforebegin';
+            case 'column-reverse':
+                return (rect.top + (0.5 * rect.height)) > clientY
+                    ? 'afterend' : 'beforebegin';
+        }
+
+        console.error('Unexpected flexDirection value');
+        return 'afterend';
+    }
+
+    /**
+     * @param {HTMLElement} element 
+     * @param {'beforebegin'|'afterend'} where 
+     */
+    #putToolbarAdjacentTo(element, where) {
+        if (element === this.#heading && where === 'beforebegin')
+            return;
+
+        element?.insertAdjacentElement(where, this.#toolbar);
+    }
+
+    /**
+     * 
+     * @param {ContentEditorComponent|ContentContainerElement} container 
+     * @param {'beforebegin'|'afterend'} adjacency 
+     */
+    #putToolbarFirstOrLast(container, adjacency) {
+        if (adjacency === 'afterend') {
+            container.append(this.#toolbar);
+            return;
+        }
+        
+        if (container === this)
+            return;
+        
+        container.prepend(this.#toolbar);
+    }
+
+    /**
+     * @param {FocusEvent} event 
+     * @param {HTMLElement} target 
+     * @param {ContentContainerElement} container 
+     */
+    #setToolbarPositionByFocus(event, target, container) {
+        // TODO
+    }
+
+    /**
+     * @param {MouseEvent} event 
+     * @param {HTMLElement} target 
+     * @param {ContentContainerElement} container 
+     */
+    #setToolbarPositionByMouse(event, target, container) {
+        if (target !== container) {
+            this.#putToolbarAdjacentTo(target, this.#getAdjacency(container, target, event));
+            return;
+        }
+
+        if (container.contains(this.#previousTarget)) {
+            if (this.#previousTarget === this) {
+                this.#putToolbarFirstOrLast(this, this.#getAdjacency(this, this, event));
+                return
+            }
+
+            this.#putToolbarAdjacentTo(this.#previousTarget, this.#getAdjacency(container, this.#previousTarget, event));
+            return;
+        }
+
+        this.#putToolbarFirstOrLast(container, this.#getAdjacency(container, container, event));
+    }
+
+    /** @param {MouseEvent|FocusEvent} event */
+    #toolbarControl(event) {
+        /** @type {HTMLElement} */
+        let target = event.target;
+        const localName = target.localName;
+
+        if (localName === ContentEditorComponent.TOOLBAR_NAME)
+            return;
+
+        const date = new Date();
+        this.nextElementSibling.textContent = `${date.getSeconds()}.${date.getMilliseconds()} : ${localName}`;
+
+        const container = this.#findContainer(target);
+
+        if (!container) {
+            console.error('No container found');
+            return;
+        }
+
+        if (target !== container) {
+            target = Array.from(container.children).find(child => child.contains(target));
+        }
+
+        if (event.type.includes('mouse'))
+            this.#setToolbarPositionByMouse(event, target, container);
+        else
+            this.#setToolbarPositionByFocus(event, target, container);
+
+        this.#previousTarget = target;
+    }
+}
+
+customElements.define('content-editor-component', ContentEditorComponent);
+
+
+class BlogFormComponent extends HTMLElement {
+    /** @type {HTMLFormElement} */ #form;
+    
+    /** @type {HTMLInputElement} */ #inputTitle;
+
+    /** @type {ContentEditorComponent} */ #editor;
+
+    constructor() { super(); }
+
+    connectedCallback() {
+        this.#form = this.querySelector('form');
+        const formId = this.#form.id;
+        this.#editor = this.querySelector(customElements.getName(ContentEditorComponent));
+
+        this.#inputTitle = this.#form.elements['title'];
+        this.#inputTitle.addEventListener('input', () => {
+            this.#editor.setHeading(this.#inputTitle.value);
+        });
+    }
 
     disconnectedCallback() {}
 }
@@ -6374,491 +6880,6 @@ customElements.define('config-field-component', ConfigFieldComponent);
 
 /* IMPORT: /js/components/content-editor-component.js */
 
-
-
-/* IMPORT: /js/custom-elements/content-editor/content-container-element.js */
-
-
-
-
-/* IMPORT: /js/custom-elements/content-editor/content-divider-element.js */
-
-
-
-
-/* IMPORT: /js/custom-elements/content-editor/content-toolbar-element.js */
-
-
-
-
-/* IMPORT: /js/custom-elements/content-editor/content-text-element.js */
-
-
-
-
-/* IMPORT: /js/components/modal-popup-component.js */
-
-class ModalPopupComponent extends HTMLElement {
-    /** @type {HTMLTemplateElement} */ #template;
-    /** @type {HTMLButtonElement[]} */ #focusTargets = [];
-    /** @type {HTMLElement} */ #currentModal = null;
-
-    constructor() {
-        super();
-        this.#keydownCapture = this.#keydownCapture.bind(this);
-    }
-
-    connectedCallback() {
-        this.#template = this.querySelector('template');
-    }
-
-    disconnectedCallback() {}
-
-    close() {
-        this.#currentModal.querySelector('dialog')?.close();
-        this.#currentModal.remove();
-        this.#currentModal = null;
-        this.#focusTargets = [];
-        document.removeEventListener('keydown', this.#keydownCapture);
-        document.documentElement.classList.remove('disable-scrolling');
-    }
-
-    /**
-     * 
-     * @param {string} prompt 
-     * @param {string} closeButtonText
-     * @param {string} [title=null] 
-     * @param  {...{ text: string, type: 'default'|'primary'|'warn', callbackFn: () => void}} additionalButtons 
-     */
-    create(prompt, closeButtonText, title = null, ...additionalButtons) {
-        if (!this.#template) {
-            // TODO: Implement proper notification
-            console.error('No modal popup template found');
-            return;
-        }
-
-        if (!prompt) prompt = 'No prompt provided';
-        if (!closeButtonText) closeButtonText = 'Cancel';
-
-        /** @type {DocumentFragment} */
-        const clone = this.#template.content.cloneNode(true);
-        
-        this.#currentModal = clone.firstElementChild;
-
-        const dialog = this.#currentModal.querySelector('dialog');
-
-        const heading = dialog.querySelector('h1');
-        const body = dialog.querySelector('modal-body');
-        const buttonList = dialog.querySelector('menu');
-
-        if (title)
-            heading.textContent = title;
-        else
-            heading.remove();
-
-        body.textContent = prompt;
-
-        buttonList.append(this.#createButtonItem(closeButtonText, () => {}));
-
-        for (const button of additionalButtons) {
-            buttonList.prepend(
-                this.#createButtonItem(
-                    button.text,
-                    button.callbackFn,
-                    button.type
-                )
-            );
-        }
-
-        this.#focusTargets = [ dialog, ...buttonList.querySelectorAll('button') ];
-
-        document.documentElement.classList.add('disable-scrolling');
-        document.addEventListener('keydown', this.#keydownCapture);
-        this.append(clone);
-        dialog.focus();
-    }
-
-    /**
-     * 
-     * @param {string} text 
-     * @param {() => void} callbackFn 
-     * @param {'default'|'primary'|'warn'} [type='default']
-     * @returns {HTMLLIElement}
-     */
-    #createButtonItem(text, callbackFn, type = 'default') {
-        const listItem = document.createElement('li');
-        const button = document.createElement('button');
-        listItem.append(button);
-
-        button.type = 'button';
-
-        if (typeof callbackFn !== 'function') {
-            button.textContent = '[Error]';
-            button.classList.add('btn-warn');
-            return listItem;
-        }
-
-        button.textContent = text;
-        
-        switch (type) {
-            case 'warn':
-                button.classList.add('btn-warn');
-                break;
-
-            case 'primary':
-                button.classList.add('btn-primary');
-                break;
-
-            case 'default':
-            default:
-                button.classList.add('btn-secondary');
-                break;
-        }
-
-        button.addEventListener('click', () => {
-            this.close();
-            callbackFn?.call(this);
-        });
-
-        return listItem;
-    }
-
-    /**
-     * @param {KeyboardEvent} event 
-     * @param {boolean} event.shiftKey
-     */
-    #focusTrap({ shiftKey }) {
-        if (!this.#focusTargets?.length)
-            return;
-
-        if (this.#focusTargets.length === 1) {
-            this.#focusTargets[0].focus();
-            return;
-        }
-
-        const activeIndex = this.#focusTargets.indexOf(document.activeElement);
-
-        if (shiftKey) {
-            if (activeIndex < 1) {
-                this.#focusTargets.at(-1).focus();
-                return;
-            }
-
-            this.#focusTargets.at(activeIndex-1).focus();
-            return;
-        }
-
-        if (activeIndex === this.#focusTargets.length - 1) {
-            this.#focusTargets[0].focus();
-            return;
-        }
-
-        this.#focusTargets[activeIndex + 1].focus();
-        return;
-    }
-
-    /** @param {KeyboardEvent} event */
-    #keydownCapture = (event) => {
-        switch (event.key) {
-            case 'Tab':
-                event.preventDefault();
-                this.#focusTrap(event);
-                return;
-
-            case 'Escape':
-                event.preventDefault();
-                this.close();
-                return;
-        }
-    }
-}
-
-customElements.define('modal-popup-component', ModalPopupComponent);
-
-/** @type {ModalPopupComponent} */
-const modalPopupComponent = document.querySelector('modal-popup-component');
-
-
-/* IMPORT: /js/utilities/emitter.js */
-
-
-
-class ContentEditorComponent extends HTMLElement {
-    static CONTAINER_NAME = customElements.getName(ContentContainerElement);
-    static DIVIDER_NAME = customElements.getName(ContentDividerElement);
-    static TOOLBAR_NAME = customElements.getName(ContentToolbarElement);
-    static TEXT_NAME = customElements.getName(ContentTextElement);
-
-    /** @type {1|2|3|4|5|6} */ #baseHeadingLevel;
-    #headingText = new Emitter('');
-
-    /** @type {HTMLHeadingElement} */ #heading;
-    /** @type {ContentToolbarElement} */ #toolbar;
-    /** @type {ContentDividerElement} */ #divider;
-    /** @type {HTMLElement} */ #previousTarget;
-
-    constructor() { super(); }
-
-    connectedCallback() {
-        this.setAttribute('tabindex', '0');
-        
-        this.#baseHeadingLevel = Math.min(Math.max(Math.floor(Number(this.dataset.headingBaseLevel)), 1), 6);
-        this.#heading = document.createElement(`h${this.#baseHeadingLevel}`);
-        this.prepend(this.#heading);
-
-        this.#headingText.subscribe({next: text => {
-            this.#heading.textContent = text;
-        }}, {getCurrent: true});
-
-        this.#toolbar = document.createElement(ContentEditorComponent.TOOLBAR_NAME);
-        this.appendChild(this.#toolbar);
-
-        this.#divider = this.querySelector(ContentEditorComponent.DIVIDER_NAME)
-            ?? document.createElement(ContentEditorComponent.DIVIDER_NAME);
-        this.#divider.setText(this.dataset.dividerText);
-
-        this.addEventListener('mouseover', event => this.#toolbarControl(event));
-        this.addEventListener('focusin', event => this.#toolbarControl(event));
-
-        this.addEventListener('content-add', event => {
-            event.stopPropagation();
-            const container = document.createElement(ContentEditorComponent.CONTAINER_NAME);
-            
-            this.#toolbar.before(container);
-        });
-
-        this.addEventListener('content-direction', event => {
-            event.stopPropagation();
-
-            this.#toolbar.parentElement.setAttribute('content-direction', event.detail);
-        });
-
-        this.addEventListener('content-remove', event => {
-            event.stopPropagation();
-
-            /** @type {HTMLElement} */
-            const container = this.#toolbar.parentElement;
-
-            if (container === this || !this.contains(container)) {
-                console.error('Trying to remove something out of bounds');
-                return;
-            }
-            
-            modalPopupComponent.create(
-                this.dataset.removeContainerPrompt,
-                this.dataset.removeContainerNo,
-                null,
-                {
-                    text: this.dataset.removeContainerYes,
-                    type: 'warn',
-                    callbackFn: () => {
-                        container.parentElement.append(this.#toolbar);
-                        container.remove();
-                    }
-                },
-                {
-                    text: this.dataset.removeContainerKeepContents,
-                    type: 'primary',
-                    callbackFn: () => {
-                        container.parentElement.append(this.#toolbar);
-                        container.replaceWith(...container.children);
-                    }
-                }
-            )
-        });
-
-        this.addEventListener('content-text', event => {
-            event.stopPropagation();
-            /** @type {ContentTextElement} */
-            const contentText = document.createElement(ContentEditorComponent.TEXT_NAME);
-            
-            if (this.#toolbar.parentElement === this) {
-                const container = document.createElement(ContentEditorComponent.CONTAINER_NAME);
-                container.append(contentText);
-                this.#toolbar.before(container);
-                contentText.focusWithin();
-                return;
-            }
-
-            this.#toolbar.before(contentText);
-        });
-
-        this.addEventListener('content-paragraph',
-            /** @param {CustomEvent<{ type: 'new'|'previous'|'next', content: DocumentFragment|null }>} event */
-            event => {
-                /** @type {ContentTextElement} */
-                const textElement = event.target;
-
-                switch (event.detail.type) {
-                    case 'new':
-                        /** @type {ContentTextElement} */
-                        const newText = document.createElement(ContentEditorComponent.TEXT_NAME);
-                        textElement.after(newText);
-                        newText.focusWithin();
-                        newText.appendDocumentFragment(event.detail.content);
-                        break;
-                }
-            }
-        );
-
-        this.addEventListener('content-divide', event => {
-            event.stopPropagation();
-
-            this.#toolbar.before(this.#divider);
-        });
-    }
-
-    disconnectedCallback() {}
-
-
-    setHeading(text = '') {
-        if (typeof text === 'string') {
-            this.#headingText.setValue(text);
-            return;
-        }
-
-        console.error('Parameter "text" is not of string type');
-    }
-
-    /** 
-     * @param {HTMLElement} element  
-     * @returns {(ContentEditorComponent|ContentContainerElement)?}
-     */
-    #findContainer(element) {
-        while (element) {
-            if (element === this || element.localName === ContentEditorComponent.CONTAINER_NAME)
-                return element;
-
-            element = element.parentElement;
-        }
-
-        return null;
-    }
-
-    /**
-     * @param {ContentContainerElement} directionSource 
-     * @param {HTMLElement} anchorElement 
-     * @param {MouseEvent} mouseEvent 
-     * @param {number} mouseEvent.clientX 
-     * @param {number} mouseEvent.clientY 
-     * @returns {'beforebegin'|'afterend'}
-     */
-    #getAdjacency(directionSource, anchorElement, { clientX, clientY }) {
-        const rect = anchorElement.getBoundingClientRect();
-
-        switch (getComputedStyle(directionSource).flexDirection) {
-            case 'row':
-                return (rect.left + (0.5 * rect.width)) < clientX
-                    ? 'afterend' : 'beforebegin';
-            case 'row-reverse':
-                return (rect.left + (0.5 * rect.width)) > clientX
-                    ? 'afterend' : 'beforebegin';
-            case 'column':
-                return (rect.top + (0.5 * rect.height)) < clientY
-                    ? 'afterend' : 'beforebegin';
-            case 'column-reverse':
-                return (rect.top + (0.5 * rect.height)) > clientY
-                    ? 'afterend' : 'beforebegin';
-        }
-
-        console.error('Unexpected flexDirection value');
-        return 'afterend';
-    }
-
-    /**
-     * @param {HTMLElement} element 
-     * @param {'beforebegin'|'afterend'} where 
-     */
-    #putToolbarAdjacentTo(element, where) {
-        if (element === this.#heading && where === 'beforebegin')
-            return;
-
-        element?.insertAdjacentElement(where, this.#toolbar);
-    }
-
-    /**
-     * 
-     * @param {ContentEditorComponent|ContentContainerElement} container 
-     * @param {'beforebegin'|'afterend'} adjacency 
-     */
-    #putToolbarFirstOrLast(container, adjacency) {
-        if (adjacency === 'afterend') {
-            container.append(this.#toolbar);
-            return;
-        }
-        
-        if (container === this)
-            return;
-        
-        container.prepend(this.#toolbar);
-    }
-
-    /**
-     * @param {FocusEvent} event 
-     * @param {HTMLElement} target 
-     * @param {ContentContainerElement} container 
-     */
-    #setToolbarPositionByFocus(event, target, container) {
-        // TODO
-    }
-
-    /**
-     * @param {MouseEvent} event 
-     * @param {HTMLElement} target 
-     * @param {ContentContainerElement} container 
-     */
-    #setToolbarPositionByMouse(event, target, container) {
-        if (target !== container) {
-            this.#putToolbarAdjacentTo(target, this.#getAdjacency(container, target, event));
-            return;
-        }
-
-        if (container.contains(this.#previousTarget)) {
-            if (this.#previousTarget === this) {
-                this.#putToolbarFirstOrLast(this, this.#getAdjacency(this, this, event));
-                return
-            }
-
-            this.#putToolbarAdjacentTo(this.#previousTarget, this.#getAdjacency(container, this.#previousTarget, event));
-            return;
-        }
-
-        this.#putToolbarFirstOrLast(container, this.#getAdjacency(container, container, event));
-    }
-
-    /** @param {MouseEvent|FocusEvent} event */
-    #toolbarControl(event) {
-        /** @type {HTMLElement} */
-        let target = event.target;
-        const localName = target.localName;
-
-        if (localName === ContentEditorComponent.TOOLBAR_NAME)
-            return;
-
-        const date = new Date();
-        this.nextElementSibling.textContent = `${date.getSeconds()}.${date.getMilliseconds()} : ${localName}`;
-
-        const container = this.#findContainer(target);
-
-        if (!container) {
-            console.error('No container found');
-            return;
-        }
-
-        if (target !== container) {
-            target = Array.from(container.children).find(child => child.contains(target));
-        }
-
-        if (event.type.includes('mouse'))
-            this.#setToolbarPositionByMouse(event, target, container);
-        else
-            this.#setToolbarPositionByFocus(event, target, container);
-
-        this.#previousTarget = target;
-    }
-}
-
-customElements.define('content-editor-component', ContentEditorComponent);
 
 
 
