@@ -14,7 +14,8 @@ use App\Utils\CSSRenderer;
     data-remove-container-yes="Yes"
     data-remove-container-no="No"
     data-remove-container-keep-contents="Keep contents"
-    data-divider-text="Preview ends">
+    data-divider-text="Preview ends"
+    data-heading-base-level="2">
 </content-editor-component>
 <div></div>
 <div></div>

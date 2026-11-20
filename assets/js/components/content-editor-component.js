@@ -3,6 +3,7 @@ import ContentDividerElement from "/js/custom-elements/content-editor/content-di
 import ContentToolbarElement from "/js/custom-elements/content-editor/content-toolbar-element.js";
 import ContentTextElement from "/js/custom-elements/content-editor/content-text-element.js";
 import { modalPopupComponent } from "/js/components/modal-popup-component.js";
+import Emitter from "/js/utilities/emitter.js";
 
 export default class ContentEditorComponent extends HTMLElement {
     static CONTAINER_NAME = customElements.getName(ContentContainerElement);
@@ -10,6 +11,10 @@ export default class ContentEditorComponent extends HTMLElement {
     static TOOLBAR_NAME = customElements.getName(ContentToolbarElement);
     static TEXT_NAME = customElements.getName(ContentTextElement);
 
+    /** @type {1|2|3|4|5|6} */ #baseHeadingLevel;
+    #headingText = new Emitter('');
+
+    /** @type {HTMLHeadingElement} */ #heading;
     /** @type {ContentToolbarElement} */ #toolbar;
     /** @type {ContentDividerElement} */ #divider;
     /** @type {HTMLElement} */ #previousTarget;
@@ -18,6 +23,14 @@ export default class ContentEditorComponent extends HTMLElement {
 
     connectedCallback() {
         this.setAttribute('tabindex', '0');
+        
+        this.#baseHeadingLevel = Math.min(Math.max(Math.floor(Number(this.dataset.headingBaseLevel)), 1), 6);
+        this.#heading = document.createElement(`h${this.#baseHeadingLevel}`);
+        this.prepend(this.#heading);
+
+        this.#headingText.subscribe({next: text => {
+            this.#heading.textContent = text;
+        }}, {getCurrent: true});
 
         this.#toolbar = document.createElement(ContentEditorComponent.TOOLBAR_NAME);
         this.appendChild(this.#toolbar);
@@ -78,6 +91,7 @@ export default class ContentEditorComponent extends HTMLElement {
 
         this.addEventListener('content-text', event => {
             event.stopPropagation();
+            /** @type {ContentTextElement} */
             const contentText = document.createElement(ContentEditorComponent.TEXT_NAME);
             
             if (this.#toolbar.parentElement === this) {
@@ -117,6 +131,16 @@ export default class ContentEditorComponent extends HTMLElement {
     }
 
     disconnectedCallback() {}
+
+
+    setHeading(text = '') {
+        if (typeof text === 'string') {
+            this.#headingText.setValue(text);
+            return;
+        }
+
+        console.error('Parameter "text" is not of string type');
+    }
 
     /** 
      * @param {HTMLElement} element  
@@ -164,15 +188,31 @@ export default class ContentEditorComponent extends HTMLElement {
     }
 
     /**
+     * @param {HTMLElement} element 
+     * @param {'beforebegin'|'afterend'} where 
+     */
+    #putToolbarAdjacentTo(element, where) {
+        if (element === this.#heading && where === 'beforebegin')
+            return;
+
+        element?.insertAdjacentElement(where, this.#toolbar);
+    }
+
+    /**
      * 
      * @param {ContentEditorComponent|ContentContainerElement} container 
      * @param {'beforebegin'|'afterend'} adjacency 
      */
     #putToolbarFirstOrLast(container, adjacency) {
-        if (adjacency === 'beforebegin')
-            container.prepend(this.#toolbar);
-        else
+        if (adjacency === 'afterend') {
             container.append(this.#toolbar);
+            return;
+        }
+        
+        if (container === this)
+            return;
+        
+        container.prepend(this.#toolbar);
     }
 
     /**
@@ -181,7 +221,7 @@ export default class ContentEditorComponent extends HTMLElement {
      * @param {ContentContainerElement} container 
      */
     #setToolbarPositionByFocus(event, target, container) {
-
+        // TODO
     }
 
     /**
@@ -191,7 +231,7 @@ export default class ContentEditorComponent extends HTMLElement {
      */
     #setToolbarPositionByMouse(event, target, container) {
         if (target !== container) {
-            target.insertAdjacentElement(this.#getAdjacency(container, target, event), this.#toolbar);
+            this.#putToolbarAdjacentTo(target, this.#getAdjacency(container, target, event));
             return;
         }
 
@@ -200,8 +240,8 @@ export default class ContentEditorComponent extends HTMLElement {
                 this.#putToolbarFirstOrLast(this, this.#getAdjacency(this, this, event));
                 return
             }
-            
-            this.#previousTarget?.insertAdjacentElement(this.#getAdjacency(container, this.#previousTarget, event), this.#toolbar);
+
+            this.#putToolbarAdjacentTo(this.#previousTarget, this.#getAdjacency(container, this.#previousTarget, event));
             return;
         }
 
