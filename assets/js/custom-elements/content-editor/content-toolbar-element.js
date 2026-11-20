@@ -5,6 +5,7 @@ export default class ContentToolbarElement extends HTMLElement {
 
     /** @type {ShadowRoot} */ #shadowRoot;
     /** @type {HTMLButtonElement} */ #btnContainer;
+    /** @type {HTMLButtonElement} */ #btnHeading;
     /** @type {HTMLButtonElement} */ #btnRemove;
     /** @type {HTMLButtonElement} */ #btnDirection;
     /** @type {HTMLButtonElement} */ #btnText;
@@ -22,6 +23,8 @@ export default class ContentToolbarElement extends HTMLElement {
         
         this.#btnContainer = this.#attachNewSvgButton({title: 'Add content box', symbolId: '#svg-add-box'});
         this.#addClickEvent(this.#btnContainer, 'content-add');
+
+        this.#btnHeading = this.#attachNewSvgButton({title: 'Add heading', symbolId: '#svg-heading-1'});
 
         this.#btnText = this.#attachNewSvgButton({title: 'Add text', symbolId: '#svg-text-snippet'});
         this.#addClickEvent(this.#btnText, 'content-text');
@@ -167,6 +170,7 @@ export default class ContentToolbarElement extends HTMLElement {
     #updateVisibility() {
         const inContainer = this.parentElement.localName === ContentToolbarElement.CONTAINER_NAME;
 
+        this.#btnHeading.hidden = !inContainer || this !== this.parentElement.firstChild;
         this.#btnDirection.hidden = !inContainer;
         this.#btnRemove.hidden = !inContainer;
         this.#btnDivider.hidden = inContainer;

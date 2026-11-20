@@ -70,6 +70,25 @@
         <path d="M360-160q-33 0-56.5-23.5T280-240q0-33 23.5-56.5T360-320q33 0 56.5 23.5T440-240q0 33-23.5 56.5T360-160Zm240 0q-33 0-56.5-23.5T520-240q0-33 23.5-56.5T600-320q33 0 56.5 23.5T680-240q0 33-23.5 56.5T600-160ZM360-400q-33 0-56.5-23.5T280-480q0-33 23.5-56.5T360-560q33 0 56.5 23.5T440-480q0 33-23.5 56.5T360-400Zm240 0q-33 0-56.5-23.5T520-480q0-33 23.5-56.5T600-560q33 0 56.5 23.5T680-480q0 33-23.5 56.5T600-400ZM360-640q-33 0-56.5-23.5T280-720q0-33 23.5-56.5T360-800q33 0 56.5 23.5T440-720q0 33-23.5 56.5T360-640Zm240 0q-33 0-56.5-23.5T520-720q0-33 23.5-56.5T600-800q33 0 56.5 23.5T680-720q0 33-23.5 56.5T600-640Z"/>
     </symbol>
 
+    <symbol id="svg-heading-1" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M5,17V7H7v4h4V7h2V17H11V13H7v4H5Zm12,0V9H15V7h4V17H17Z"/>
+    </symbol>
+    <symbol id="svg-heading-2" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M3,17V7H5v4H9V7h2V17H9V13H5v4H3Zm10,0V13q0-0.83 0.59-1.41T15,11h4V9H13V7h6q0.83,0 1.41,0.59T21,9v2q0,0.82-0.59,1.41T19,13H15v2h6v2H13Z"/>
+    </symbol>
+    <symbol id="svg-heading-3" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M3,17V7H5v4H9V7h2V17H9V13H5v4H3Zm10,0V15h6V13H15V11h4V9H13V7h6q0.83,0 1.41,0.59T21,9v6q0,0.82-0.59,1.41T19,17H13Z"/>
+    </symbol>
+    <symbol id="svg-heading-4" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M3,17V7H5v4H9V7h2V17H9V13H5v4H3Zm15,0V14H13V7h2v5h3V7h2v5h2v2H20v3H18Z"/>
+    </symbol>
+    <symbol id="svg-heading-5" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M3,17V7H5v4H9V7h2V17H9V13H5v4H3Zm10,0V15h6V13H13V7h8V9H15v2h4q0.83,0 1.41,0.59Q21,12.18 21,13v2q0,0.82-0.59,1.41T19,17H13Z"/>
+    </symbol>
+    <symbol id="svg-heading-6" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M3,17V7H5v4H9V7h2V17H9V13H5v4H3Zm12,0q-0.82,0-1.41-0.59T13,15V9q0-0.83 0.59-1.41T15,7h6V9H15v2h4q0.83,0 1.41,0.59Q21,12.18 21,13v2q0,0.82-0.59,1.41T19,17H15Zm0-4v2h4V13H15Z"/>
+    </symbol>
+
     <symbol id="svg-text-snippet" viewBox="0 0 24 24" fill="currentColor">
         <path d="M5,19H19V9.82L14.18,5H5V19Zm0,2q-0.83,0-1.41-0.59T3,19V5Q3,4.17 3.59,3.59T5,3H15l6,6V19q0,0.82-0.59,1.41T19,21H5Zm2-4H17V15H7v2Zm0-4H17V11H7v2ZM7,9h7V7H7V9ZM5,19V5V9.82V19Z"/>
     </symbol>
