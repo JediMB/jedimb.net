@@ -184,6 +184,18 @@ export default class ContentTextElement extends HTMLElement {
                 .forEach(match => match.replaceWith(...match.childNodes));
 
             while (element.localName === element.nextElementSibling?.localName) {
+                const inbetweeners = [];
+                let searchNode = element.nextSibling;
+
+                while (searchNode.nodeType === Node.TEXT_NODE) {
+                    inbetweeners.push(searchNode);
+                    searchNode = searchNode.nextSibling;
+                }
+
+                if (inbetweeners.some(text => text.textContent.trim()))
+                    break;
+
+                element.append(...inbetweeners);
                 element.append(...element.nextElementSibling.childNodes);
                 element.nextElementSibling.remove();
             }
