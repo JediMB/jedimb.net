@@ -17,12 +17,16 @@ export default class ContentContainerElement extends HTMLElement {
 
     decreaseHeadingLevel() {
         this.#headingLevel--;
-        this.#addOrReplaceHeading();
+
+        if (this.#heading)
+            this.#addOrReplaceHeading();
     }
 
     increaseHeadingLevel() {
         this.#headingLevel++;
-        this.#addOrReplaceHeading();
+        
+        if (this.#heading)
+            this.#addOrReplaceHeading();
     }
 
     removeHeading() {
