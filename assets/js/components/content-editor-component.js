@@ -47,11 +47,12 @@ export default class ContentEditorComponent extends HTMLElement {
             this.#insertNewContainer('beforebegin', this.#toolbar);
         });
 
-        this.addEventListener('content-direction', event => {
-            event.stopPropagation();
-
-            this.#toolbar.parentElement.setAttribute('content-direction', event.detail);
-        });
+        this.addEventListener('content-direction', /** @param {CustomEvent<(() => void)> event} */
+            event => {
+                event.stopPropagation();
+                this.#toolbar.parentElement.setAttribute('content-direction', event.detail);
+            }
+        );
 
         this.addEventListener('content-remove', event => {
             event.stopPropagation();
@@ -85,6 +86,19 @@ export default class ContentEditorComponent extends HTMLElement {
                     }
                 }
             )
+        });
+
+        this.addEventListener('content-heading', event => {
+            event.stopPropagation();
+            /** @type {ContentContainerElement} */
+            const container = this.#toolbar.parentElement;
+
+            if (container === this) {
+                console.error('Trying to insert a heading into content editor root');
+                return;
+            }
+
+            container.setHeading();
         });
 
         this.addEventListener('content-text', event => {
@@ -147,7 +161,7 @@ export default class ContentEditorComponent extends HTMLElement {
     #insertNewContainer(where, anchorElement, ...contents) {
         /** @type {ContentContainerElement} */
         const container = document.createElement(ContentEditorComponent.CONTAINER_NAME);
-        container.headingLevel = (anchorElement.parentElement.headingLevel ?? this.#baseHeadingLevel) + 1;
+        container.setup(anchorElement.parentElement.headingLevel ?? this.#baseHeadingLevel)
         container.append(...contents);
         anchorElement.insertAdjacentElement(where, container);
         return container;
@@ -203,7 +217,7 @@ export default class ContentEditorComponent extends HTMLElement {
      * @param {'beforebegin'|'afterend'} where 
      */
     #putToolbarAdjacentTo(element, where) {
-        if (element === this.#heading && where === 'beforebegin')
+        if (element instanceof HTMLHeadingElement && where === 'beforebegin')
             return;
 
         element?.insertAdjacentElement(where, this.#toolbar);
@@ -220,7 +234,7 @@ export default class ContentEditorComponent extends HTMLElement {
             return;
         }
         
-        if (container === this)
+        if (container.firstElementChild instanceof HTMLHeadingElement)
             return;
         
         container.prepend(this.#toolbar);

@@ -5,7 +5,7 @@ export default class ContentToolbarElement extends HTMLElement {
 
     /** @type {ShadowRoot} */ #shadowRoot;
     /** @type {HTMLButtonElement} */ #btnContainer;
-    /** @type {HTMLButtonElement} */ #btnHeading;
+    /** @type {HTMLButtonElement[]} */ #btnHeadings;
     /** @type {HTMLButtonElement} */ #btnRemove;
     /** @type {HTMLButtonElement} */ #btnDirection;
     /** @type {HTMLButtonElement} */ #btnText;
@@ -24,7 +24,15 @@ export default class ContentToolbarElement extends HTMLElement {
         this.#btnContainer = this.#attachNewSvgButton({title: 'Add content box', symbolId: '#svg-add-box'});
         this.#addClickEvent(this.#btnContainer, 'content-add');
 
-        this.#btnHeading = this.#attachNewSvgButton({title: 'Add heading', symbolId: '#svg-heading-1'});
+        this.#btnHeadings = [
+            this.#attachNewSvgButton({title: 'Add level 2 heading', symbolId: '#svg-heading-2'}),
+            this.#attachNewSvgButton({title: 'Add level 3 heading', symbolId: '#svg-heading-3'}),
+            this.#attachNewSvgButton({title: 'Add level 4 heading', symbolId: '#svg-heading-4'}),
+            this.#attachNewSvgButton({title: 'Add level 5 heading', symbolId: '#svg-heading-5'}),
+            this.#attachNewSvgButton({title: 'Add level 6 heading', symbolId: '#svg-heading-6'})
+        ];
+
+        this.#btnHeadings.forEach(btn => this.#addClickEvent(btn, 'content-heading'));
 
         this.#btnText = this.#attachNewSvgButton({title: 'Add text', symbolId: '#svg-text-snippet'});
         this.#addClickEvent(this.#btnText, 'content-text');
@@ -168,9 +176,16 @@ export default class ContentToolbarElement extends HTMLElement {
     }
 
     #updateVisibility() {
+        /** @type {ContentEditorComponent|ContentContainerElement} */
+        const parent = this.parentElement;
         const inContainer = this.parentElement.localName === ContentToolbarElement.CONTAINER_NAME;
 
-        this.#btnHeading.hidden = !inContainer || this !== this.parentElement.firstChild;
+        this.#btnHeadings.forEach((btn, index) => {
+            btn.hidden = !inContainer
+                || parent.hasHeading
+                || this !== this.parentElement.firstChild
+                || parent.headingLevel !== index + 1;
+        });
         this.#btnDirection.hidden = !inContainer;
         this.#btnRemove.hidden = !inContainer;
         this.#btnDivider.hidden = inContainer;

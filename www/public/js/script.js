@@ -2578,21 +2578,13 @@ const userApiService = new UserApiService();
 /* IMPORT: /js/custom-elements/content-editor/content-container-element.js */
 
 class ContentContainerElement extends HTMLElement {
-    /** @type {2|3|4|5|6|null} */ #headingLevel = null;
+    /** @type {boolean} */ #isSetup = false;
+    /** @type {HTMLHeadingElement} */ #heading = null;
+    /** @type {2|3|4|5|6} */ #headingLevel = 0;
 
-    /** @param {2|3|4|5|6} val  */
-    set headingLevel(val) {
-        const level = Math.floor(Number(val));
+    get hasHeading() { return !!this.#heading; }
 
-        if (level < 2 || level > 6)
-            this.#headingLevel = null;
-        else
-            this.#headingLevel = level;
-    }
-
-    get headingLevel() {
-        return this.#headingLevel;
-    }
+    get headingLevel() { return this.#headingLevel; }
 
     constructor() { super(); }
 
@@ -2601,6 +2593,72 @@ class ContentContainerElement extends HTMLElement {
     }
 
     disconnectedCallback() {}
+
+    decreaseHeadingLevel() {
+        this.#headingLevel--;
+        this.#addOrReplaceHeading();
+    }
+
+    increaseHeadingLevel() {
+        this.#headingLevel++;
+        this.#addOrReplaceHeading();
+    }
+
+    removeHeading() {
+        if (!this.#heading)
+            return;
+
+        this.#headingLevel--;
+        /** @type {NodeListOf<ContentContainerElement>} */
+        const descendants = this.querySelectorAll(customElements.getName(ContentContainerElement));
+        descendants.forEach(container => container.decreaseHeadingLevel());
+
+        this.#heading.remove();
+        this.#heading = null;
+    }
+
+    setHeading() {
+        if (!this.#isValidHeadingLevel())
+            return console.error(`Cannot add heading while at invalid heading level (${this.#headingLevel})`);
+
+        if (!this.#heading) {
+            this.#headingLevel++;
+            /** @type {NodeListOf<ContentContainerElement>} */
+            const descendants = this.querySelectorAll(customElements.getName(ContentContainerElement));
+            descendants.forEach(container => container.increaseHeadingLevel());
+        }
+
+        this.#addOrReplaceHeading();
+    }
+
+    #addOrReplaceHeading() {
+        // TODO: Use a different element if trying to increment the level to 7 or above
+
+        const newHeading = document.createElement(`h${this.#headingLevel}`);
+        newHeading.textContent = this.#heading?.textContent;
+        this.#heading?.remove();
+        this.#heading = newHeading;
+        this.prepend(newHeading);
+        newHeading.contentEditable = true;
+        newHeading.focus();
+    }
+
+    /** @param {number} headingLevel  */
+    setup(headingLevel) {
+        if (this.#isSetup) {
+            console.error('Cannot setup ContentContainerElement more than once');
+            return;
+        }
+        this.#isSetup = true;
+
+        this.#headingLevel = Math.floor(Number(headingLevel));
+        if (!this.#isValidHeadingLevel())
+            this.#headingLevel = 0;
+    }
+
+    #isValidHeadingLevel() {
+        return Number.isInteger(this.#headingLevel) && this.#headingLevel >= 2 && this.#headingLevel <= 6;
+    }
 }
 
 customElements.define('content-container', ContentContainerElement);
@@ -3264,7 +3322,7 @@ class ContentToolbarElement extends HTMLElement {
 
     /** @type {ShadowRoot} */ #shadowRoot;
     /** @type {HTMLButtonElement} */ #btnContainer;
-    /** @type {HTMLButtonElement} */ #btnHeading;
+    /** @type {HTMLButtonElement[]} */ #btnHeadings;
     /** @type {HTMLButtonElement} */ #btnRemove;
     /** @type {HTMLButtonElement} */ #btnDirection;
     /** @type {HTMLButtonElement} */ #btnText;
@@ -3283,7 +3341,15 @@ class ContentToolbarElement extends HTMLElement {
         this.#btnContainer = this.#attachNewSvgButton({title: 'Add content box', symbolId: '#svg-add-box'});
         this.#addClickEvent(this.#btnContainer, 'content-add');
 
-        this.#btnHeading = this.#attachNewSvgButton({title: 'Add heading', symbolId: '#svg-heading-1'});
+        this.#btnHeadings = [
+            this.#attachNewSvgButton({title: 'Add level 2 heading', symbolId: '#svg-heading-2'}),
+            this.#attachNewSvgButton({title: 'Add level 3 heading', symbolId: '#svg-heading-3'}),
+            this.#attachNewSvgButton({title: 'Add level 4 heading', symbolId: '#svg-heading-4'}),
+            this.#attachNewSvgButton({title: 'Add level 5 heading', symbolId: '#svg-heading-5'}),
+            this.#attachNewSvgButton({title: 'Add level 6 heading', symbolId: '#svg-heading-6'})
+        ];
+
+        this.#btnHeadings.forEach(btn => this.#addClickEvent(btn, 'content-heading'));
 
         this.#btnText = this.#attachNewSvgButton({title: 'Add text', symbolId: '#svg-text-snippet'});
         this.#addClickEvent(this.#btnText, 'content-text');
@@ -3427,9 +3493,16 @@ class ContentToolbarElement extends HTMLElement {
     }
 
     #updateVisibility() {
+        /** @type {ContentEditorComponent|ContentContainerElement} */
+        const parent = this.parentElement;
         const inContainer = this.parentElement.localName === ContentToolbarElement.CONTAINER_NAME;
 
-        this.#btnHeading.hidden = !inContainer || this !== this.parentElement.firstChild;
+        this.#btnHeadings.forEach((btn, index) => {
+            btn.hidden = !inContainer
+                || parent.hasHeading
+                || this !== this.parentElement.firstChild
+                || parent.headingLevel !== index + 1;
+        });
         this.#btnDirection.hidden = !inContainer;
         this.#btnRemove.hidden = !inContainer;
         this.#btnDivider.hidden = inContainer;
@@ -4867,11 +4940,12 @@ class ContentEditorComponent extends HTMLElement {
             this.#insertNewContainer('beforebegin', this.#toolbar);
         });
 
-        this.addEventListener('content-direction', event => {
-            event.stopPropagation();
-
-            this.#toolbar.parentElement.setAttribute('content-direction', event.detail);
-        });
+        this.addEventListener('content-direction', /** @param {CustomEvent<(() => void)> event} */
+            event => {
+                event.stopPropagation();
+                this.#toolbar.parentElement.setAttribute('content-direction', event.detail);
+            }
+        );
 
         this.addEventListener('content-remove', event => {
             event.stopPropagation();
@@ -4905,6 +4979,19 @@ class ContentEditorComponent extends HTMLElement {
                     }
                 }
             )
+        });
+
+        this.addEventListener('content-heading', event => {
+            event.stopPropagation();
+            /** @type {ContentContainerElement} */
+            const container = this.#toolbar.parentElement;
+
+            if (container === this) {
+                console.error('Trying to insert a heading into content editor root');
+                return;
+            }
+
+            container.setHeading();
         });
 
         this.addEventListener('content-text', event => {
@@ -4967,7 +5054,7 @@ class ContentEditorComponent extends HTMLElement {
     #insertNewContainer(where, anchorElement, ...contents) {
         /** @type {ContentContainerElement} */
         const container = document.createElement(ContentEditorComponent.CONTAINER_NAME);
-        container.headingLevel = (anchorElement.parentElement.headingLevel ?? this.#baseHeadingLevel) + 1;
+        container.setup(anchorElement.parentElement.headingLevel ?? this.#baseHeadingLevel)
         container.append(...contents);
         anchorElement.insertAdjacentElement(where, container);
         return container;
@@ -5023,7 +5110,7 @@ class ContentEditorComponent extends HTMLElement {
      * @param {'beforebegin'|'afterend'} where 
      */
     #putToolbarAdjacentTo(element, where) {
-        if (element === this.#heading && where === 'beforebegin')
+        if (element instanceof HTMLHeadingElement && where === 'beforebegin')
             return;
 
         element?.insertAdjacentElement(where, this.#toolbar);
@@ -5040,7 +5127,7 @@ class ContentEditorComponent extends HTMLElement {
             return;
         }
         
-        if (container === this)
+        if (container.firstElementChild instanceof HTMLHeadingElement)
             return;
         
         container.prepend(this.#toolbar);
