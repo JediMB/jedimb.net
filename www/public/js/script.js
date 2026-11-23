@@ -4831,8 +4831,8 @@ class ContentEditorComponent extends HTMLElement {
     static TOOLBAR_NAME = customElements.getName(ContentToolbarElement);
     static TEXT_NAME = customElements.getName(ContentTextElement);
 
-    /** @type {1|2|3|4|5|6} */ #baseHeadingLevel;
     #headingText = new Emitter('');
+    /** @type {1|2|3|4|5|6} */ #baseHeadingLevel;
 
     /** @type {HTMLHeadingElement} */ #heading;
     /** @type {ContentToolbarElement} */ #toolbar;
@@ -4864,9 +4864,7 @@ class ContentEditorComponent extends HTMLElement {
 
         this.addEventListener('content-add', event => {
             event.stopPropagation();
-            const container = document.createElement(ContentEditorComponent.CONTAINER_NAME);
-            
-            this.#toolbar.before(container);
+            this.#insertNewContainer('beforebegin', this.#toolbar);
         });
 
         this.addEventListener('content-direction', event => {
@@ -4915,9 +4913,7 @@ class ContentEditorComponent extends HTMLElement {
             const contentText = document.createElement(ContentEditorComponent.TEXT_NAME);
             
             if (this.#toolbar.parentElement === this) {
-                const container = document.createElement(ContentEditorComponent.CONTAINER_NAME);
-                container.append(contentText);
-                this.#toolbar.before(container);
+                this.#insertNewContainer('beforebegin', this.#toolbar, contentText);
                 contentText.focusWithin();
                 return;
             }
@@ -4952,7 +4948,6 @@ class ContentEditorComponent extends HTMLElement {
 
     disconnectedCallback() {}
 
-
     setHeading(text = '') {
         if (typeof text === 'string') {
             this.#headingText.setValue(text);
@@ -4960,6 +4955,22 @@ class ContentEditorComponent extends HTMLElement {
         }
 
         console.error('Parameter "text" is not of string type');
+    }
+
+    /** 
+     * @param {'beforebegin'|'afterend'} where 
+     * @param {HTMLElement &
+     * { parentElement: ContentEditorComponent|ContentContainerElement}} anchorElement 
+     * @param {...Node} contents 
+     * @returns {ContentContainerElement}
+     * */
+    #insertNewContainer(where, anchorElement, ...contents) {
+        /** @type {ContentContainerElement} */
+        const container = document.createElement(ContentEditorComponent.CONTAINER_NAME);
+        container.headingLevel = (anchorElement.parentElement.headingLevel ?? this.#baseHeadingLevel) + 1;
+        container.append(...contents);
+        anchorElement.insertAdjacentElement(where, container);
+        return container;
     }
 
     /** 
