@@ -75,4 +75,16 @@ use App\Utils\CSSRenderer;
             }
         }
     }
+
+    content-invalid-heading {
+        display: block;
+        text-decoration: line-through;
+
+        &::before {
+            margin-right: 1em;
+            color: var(--clr-warn-dark);
+            content: '❌';
+            text-decoration: none;
+        }
+    }
 CSS) ?>

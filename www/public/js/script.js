@@ -2596,12 +2596,16 @@ class ContentContainerElement extends HTMLElement {
 
     decreaseHeadingLevel() {
         this.#headingLevel--;
-        this.#addOrReplaceHeading();
+
+        if (this.#heading)
+            this.#addOrReplaceHeading();
     }
 
     increaseHeadingLevel() {
         this.#headingLevel++;
-        this.#addOrReplaceHeading();
+
+        if (this.#heading)
+            this.#addOrReplaceHeading();
     }
 
     removeHeading() {
@@ -2632,9 +2636,10 @@ class ContentContainerElement extends HTMLElement {
     }
 
     #addOrReplaceHeading() {
-        // TODO: Use a different element if trying to increment the level to 7 or above
-
-        const newHeading = document.createElement(`h${this.#headingLevel}`);
+        console.log(this.#headingLevel);
+        const newHeading = this.#isValidHeadingLevel()
+            ? document.createElement(`h${this.#headingLevel}`)
+            : document.createElement('content-invalid-heading');
         newHeading.textContent = this.#heading?.textContent;
         this.#heading?.remove();
         this.#heading = newHeading;
@@ -2657,7 +2662,9 @@ class ContentContainerElement extends HTMLElement {
     }
 
     #isValidHeadingLevel() {
-        return Number.isInteger(this.#headingLevel) && this.#headingLevel >= 2 && this.#headingLevel <= 6;
+        return Number.isInteger(this.#headingLevel)
+            && this.#headingLevel >= 2
+            && this.#headingLevel <= 6;
     }
 }
 
