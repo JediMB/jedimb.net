@@ -3190,11 +3190,10 @@ class ContentTextElement extends HTMLElement {
     #activate(keyboardActivation = false) {
         const content = this.#content;
 
-        const contenteditable = content.getAttribute('contenteditable');
-        if (contenteditable === 'true' || contenteditable === '')
+        if (content.contentEditable === ContentEditable.TRUE)
             return;
 
-        content.setAttribute('contenteditable', 'true');
+        content.contentEditable = ContentEditable.TRUE;
         content.addEventListener('keydown', this.#handleKeyboardCommands);
     }
 
@@ -3234,7 +3233,7 @@ class ContentTextElement extends HTMLElement {
     #deactivate() {
         const content = this.#content;
 
-        if (!content.hasAttribute('contenteditable'))
+        if (content.contentEditable === ContentEditable.INHERIT)
             return;
 
         if (content.textContent.trim() === '') {
@@ -3242,7 +3241,7 @@ class ContentTextElement extends HTMLElement {
             return;
         }
 
-        content.removeAttribute('contenteditable');
+        content.contentEditable = ContentEditable.INHERIT;
         content.querySelectorAll('*').forEach(element => {
             if (!element)
                 return;
