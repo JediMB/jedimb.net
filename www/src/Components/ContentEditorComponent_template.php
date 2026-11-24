@@ -45,6 +45,10 @@ use App\Utils\CSSRenderer;
         min-width: 1em;
         padding: 1em;
 
+        & :is(h2, h3, h4, h5, h6):not([contenteditable]) {
+            cursor: pointer;
+        }
+
         & > content-toolbar { flex-direction: row; }
         
         &[content-direction="row"] {
@@ -52,7 +56,18 @@ use App\Utils\CSSRenderer;
 
             & > content-toolbar { flex-direction: column; }
         }
+    }
 
+    content-invalid-heading {
+        display: block;
+        text-decoration: line-through;
+
+        &::before {
+            margin-right: 1em;
+            color: var(--clr-warn-dark);
+            content: '❌';
+            text-decoration: none;
+        }
     }
 
     content-text {
@@ -73,18 +88,6 @@ use App\Utils\CSSRenderer;
                     background-color: var(--clr-accent-dark);
                 }
             }
-        }
-    }
-
-    content-invalid-heading {
-        display: block;
-        text-decoration: line-through;
-
-        &::before {
-            margin-right: 1em;
-            color: var(--clr-warn-dark);
-            content: '❌';
-            text-decoration: none;
         }
     }
 CSS) ?>

@@ -1,3 +1,5 @@
+import ContentEditable from "/js/enums/content-editable.enum.js";
+
 export default class ContentContainerElement extends HTMLElement {
     /** @type {boolean} */ #isSetup = false;
     /** @type {HTMLHeadingElement} */ #heading = null;
@@ -57,7 +59,6 @@ export default class ContentContainerElement extends HTMLElement {
     }
 
     #addOrReplaceHeading() {
-        console.log(this.#headingLevel);
         const newHeading = this.#isValidHeadingLevel()
             ? document.createElement(`h${this.#headingLevel}`)
             : document.createElement('content-invalid-heading');
@@ -65,7 +66,54 @@ export default class ContentContainerElement extends HTMLElement {
         this.#heading?.remove();
         this.#heading = newHeading;
         this.prepend(newHeading);
-        newHeading.contentEditable = true;
+
+
+        newHeading.addEventListener('click', () => {
+            if (!newHeading.isContentEditable)
+                newHeading.contentEditable = ContentEditable.PLAINTEXT_ONLY;
+        });
+
+        newHeading.addEventListener('keypress', () => {
+            if (!newHeading.isContentEditable)
+                newHeading.contentEditable = ContentEditable.PLAINTEXT_ONLY;
+        });
+
+        newHeading.addEventListener('keydown', event => {
+            event.stopPropagation();
+
+            if (event.key === 'Enter' || event.key === 'Return')
+                event.preventDefault();
+        });
+
+        newHeading.addEventListener('paste', event => {
+            event.preventDefault();
+
+            if (!newHeading.isContentEditable)
+                return;
+
+            const pasteText = event.clipboardData.getData('text').replaceAll("\n", ' ');
+            const selection = getSelection();
+
+            if (!newHeading.contains(selection.anchorNode) || !newHeading.contains(selection.focusNode)) {
+                newHeading.textContent += pasteText;
+                selection.setPosition(newHeading, newHeading.childNodes.length);
+                return;
+            }
+
+            selection.deleteFromDocument();
+            selection.getRangeAt(0).insertNode(document.createTextNode(pasteText));
+            selection.collapseToEnd();
+        });
+
+        newHeading.addEventListener('blur', () => {
+            if (!newHeading.textContent.trim())
+                this.removeHeading();
+
+            newHeading.contentEditable = ContentEditable.INHERIT;
+        });
+
+        newHeading.tabIndex = 0;
+        newHeading.contentEditable = ContentEditable.PLAINTEXT_ONLY;
         newHeading.focus();
     }
 
