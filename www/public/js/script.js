@@ -3122,6 +3122,59 @@ class ContentTextElement extends HTMLElement {
         this.#attachNewSvgButton({title: 'Strikethrough', symbolId: '#svg-text-strikethrough'})
             .addEventListener('click', () => this.#formatter.toggleTag('s'));
 
+        this.#attachNewSvgButton({title: 'Cut', symbolId: '#svg-content-cut'})
+            .addEventListener('click', () => {
+
+            });
+        this.#attachNewSvgButton({title: 'Copy', symbolId: '#svg-content-copy'})
+            .addEventListener('click', async () => {
+                const selection = getSelection();
+
+                if (selection.isCollapsed)
+                    return;
+
+                try {
+                    const selectedContents = selection.getComposedRanges()
+                        .map((_, index) => selection.getRangeAt(index))
+                        .map(range => {
+                            let contents = range.cloneContents();
+                            
+                            let element = range.commonAncestorContainer;
+                            if (element.nodeType === Node.TEXT_NODE)
+                                element = element.parentElement;
+
+                            while (element && element !== this.#content) {
+                                const newElement = document.createElement(element.localName);
+                                newElement.append(contents);
+                                contents = newElement;
+                                element = element.parentElement;
+                            }
+
+                            return contents;
+                        });
+
+                    const container = document.createElement('div');
+                    container.append(...selectedContents);
+                    const html = container.innerHTML;
+                    const text = container.innerText;
+
+                    const clipboardItem = new ClipboardItem({
+                        'text/html': new Blob([html], { type: 'text/html' }),
+                        'text/plain': new Blob([text], { type: 'text/plain' })
+                    });
+
+                    await navigator.clipboard.write([clipboardItem]);
+                }
+                catch (_) {
+                    document.execCommand('copy');
+                    console.error('Fell back to execCommand copy functionality');
+                }
+            });
+        this.#attachNewSvgButton({title: 'Paste', symbolId: '#svg-content-paste'})
+            .addEventListener('click', () => {
+                
+            });
+
         const css = new CSSStyleSheet();
         css.replaceSync(`
             :focus-visible,
