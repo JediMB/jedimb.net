@@ -13,6 +13,8 @@ export default class ContentTextElement extends HTMLElement {
     /** @type {ContentTextFormatter} */ #formatter;
     /** @type {ContentClipboardManager} */ #clipboard;
 
+    /** @type {string[]} */ #validElementTypes = [];
+
     constructor() {
         super();
         this.#handleKeyboardCommands = this.#handleKeyboardCommands.bind(this);
@@ -128,6 +130,11 @@ export default class ContentTextElement extends HTMLElement {
             return;
 
         this.#content.append(content);
+    }
+
+    /** @param {string[]} validElementTypes  */
+    setValidElementTypes(validElementTypes) {
+        this.#validElementTypes = validElementTypes;
     }
 
     focusWithin() {

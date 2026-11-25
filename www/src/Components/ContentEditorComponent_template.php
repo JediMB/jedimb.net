@@ -15,7 +15,8 @@ use App\Utils\CSSRenderer;
     data-remove-container-no="No"
     data-remove-container-keep-contents="Keep contents"
     data-divider-text="Preview ends"
-    data-heading-base-level="2">
+    data-heading-base-level="2"
+    data-valid-element-types="<?= str_replace('"', "'", json_encode(INPUT_ALLOWED_TAGS)) ?>">
 </content-editor-component>
 <div></div>
 <div></div>

@@ -60,7 +60,7 @@ define('INPUT_LENGTH', [
 
 define('INPUT_ALLOWED_TAGS', [
     'div', 'p', 'h3', 'h4', 'h5',
-    'a', 'b', 'i', 'u',
+    'a', 'b', 'i', 's', 'u',
     'br', 'hr', 'img-gallery', 'img-wrapper',
     'li', 'ol', 'ul'
 ]);

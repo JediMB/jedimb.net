@@ -13,6 +13,7 @@ export default class ContentEditorComponent extends HTMLElement {
 
     #headingText = new Emitter('');
     /** @type {1|2|3|4|5|6} */ #baseHeadingLevel;
+    /** @type {string[]} */ #validElementTypes;
 
     /** @type {HTMLHeadingElement} */ #heading;
     /** @type {ContentToolbarElement} */ #toolbar;
@@ -23,6 +24,11 @@ export default class ContentEditorComponent extends HTMLElement {
 
     connectedCallback() {
         this.setAttribute('tabindex', '0');
+
+        const validElementTypes = JSON.parse(this.dataset.validElementTypes.replaceAll("'", '"') ?? '[]');
+        this.#validElementTypes = Array.isArray(validElementTypes)
+            ? validElementTypes
+            : [];
         
         this.#baseHeadingLevel = Math.min(Math.max(Math.floor(Number(this.dataset.headingBaseLevel)), 1), 6);
         this.#heading = document.createElement(`h${this.#baseHeadingLevel}`);
@@ -105,6 +111,7 @@ export default class ContentEditorComponent extends HTMLElement {
             event.stopPropagation();
             /** @type {ContentTextElement} */
             const contentText = document.createElement(ContentEditorComponent.TEXT_NAME);
+            contentText.setValidElementTypes(this.#validElementTypes);
             
             if (this.#toolbar.parentElement === this) {
                 this.#insertNewContainer('beforebegin', this.#toolbar, contentText);
@@ -125,6 +132,7 @@ export default class ContentEditorComponent extends HTMLElement {
                     case 'new':
                         /** @type {ContentTextElement} */
                         const newText = document.createElement(ContentEditorComponent.TEXT_NAME);
+                        newText.setValidElementTypes(this.#validElementTypes);
                         textElement.after(newText);
                         newText.focusWithin();
                         newText.appendDocumentFragment(event.detail.content);
