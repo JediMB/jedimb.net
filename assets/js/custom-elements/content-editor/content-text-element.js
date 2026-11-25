@@ -31,7 +31,7 @@ export default class ContentTextElement extends HTMLElement {
         this.#content = content;
         this.#shadowRoot.append(content);
         this.#formatter = new ContentTextFormatter(content);
-        this.#clipboard = new ContentClipboardManager(content);
+        this.#clipboard = new ContentClipboardManager(content, this.#validElementTypes);
 
         content.dataset.placeholder = ContentTextElement.PLACEHOLDER_TEXT;
         content.dataset.placeholderFocused = ContentTextElement.PLACEHOLDER_FOCUS_TEXT;

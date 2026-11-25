@@ -1,17 +1,71 @@
 export default class ContentClipboardManager {
     /** @type {HTMLElement} */ #container;
+    /** @type {string[]} */ #validElementTypes = [];
 
-    /** @param {HTMLElement} container  */
-    constructor(container) {
+    /**
+     * @param {HTMLElement} container 
+     * @param {string[]} validElementTypes 
+     */
+    constructor(container, validElementTypes) {
         this.#container = container;
+
+        if (validElementTypes)
+            this.#validElementTypes = [...validElementTypes];
+
+        this.#container.addEventListener('paste', event => {
+            if (!this.#container.isContentEditable)
+                return;
+
+            for (const type of ['text/html', 'text/plain']) {
+                const data = event.clipboardData.getData(type);
+
+                if (data) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                    this.#pasteToSelection(data, type);
+                    return;
+                }
+            }
+        });
     }
 
-    async copy() { this.#copyToClipboard(); }
+    async copy() { await this.#copyToClipboard(); }
 
     async cut() { await this.#copyToClipboard({deleteSelection: true}); }
 
     async paste() {
+        const [data, contentType] = await this.#findClipboardText('text/html', 'text/plain');
 
+        if (!data) return;
+
+        this.#pasteToSelection(data, contentType);
+    }
+
+    /**
+     * @param {string} html 
+     * @returns {string}
+     */
+    #cleanUp(html) {
+        const container = document.createElement('div');
+        container.innerHTML = html;
+
+        const elements = container.querySelectorAll('*');
+
+        // TODO: Replace \n with <br>
+        for (const element of elements) {
+            const isValid = this.#validElementTypes.includes(element.localName);
+
+            if (!isValid) {
+                element.replaceWith(...element.childNodes);
+                continue;
+            }
+
+            for (const attribute of element.attributes) {
+                element.removeAttributeNode(attribute);
+            }
+        }
+
+        return container.innerHTML;
     }
 
     /**
@@ -70,6 +124,64 @@ export default class ContentClipboardManager {
 
             document.execCommand('copy');
             console.error('Fell back to execCommand copy functionality');
+        }
+    }
+
+    /**
+     * @typedef {'text/html'|'text/plain'} ContentType
+     * @param  {...ContentType} wantedContentTypes 
+     * @returns {Promise<[string, ContentType]|null[]>}
+     */
+    async #findClipboardText(...wantedContentTypes) {
+        const content = await navigator.clipboard.read();
+
+        for (const type of wantedContentTypes) {
+            const item = content.find(i => i.types.includes(type));
+
+            if (item) {
+                const blob = await item.getType(type);
+                return [await blob.text(), type];
+            }
+        }
+        
+        return [null];
+    }
+
+    /**
+     * @param {string} data 
+     * @param {ContentType} type 
+     */
+    #pasteToSelection(data, type) {
+        const selection = getSelection();
+
+        try {
+            const validRanges = selection.getComposedRanges()
+                .map((_, index) => selection.getRangeAt(index))
+                .filter(range => this.#container.contains(range.commonAncestorContainer));
+
+            data = this.#cleanUp(data);
+
+            switch (type) {
+                case 'text/html':
+                    for (const range of validRanges) {
+                        range.deleteContents();
+                        range.insertNode(range.createContextualFragment(data));
+                        range.collapse();
+                    }
+                    break;
+
+                case 'text/plain':
+                    for (const range of validRanges) {
+                        range.deleteContents();
+                        range.insertNode(document.createTextNode(data));
+                        range.collapse();
+                    }
+                    break;
+            }
+        }
+        catch (_) {
+            document.execCommand('paste');
+            console.error('Fell back to execCommand paste functionality');
         }
     }
 

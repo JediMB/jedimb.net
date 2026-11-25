@@ -2819,18 +2819,72 @@ customElements.define('content-divider', ContentDividerElement);
 
 class ContentClipboardManager {
     /** @type {HTMLElement} */ #container;
+    /** @type {string[]} */ #validElementTypes = [];
 
-    /** @param {HTMLElement} container  */
-    constructor(container) {
+    /**
+     * @param {HTMLElement} container 
+     * @param {string[]} validElementTypes 
+     */
+    constructor(container, validElementTypes) {
         this.#container = container;
+
+        if (validElementTypes)
+            this.#validElementTypes = [...validElementTypes];
+
+        this.#container.addEventListener('paste', event => {
+            if (!this.#container.isContentEditable)
+                return;
+
+            for (const type of ['text/html', 'text/plain']) {
+                const data = event.clipboardData.getData(type);
+
+                if (data) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                    this.#pasteToSelection(data, type);
+                    return;
+                }
+            }
+        });
     }
 
-    async copy() { this.#copyToClipboard(); }
+    async copy() { await this.#copyToClipboard(); }
 
     async cut() { await this.#copyToClipboard({deleteSelection: true}); }
 
     async paste() {
+        const [data, contentType] = await this.#findClipboardText('text/html', 'text/plain');
 
+        if (!data) return;
+
+        this.#pasteToSelection(data, contentType);
+    }
+
+    /**
+     * @param {string} html 
+     * @returns {string}
+     */
+    #cleanUp(html) {
+        const container = document.createElement('div');
+        container.innerHTML = html;
+
+        const elements = container.querySelectorAll('*');
+
+        // TODO: Replace \n with <br>
+        for (const element of elements) {
+            const isValid = this.#validElementTypes.includes(element.localName);
+
+            if (!isValid) {
+                element.replaceWith(...element.childNodes);
+                continue;
+            }
+
+            for (const attribute of element.attributes) {
+                element.removeAttributeNode(attribute);
+            }
+        }
+
+        return container.innerHTML;
     }
 
     /**
@@ -2889,6 +2943,64 @@ class ContentClipboardManager {
 
             document.execCommand('copy');
             console.error('Fell back to execCommand copy functionality');
+        }
+    }
+
+    /**
+     * @typedef {'text/html'|'text/plain'} ContentType
+     * @param  {...ContentType} wantedContentTypes 
+     * @returns {Promise<[string, ContentType]|null[]>}
+     */
+    async #findClipboardText(...wantedContentTypes) {
+        const content = await navigator.clipboard.read();
+
+        for (const type of wantedContentTypes) {
+            const item = content.find(i => i.types.includes(type));
+
+            if (item) {
+                const blob = await item.getType(type);
+                return [await blob.text(), type];
+            }
+        }
+        
+        return [null];
+    }
+
+    /**
+     * @param {string} data 
+     * @param {ContentType} type 
+     */
+    #pasteToSelection(data, type) {
+        const selection = getSelection();
+
+        try {
+            const validRanges = selection.getComposedRanges()
+                .map((_, index) => selection.getRangeAt(index))
+                .filter(range => this.#container.contains(range.commonAncestorContainer));
+
+            data = this.#cleanUp(data);
+
+            switch (type) {
+                case 'text/html':
+                    for (const range of validRanges) {
+                        range.deleteContents();
+                        range.insertNode(range.createContextualFragment(data));
+                        range.collapse();
+                    }
+                    break;
+
+                case 'text/plain':
+                    for (const range of validRanges) {
+                        range.deleteContents();
+                        range.insertNode(document.createTextNode(data));
+                        range.collapse();
+                    }
+                    break;
+            }
+        }
+        catch (_) {
+            document.execCommand('paste');
+            console.error('Fell back to execCommand paste functionality');
         }
     }
 
@@ -3164,6 +3276,8 @@ class ContentTextElement extends HTMLElement {
     /** @type {ContentTextFormatter} */ #formatter;
     /** @type {ContentClipboardManager} */ #clipboard;
 
+    /** @type {string[]} */ #validElementTypes = [];
+
     constructor() {
         super();
         this.#handleKeyboardCommands = this.#handleKeyboardCommands.bind(this);
@@ -3180,7 +3294,7 @@ class ContentTextElement extends HTMLElement {
         this.#content = content;
         this.#shadowRoot.append(content);
         this.#formatter = new ContentTextFormatter(content);
-        this.#clipboard = new ContentClipboardManager(content);
+        this.#clipboard = new ContentClipboardManager(content, this.#validElementTypes);
 
         content.dataset.placeholder = ContentTextElement.PLACEHOLDER_TEXT;
         content.dataset.placeholderFocused = ContentTextElement.PLACEHOLDER_FOCUS_TEXT;
@@ -3204,20 +3318,20 @@ class ContentTextElement extends HTMLElement {
         this.#toolbar = document.createElement('text-toolbar');
         this.#shadowRoot.append(this.#toolbar);
 
-        this.#attachNewSvgButton({title: 'Bold', symbolId: '#svg-text-bold'})
+        this.#attachNewSvgButton({title: 'Bold (Ctrl + B)', symbolId: '#svg-text-bold'})
             .addEventListener('click', () => this.#formatter.toggleTag('b'));
-        this.#attachNewSvgButton({title: 'Italics', symbolId: '#svg-text-italics'})
+        this.#attachNewSvgButton({title: 'Italics (Ctrl + I)', symbolId: '#svg-text-italics'})
             .addEventListener('click', () => this.#formatter.toggleTag('i'));
-        this.#attachNewSvgButton({title: 'Underline', symbolId: '#svg-text-underline'})
+        this.#attachNewSvgButton({title: 'Underline (Ctrl + U)', symbolId: '#svg-text-underline'})
             .addEventListener('click', () => this.#formatter.toggleTag('u'));
         this.#attachNewSvgButton({title: 'Strikethrough', symbolId: '#svg-text-strikethrough'})
             .addEventListener('click', () => this.#formatter.toggleTag('s'));
 
-        this.#attachNewSvgButton({title: 'Cut', symbolId: '#svg-content-cut'})
+        this.#attachNewSvgButton({title: 'Cut (Ctrl + X)', symbolId: '#svg-content-cut'})
             .addEventListener('click', () => this.#clipboard.cut());
-        this.#attachNewSvgButton({title: 'Copy', symbolId: '#svg-content-copy'})
+        this.#attachNewSvgButton({title: 'Copy (Ctrl + C)', symbolId: '#svg-content-copy'})
             .addEventListener('click', () => this.#clipboard.copy());
-        this.#attachNewSvgButton({title: 'Paste', symbolId: '#svg-content-paste'})
+        this.#attachNewSvgButton({title: 'Paste (Ctrl + V)\nShift click: paste unformatted (Ctrl + Shift + V)', symbolId: '#svg-content-paste'})
             .addEventListener('click', () => this.#clipboard.paste());
 
         const css = new CSSStyleSheet();
@@ -3279,6 +3393,11 @@ class ContentTextElement extends HTMLElement {
             return;
 
         this.#content.append(content);
+    }
+
+    /** @param {string[]} validElementTypes  */
+    setValidElementTypes(validElementTypes) {
+        this.#validElementTypes = validElementTypes;
     }
 
     focusWithin() {
@@ -5069,6 +5188,7 @@ class ContentEditorComponent extends HTMLElement {
 
     #headingText = new Emitter('');
     /** @type {1|2|3|4|5|6} */ #baseHeadingLevel;
+    /** @type {string[]} */ #validElementTypes;
 
     /** @type {HTMLHeadingElement} */ #heading;
     /** @type {ContentToolbarElement} */ #toolbar;
@@ -5079,6 +5199,11 @@ class ContentEditorComponent extends HTMLElement {
 
     connectedCallback() {
         this.setAttribute('tabindex', '0');
+
+        const validElementTypes = JSON.parse(this.dataset.validElementTypes.replaceAll("'", '"') ?? '[]');
+        this.#validElementTypes = Array.isArray(validElementTypes)
+            ? validElementTypes
+            : [];
         
         this.#baseHeadingLevel = Math.min(Math.max(Math.floor(Number(this.dataset.headingBaseLevel)), 1), 6);
         this.#heading = document.createElement(`h${this.#baseHeadingLevel}`);
@@ -5161,6 +5286,7 @@ class ContentEditorComponent extends HTMLElement {
             event.stopPropagation();
             /** @type {ContentTextElement} */
             const contentText = document.createElement(ContentEditorComponent.TEXT_NAME);
+            contentText.setValidElementTypes(this.#validElementTypes);
             
             if (this.#toolbar.parentElement === this) {
                 this.#insertNewContainer('beforebegin', this.#toolbar, contentText);
@@ -5181,6 +5307,7 @@ class ContentEditorComponent extends HTMLElement {
                     case 'new':
                         /** @type {ContentTextElement} */
                         const newText = document.createElement(ContentEditorComponent.TEXT_NAME);
+                        newText.setValidElementTypes(this.#validElementTypes);
                         textElement.after(newText);
                         newText.focusWithin();
                         newText.appendDocumentFragment(event.detail.content);
