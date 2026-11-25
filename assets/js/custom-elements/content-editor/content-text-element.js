@@ -1,3 +1,4 @@
+import ContentClipboardManager from "/js/utilities/content-clipboard-manager.js";
 import ContentTextFormatter from "/js/utilities/content-text-formatter.js";
 import ModifierKeys from "/js/utilities/modifier-keys.utility.js";
 
@@ -10,6 +11,7 @@ export default class ContentTextElement extends HTMLElement {
     /** @type {HTMLElement} */ #toolbar;
 
     /** @type {ContentTextFormatter} */ #formatter;
+    /** @type {ContentClipboardManager} */ #clipboard;
 
     constructor() {
         super();
@@ -27,6 +29,7 @@ export default class ContentTextElement extends HTMLElement {
         this.#content = content;
         this.#shadowRoot.append(content);
         this.#formatter = new ContentTextFormatter(content);
+        this.#clipboard = new ContentClipboardManager(content);
 
         content.dataset.placeholder = ContentTextElement.PLACEHOLDER_TEXT;
         content.dataset.placeholderFocused = ContentTextElement.PLACEHOLDER_FOCUS_TEXT;
@@ -60,57 +63,11 @@ export default class ContentTextElement extends HTMLElement {
             .addEventListener('click', () => this.#formatter.toggleTag('s'));
 
         this.#attachNewSvgButton({title: 'Cut', symbolId: '#svg-content-cut'})
-            .addEventListener('click', () => {
-
-            });
+            .addEventListener('click', () => this.#clipboard.cut());
         this.#attachNewSvgButton({title: 'Copy', symbolId: '#svg-content-copy'})
-            .addEventListener('click', async () => {
-                const selection = getSelection();
-
-                if (selection.isCollapsed)
-                    return;
-
-                try {
-                    const selectedContents = selection.getComposedRanges()
-                        .map((_, index) => selection.getRangeAt(index))
-                        .map(range => {
-                            let contents = range.cloneContents();
-                            
-                            let element = range.commonAncestorContainer;
-                            if (element.nodeType === Node.TEXT_NODE)
-                                element = element.parentElement;
-
-                            while (element && element !== this.#content) {
-                                const newElement = document.createElement(element.localName);
-                                newElement.append(contents);
-                                contents = newElement;
-                                element = element.parentElement;
-                            }
-
-                            return contents;
-                        });
-
-                    const container = document.createElement('div');
-                    container.append(...selectedContents);
-                    const html = container.innerHTML;
-                    const text = container.innerText;
-
-                    const clipboardItem = new ClipboardItem({
-                        'text/html': new Blob([html], { type: 'text/html' }),
-                        'text/plain': new Blob([text], { type: 'text/plain' })
-                    });
-
-                    await navigator.clipboard.write([clipboardItem]);
-                }
-                catch (_) {
-                    document.execCommand('copy');
-                    console.error('Fell back to execCommand copy functionality');
-                }
-            });
+            .addEventListener('click', () => this.#clipboard.copy());
         this.#attachNewSvgButton({title: 'Paste', symbolId: '#svg-content-paste'})
-            .addEventListener('click', () => {
-                
-            });
+            .addEventListener('click', () => this.#clipboard.paste());
 
         const css = new CSSStyleSheet();
         css.replaceSync(`
