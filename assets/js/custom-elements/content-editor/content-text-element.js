@@ -55,20 +55,20 @@ export default class ContentTextElement extends HTMLElement {
         this.#toolbar = document.createElement('text-toolbar');
         this.#shadowRoot.append(this.#toolbar);
 
-        this.#attachNewSvgButton({title: 'Bold', symbolId: '#svg-text-bold'})
+        this.#attachNewSvgButton({title: 'Bold (Ctrl + B)', symbolId: '#svg-text-bold'})
             .addEventListener('click', () => this.#formatter.toggleTag('b'));
-        this.#attachNewSvgButton({title: 'Italics', symbolId: '#svg-text-italics'})
+        this.#attachNewSvgButton({title: 'Italics (Ctrl + I)', symbolId: '#svg-text-italics'})
             .addEventListener('click', () => this.#formatter.toggleTag('i'));
-        this.#attachNewSvgButton({title: 'Underline', symbolId: '#svg-text-underline'})
+        this.#attachNewSvgButton({title: 'Underline (Ctrl + U)', symbolId: '#svg-text-underline'})
             .addEventListener('click', () => this.#formatter.toggleTag('u'));
         this.#attachNewSvgButton({title: 'Strikethrough', symbolId: '#svg-text-strikethrough'})
             .addEventListener('click', () => this.#formatter.toggleTag('s'));
 
-        this.#attachNewSvgButton({title: 'Cut', symbolId: '#svg-content-cut'})
+        this.#attachNewSvgButton({title: 'Cut (Ctrl + X)', symbolId: '#svg-content-cut'})
             .addEventListener('click', () => this.#clipboard.cut());
-        this.#attachNewSvgButton({title: 'Copy', symbolId: '#svg-content-copy'})
+        this.#attachNewSvgButton({title: 'Copy (Ctrl + C)', symbolId: '#svg-content-copy'})
             .addEventListener('click', () => this.#clipboard.copy());
-        this.#attachNewSvgButton({title: 'Paste', symbolId: '#svg-content-paste'})
+        this.#attachNewSvgButton({title: 'Paste (Ctrl + V)\nShift click: paste unformatted (Ctrl + Shift + V)', symbolId: '#svg-content-paste'})
             .addEventListener('click', () => this.#clipboard.paste());
 
         const css = new CSSStyleSheet();
