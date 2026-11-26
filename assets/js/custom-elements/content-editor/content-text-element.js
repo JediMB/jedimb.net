@@ -1,6 +1,8 @@
+import ContentToolbarElement from "/js/custom-elements/content-editor/content-toolbar-element.js";
 import ContentClipboardManager from "/js/utilities/content-clipboard-manager.js";
 import ContentTextFormatter from "/js/utilities/content-text-formatter.js";
 import ModifierKeys from "/js/utilities/modifier-keys.utility.js";
+import { fcToUpperCase } from "/js/utilities/string.utility.js";
 
 export default class ContentTextElement extends HTMLElement {
     static PLACEHOLDER_TEXT = 'Click here to input text...';
@@ -139,6 +141,13 @@ export default class ContentTextElement extends HTMLElement {
 
     focusWithin() {
         this.#content.focus();
+        this.#activate();
+
+        const node = this.#content.lastChild;
+        const offset = node?.childNodes.length || node?.textContent.length;
+
+        if (node)
+            getSelection().setPosition(node, offset);
     }
 
     #activate(keyboardActivation = false) {
@@ -261,7 +270,8 @@ export default class ContentTextElement extends HTMLElement {
                         break;
 
                     case 'ArrowUp':
-                        console.log(getSelection());
+                    case 'ArrowDown':
+                        this.#interceptVerticalArrowMovement(event);
                         break;
                 }
                 break;
@@ -283,6 +293,43 @@ export default class ContentTextElement extends HTMLElement {
                 }
                 break;
         }
+    }
+
+    /** @param {KeyboardEvent} event */
+    #interceptVerticalArrowMovement(event) {
+        const previousSibling = (this.previousSibling instanceof ContentToolbarElement)
+            ? this.previousSibling.previousSibling
+            : this.previousSibling;
+        const nextSibling = (this.nextSibling instanceof ContentToolbarElement)
+            ? this.nextSibling.nextSibling
+            : this.nextSibling;
+
+        const [edge, target, toEnd] = event.key === 'ArrowUp'
+            ? ['top', previousSibling]
+            : ['bottom', nextSibling];
+
+        const caretPos = getSelection().getRangeAt(0).getBoundingClientRect()[edge];
+        const elementPos = this.#content.getBoundingClientRect()[edge];
+
+        const capEdge = fcToUpperCase(edge);
+        const style = getComputedStyle(this.#content);
+        const margin = style[`margin${capEdge}`];
+        const borderWidth = style[`border${capEdge}Width`];
+        const padding = style[`padding${capEdge}`]
+
+        const expectedDifference = [ margin, borderWidth, padding ]
+            .map(p => Number(p.split('px')[0]))
+            .reduce((accumulator, value) => accumulator + value, 0);
+        const result = caretPos - (elementPos + expectedDifference);
+
+        if (result)
+            return;
+
+        if (result !== 0 || !(target instanceof ContentTextElement))
+            return;
+        
+        event.preventDefault();
+        target.focusWithin();
     }
 
     /**
