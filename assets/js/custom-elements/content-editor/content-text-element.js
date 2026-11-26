@@ -200,7 +200,7 @@ export default class ContentTextElement extends HTMLElement {
             if (!element)
                 return;
             
-            if (element.textContent.length === 0) {
+            if (!element.textContent.length && this.#isNonVoidElement(element)) {
                 element.remove();
                 return;
             }
@@ -239,6 +239,13 @@ export default class ContentTextElement extends HTMLElement {
             bubbles: true,
             detail: { type, ...(type === 'new' ? {content} : {}) }
         }));
+    }
+
+    /** 
+     * @param {HTMLElement} element
+     * @param {string} element.localName  */
+    #isNonVoidElement({localName}) {
+        return document.createElement(localName).outerHTML.includes('</');
     }
 
     /** @param {KeyboardEvent} event  */

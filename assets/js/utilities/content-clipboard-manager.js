@@ -51,7 +51,6 @@ export default class ContentClipboardManager {
 
         const elements = container.querySelectorAll('*');
 
-        // TODO: Replace \n with <br>
         for (const element of elements) {
             const isValid = this.#validInlineTags.includes(element.localName);
 

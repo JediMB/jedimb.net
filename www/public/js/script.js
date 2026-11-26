@@ -2882,7 +2882,6 @@ class ContentClipboardManager {
 
         const elements = container.querySelectorAll('*');
 
-        // TODO: Replace \n with <br>
         for (const element of elements) {
             const isValid = this.#validInlineTags.includes(element.localName);
 
@@ -3475,7 +3474,7 @@ class ContentTextElement extends HTMLElement {
             if (!element)
                 return;
             
-            if (element.textContent.length === 0) {
+            if (!element.textContent.length && this.#isNonVoidElement(element)) {
                 element.remove();
                 return;
             }
@@ -3514,6 +3513,13 @@ class ContentTextElement extends HTMLElement {
             bubbles: true,
             detail: { type, ...(type === 'new' ? {content} : {}) }
         }));
+    }
+
+    /** 
+     * @param {HTMLElement} element
+     * @param {string} element.localName  */
+    #isNonVoidElement({localName}) {
+        return document.createElement(localName).outerHTML.includes('</');
     }
 
     /** @param {KeyboardEvent} event  */
