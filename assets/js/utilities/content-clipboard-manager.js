@@ -1,16 +1,16 @@
 export default class ContentClipboardManager {
     /** @type {HTMLElement} */ #container;
-    /** @type {string[]} */ #validElementTypes = [];
+    /** @type {string[]} */ #validInlineTags = [];
 
     /**
      * @param {HTMLElement} container 
-     * @param {string[]} validElementTypes 
+     * @param {string[]} validInlineTags 
      */
-    constructor(container, validElementTypes) {
+    constructor(container, validInlineTags) {
         this.#container = container;
 
-        if (validElementTypes)
-            this.#validElementTypes = [...validElementTypes];
+        if (validInlineTags)
+            this.#validInlineTags = [...validInlineTags];
 
         this.#container.addEventListener('paste', event => {
             if (!this.#container.isContentEditable)
@@ -53,7 +53,7 @@ export default class ContentClipboardManager {
 
         // TODO: Replace \n with <br>
         for (const element of elements) {
-            const isValid = this.#validElementTypes.includes(element.localName);
+            const isValid = this.#validInlineTags.includes(element.localName);
 
             if (!isValid) {
                 element.replaceWith(...element.childNodes);

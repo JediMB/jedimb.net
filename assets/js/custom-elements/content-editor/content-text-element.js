@@ -13,7 +13,7 @@ export default class ContentTextElement extends HTMLElement {
     /** @type {ContentTextFormatter} */ #formatter;
     /** @type {ContentClipboardManager} */ #clipboard;
 
-    /** @type {string[]} */ #validElementTypes = [];
+    /** @type {string[]} */ #validInlineTags = [];
 
     constructor() {
         super();
@@ -31,7 +31,7 @@ export default class ContentTextElement extends HTMLElement {
         this.#content = content;
         this.#shadowRoot.append(content);
         this.#formatter = new ContentTextFormatter(content);
-        this.#clipboard = new ContentClipboardManager(content, this.#validElementTypes);
+        this.#clipboard = new ContentClipboardManager(content, this.#validInlineTags);
 
         content.dataset.placeholder = ContentTextElement.PLACEHOLDER_TEXT;
         content.dataset.placeholderFocused = ContentTextElement.PLACEHOLDER_FOCUS_TEXT;
@@ -132,9 +132,9 @@ export default class ContentTextElement extends HTMLElement {
         this.#content.append(content);
     }
 
-    /** @param {string[]} validElementTypes  */
-    setValidElementTypes(validElementTypes) {
-        this.#validElementTypes = validElementTypes;
+    /** @param {string[]} validInlineTags  */
+    setValidInlineTags(validInlineTags) {
+        this.#validInlineTags = validInlineTags;
     }
 
     focusWithin() {

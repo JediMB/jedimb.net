@@ -2831,17 +2831,17 @@ customElements.define('content-divider', ContentDividerElement);
 
 class ContentClipboardManager {
     /** @type {HTMLElement} */ #container;
-    /** @type {string[]} */ #validElementTypes = [];
+    /** @type {string[]} */ #validInlineTags = [];
 
     /**
      * @param {HTMLElement} container 
-     * @param {string[]} validElementTypes 
+     * @param {string[]} validInlineTags 
      */
-    constructor(container, validElementTypes) {
+    constructor(container, validInlineTags) {
         this.#container = container;
 
-        if (validElementTypes)
-            this.#validElementTypes = [...validElementTypes];
+        if (validInlineTags)
+            this.#validInlineTags = [...validInlineTags];
 
         this.#container.addEventListener('paste', event => {
             if (!this.#container.isContentEditable)
@@ -2884,7 +2884,7 @@ class ContentClipboardManager {
 
         // TODO: Replace \n with <br>
         for (const element of elements) {
-            const isValid = this.#validElementTypes.includes(element.localName);
+            const isValid = this.#validInlineTags.includes(element.localName);
 
             if (!isValid) {
                 element.replaceWith(...element.childNodes);
@@ -3288,7 +3288,7 @@ class ContentTextElement extends HTMLElement {
     /** @type {ContentTextFormatter} */ #formatter;
     /** @type {ContentClipboardManager} */ #clipboard;
 
-    /** @type {string[]} */ #validElementTypes = [];
+    /** @type {string[]} */ #validInlineTags = [];
 
     constructor() {
         super();
@@ -3306,7 +3306,7 @@ class ContentTextElement extends HTMLElement {
         this.#content = content;
         this.#shadowRoot.append(content);
         this.#formatter = new ContentTextFormatter(content);
-        this.#clipboard = new ContentClipboardManager(content, this.#validElementTypes);
+        this.#clipboard = new ContentClipboardManager(content, this.#validInlineTags);
 
         content.dataset.placeholder = ContentTextElement.PLACEHOLDER_TEXT;
         content.dataset.placeholderFocused = ContentTextElement.PLACEHOLDER_FOCUS_TEXT;
@@ -3407,9 +3407,9 @@ class ContentTextElement extends HTMLElement {
         this.#content.append(content);
     }
 
-    /** @param {string[]} validElementTypes  */
-    setValidElementTypes(validElementTypes) {
-        this.#validElementTypes = validElementTypes;
+    /** @param {string[]} validInlineTags  */
+    setValidInlineTags(validInlineTags) {
+        this.#validInlineTags = validInlineTags;
     }
 
     focusWithin() {
@@ -5205,7 +5205,7 @@ class ContentEditorComponent extends HTMLElement {
 
     #headingText = new Emitter('');
     /** @type {1|2|3|4|5|6} */ #baseHeadingLevel;
-    /** @type {string[]} */ #validElementTypes;
+    /** @type {string[]} */ #validInlineTags;
 
     /** @type {HTMLHeadingElement} */ #heading;
     /** @type {ContentToolbarElement} */ #toolbar;
@@ -5217,9 +5217,9 @@ class ContentEditorComponent extends HTMLElement {
     connectedCallback() {
         this.setAttribute('tabindex', '0');
 
-        const validElementTypes = JSON.parse(this.dataset.validElementTypes.replaceAll("'", '"') ?? '[]');
-        this.#validElementTypes = Array.isArray(validElementTypes)
-            ? validElementTypes
+        const validInlineTags = JSON.parse(this.dataset.validInlineTags.replaceAll("'", '"') ?? '[]');
+        this.#validInlineTags = Array.isArray(validInlineTags)
+            ? validInlineTags
             : [];
         
         this.#baseHeadingLevel = Math.min(Math.max(Math.floor(Number(this.dataset.headingBaseLevel)), 1), 6);
@@ -5296,7 +5296,7 @@ class ContentEditorComponent extends HTMLElement {
             event.stopPropagation();
             /** @type {ContentTextElement} */
             const contentText = document.createElement(ContentEditorComponent.TEXT_NAME);
-            contentText.setValidElementTypes(this.#validElementTypes);
+            contentText.setValidInlineTags(this.#validInlineTags);
             
             if (this.#toolbar.parentElement === this) {
                 this.#insertNewContainer('beforebegin', this.#toolbar, contentText);
@@ -5317,7 +5317,7 @@ class ContentEditorComponent extends HTMLElement {
                     case 'new':
                         /** @type {ContentTextElement} */
                         const newText = document.createElement(ContentEditorComponent.TEXT_NAME);
-                        newText.setValidElementTypes(this.#validElementTypes);
+                        newText.setValidInlineTags(this.#validInlineTags);
                         textElement.after(newText);
                         newText.focusWithin();
                         newText.appendDocumentFragment(event.detail.content);

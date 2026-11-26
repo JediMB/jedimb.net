@@ -28,11 +28,11 @@ class BlogPostDTO extends DbBase {
         $this->title = Input::verifyRequiredTextInput('title', $input, INPUT_LENGTH['page_title'], $errors, REGEX_PHP['default_text']);
         $this->description = Input::verifyRequiredTextInput('description', $input, INPUT_LENGTH['page_description'], $errors, REGEX_PHP['default_text']);
         
-        $this->contentShort = strip_tags($input['contentShort'], INPUT_ALLOWED_TAGS);
+        $this->contentShort = strip_tags($input['contentShort'], EDITOR_ALLOWED_INLINE_TAGS + EDITOR_ALLOWED_BLOCK_TAGS);
         
         $this->contentRest = empty($input['contentRest'])
             ? null
-            : strip_tags($input['contentRest'], INPUT_ALLOWED_TAGS);
+            : strip_tags($input['contentRest'], EDITOR_ALLOWED_INLINE_TAGS + EDITOR_ALLOWED_BLOCK_TAGS);
 
         $this->mastolink = Input::verifyOptionalTextInput('mastolink', $input, INPUT_LENGTH['page_sociallink'], $errors, REGEX_PHP['url']);
 

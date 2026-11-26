@@ -58,11 +58,10 @@ define('INPUT_LENGTH', [
     'constant_value' => [ 'min' => 1, 'max' => 512 ]
 ]);
 
-define('INPUT_ALLOWED_TAGS', [
-    'div', 'p', 'h3', 'h4', 'h5',
-    'a', 'b', 'i', 's', 'u',
-    'br', 'hr', 'img-gallery', 'img-wrapper',
-    'li', 'ol', 'ul'
+define('EDITOR_ALLOWED_INLINE_TAGS', [ 'a', 'b', 'i', 's', 'u', 'br' ]);
+define('EDITOR_ALLOWED_BLOCK_TAGS', [
+    'h2', 'h3', 'h4', 'h5', 'h6',
+    'div', 'p', 'hr', 'img-gallery', 'img-wrapper'
 ]);
 
 define('REGEX_PATH_WITH_PAGE', '/^(?:(.+)\/)?(\d{1,7})\/?$/');
