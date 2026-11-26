@@ -2840,11 +2840,13 @@ class ContentToolbarElement extends HTMLElement {
 
     /** @type {ShadowRoot} */ #shadowRoot;
     /** @type {HTMLButtonElement} */ #btnContainer;
-    /** @type {HTMLButtonElement[]} */ #btnHeadings;
-    /** @type {HTMLButtonElement} */ #btnRemove;
     /** @type {HTMLButtonElement} */ #btnDirection;
-    /** @type {HTMLButtonElement} */ #btnText;
     /** @type {HTMLButtonElement} */ #btnDivider;
+    /** @type {HTMLButtonElement[]} */ #btnHeadings;
+    /** @type {HTMLButtonElement} */ #btnListOrdered;
+    /** @type {HTMLButtonElement} */ #btnListUnordered;
+    /** @type {HTMLButtonElement} */ #btnRemove;
+    /** @type {HTMLButtonElement} */ #btnText;
 
     constructor() { super(); }
 
@@ -2871,6 +2873,11 @@ class ContentToolbarElement extends HTMLElement {
 
         this.#btnText = this.#attachNewSvgButton({title: 'Add text', symbolId: '#svg-text-snippet'});
         this.#addClickEvent(this.#btnText, 'content-text');
+
+        this.#btnListUnordered = this.#attachNewSvgButton({title: 'Add a bullet list', symbolId: '#svg-list-unordered' });
+        this.#addClickEvent(this.#btnListUnordered, 'content-list', () => 'unordered');
+        this.#btnListOrdered = this.#attachNewSvgButton({title: 'Add a numbered list', symbolId: '#svg-list-ordered'});
+        this.#addClickEvent(this.#btnListOrdered, 'content-list', () => 'ordered');
 
         this.#btnDirection = this.#attachNewSvgButton(
             {title: 'Change content to side-by-side', symbolId: '#svg-content-columns'},
@@ -5258,6 +5265,11 @@ const modalPopupComponent = document.querySelector('modal-popup-component');
 
 
 
+
+/* IMPORT: /js/enums/content-editable.enum.js */
+
+
+
 class ContentEditorComponent extends HTMLElement {
     static CONTAINER_NAME = customElements.getName(ContentContainerElement);
     static DIVIDER_NAME = customElements.getName(ContentDividerElement);
@@ -5366,7 +5378,31 @@ class ContentEditorComponent extends HTMLElement {
             }
 
             this.#toolbar.before(contentText);
+            contentText.focusWithin();
         });
+
+        this.addEventListener('content-list', /** @param {CustomEvent<'ordered'|'unordered'} event */
+            event => {
+                const list = event.detail === 'ordered'
+                    ? document.createElement('ol')
+                    : document.createElement('ul');
+                const listItem = document.createElement('li')
+                list.append(listItem);
+                list.tabIndex = 0;
+                list.contentEditable = ContentEditable.TRUE;
+
+                if (this.#toolbar.parentElement === this) {
+                    this.#insertNewContainer('beforebegin', this.#toolbar, list);
+                    list.focus();
+                    getSelection().selectAllChildren(listItem);
+                    return;
+                }
+
+                this.#toolbar.before(list);
+                list.focus();
+                getSelection().selectAllChildren(listItem);
+            }
+        );
 
         this.addEventListener('content-paragraph',
             /** @param {CustomEvent<{ type: 'new'|'previous'|'next', content: DocumentFragment|null }>} event */

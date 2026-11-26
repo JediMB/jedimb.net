@@ -4,6 +4,7 @@ import ContentToolbarElement from "/js/custom-elements/content-editor/content-to
 import ContentTextElement from "/js/custom-elements/content-editor/content-text-element.js";
 import { modalPopupComponent } from "/js/components/modal-popup-component.js";
 import Emitter from "/js/utilities/emitter.js";
+import ContentEditable from "/js/enums/content-editable.enum.js";
 
 export default class ContentEditorComponent extends HTMLElement {
     static CONTAINER_NAME = customElements.getName(ContentContainerElement);
@@ -113,7 +114,31 @@ export default class ContentEditorComponent extends HTMLElement {
             }
 
             this.#toolbar.before(contentText);
+            contentText.focusWithin();
         });
+
+        this.addEventListener('content-list', /** @param {CustomEvent<'ordered'|'unordered'} event */
+            event => {
+                const list = event.detail === 'ordered'
+                    ? document.createElement('ol')
+                    : document.createElement('ul');
+                const listItem = document.createElement('li')
+                list.append(listItem);
+                list.tabIndex = 0;
+                list.contentEditable = ContentEditable.TRUE;
+
+                if (this.#toolbar.parentElement === this) {
+                    this.#insertNewContainer('beforebegin', this.#toolbar, list);
+                    list.focus();
+                    getSelection().selectAllChildren(listItem);
+                    return;
+                }
+
+                this.#toolbar.before(list);
+                list.focus();
+                getSelection().selectAllChildren(listItem);
+            }
+        );
 
         this.addEventListener('content-paragraph',
             /** @param {CustomEvent<{ type: 'new'|'previous'|'next', content: DocumentFragment|null }>} event */
