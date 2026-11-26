@@ -52,7 +52,7 @@ use App\Utils\CSSRenderer;
 
         & > content-toolbar { flex-direction: row; }
         
-        &[content-direction="row"] {
+        &[data-content-direction="row"] {
             flex-direction: row;
 
             & > content-toolbar { flex-direction: column; }

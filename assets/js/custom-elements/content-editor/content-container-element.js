@@ -9,6 +9,10 @@ export default class ContentContainerElement extends HTMLElement {
 
     get headingLevel() { return this.#headingLevel; }
 
+    /** @type {'row'|'column'} */
+    get contentDirection() { return this.dataset.contentDirection || 'column'; }
+    set contentDirection(val) { this.dataset.contentDirection = (val === 'row') ? 'row' : 'column'; }
+
     constructor() { super(); }
 
     connectedCallback() {
@@ -56,6 +60,14 @@ export default class ContentContainerElement extends HTMLElement {
         }
 
         this.#addOrReplaceHeading();
+    }
+
+    toggleContentDirection() {
+        this.contentDirection = (this.contentDirection === 'row')
+            ? 'column'
+            : 'row';
+
+        return this.contentDirection;
     }
 
     #addOrReplaceHeading() {

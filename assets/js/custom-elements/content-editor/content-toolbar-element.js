@@ -15,7 +15,7 @@ export default class ContentToolbarElement extends HTMLElement {
 
     connectedCallback() {
         if (this.#shadowRoot) {
-            this.#updateVisibility();
+            this.#updateConfiguration();
             return;
         }
 
@@ -41,21 +41,12 @@ export default class ContentToolbarElement extends HTMLElement {
             {title: 'Change content to side-by-side', symbolId: '#svg-content-columns'},
             {title: 'Change content to above-and-below', symbolId: '#svg-content-rows'}
         );
-        this.#addClickEvent(this.#btnDirection, 'content-direction', () => {
-            const wasActive = this.#btnDirection.dataset.direction === 'row';
-            
-            this.#btnDirection.classList.toggle('active', !wasActive);
+        this.#btnDirection.addEventListener('click', () => {
+            if (!(this.parentElement instanceof ContentContainerElement))
+                return;
 
-            const newMode = wasActive ? 'column' : 'row';
-            this.#btnDirection.dataset.direction = newMode;
-
-            const newTitle = wasActive
-                ? this.#btnDirection.dataset.titleInactive
-                : this.#btnDirection.dataset.titleActive;
-            this.#btnDirection.title = newTitle;
-            this.#btnDirection.ariaLabel = newTitle;
-
-            return newMode;
+            const newMode = this.parentElement.toggleContentDirection();
+            this.#updateBtnDirection(newMode === 'row');
         });
 
         this.#btnRemove = this.#attachNewSvgButton({title: 'Remove content box', symbolId: '#svg-delete'});
@@ -99,7 +90,7 @@ export default class ContentToolbarElement extends HTMLElement {
             }
         `);
         this.#shadowRoot.adoptedStyleSheets.push(css);
-        this.#updateVisibility();
+        this.#updateConfiguration();
     }
 
     disconnectedCallback() {}
@@ -175,10 +166,21 @@ export default class ContentToolbarElement extends HTMLElement {
         return svg;
     }
 
-    #updateVisibility() {
+    /** @param {boolean} active  */
+    #updateBtnDirection(active) {
+        this.#btnDirection.classList.toggle('active', active);
+
+        const newTitle = active
+            ? this.#btnDirection.dataset.titleActive
+            : this.#btnDirection.dataset.titleInactive;
+        this.#btnDirection.title = newTitle;
+        this.#btnDirection.ariaLabel = newTitle;
+    }
+
+    #updateConfiguration() {
         /** @type {ContentEditorComponent|ContentContainerElement} */
         const parent = this.parentElement;
-        const inContainer = this.parentElement.localName === ContentToolbarElement.CONTAINER_NAME;
+        const inContainer = parent instanceof ContentContainerElement;
 
         this.#btnHeadings.forEach((btn, index) => {
             btn.hidden = !inContainer
@@ -189,6 +191,9 @@ export default class ContentToolbarElement extends HTMLElement {
         this.#btnDirection.hidden = !inContainer;
         this.#btnRemove.hidden = !inContainer;
         this.#btnDivider.hidden = inContainer;
+
+        if (inContainer)
+            this.#updateBtnDirection(parent.contentDirection === 'row');
     }
 }
 

@@ -53,13 +53,6 @@ export default class ContentEditorComponent extends HTMLElement {
             this.#insertNewContainer('beforebegin', this.#toolbar);
         });
 
-        this.addEventListener('content-direction', /** @param {CustomEvent<('row'|'column')> event} */
-            event => {
-                event.stopPropagation();
-                this.#toolbar.parentElement.setAttribute('content-direction', event.detail);
-            }
-        );
-
         this.addEventListener('content-remove', event => {
             event.stopPropagation();
 

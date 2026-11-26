@@ -2599,6 +2599,10 @@ class ContentContainerElement extends HTMLElement {
 
     get headingLevel() { return this.#headingLevel; }
 
+    /** @type {'row'|'column'} */
+    get contentDirection() { return this.dataset.contentDirection || 'column'; }
+    set contentDirection(val) { this.dataset.contentDirection = (val === 'row') ? 'row' : 'column'; }
+
     constructor() { super(); }
 
     connectedCallback() {
@@ -2646,6 +2650,14 @@ class ContentContainerElement extends HTMLElement {
         }
 
         this.#addOrReplaceHeading();
+    }
+
+    toggleContentDirection() {
+        this.contentDirection = (this.contentDirection === 'row')
+            ? 'column'
+            : 'row';
+
+        return this.contentDirection;
     }
 
     #addOrReplaceHeading() {
@@ -3614,7 +3626,7 @@ class ContentToolbarElement extends HTMLElement {
 
     connectedCallback() {
         if (this.#shadowRoot) {
-            this.#updateVisibility();
+            this.#updateConfiguration();
             return;
         }
 
@@ -3640,21 +3652,12 @@ class ContentToolbarElement extends HTMLElement {
             {title: 'Change content to side-by-side', symbolId: '#svg-content-columns'},
             {title: 'Change content to above-and-below', symbolId: '#svg-content-rows'}
         );
-        this.#addClickEvent(this.#btnDirection, 'content-direction', () => {
-            const wasActive = this.#btnDirection.dataset.direction === 'row';
-            
-            this.#btnDirection.classList.toggle('active', !wasActive);
+        this.#btnDirection.addEventListener('click', () => {
+            if (!(this.parentElement instanceof ContentContainerElement))
+                return;
 
-            const newMode = wasActive ? 'column' : 'row';
-            this.#btnDirection.dataset.direction = newMode;
-
-            const newTitle = wasActive
-                ? this.#btnDirection.dataset.titleInactive
-                : this.#btnDirection.dataset.titleActive;
-            this.#btnDirection.title = newTitle;
-            this.#btnDirection.ariaLabel = newTitle;
-
-            return newMode;
+            const newMode = this.parentElement.toggleContentDirection();
+            this.#updateBtnDirection(newMode === 'row');
         });
 
         this.#btnRemove = this.#attachNewSvgButton({title: 'Remove content box', symbolId: '#svg-delete'});
@@ -3698,7 +3701,7 @@ class ContentToolbarElement extends HTMLElement {
             }
         `);
         this.#shadowRoot.adoptedStyleSheets.push(css);
-        this.#updateVisibility();
+        this.#updateConfiguration();
     }
 
     disconnectedCallback() {}
@@ -3774,10 +3777,21 @@ class ContentToolbarElement extends HTMLElement {
         return svg;
     }
 
-    #updateVisibility() {
+    /** @param {boolean} active  */
+    #updateBtnDirection(active) {
+        this.#btnDirection.classList.toggle('active', active);
+
+        const newTitle = active
+            ? this.#btnDirection.dataset.titleActive
+            : this.#btnDirection.dataset.titleInactive;
+        this.#btnDirection.title = newTitle;
+        this.#btnDirection.ariaLabel = newTitle;
+    }
+
+    #updateConfiguration() {
         /** @type {ContentEditorComponent|ContentContainerElement} */
         const parent = this.parentElement;
-        const inContainer = this.parentElement.localName === ContentToolbarElement.CONTAINER_NAME;
+        const inContainer = parent instanceof ContentContainerElement;
 
         this.#btnHeadings.forEach((btn, index) => {
             btn.hidden = !inContainer
@@ -3788,6 +3802,9 @@ class ContentToolbarElement extends HTMLElement {
         this.#btnDirection.hidden = !inContainer;
         this.#btnRemove.hidden = !inContainer;
         this.#btnDivider.hidden = inContainer;
+
+        if (inContainer)
+            this.#updateBtnDirection(parent.contentDirection === 'row');
     }
 }
 
@@ -5227,13 +5244,6 @@ class ContentEditorComponent extends HTMLElement {
             event.stopPropagation();
             this.#insertNewContainer('beforebegin', this.#toolbar);
         });
-
-        this.addEventListener('content-direction', /** @param {CustomEvent<('row'|'column')> event} */
-            event => {
-                event.stopPropagation();
-                this.#toolbar.parentElement.setAttribute('content-direction', event.detail);
-            }
-        );
 
         this.addEventListener('content-remove', event => {
             event.stopPropagation();
