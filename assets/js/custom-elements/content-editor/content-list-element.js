@@ -12,15 +12,7 @@ export default class ContentListElement extends ContentEditable {
 
     /** @param {'ul'|'ol'|'menu'} localName  */
     setType(localName) {
-        localName = localName.toLowerCase();
-
-        if (localName === this.contentType)
-            return;
-
-        if (!['ul', 'ol', 'menu'].includes(localName))
-            return;
-
-        super._setType(localName);
+        super._setType(localName, null, ['ul', 'ol', 'menu']);
     }
 }
 

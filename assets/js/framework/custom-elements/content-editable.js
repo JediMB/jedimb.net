@@ -34,15 +34,21 @@ export default class ContentEditable extends HTMLElement {
 
     /**
      * @param {string} contentType The type (localName) of the content element
-     * @param  {string[]} contentChildTypes A child of each type is appended to the content element
+     * @param {string[]} [contentChildTypes] A child of each type is appended to the content element
+     * @param {string[]} [allowedContentTypes] An optional whitelist of content types
      */
-    _setType(contentType, contentChildTypes) {
+    _setType(contentType, contentChildTypes = [], allowedContentTypes = null) {
+        if (contentType.toLowerCase() === this.#content?.localName)
+            return;
+
+        if (allowedContentTypes && !allowedContentTypes.includes(contentType))
+            return;
+
         const content = document.createElement(contentType);
 
         if (contentChildTypes?.length)
-            for (const childType of contentChildTypes) {
+            for (const childType of contentChildTypes)
                 content.append(document.createElement(childType));
-            }
         else if (this.#content?.childNodes.length)
             content.append(...this.#content.childNodes);
 
