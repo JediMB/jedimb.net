@@ -1,16 +1,17 @@
 import ContentContainerElement from "/js/custom-elements/content-editor/content-container-element.js";
 import ContentDividerElement from "/js/custom-elements/content-editor/content-divider-element.js";
-import ContentToolbarElement from "/js/custom-elements/content-editor/content-toolbar-element.js";
+import ContentListElement from "/js/custom-elements/content-editor/content-list-element.js";
 import ContentTextElement from "/js/custom-elements/content-editor/content-text-element.js";
-import { modalPopupComponent } from "/js/components/modal-popup-component.js";
+import ContentToolbarElement from "/js/custom-elements/content-editor/content-toolbar-element.js";
 import Emitter from "/js/utilities/emitter.js";
-import ContentEditable from "/js/enums/content-editable.enum.js";
+import { modalPopupComponent } from "/js/components/modal-popup-component.js";
 
 export default class ContentEditorComponent extends HTMLElement {
     static CONTAINER_NAME = customElements.getName(ContentContainerElement);
     static DIVIDER_NAME = customElements.getName(ContentDividerElement);
-    static TOOLBAR_NAME = customElements.getName(ContentToolbarElement);
+    static LIST_NAME = customElements.getName(ContentListElement);
     static TEXT_NAME = customElements.getName(ContentTextElement);
+    static TOOLBAR_NAME = customElements.getName(ContentToolbarElement);
 
     #headingText = new Emitter('');
     /** @type {1|2|3|4|5|6} */ #baseHeadingLevel;
@@ -119,24 +120,20 @@ export default class ContentEditorComponent extends HTMLElement {
 
         this.addEventListener('content-list', /** @param {CustomEvent<'ordered'|'unordered'} event */
             event => {
-                const list = event.detail === 'ordered'
-                    ? document.createElement('ol')
-                    : document.createElement('ul');
-                const listItem = document.createElement('li')
-                list.append(listItem);
-                list.tabIndex = 0;
-                list.contentEditable = ContentEditable.TRUE;
+                event.stopPropagation();
+                /** @type {ContentListElement} */
+                const contentList = document.createElement(ContentEditorComponent.LIST_NAME);
+                if (event.detail === 'ordered')
+                    contentList.setType('ol');
 
                 if (this.#toolbar.parentElement === this) {
-                    this.#insertNewContainer('beforebegin', this.#toolbar, list);
-                    list.focus();
-                    getSelection().selectAllChildren(listItem);
+                    this.#insertNewContainer('beforebegin', this.#toolbar, contentList);
+                    contentList.focusWithin();
                     return;
                 }
 
-                this.#toolbar.before(list);
-                list.focus();
-                getSelection().selectAllChildren(listItem);
+                this.#toolbar.before(contentList);
+                contentList.focusWithin();
             }
         );
 

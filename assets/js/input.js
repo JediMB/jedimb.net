@@ -44,6 +44,7 @@ import userApiService from '/js/services/api/user-api.service.js';
 /* Custom elements */
 import ContentContainerElement from '/js/custom-elements/content-editor/content-container-element.js';
 import ContentDividerElement from '/js/custom-elements/content-editor/content-divider-element.js';
+import ContentListElement from '/js/custom-elements/content-editor/content-list-element.js';
 import ContentTextElement from '/js/custom-elements/content-editor/content-text-element.js';
 import ContentToolbarElement from '/js/custom-elements/content-editor/content-toolbar-element.js';
 import DateTimeElement from '/js/custom-elements/date-time.element.js';

@@ -2823,6 +2823,59 @@ class ContentDividerElement extends HTMLElement {
 customElements.define('content-divider', ContentDividerElement);
 
 
+/* IMPORT: /js/custom-elements/content-editor/content-list-element.js */
+
+
+
+/* IMPORT: /js/enums/content-editable.enum.js */
+
+
+
+class ContentListElement extends HTMLElement {
+    /** @type {ShadowRoot} */ #shadowRoot;
+    /** @type {HTMLOListElement|HTMLUListElement} */ #list;
+
+    constructor() {
+        super();
+        this.setType('ul');
+    }
+
+    connectedCallback() {
+        this.#shadowRoot = this.attachShadow({ mode: 'closed' });
+        this.#shadowRoot.append(this.#list);
+    }
+
+    disconnectedCallback() {}
+
+    focusWithin() {
+        this.#list.focus();
+        this.#list.contentEditable = ContentEditable.TRUE;
+        getSelection().setPosition(this.#list.lastChild, this.#list.lastChild.childNodes.length);
+    }
+
+    /** @param {'ul'|'ol'|'menu'} localName  */
+    setType(localName) {
+        localName = localName.toLowerCase();
+
+        if (localName === this.#list?.localName)
+            return;
+
+        if (!['ul', 'ol', 'menu'].includes(localName))
+            return;
+
+        const newList = document.createElement(localName);
+        newList.tabIndex = 0;
+        newList.append(
+            ...( this.#list?.childNodes ?? [document.createElement('li')] )
+        );
+        this.#list?.replaceWith(newList);
+        this.#list = newList;
+    }
+}
+
+customElements.define('content-list', ContentListElement);
+
+
 /* IMPORT: /js/custom-elements/content-editor/content-text-element.js */
 
 
@@ -5068,12 +5121,22 @@ customElements.define('account-menu-component', AccountMenuComponent);
 
 
 
-/* IMPORT: /js/custom-elements/content-editor/content-toolbar-element.js */
+/* IMPORT: /js/custom-elements/content-editor/content-list-element.js */
 
 
 
 
 /* IMPORT: /js/custom-elements/content-editor/content-text-element.js */
+
+
+
+
+/* IMPORT: /js/custom-elements/content-editor/content-toolbar-element.js */
+
+
+
+
+/* IMPORT: /js/utilities/emitter.js */
 
 
 
@@ -5260,21 +5323,12 @@ customElements.define('modal-popup-component', ModalPopupComponent);
 /** @type {ModalPopupComponent} */
 const modalPopupComponent = document.querySelector('modal-popup-component');
 
-
-/* IMPORT: /js/utilities/emitter.js */
-
-
-
-
-/* IMPORT: /js/enums/content-editable.enum.js */
-
-
-
 class ContentEditorComponent extends HTMLElement {
     static CONTAINER_NAME = customElements.getName(ContentContainerElement);
     static DIVIDER_NAME = customElements.getName(ContentDividerElement);
-    static TOOLBAR_NAME = customElements.getName(ContentToolbarElement);
+    static LIST_NAME = customElements.getName(ContentListElement);
     static TEXT_NAME = customElements.getName(ContentTextElement);
+    static TOOLBAR_NAME = customElements.getName(ContentToolbarElement);
 
     #headingText = new Emitter('');
     /** @type {1|2|3|4|5|6} */ #baseHeadingLevel;
@@ -5383,24 +5437,20 @@ class ContentEditorComponent extends HTMLElement {
 
         this.addEventListener('content-list', /** @param {CustomEvent<'ordered'|'unordered'} event */
             event => {
-                const list = event.detail === 'ordered'
-                    ? document.createElement('ol')
-                    : document.createElement('ul');
-                const listItem = document.createElement('li')
-                list.append(listItem);
-                list.tabIndex = 0;
-                list.contentEditable = ContentEditable.TRUE;
+                event.stopPropagation();
+                /** @type {ContentListElement} */
+                const contentList = document.createElement(ContentEditorComponent.LIST_NAME);
+                if (event.detail === 'ordered')
+                    contentList.setType('ol');
 
                 if (this.#toolbar.parentElement === this) {
-                    this.#insertNewContainer('beforebegin', this.#toolbar, list);
-                    list.focus();
-                    getSelection().selectAllChildren(listItem);
+                    this.#insertNewContainer('beforebegin', this.#toolbar, contentList);
+                    contentList.focusWithin();
                     return;
                 }
 
-                this.#toolbar.before(list);
-                list.focus();
-                getSelection().selectAllChildren(listItem);
+                this.#toolbar.before(contentList);
+                contentList.focusWithin();
             }
         );
 
