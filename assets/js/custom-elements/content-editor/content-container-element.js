@@ -1,4 +1,4 @@
-import ContentEditable from "/js/enums/content-editable.enum.js";
+import ContentEditable from "/js/framework/custom-elements/content-editable.js";
 
 export default class ContentContainerElement extends HTMLElement {
     /** @type {boolean} */ #isSetup = false;

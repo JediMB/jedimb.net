@@ -2579,16 +2579,60 @@ const userApiService = new UserApiService();
 
 
 
-/* IMPORT: /js/enums/content-editable.enum.js */
+/* IMPORT: /js/framework/custom-elements/content-editable.js */
 
-const ContentEditable = Object.freeze({
-   INHERIT: 'inherit',
-   TRUE: 'true',
-   FALSE: 'false',
-   PLAINTEXT_ONLY: 'plaintext-only'
-});
+class ContentEditable extends HTMLElement {
+    static INHERIT = Object.freeze('inherit');
+    static TRUE = Object.freeze('true');
+    static FALSE = Object.freeze('false');
+    static PLAINTEXT_ONLY = Object.freeze('plaintext-only');
 
+    #shadowRoot;
+    /** @type {HTMLElement} */ #content;
 
+    /** The localName of the content element */
+    get contentType() { return this.#content.localName; }
+
+    /**
+     * @param {string} contentType The type (localName) of the content element
+     * @param  {...string} contentChildTypes A child of each type is appended to the content element
+     */
+    constructor(contentType, ...contentChildTypes) {
+        super();
+        this.#shadowRoot = this.attachShadow({ mode: 'closed' });
+        this._setType(contentType, contentChildTypes);
+        this.#shadowRoot.append(this.#content);
+    }
+
+    focusWithin() {
+        this.#content.focus();
+        this.#content.contentEditable = ContentEditable.TRUE;
+
+        getSelection().setPosition(
+            this.#content.lastChild,
+            this.#content.lastChild?.childNodes?.length
+                || this.#content.lastChild?.textContent.length
+        );
+    }
+
+    /**
+     * @param {string} contentType The type (localName) of the content element
+     * @param  {string[]} contentChildTypes A child of each type is appended to the content element
+     */
+    _setType(contentType, contentChildTypes) {
+        const content = document.createElement(contentType);
+
+        if (contentChildTypes?.length)
+            for (const childType of contentChildTypes) {
+                content.append(document.createElement(childType));
+            }
+        else if (this.#content?.childNodes.length)
+            content.append(...this.#content.childNodes);
+
+        this.#content?.replaceWith(content);
+        this.#content = content;
+    }
+}
 
 class ContentContainerElement extends HTMLElement {
     /** @type {boolean} */ #isSetup = false;
@@ -2827,49 +2871,31 @@ customElements.define('content-divider', ContentDividerElement);
 
 
 
-/* IMPORT: /js/enums/content-editable.enum.js */
+/* IMPORT: /js/framework/custom-elements/content-editable.js */
 
 
 
-class ContentListElement extends HTMLElement {
-    /** @type {ShadowRoot} */ #shadowRoot;
-    /** @type {HTMLOListElement|HTMLUListElement} */ #list;
-
+class ContentListElement extends ContentEditable {
     constructor() {
-        super();
-        this.setType('ul');
+        super('ul', 'li');
     }
 
     connectedCallback() {
-        this.#shadowRoot = this.attachShadow({ mode: 'closed' });
-        this.#shadowRoot.append(this.#list);
     }
 
     disconnectedCallback() {}
-
-    focusWithin() {
-        this.#list.focus();
-        this.#list.contentEditable = ContentEditable.TRUE;
-        getSelection().setPosition(this.#list.lastChild, this.#list.lastChild.childNodes.length);
-    }
 
     /** @param {'ul'|'ol'|'menu'} localName  */
     setType(localName) {
         localName = localName.toLowerCase();
 
-        if (localName === this.#list?.localName)
+        if (localName === this.contentType)
             return;
 
         if (!['ul', 'ol', 'menu'].includes(localName))
             return;
 
-        const newList = document.createElement(localName);
-        newList.tabIndex = 0;
-        newList.append(
-            ...( this.#list?.childNodes ?? [document.createElement('li')] )
-        );
-        this.#list?.replaceWith(newList);
-        this.#list = newList;
+        super._setType(localName);
     }
 }
 
