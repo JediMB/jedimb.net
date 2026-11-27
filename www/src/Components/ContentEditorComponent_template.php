@@ -27,7 +27,7 @@ use App\Utils\CSSRenderer;
         flex-direction: column;
         gap: var(--size-s);
         width: 100%;
-        height: 15em;
+        height: 30em;
         overflow: scroll;
 
         border-radius: var(--size-xs);
