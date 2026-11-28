@@ -304,7 +304,7 @@ export default class ContentTextElement extends HTMLElement {
             ? this.nextSibling.nextSibling
             : this.nextSibling;
 
-        const [edge, target, toEnd] = event.key === 'ArrowUp'
+        const [edge, target] = event.key === 'ArrowUp'
             ? ['top', previousSibling]
             : ['bottom', nextSibling];
 
@@ -315,7 +315,7 @@ export default class ContentTextElement extends HTMLElement {
         const style = getComputedStyle(this.#content);
         const margin = style[`margin${capEdge}`];
         const borderWidth = style[`border${capEdge}Width`];
-        const padding = style[`padding${capEdge}`]
+        const padding = style[`padding${capEdge}`];
 
         const expectedDifference = [ margin, borderWidth, padding ]
             .map(p => Number(p.split('px')[0]))
