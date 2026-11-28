@@ -1,5 +1,6 @@
 export default class ContentClipboardManager {
     /** @type {HTMLElement} */ #container;
+    /** @type {HTMLElement} */ #subContainer = null;
     /** @type {string[]} */ #validInlineTags = [];
 
     /**
@@ -7,26 +8,14 @@ export default class ContentClipboardManager {
      * @param {string[]} validInlineTags 
      */
     constructor(container, validInlineTags) {
+        this.#pasteEvent = this.#pasteEvent.bind(this);
+
         this.#container = container;
 
         if (validInlineTags)
             this.#validInlineTags = [...validInlineTags];
 
-        this.#container.addEventListener('paste', event => {
-            if (!this.#container.isContentEditable)
-                return;
-
-            for (const type of ['text/html', 'text/plain']) {
-                const data = event.clipboardData.getData(type);
-
-                if (data) {
-                    event.preventDefault();
-                    event.stopPropagation();
-                    this.#pasteToSelection(data, type);
-                    return;
-                }
-            }
-        });
+        this.#container.addEventListener('paste', this.#pasteEvent);
     }
 
     async copy() { await this.#copyToClipboard(); }
@@ -39,6 +28,16 @@ export default class ContentClipboardManager {
         if (!data) return;
 
         this.#pasteToSelection(data, contentType);
+    }
+
+    /** @param {HTMLElement} subContainer  */
+    setSubContainer(subContainer) {
+        this.#subContainer = subContainer;
+    }
+
+    /** @param {string[]} newInlineTags  */
+    setValidInlineTags(newInlineTags) {
+        this.#validInlineTags = [...newInlineTags];
     }
 
     /**
@@ -80,7 +79,7 @@ export default class ContentClipboardManager {
         try {
             const validRanges = selection.getComposedRanges()
                 .map((_, index) => selection.getRangeAt(index))
-                .filter(range => this.#container.contains(range.commonAncestorContainer));
+                .filter(range => (this.#subContainer || this.#container).contains(range.commonAncestorContainer));
 
             const selectedContents = validRanges.map(range => {
                 let contents = range.cloneContents();
@@ -89,7 +88,7 @@ export default class ContentClipboardManager {
                 if (element.nodeType === Node.TEXT_NODE)
                     element = element.parentElement;
 
-                while (element && element !== this.#container) {
+                while (element && element !== (this.#subContainer || this.#container)) {
                     const newElement = document.createElement(element.localName);
                     newElement.append(contents);
                     contents = newElement;
@@ -146,6 +145,22 @@ export default class ContentClipboardManager {
         return [null];
     }
 
+    #pasteEvent = (event) => {
+        if (!(this.#subContainer || this.#container).isContentEditable)
+            return;
+
+        for (const type of ['text/html', 'text/plain']) {
+            const data = event.clipboardData.getData(type);
+
+            if (data) {
+                event.preventDefault();
+                event.stopPropagation();
+                this.#pasteToSelection(data, type);
+                return;
+            }
+        }
+    }
+
     /**
      * @param {string} data 
      * @param {ContentType} type 
@@ -156,7 +171,7 @@ export default class ContentClipboardManager {
         try {
             const validRanges = selection.getComposedRanges()
                 .map((_, index) => selection.getRangeAt(index))
-                .filter(range => this.#container.contains(range.commonAncestorContainer));
+                .filter(range => (this.#subContainer || this.#container).contains(range.commonAncestorContainer));
 
             data = this.#cleanUp(data);
 

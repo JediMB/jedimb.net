@@ -2583,6 +2583,448 @@ const userApiService = new UserApiService();
 
 
 
+/* IMPORT: /js/utilities/content-clipboard-manager.js */
+
+class ContentClipboardManager {
+    /** @type {HTMLElement} */ #container;
+    /** @type {HTMLElement} */ #subContainer = null;
+    /** @type {string[]} */ #validInlineTags = [];
+
+    /**
+     * @param {HTMLElement} container 
+     * @param {string[]} validInlineTags 
+     */
+    constructor(container, validInlineTags) {
+        this.#pasteEvent = this.#pasteEvent.bind(this);
+
+        this.#container = container;
+
+        if (validInlineTags)
+            this.#validInlineTags = [...validInlineTags];
+
+        this.#container.addEventListener('paste', this.#pasteEvent);
+    }
+
+    async copy() { await this.#copyToClipboard(); }
+
+    async cut() { await this.#copyToClipboard({deleteSelection: true}); }
+
+    async paste() {
+        const [data, contentType] = await this.#findClipboardText('text/html', 'text/plain');
+
+        if (!data) return;
+
+        this.#pasteToSelection(data, contentType);
+    }
+
+    /** @param {HTMLElement} subContainer  */
+    setSubContainer(subContainer) {
+        this.#subContainer = subContainer;
+    }
+
+    /** @param {string[]} newInlineTags  */
+    setValidInlineTags(newInlineTags) {
+        this.#validInlineTags = [...newInlineTags];
+    }
+
+    /**
+     * @param {string} html 
+     * @returns {string}
+     */
+    #cleanUp(html) {
+        const container = document.createElement('div');
+        container.innerHTML = html;
+
+        const elements = container.querySelectorAll('*');
+
+        for (const element of elements) {
+            const isValid = this.#validInlineTags.includes(element.localName);
+
+            if (!isValid) {
+                element.replaceWith(...element.childNodes);
+                continue;
+            }
+
+            for (const attribute of element.attributes) {
+                element.removeAttributeNode(attribute);
+            }
+        }
+
+        return container.innerHTML;
+    }
+
+    /**
+     * @param {object} options 
+     * @param {boolean} options.deleteSelection
+     */
+    async #copyToClipboard(options) {
+        const selection = getSelection();
+
+        if (selection.isCollapsed)
+            return;
+
+        try {
+            const validRanges = selection.getComposedRanges()
+                .map((_, index) => selection.getRangeAt(index))
+                .filter(range => (this.#subContainer || this.#container).contains(range.commonAncestorContainer));
+
+            const selectedContents = validRanges.map(range => {
+                let contents = range.cloneContents();
+                
+                let element = range.commonAncestorContainer;
+                if (element.nodeType === Node.TEXT_NODE)
+                    element = element.parentElement;
+
+                while (element && element !== (this.#subContainer || this.#container)) {
+                    const newElement = document.createElement(element.localName);
+                    newElement.append(contents);
+                    contents = newElement;
+                    element = element.parentElement;
+                }
+
+                return contents;
+            });
+
+            if (options?.deleteSelection)
+                validRanges.forEach(range => range.deleteContents());
+
+            if (!selectedContents.length)
+                return;
+
+            const [text, html] = this.#getTextAndHTML(selectedContents);
+
+            const clipboardItem = new ClipboardItem({
+                'text/plain': new Blob([text], { type: 'text/plain' }),
+                'text/html': new Blob([html], { type: 'text/html' })
+            });
+
+            await navigator.clipboard.write([clipboardItem]);
+        }
+        catch (_) {
+            if (options?.deleteSelection) {
+                document.execCommand('cut');
+                console.error('Fell back to execCommand cut functionality');
+                return;
+            }
+
+            document.execCommand('copy');
+            console.error('Fell back to execCommand copy functionality');
+        }
+    }
+
+    /**
+     * @typedef {'text/html'|'text/plain'} ContentType
+     * @param  {...ContentType} wantedContentTypes 
+     * @returns {Promise<[string, ContentType]|null[]>}
+     */
+    async #findClipboardText(...wantedContentTypes) {
+        const content = await navigator.clipboard.read();
+
+        for (const type of wantedContentTypes) {
+            const item = content.find(i => i.types.includes(type));
+
+            if (item) {
+                const blob = await item.getType(type);
+                return [await blob.text(), type];
+            }
+        }
+        
+        return [null];
+    }
+
+    #pasteEvent = (event) => {
+        if (!(this.#subContainer || this.#container).isContentEditable)
+            return;
+
+        for (const type of ['text/html', 'text/plain']) {
+            const data = event.clipboardData.getData(type);
+
+            if (data) {
+                event.preventDefault();
+                event.stopPropagation();
+                this.#pasteToSelection(data, type);
+                return;
+            }
+        }
+    }
+
+    /**
+     * @param {string} data 
+     * @param {ContentType} type 
+     */
+    #pasteToSelection(data, type) {
+        const selection = getSelection();
+
+        try {
+            const validRanges = selection.getComposedRanges()
+                .map((_, index) => selection.getRangeAt(index))
+                .filter(range => (this.#subContainer || this.#container).contains(range.commonAncestorContainer));
+
+            data = this.#cleanUp(data);
+
+            switch (type) {
+                case 'text/html':
+                    for (const range of validRanges) {
+                        range.deleteContents();
+                        range.insertNode(range.createContextualFragment(data));
+                        range.collapse();
+                    }
+                    break;
+
+                case 'text/plain':
+                    for (const range of validRanges) {
+                        range.deleteContents();
+                        range.insertNode(document.createTextNode(data));
+                        range.collapse();
+                    }
+                    break;
+            }
+        }
+        catch (_) {
+            document.execCommand('paste');
+            console.error('Fell back to execCommand paste functionality');
+        }
+    }
+
+    /**
+     * @param  {Node[]} nodes 
+     * @returns {[text: string, html: string]}
+     */
+    #getTextAndHTML(nodes) {
+        const container = document.createElement('div');
+        container.append(...nodes);
+        return [ container.innerText, container.innerHTML ];
+    }
+}
+
+
+/* IMPORT: /js/utilities/content-text-formatter.js */
+
+class ContentTextFormatter {
+    /** @type {HTMLElement} */ #container;
+    /** @type {HTMLElement} */ #subContainer = null;
+
+    /** @param {HTMLElement} shadowRootElement HTMLElement in the root of a shadow DOM */
+    constructor(shadowRootElement) {
+        if (!(shadowRootElement.getRootNode() instanceof ShadowRoot)) {
+            console.error('Invalid shadowRootElement argument: has a parentElement');
+            return;
+        }
+
+        this.#container = shadowRootElement;
+    }
+
+    /** @param {HTMLElement} subContainer  */
+    setSubContainer(subContainer) {
+        this.#subContainer = subContainer;
+    }
+
+    /** @param {string} tag The tag of the HTMLElement type that is to be removed or applied */
+    toggleTag(tag) {
+        const localName = tag.toLowerCase();
+        const selection = getSelection();
+        
+        if (selection.isCollapsed)
+            this.#toggleAtPosition(localName, selection);
+        else
+            this.#toggleAtRanges(localName, selection);
+    }
+
+    /**
+     * @param {Range} range 
+     * @param {string} localName 
+     * @param {Node} endNode 
+     * @param {number} endOffset 
+     */
+    #escapeTag(range, localName, endNode, endOffset) {
+        const container = this.#subContainer || this.#container;
+
+        const afterRange = document.createRange();
+        afterRange.setStart(endNode, endOffset);
+        afterRange.setEnd(container, container.childNodes.length);
+        const afterContents = afterRange.extractContents();
+
+        range.setEnd(container, container.childNodes.length);
+        this.#reformatRange(range, localName, 'remove');
+
+        container.append(afterContents);
+    }
+
+    /**
+     * @param {HTMLElement} element 
+     * @param {string} localName 
+     * @returns {HTMLElement|null}
+     */
+    #findMatchingParent(element, localName) {
+        while (element && element.localName !== localName) {
+            element = element.parentElement;
+        }
+
+        return element;
+    }
+
+    /**
+     * @param {HTMLElement} parentElement 
+     * @param {number} [offset=0] Character offset determining which text node is correct
+     * @returns {[Text|null, number]}
+     */
+    #findTextChild(parentElement, offset = 0) {
+        for (const child of parentElement.childNodes) {
+            if (child.nodeType === Node.TEXT_NODE) {
+                if (offset <= child.textContent.length)
+                    return [ child, offset ];
+
+                offset -= child.textContent.length;
+            }
+
+            const [ descendant, newOffset ] = this.#findTextChild(child, offset);
+
+            if (descendant)
+                return [ descendant, newOffset ];
+
+            offset = newOffset;
+        }
+
+        return [ null, offset ];
+    }
+
+    /**
+     * @param {HTMLElement} parentElement 
+     * @param {(textNode: Text) => boolean} conditionCallback 
+     * @returns {Text|null}
+     */
+    #findTextNodeBy(parentElement, conditionCallback) {
+        for (const child of parentElement.childNodes) {
+            if (child.nodeType === Node.TEXT_NODE && conditionCallback(child))
+                return child;
+
+            const descendant = this.#findTextNodeBy(child, conditionCallback);
+
+            if (descendant)
+                return descendant;
+        }
+
+        return null;
+    }
+
+    /**
+     * @param {Selection} selection 
+     * @param {string} localName 
+     */
+    #formatWord(selection, localName) {
+        selection.modify('extend', 'backward', 'word');
+        const selectionOffset = selection.toString().length;
+        selection.collapseToStart();
+        selection.modify('extend', 'forward', 'word');
+
+        const range = selection.getRangeAt(0);
+        const newElement = this.#reformatRange(range, localName, 'replace');
+
+        const [ foundNode, foundOffset ] = this.#findTextChild(newElement, selectionOffset);
+
+        selection.setPosition(foundNode, foundOffset);
+    }
+
+    /**
+     * @param {Range} range 
+     * @param {string} localName 
+     * @param {'replace'|'remove'} formattingMode 
+     * @returns {HTMLElement|null} Returns the new HTMLElement if formattingMode is 'replace'
+     */
+    #reformatRange(range, localName, formattingMode) {
+        const contents = range.extractContents();
+        contents.querySelectorAll(localName)
+            .forEach(match => match.replaceWith(...match.childNodes));
+        contents.normalize();
+
+        if (formattingMode === 'remove') {
+            range.insertNode(contents);
+            return null;
+        }
+
+        const newElement = document.createElement(localName);
+        newElement.append(contents);
+        range.insertNode(newElement);
+
+        return newElement;
+    }
+
+    /**
+     * @param {string} localName 
+     * @param {Selection} selection 
+     */
+    #toggleAtPosition(localName, selection) {
+        const { anchorNode, anchorOffset } = selection;
+        const parentMatch = this.#findMatchingParent(anchorNode, localName);
+
+        const textContent = anchorNode.textContent;
+        const isInsideAWord = anchorNode.nodeType === Node.TEXT_NODE
+            && anchorOffset !== 0
+            && anchorOffset !== textContent.length
+            && textContent[anchorOffset] !== ' '
+            && textContent[anchorOffset-1] !== ' ';
+
+        if (parentMatch) {
+            if (isInsideAWord) {
+                parentMatch.replaceWith(...parentMatch.childNodes);
+                selection.setPosition(anchorNode, anchorOffset);
+                return;
+            }
+
+            const range = selection.getRangeAt(0);
+            this.#escapeTag(range, localName, anchorNode, anchorOffset);
+            return;
+        }
+
+        if (isInsideAWord) {
+            this.#formatWord(selection, localName);
+            return;
+        }
+
+        const element = document.createElement(localName);
+        const range = selection.getRangeAt(0);
+        range.insertNode(element);
+        selection.setPosition(element, 0);
+    }
+
+    /**
+     * Which way a range is toggled is calculated independently for each range,
+     * which is maybe a bit unintuitive, but also extremely cornercase
+     * @param {string} localName 
+     * @param {Selection} selection 
+     */
+    #toggleAtRanges(localName, selection) {
+        const ranges = selection.getComposedRanges()
+            .map((_, index) => selection.getRangeAt(index))
+            .reverse();
+
+        for (const range of ranges) {
+            const commonAncestor = range.commonAncestorContainer;
+            const matchingParent = this.#findMatchingParent(commonAncestor, localName);
+
+            if (commonAncestor.nodeType === Node.TEXT_NODE && !matchingParent) {
+                const newElement = document.createElement(localName);
+                range.surroundContents(newElement);
+                continue;
+            }
+
+            const isAllFormatted = !this.#findTextNodeBy(commonAncestor, textNode => {
+                return (range.isPointInRange(textNode, 0) || range.isPointInRange(textNode, textNode.textContent.length))
+                    && textNode.textContent.trim()
+                    && !this.#findMatchingParent(textNode, localName);
+            });
+
+            if (matchingParent || isAllFormatted) {
+                this.#escapeTag(range, localName, range.endContainer, range.endOffset);
+                continue;
+            }
+
+            this.#reformatRange(range, localName, 'replace');
+        }
+    }
+}
+
+
 /* IMPORT: /js/utilities/modifier-keys.utility.js */
 
 class ModifierKeys {
@@ -2669,6 +3111,7 @@ class ContentEditable extends HTMLElement {
 
     #allowedContentTypes;
     #subContentType;
+    /** @type {string[]} */ #validInlineTags = [];
 
     /** The localName of the content element */
     get contentType() { return this.#content.localName; }
@@ -2688,7 +3131,7 @@ class ContentEditable extends HTMLElement {
         this.#shadowRoot.append(this.#content);
 
         this.#formatter = new ContentTextFormatter(this.#content);
-        this.#clipboard = new ContentClipboardManager(this.#content, []);
+        this.#clipboard = new ContentClipboardManager(this.#content, this.#validInlineTags);
 
         const css = new CSSStyleSheet();
         css.replaceSync(`
@@ -2763,6 +3206,11 @@ class ContentEditable extends HTMLElement {
         this.#content = content;
     }
 
+    /** @param {string[]} validInlineTags  */
+    setValidInlineTags(validInlineTags) {
+        this.#validInlineTags = [...validInlineTags];
+    }
+
     /** @param {HTMLElement} [element=null]  */
     #activate(element = null) {
         const newEditable = element ?? (
@@ -2777,6 +3225,11 @@ class ContentEditable extends HTMLElement {
         this.#deactivate();
         this.#editable = newEditable;
         newEditable.contentEditable = ContentEditable.TRUE;
+        
+        const subContainer = this.#subContentType ? newEditable : null;
+        this.#clipboard.setSubContainer(subContainer);
+        this.#formatter.setSubContainer(subContainer);
+        
         newEditable.addEventListener('keydown', this.#handleKeyboardCommands);
     }
 
@@ -3468,421 +3921,12 @@ customElements.define('content-toolbar', ContentToolbarElement);
 
 /* IMPORT: /js/utilities/content-clipboard-manager.js */
 
-class ContentClipboardManager {
-    /** @type {HTMLElement} */ #container;
-    /** @type {string[]} */ #validInlineTags = [];
 
-    /**
-     * @param {HTMLElement} container 
-     * @param {string[]} validInlineTags 
-     */
-    constructor(container, validInlineTags) {
-        this.#container = container;
-
-        if (validInlineTags)
-            this.#validInlineTags = [...validInlineTags];
-
-        this.#container.addEventListener('paste', event => {
-            if (!this.#container.isContentEditable)
-                return;
-
-            for (const type of ['text/html', 'text/plain']) {
-                const data = event.clipboardData.getData(type);
-
-                if (data) {
-                    event.preventDefault();
-                    event.stopPropagation();
-                    this.#pasteToSelection(data, type);
-                    return;
-                }
-            }
-        });
-    }
-
-    async copy() { await this.#copyToClipboard(); }
-
-    async cut() { await this.#copyToClipboard({deleteSelection: true}); }
-
-    async paste() {
-        const [data, contentType] = await this.#findClipboardText('text/html', 'text/plain');
-
-        if (!data) return;
-
-        this.#pasteToSelection(data, contentType);
-    }
-
-    /**
-     * @param {string} html 
-     * @returns {string}
-     */
-    #cleanUp(html) {
-        const container = document.createElement('div');
-        container.innerHTML = html;
-
-        const elements = container.querySelectorAll('*');
-
-        for (const element of elements) {
-            const isValid = this.#validInlineTags.includes(element.localName);
-
-            if (!isValid) {
-                element.replaceWith(...element.childNodes);
-                continue;
-            }
-
-            for (const attribute of element.attributes) {
-                element.removeAttributeNode(attribute);
-            }
-        }
-
-        return container.innerHTML;
-    }
-
-    /**
-     * @param {object} options 
-     * @param {boolean} options.deleteSelection
-     */
-    async #copyToClipboard(options) {
-        const selection = getSelection();
-
-        if (selection.isCollapsed)
-            return;
-
-        try {
-            const validRanges = selection.getComposedRanges()
-                .map((_, index) => selection.getRangeAt(index))
-                .filter(range => this.#container.contains(range.commonAncestorContainer));
-
-            const selectedContents = validRanges.map(range => {
-                let contents = range.cloneContents();
-                
-                let element = range.commonAncestorContainer;
-                if (element.nodeType === Node.TEXT_NODE)
-                    element = element.parentElement;
-
-                while (element && element !== this.#container) {
-                    const newElement = document.createElement(element.localName);
-                    newElement.append(contents);
-                    contents = newElement;
-                    element = element.parentElement;
-                }
-
-                return contents;
-            });
-
-            if (options?.deleteSelection)
-                validRanges.forEach(range => range.deleteContents());
-
-            if (!selectedContents.length)
-                return;
-
-            const [text, html] = this.#getTextAndHTML(selectedContents);
-
-            const clipboardItem = new ClipboardItem({
-                'text/plain': new Blob([text], { type: 'text/plain' }),
-                'text/html': new Blob([html], { type: 'text/html' })
-            });
-
-            await navigator.clipboard.write([clipboardItem]);
-        }
-        catch (_) {
-            if (options?.deleteSelection) {
-                document.execCommand('cut');
-                console.error('Fell back to execCommand cut functionality');
-                return;
-            }
-
-            document.execCommand('copy');
-            console.error('Fell back to execCommand copy functionality');
-        }
-    }
-
-    /**
-     * @typedef {'text/html'|'text/plain'} ContentType
-     * @param  {...ContentType} wantedContentTypes 
-     * @returns {Promise<[string, ContentType]|null[]>}
-     */
-    async #findClipboardText(...wantedContentTypes) {
-        const content = await navigator.clipboard.read();
-
-        for (const type of wantedContentTypes) {
-            const item = content.find(i => i.types.includes(type));
-
-            if (item) {
-                const blob = await item.getType(type);
-                return [await blob.text(), type];
-            }
-        }
-        
-        return [null];
-    }
-
-    /**
-     * @param {string} data 
-     * @param {ContentType} type 
-     */
-    #pasteToSelection(data, type) {
-        const selection = getSelection();
-
-        try {
-            const validRanges = selection.getComposedRanges()
-                .map((_, index) => selection.getRangeAt(index))
-                .filter(range => this.#container.contains(range.commonAncestorContainer));
-
-            data = this.#cleanUp(data);
-
-            switch (type) {
-                case 'text/html':
-                    for (const range of validRanges) {
-                        range.deleteContents();
-                        range.insertNode(range.createContextualFragment(data));
-                        range.collapse();
-                    }
-                    break;
-
-                case 'text/plain':
-                    for (const range of validRanges) {
-                        range.deleteContents();
-                        range.insertNode(document.createTextNode(data));
-                        range.collapse();
-                    }
-                    break;
-            }
-        }
-        catch (_) {
-            document.execCommand('paste');
-            console.error('Fell back to execCommand paste functionality');
-        }
-    }
-
-    /**
-     * @param  {Node[]} nodes 
-     * @returns {[text: string, html: string]}
-     */
-    #getTextAndHTML(nodes) {
-        const container = document.createElement('div');
-        container.append(...nodes);
-        return [ container.innerText, container.innerHTML ];
-    }
-}
 
 
 /* IMPORT: /js/utilities/content-text-formatter.js */
 
-class ContentTextFormatter {
-    /** @type {HTMLElement} */ #content;
 
-    /** @param {HTMLElement} shadowRootElement HTMLElement in the root of a shadow DOM */
-    constructor(shadowRootElement) {
-        if (!(shadowRootElement.getRootNode() instanceof ShadowRoot)) {
-            console.error('Invalid shadowRootElement argument: has a parentElement');
-            return;
-        }
-
-        this.#content = shadowRootElement;
-    }
-
-    /** @param {string} tag The tag of the HTMLElement type that is to be removed or applied */
-    toggleTag(tag) {
-        const localName = tag.toLowerCase();
-        const selection = getSelection();
-        
-        if (selection.isCollapsed)
-            this.#toggleAtPosition(localName, selection);
-        else
-            this.#toggleAtRanges(localName, selection);
-    }
-
-    /**
-     * @param {Range} range 
-     * @param {string} localName 
-     * @param {Node} endNode 
-     * @param {number} endOffset 
-     */
-    #escapeTag(range, localName, endNode, endOffset) {
-        const afterRange = document.createRange();
-        afterRange.setStart(endNode, endOffset);
-        afterRange.setEnd(this.#content, this.#content.childNodes.length);
-        const afterContents = afterRange.extractContents();
-
-        range.setEnd(this.#content, this.#content.childNodes.length);
-        this.#reformatRange(range, localName, 'remove');
-
-        this.#content.append(afterContents);
-    }
-
-    /**
-     * @param {HTMLElement} element 
-     * @param {string} localName 
-     * @returns {HTMLElement|null}
-     */
-    #findMatchingParent(element, localName) {
-        while (element && element.localName !== localName) {
-            element = element.parentElement;
-        }
-
-        return element;
-    }
-
-    /**
-     * @param {HTMLElement} parentElement 
-     * @param {number} [offset=0] Character offset determining which text node is correct
-     * @returns {[Text|null, number]}
-     */
-    #findTextChild(parentElement, offset = 0) {
-        for (const child of parentElement.childNodes) {
-            if (child.nodeType === Node.TEXT_NODE) {
-                if (offset <= child.textContent.length)
-                    return [ child, offset ];
-
-                offset -= child.textContent.length;
-            }
-
-            const [ descendant, newOffset ] = this.#findTextChild(child, offset);
-
-            if (descendant)
-                return [ descendant, newOffset ];
-
-            offset = newOffset;
-        }
-
-        return [ null, offset ];
-    }
-
-    /**
-     * @param {HTMLElement} parentElement 
-     * @param {(textNode: Text) => boolean} conditionCallback 
-     * @returns {Text|null}
-     */
-    #findTextNodeBy(parentElement, conditionCallback) {
-        for (const child of parentElement.childNodes) {
-            if (child.nodeType === Node.TEXT_NODE && conditionCallback(child))
-                return child;
-
-            const descendant = this.#findTextNodeBy(child, conditionCallback);
-
-            if (descendant)
-                return descendant;
-        }
-
-        return null;
-    }
-
-    /**
-     * @param {Selection} selection 
-     * @param {string} localName 
-     */
-    #formatWord(selection, localName) {
-        selection.modify('extend', 'backward', 'word');
-        const selectionOffset = selection.toString().length;
-        selection.collapseToStart();
-        selection.modify('extend', 'forward', 'word');
-
-        const range = selection.getRangeAt(0);
-        const newElement = this.#reformatRange(range, localName, 'replace');
-
-        const [ foundNode, foundOffset ] = this.#findTextChild(newElement, selectionOffset);
-
-        selection.setPosition(foundNode, foundOffset);
-    }
-
-    /**
-     * @param {Range} range 
-     * @param {string} localName 
-     * @param {'replace'|'remove'} formattingMode 
-     * @returns {HTMLElement|null} Returns the new HTMLElement if formattingMode is 'replace'
-     */
-    #reformatRange(range, localName, formattingMode) {
-        const contents = range.extractContents();
-        contents.querySelectorAll(localName)
-            .forEach(match => match.replaceWith(...match.childNodes));
-        contents.normalize();
-
-        if (formattingMode === 'remove') {
-            range.insertNode(contents);
-            return null;
-        }
-
-        const newElement = document.createElement(localName);
-        newElement.append(contents);
-        range.insertNode(newElement);
-
-        return newElement;
-    }
-
-    /**
-     * @param {string} localName 
-     * @param {Selection} selection 
-     */
-    #toggleAtPosition(localName, selection) {
-        const { anchorNode, anchorOffset } = selection;
-        const parentMatch = this.#findMatchingParent(anchorNode, localName);
-
-        const textContent = anchorNode.textContent;
-        const isInsideAWord = anchorNode.nodeType === Node.TEXT_NODE
-            && anchorOffset !== 0
-            && anchorOffset !== textContent.length
-            && textContent[anchorOffset] !== ' '
-            && textContent[anchorOffset-1] !== ' ';
-
-        if (parentMatch) {
-            if (isInsideAWord) {
-                parentMatch.replaceWith(...parentMatch.childNodes);
-                selection.setPosition(anchorNode, anchorOffset);
-                return;
-            }
-
-            const range = selection.getRangeAt(0);
-            this.#escapeTag(range, localName, anchorNode, anchorOffset);
-            return;
-        }
-
-        if (isInsideAWord) {
-            this.#formatWord(selection, localName);
-            return;
-        }
-
-        const element = document.createElement(localName);
-        const range = selection.getRangeAt(0);
-        range.insertNode(element);
-        selection.setPosition(element, 0);
-    }
-
-    /**
-     * Which way a range is toggled is calculated independently for each range,
-     * which is maybe a bit unintuitive, but also extremely cornercase
-     * @param {string} localName 
-     * @param {Selection} selection 
-     */
-    #toggleAtRanges(localName, selection) {
-        const ranges = selection.getComposedRanges()
-            .map((_, index) => selection.getRangeAt(index))
-            .reverse();
-
-        for (const range of ranges) {
-            const commonAncestor = range.commonAncestorContainer;
-            const matchingParent = this.#findMatchingParent(commonAncestor, localName);
-
-            if (commonAncestor.nodeType === Node.TEXT_NODE && !matchingParent) {
-                const newElement = document.createElement(localName);
-                range.surroundContents(newElement);
-                continue;
-            }
-
-            const isAllFormatted = !this.#findTextNodeBy(commonAncestor, textNode => {
-                return (range.isPointInRange(textNode, 0) || range.isPointInRange(textNode, textNode.textContent.length))
-                    && textNode.textContent.trim()
-                    && !this.#findMatchingParent(textNode, localName);
-            });
-
-            if (matchingParent || isAllFormatted) {
-                this.#escapeTag(range, localName, range.endContainer, range.endOffset);
-                continue;
-            }
-
-            this.#reformatRange(range, localName, 'replace');
-        }
-    }
-}
 
 
 /* IMPORT: /js/utilities/modifier-keys.utility.js */

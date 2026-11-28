@@ -1,5 +1,6 @@
 export default class ContentTextFormatter {
-    /** @type {HTMLElement} */ #content;
+    /** @type {HTMLElement} */ #container;
+    /** @type {HTMLElement} */ #subContainer = null;
 
     /** @param {HTMLElement} shadowRootElement HTMLElement in the root of a shadow DOM */
     constructor(shadowRootElement) {
@@ -8,7 +9,12 @@ export default class ContentTextFormatter {
             return;
         }
 
-        this.#content = shadowRootElement;
+        this.#container = shadowRootElement;
+    }
+
+    /** @param {HTMLElement} subContainer  */
+    setSubContainer(subContainer) {
+        this.#subContainer = subContainer;
     }
 
     /** @param {string} tag The tag of the HTMLElement type that is to be removed or applied */
@@ -29,15 +35,17 @@ export default class ContentTextFormatter {
      * @param {number} endOffset 
      */
     #escapeTag(range, localName, endNode, endOffset) {
+        const container = this.#subContainer || this.#container;
+
         const afterRange = document.createRange();
         afterRange.setStart(endNode, endOffset);
-        afterRange.setEnd(this.#content, this.#content.childNodes.length);
+        afterRange.setEnd(container, container.childNodes.length);
         const afterContents = afterRange.extractContents();
 
-        range.setEnd(this.#content, this.#content.childNodes.length);
+        range.setEnd(container, container.childNodes.length);
         this.#reformatRange(range, localName, 'remove');
 
-        this.#content.append(afterContents);
+        container.append(afterContents);
     }
 
     /**

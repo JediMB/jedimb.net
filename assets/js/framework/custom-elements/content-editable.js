@@ -1,3 +1,5 @@
+import ContentClipboardManager from "/js/utilities/content-clipboard-manager.js";
+import ContentTextFormatter from "/js/utilities/content-text-formatter.js";
 import ModifierKeys from "/js/utilities/modifier-keys.utility.js";
 import { fcToUpperCase } from "/js/utilities/string.utility.js";
 
@@ -15,6 +17,7 @@ export default class ContentEditable extends HTMLElement {
 
     #allowedContentTypes;
     #subContentType;
+    /** @type {string[]} */ #validInlineTags = [];
 
     /** The localName of the content element */
     get contentType() { return this.#content.localName; }
@@ -34,7 +37,7 @@ export default class ContentEditable extends HTMLElement {
         this.#shadowRoot.append(this.#content);
 
         this.#formatter = new ContentTextFormatter(this.#content);
-        this.#clipboard = new ContentClipboardManager(this.#content, []);
+        this.#clipboard = new ContentClipboardManager(this.#content, this.#validInlineTags);
 
         const css = new CSSStyleSheet();
         css.replaceSync(`
@@ -109,6 +112,11 @@ export default class ContentEditable extends HTMLElement {
         this.#content = content;
     }
 
+    /** @param {string[]} validInlineTags  */
+    setValidInlineTags(validInlineTags) {
+        this.#validInlineTags = [...validInlineTags];
+    }
+
     /** @param {HTMLElement} [element=null]  */
     #activate(element = null) {
         const newEditable = element ?? (
@@ -123,6 +131,11 @@ export default class ContentEditable extends HTMLElement {
         this.#deactivate();
         this.#editable = newEditable;
         newEditable.contentEditable = ContentEditable.TRUE;
+        
+        const subContainer = this.#subContentType ? newEditable : null;
+        this.#clipboard.setSubContainer(subContainer);
+        this.#formatter.setSubContainer(subContainer);
+        
         newEditable.addEventListener('keydown', this.#handleKeyboardCommands);
     }
 
